@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RivFree — Comparador de precios de free shops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#123C39;
+    --teal-dark:#0B2624;
+    --paper:#F1ECDE;
+    --paper-dim:#E4DCC6;
+    --gold:#C7963E;
+    --gold-bright:#E0B562;
+    --stamp-red:#A63A32;
+    --ink:#1B1B1B;
+    --surface:#FFFFFF;
+    --muted:#756F5D;
+    --line: rgba(18,60,57,0.18);
+    --accent:#F06449;
+    --accent-soft:#FFE2D9;
+    --lime:#BEEB72;
+  }
+  :root[data-theme="dark"]{
+    --teal:#194F4A;
+    --teal-dark:#E4F3F0;
+    --paper:#101716;
+    --paper-dim:#1C2927;
+    --gold:#D3A64E;
+    --gold-bright:#E7BD69;
+    --ink:#F2EFE7;
+    --surface:#17211F;
+    --muted:#B8B3A5;
+    --line:rgba(231,189,105,.22);
+    --accent:#FF8068;
+    --accent-soft:#3A2522;
+    --lime:#C8F47E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    background:
+      radial-gradient(circle at 84% -20%, rgba(190,235,114,.24), transparent 34%),
+      linear-gradient(120deg,#092D2B 0%,var(--teal) 58%,#174E46 100%);
+    color:#fff;
+    padding:24px 20px 26px;
+    border-bottom:4px solid var(--lime);
+    position:relative;
+  }
+  .topbar-inner{
+    max-width:1100px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand-lockup{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    display:grid;
+    place-items:center;
+    width:48px;
+    height:48px;
+    border-radius:14px 14px 14px 4px;
+    background:var(--lime);
+    color:#092D2B;
+    font:700 20px 'Oswald',sans-serif;
+    box-shadow:0 7px 20px rgba(0,0,0,.2);
+    transform:rotate(-3deg);
+  }
+  .brand h1{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    font-size:clamp(30px,4vw,43px);
+    margin:0;
+    font-weight:700;
+  }
+  .brand-name-free{color:var(--lime);}
+  .brand-link{color:inherit; text-decoration:none; display:block;}
+  .brand-link:focus-visible{border-radius:3px;}
+  .brand p{
+    margin:2px 0 0;
+    color:#D7E9E5;
+    font-size:14px;
+    letter-spacing:0.5px;
+  }
+  .updated-badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--teal-dark);
+    background:var(--gold-bright);
+    padding:6px 12px;
+    border-radius:2px;
+    white-space:nowrap;
+  }
+  .updated-badge.stale{background:#F3C7A8; color:#6B271F;}
+  .header-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .theme-toggle{
+    border:1px solid rgba(255,255,255,.48);
+    border-radius:4px;
+    padding:6px 10px;
+    color:#fff;
+    background:transparent;
+    font:600 12px 'Inter',sans-serif;
+    cursor:pointer;
+  }
+  .theme-toggle:hover{background:rgba(255,255,255,.1);}
+  .stock-notice{
+    max-width:1100px;
+    margin:18px auto 0;
+    padding:0 20px;
+  }
+  .stock-notice-inner{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:12px 14px;
+    border:1px solid var(--accent);
+    border-left:5px solid var(--accent);
+    border-radius:8px;
+    background:var(--accent-soft);
+    color:var(--ink);
+    font-size:13px;
+    line-height:1.45;
+    box-shadow:0 4px 14px rgba(45,35,25,.06);
+  }
+  .stock-notice-icon{font-size:18px; line-height:1.1;}
+  .stock-notice-text{flex:1;}
+  .stock-notice-text strong{display:block; margin-bottom:2px; color:var(--stamp-red);}
+  .stock-notice-close{
+    border:0;
+    background:transparent;
+    color:var(--ink);
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    font-size:21px;
+    line-height:1;
+    cursor:pointer;
+    opacity:.65;
+  }
+  .stock-notice-close:hover{background:rgba(0,0,0,.08); opacity:1;}
+  .controls{
+    max-width:1100px;
+    margin:14px auto 0;
+    padding:0 20px;
+  }
+  .controls-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(18,60,57,0.10);
+    padding:18px 20px;
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1fr;
+    gap:14px;
+  }
+  .search-field{grid-column:1/-1;}
+  .search-row{display:grid; grid-template-columns:1fr auto; gap:8px;}
+  .search-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-width:122px;
+    border:0;
+    border-radius:6px;
+    background:var(--accent);
+    color:#fff;
+    padding:9px 17px;
+    font:700 13px 'Inter',sans-serif;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(166,58,50,.18);
+  }
+  .search-button:hover{filter:brightness(.94);}
+  .search-button:disabled{cursor:wait; opacity:.72;}
+  .search-help{margin:6px 0 0; color:var(--muted); font-size:11px;}
+  .search-status{
+    display:none;
+    align-items:center;
+    gap:8px;
+    margin-top:7px;
+    color:var(--teal);
+    font-size:12px;
+    font-weight:600;
+  }
+  .search-status.visible{display:flex;}
+  .spinner{
+    width:14px;
+    height:14px;
+    border:2px solid var(--line);
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media (max-width:800px){
+    .controls-card{grid-template-columns:1fr 1fr; }
+  }
+  .field label{
+    display:block;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--teal);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .field input[type=text],
+  .field input[type=search],
+  .field input[type=number],
+  .field select{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .stores-field{
+    grid-column:1/-1;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 16px;
+    align-items:center;
+  }
+  .stores-field label.chk{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink);
+    text-transform:none;
+    letter-spacing:0;
+  }
+  .stores-field input[type=checkbox]{accent-color:var(--teal);}
+  .filter-actions{
+    grid-column:1/-1;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .clear-btn{
+    border:1px solid var(--teal);
+    border-radius:4px;
+    background:transparent;
+    color:var(--teal);
+    padding:8px 12px;
+    font:600 12px 'Inter',sans-serif;
+    cursor:pointer;
+  }
+  .clear-btn:hover{background:var(--paper-dim);}
+  input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible{
+    outline:3px solid var(--gold-bright);
+    outline-offset:2px;
+  }
+  .price-range{display:flex; gap:8px;}
+  .toggle-oferta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:500;
+  }
+  .results-meta{
+    max-width:1100px;
+    margin:18px auto 6px;
+    padding:0 24px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--teal);
+  }
+  .results-meta.search-complete{animation:resultPulse .35s ease-out;}
+  @keyframes resultPulse{50%{color:var(--accent);}}
+  .grid{
+    max-width:1100px;
+    margin:10px auto 60px;
+    padding:0 20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:16px;
+  }
+  .load-more-wrap{display:flex; justify-content:center; margin:-35px auto 55px; padding:0 20px;}
+  .load-more-wrap[hidden]{display:none;}
+  .load-more-btn{
+    border:1px solid var(--teal);
+    border-radius:999px;
+    background:var(--surface);
+    color:var(--teal);
+    padding:11px 22px;
+    font:700 13px 'Inter',sans-serif;
+    cursor:pointer;
+    box-shadow:0 5px 16px rgba(18,60,57,.1);
+  }
+  .load-more-btn:hover{background:var(--teal); color:#fff;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 22px rgba(18,60,57,0.14);
+  }
+  .card.comparison-card{border-color:rgba(199,150,62,.65);}
+  .card-img{
+    height:160px;
+    background:var(--paper-dim);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .card-img img{max-width:100%; max-height:100%; object-fit:contain;}
+  .card-img .noimg{font-size:12px; color:#8a8368;}
+  .card-body{padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1;}
+  .card-store{
+    display:inline-flex;
+    align-self:flex-start;
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    background:var(--teal);
+    color:#fff;
+    padding:3px 9px;
+    border-radius:2px;
+    transform:rotate(-1deg);
+    border:0;
+    cursor:pointer;
+  }
+  .card-store:hover{text-decoration:underline; background:var(--gold); color:var(--teal-dark);}
+  .store-tags{display:flex; flex-wrap:wrap; align-items:center; gap:6px;}
+  .card-name{
+    font-size:14.5px;
+    font-weight:600;
+    line-height:1.3;
+    color:var(--ink);
+    min-height:38px;
+  }
+  .badge-row{display:flex; flex-wrap:wrap; gap:6px; min-height:18px;}
+  .card-price-row{
+    margin-top:auto;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .card-price{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:20px;
+    font-weight:600;
+    color:var(--teal-dark);
+  }
+  .card-price-old{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:#999;
+    text-decoration:line-through;
+  }
+  .price-unavailable{font-size:14px; color:var(--stamp-red); font-weight:700;}
+  .badge-oferta{
+    font-size:10px;
+    font-weight:700;
+    color:#fff;
+    background:var(--stamp-red);
+    padding:2px 6px;
+    border-radius:2px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    align-self:flex-start;
+  }
+  .badge-best{
+    font-size:10px;
+    font-weight:700;
+    color:var(--teal-dark);
+    background:var(--gold-bright);
+    padding:2px 6px;
+    border-radius:2px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    align-self:flex-start;
+  }
+  .comparison-hint{
+    font-size:11px;
+    color:var(--teal);
+    font-weight:600;
+  }
+  .card-action{
+    width:100%;
+    border:0;
+    border-top:1px solid var(--line);
+    padding:10px;
+    background:var(--teal);
+    color:#fff;
+    font:600 12.5px 'Inter',sans-serif;
+    letter-spacing:.3px;
+    cursor:pointer;
+  }
+  .card-action:hover{background:var(--teal-dark);}
+  .card-link{
+    display:block;
+    text-align:center;
+    padding:9px;
+    background:var(--paper-dim);
+    color:var(--teal-dark);
+    text-decoration:none;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:0.4px;
+    border-top:1px solid var(--line);
+  }
+  .card-link:hover{background:var(--gold-bright);}
+  .empty-state{
+    max-width:600px;
+    margin:60px auto;
+    text-align:center;
+    color:var(--teal);
+    font-family:'Oswald',sans-serif;
+    font-size:18px;
+    padding:0 20px;
+  }
+  footer{
+    text-align:center;
+    padding:20px;
+    font-size:12px;
+    color:#8a8368;
+  }
+  .comparison-dialog{
+    width:min(720px,calc(100% - 24px));
+    max-height:min(760px,calc(100vh - 32px));
+    border:0;
+    border-radius:8px;
+    padding:0;
+    color:var(--ink);
+    box-shadow:0 24px 70px rgba(11,38,36,.35);
+  }
+  .comparison-dialog::backdrop{background:rgba(11,38,36,.68);}
+  .dialog-header{
+    position:sticky;
+    top:0;
+    z-index:1;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:20px 22px;
+    background:var(--teal);
+    color:#fff;
+  }
+  .dialog-header h2{margin:0; font:600 23px/1.2 'Oswald',sans-serif;}
+  .dialog-subtitle{margin:5px 0 0; color:var(--gold-bright); font-size:12px;}
+  .dialog-close{
+    flex:0 0 auto;
+    border:1px solid rgba(255,255,255,.45);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    color:#fff;
+    background:transparent;
+    font-size:23px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .comparison-list{display:grid; gap:10px; padding:18px; background:var(--paper);}
+  .offer-row{
+    display:grid;
+    grid-template-columns:minmax(130px,1fr) auto auto;
+    align-items:center;
+    gap:14px;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--surface);
+  }
+  .offer-row.cheapest{border:2px solid var(--gold);}
+  .offer-store{font-weight:700; color:var(--teal);}
+  .store-link-plain{border:0; padding:0; background:transparent; cursor:pointer; text-align:left; font:700 14px 'Inter',sans-serif;}
+  .store-link-plain:hover{text-decoration:underline;}
+  .offer-name{margin-top:3px; font-size:12px; color:#666; line-height:1.3;}
+  .offer-price{font:600 17px 'IBM Plex Mono',monospace; white-space:nowrap;}
+  .offer-link{
+    border-radius:4px;
+    padding:9px 11px;
+    background:var(--teal);
+    color:#fff;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .offer-link:hover{background:var(--gold); color:var(--teal-dark);}
+  .cheapest-label{display:block; margin-top:4px; color:var(--stamp-red); font-size:10px; font-weight:700; text-transform:uppercase;}
+  .store-info{display:grid; gap:12px; padding:20px; background:var(--paper);}
+  .store-detail{padding:13px 14px; border:1px solid var(--line); border-radius:6px; background:var(--surface);}
+  .store-detail-label{display:block; margin-bottom:4px; color:var(--muted); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.7px;}
+  .store-links{display:flex; flex-wrap:wrap; gap:8px;}
+  .store-links a{border-radius:4px; padding:9px 12px; background:var(--teal); color:#fff; text-decoration:none; font-size:12px; font-weight:600;}
+  :root[data-theme="dark"] .updated-badge{color:#10211F;}
+  :root[data-theme="dark"] .field input,
+  :root[data-theme="dark"] .field select{color:var(--ink); background:var(--paper-dim);}
+  :root[data-theme="dark"] .card-img{background:#22312E;}
+  :root[data-theme="dark"] .card-link{color:var(--ink);}
+  @media (max-width:520px){
+    .topbar{padding-top:22px;}
+    .topbar-inner{align-items:flex-start; flex-direction:column;}
+    .controls{padding:0 12px;}
+    .controls-card{grid-template-columns:1fr; padding:16px;}
+    .search-row{grid-template-columns:1fr;}
+    .search-button{width:100%; min-height:42px;}
+    .field[style]{grid-column:auto !important;}
+    .price-range{display:grid; grid-template-columns:1fr 1fr;}
+    .grid{grid-template-columns:1fr; padding:0 12px;}
+    .card{display:grid; grid-template-columns:112px 1fr;}
+    .card-img{height:100%; min-height:180px;}
+    .card-link{grid-column:1/-1;}
+    .card-action{grid-column:1/-1;}
+    .results-meta{padding:0 14px;}
+    .offer-row{grid-template-columns:1fr auto;}
+    .offer-link{grid-column:1/-1; text-align:center;}
+    .dialog-header{padding:17px;}
+    .comparison-list{padding:12px;}
+  }
+
+  /* Identidad RivFree: rojo, superficies neutras y acciones diferenciadas. */
+  :root{
+    --teal:#B42335; --teal-dark:#591723; --paper:#F7F7F8;
+    --paper-dim:#EEEFF2; --surface:#FFFFFF; --ink:#25232A;
+    --muted:#65616C; --line:#DEDCE2; --accent:#B42335;
+    --accent-soft:#FFF0F1; --stamp-red:#A51F31;
+    --gold:#B42335; --gold-bright:#F8DCE0; --lime:#FFD9DF;
+  }
+  :root[data-theme="dark"]{
+    --teal:#FF9AA9; --teal-dark:#FFE3E8; --paper:#151316;
+    --paper-dim:#302A30; --surface:#211D22; --ink:#F5EFF3;
+    --muted:#BEB3BF; --line:#49404A; --accent:#B42335;
+    --accent-soft:#392129; --stamp-red:#FFA7B4;
+    --gold:#FF9AA9; --gold-bright:#56303B; --lime:#FFD9DF;
+  }
+  .topbar{background:linear-gradient(115deg,#651323,#A71E33 65%,#B42335);border-bottom:0;padding:28px 20px;}
+  .brand-mark{background:#fff;color:#A71E33;transform:none;border-radius:14px;box-shadow:none;}
+  .brand h1{text-transform:none;letter-spacing:-.8px;}
+  .brand p{color:#FFE5E9;letter-spacing:0;font-size:13px;}
+  .theme-toggle{border-radius:8px;min-height:40px;}
+  .updated-badge{background:#fff0f1;color:#651323;border-radius:8px;font-family:'Inter',sans-serif;}
+  :root[data-theme="dark"] .updated-badge{color:#651323;}
+  .stock-notice-inner{border:1px solid var(--line);border-left:3px solid var(--teal);background:var(--surface);box-shadow:none;}
+  .controls-card{box-shadow:0 6px 22px rgba(35,20,30,.04);border-radius:16px;padding:22px;}
+  .field label{color:var(--muted);letter-spacing:.5px;}
+  .field input,.field select{min-height:44px;border-radius:8px!important;}
+  .search-row input{background:var(--surface)!important;font-size:16px!important;}
+  .search-button{border-radius:8px;min-height:48px;background:#B42335;}
+  .search-help{font-size:12px;line-height:1.5;}
+  .stores-field label.chk{padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin:0;cursor:pointer;}
+  .stores-field label.chk:has(input:checked){border-color:var(--teal);background:var(--accent-soft);}
+  .results-meta{font-family:'Inter',sans-serif;color:var(--muted);line-height:1.6;}
+  .card{border-radius:14px;}
+  .card:hover{box-shadow:0 10px 26px rgba(35,20,30,.1);}
+  .card.comparison-card{border-color:var(--teal);}
+  .card-img,:root[data-theme="dark"] .card-img{background:#fff;padding:16px;}
+  .card-img .noimg{color:#66616B;}
+  .card-body{padding:16px;gap:10px;}
+  .card-store{font-family:'Inter',sans-serif;letter-spacing:0;text-transform:none;transform:none;background:var(--paper-dim);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;}
+  .card-store:hover{background:var(--accent-soft);color:var(--teal);}
+  .card-name{line-height:1.5;}
+  .card-price{color:var(--ink);font-size:22px;}
+  .card-action,.offer-link,.store-links a{background:#B42335;color:#fff;min-height:44px;}
+  .card-action:hover,.offer-link:hover,.store-links a:hover{background:#8F1B2B;color:#fff;}
+  .card-link{background:var(--surface);color:var(--teal);padding:14px 10px;}
+  .card-link:hover{background:var(--accent-soft);}
+  .load-more-btn:hover{background:#B42335;}
+  .dialog-header{background:#81192A;}
+  .dialog-subtitle{color:#FFE3E8;}
+  .offer-name{color:var(--muted);}
+  .comparison-dialog{background:var(--surface);border-radius:16px;}
+  .badge-best{background:var(--accent-soft);color:var(--teal);}
+  .badge-oferta{background:#B42335;}
+  footer{color:var(--muted);border-top:1px solid var(--line);max-width:1060px;margin:auto;padding:24px 20px 32px;line-height:1.8;}
+  footer strong{color:var(--ink);}
+  input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline-color:var(--teal);}
+  .topbar a:focus-visible,.topbar button:focus-visible,.dialog-header button:focus-visible{outline-color:#fff;}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="brand brand-link" href="./" aria-label="Volver al inicio y recargar">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true">RF</span>
+        <div>
+          <h1>Riv<span class="brand-name-free">Free</span></h1>
+          <p>Explorá y compará los free shops de Rivera</p>
+        </div>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">🌙 Modo oscuro</button>
+      <div class="updated-badge" id="updatedBadge">cargando...</div>
+    </div>
+  </div>
+</div>
+
+<aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
+  <div class="stock-notice-inner">
+    <span class="stock-notice-icon" aria-hidden="true">ⓘ</span>
+    <div class="stock-notice-text">
+      <strong>Disponibilidad orientativa</strong>
+      La cantidad de productos publicada aquí no refleja el stock real. En las tiendas físicas suele haber más productos disponibles que los mostrados en sus catálogos web.
+    </div>
+    <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
+  </div>
+</aside>
+
+<div class="controls">
+  <div class="controls-card">
+    <form class="field search-field" id="searchForm" role="search">
+      <label for="search">Buscar producto</label>
+      <div class="search-row">
+        <input type="search" id="search" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
+        <button class="search-button" id="searchButton" type="submit">
+          <span aria-hidden="true">⌕</span> Buscar
+        </button>
+      </div>
+      <p class="search-help">Escribí tu búsqueda completa y presioná Enter.</p>
+      <div class="search-status" id="searchStatus" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>Buscando productos…</span>
+      </div>
+    </form>
+
+    <div class="field">
+      <label for="categoria">Categoría</label>
+      <select id="categoria"><option value="">Todas</option></select>
+    </div>
+
+    <div class="field">
+      <label>Precio USD</label>
+      <div class="price-range">
+        <input type="number" id="minPrice" placeholder="min">
+        <input type="number" id="maxPrice" placeholder="max">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="orden">Ordenar por</label>
+      <select id="orden">
+        <option value="precio_asc">Precio: menor a mayor</option>
+        <option value="precio_desc">Precio: mayor a menor</option>
+        <option value="nombre_asc">Nombre: A-Z</option>
+      </select>
+    </div>
+
+    <div class="field toggle-oferta">
+      <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
+    </div>
+
+    <div class="stores-field" id="storesField">
+      <!-- checkboxes de tiendas se llenan por JS -->
+    </div>
+
+    <div class="filter-actions">
+      <button class="clear-btn" id="clearFilters" type="button">Limpiar filtros</button>
+    </div>
+  </div>
+</div>
+
+<div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div>
+
+<div class="grid" id="grid"></div>
+<div class="load-more-wrap" id="loadMoreWrap" hidden>
+  <button class="load-more-btn" id="loadMore" type="button">Mostrar más productos</button>
+</div>
+<div class="empty-state" id="emptyState" style="display:none;">
+  No se encontraron productos con esos filtros.<br>Probá ampliar la búsqueda.
+</div>
+
+<dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
+  <div class="dialog-header">
+    <div>
+      <h2 id="dialogTitle">Comparar precios</h2>
+      <p class="dialog-subtitle" id="dialogSubtitle"></p>
+    </div>
+    <button class="dialog-close" id="dialogClose" type="button" aria-label="Cerrar">×</button>
+  </div>
+  <div class="comparison-list" id="comparisonList"></div>
+</dialog>
+
+<dialog class="comparison-dialog" id="storeDialog" aria-labelledby="storeDialogTitle">
+  <div class="dialog-header">
+    <div>
+      <h2 id="storeDialogTitle">Información de la tienda</h2>
+      <p class="dialog-subtitle">Datos de contacto y enlaces oficiales</p>
+    </div>
+    <button class="dialog-close" id="storeDialogClose" type="button" aria-label="Cerrar">×</button>
+  </div>
+  <div class="store-info" id="storeInfo"></div>
+</dialog>
+
+<footer>
+  <strong>RivFree · Comparador independiente</strong><br>
+  No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar.
+  Consultá la información actualizada en la publicación oficial de cada tienda.
+</footer>
+
+<script>
+let ALL_PRODUCTS = [];
+let PRODUCT_GROUPS = [];
+let STORE_INFO = {};
+let ACTIVE_SEARCH = '';
+const PAGE_SIZE = 96;
+let visibleLimit = PAGE_SIZE;
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  const button = document.getElementById('themeToggle');
+  button.setAttribute('aria-pressed', String(isDark));
+  button.textContent = isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+}
+
+function initialTheme() {
+  try {
+    const saved = localStorage.getItem('comparador-theme');
+    if (saved) return saved;
+  } catch {}
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+applyTheme(initialTheme());
+
+const CATEGORY_NAMES = {
+  'articulos-deportivos':'Artículos deportivos',
+  'bazar':'Bazar', 'bazar-1':'Bazar', 'bebidas-1':'Bebidas',
+  'bebidas-varias':'Bebidas', 'comestibles':'Comestibles',
+  'comestiveis-1':'Comestibles', 'electronica':'Electrónica',
+  'eletronicos-1':'Electrónica', 'esportes-1':'Deportes',
+  'ferramentas-1':'Herramientas', 'infantil-1':'Infantil',
+  'informatica':'Informática', 'jugueteria':'Juguetería',
+  'optica':'Óptica', 'perfumeria':'Perfumería',
+  'perfumaria-e-beleza':'Perfumería y belleza', 'relojeria':'Relojería',
+  'relogios-1':'Relojería', 'vestimenta':'Vestimenta', 'vinos':'Vinos',
+  'whisky':'Whisky'
+};
+
+const normalizeText = value => String(value || '')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+const MATCH_STOP_WORDS = new Set([
+  'perfume','perfumes','producto','produtos','free','shop','the','de','da','do',
+  'del','para','com','con','and','e','y','x','un','una'
+]);
+
+function canonicalProductName(name) {
+  let value = normalizeText(name)
+    .replace(/\beau\s+de\s+parfum\b/g, ' edp ')
+    .replace(/\beau\s+de\s+toilette\b/g, ' edt ')
+    .replace(/\bmililitros?\b/g, ' ml ')
+    .replace(/\blitros?\b/g, ' l ')
+    .replace(/(\d+(?:[.,]\d+)?)\s*(ml|kg|gb|tb|oz|cc|l|g)\b/g,
+      (_, number, unit) => `${number.replace(',', '.')}${unit}`);
+  const tokens = value.match(/[a-z0-9]+(?:\.[0-9]+)?(?:ml|kg|gb|tb|oz|cc|l|g)?/g) || [];
+  return [...new Set(tokens.filter(token => !MATCH_STOP_WORDS.has(token)))].sort().join(' ');
+}
+
+function hasStrongVariant(name) {
+  const value = normalizeText(name);
+  return /\d+(?:[.,]\d+)?\s*(?:ml|kg|gb|tb|oz|cc|l|g|cm|mm|v|hz|btu)\b/.test(value) ||
+    /\b(?=[a-z0-9]*[a-z])(?=[a-z0-9]*\d)[a-z0-9-]{4,}\b/.test(value);
+}
+
+function needsVariant(category) {
+  return /perf|cosmet|beb|vin|whisk|licor|cerve|comest/.test(normalizeText(category));
+}
+
+function groupProducts(products) {
+  const groups = new Map();
+  const seenUrls = new Set();
+  products.forEach((product, index) => {
+    const url = safeHttpUrl(product.url);
+    if (url && seenUrls.has(url)) return;
+    if (url) seenUrls.add(url);
+
+    const canonical = canonicalProductName(product.nombre);
+    const conservativeKey = needsVariant(product.categoria) && !hasStrongVariant(product.nombre)
+      ? `${canonical}::${normalizeText(product.tienda)}`
+      : canonical;
+    const key = conservativeKey || `product-${index}`;
+    if (!groups.has(key)) groups.set(key, {key, offers:[]});
+    groups.get(key).offers.push(product);
+  });
+
+  return [...groups.values()].map(group => {
+    group.offers.sort(compareOfferPrices);
+    const named = [...group.offers].sort((a, b) =>
+      b.nombre.length - a.nombre.length || a.nombre.localeCompare(b.nombre, 'es')
+    );
+    group.name = named[0].nombre;
+    group.category = named[0].categoria;
+    group.image = group.offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || null;
+    group.storeCount = new Set(group.offers.map(offer => offer.tienda)).size;
+    return group;
+  });
+}
+
+function categoryLabel(value) {
+  if (CATEGORY_NAMES[value]) return CATEGORY_NAMES[value];
+  return String(value).replace(/-\d+$/, '').replace(/-/g, ' ')
+    .replace(/^./, char => char.toUpperCase());
+}
+
+function safeHttpUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function priceLabel(value) {
+  return 'USD ' + new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value);
+}
+
+function hasPrice(product) {
+  return Number.isFinite(product.precio_usd) && product.precio_usd > 0;
+}
+
+function compareOfferPrices(a, b) {
+  if (hasPrice(a) && hasPrice(b)) return a.precio_usd - b.precio_usd;
+  if (hasPrice(a)) return -1;
+  if (hasPrice(b)) return 1;
+  return a.tienda.localeCompare(b.tienda, 'es');
+}
+
+async function loadData() {
+  try {
+    const [res, storesRes] = await Promise.all([
+      fetch('data/products.json?_=' + Date.now()),
+      fetch('data/stores.json?_=' + Date.now()).catch(() => null)
+    ]);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (storesRes?.ok) STORE_INFO = await storesRes.json();
+    ALL_PRODUCTS = (Array.isArray(data.productos) ? data.productos : []).filter(p =>
+      p && typeof p.nombre === 'string' && typeof p.tienda === 'string' &&
+      (p.precio_usd === null || p.precio_usd === undefined ||
+        (Number.isFinite(p.precio_usd) && p.precio_usd > 0))
+    );
+    PRODUCT_GROUPS = groupProducts(ALL_PRODUCTS);
+
+    const updated = data.actualizado ? new Date(data.actualizado) : null;
+    const badge = document.getElementById('updatedBadge');
+    const staleStores = (Array.isArray(data.resumen) ? data.resumen : [])
+      .filter(store => store.datos_anteriores).map(store => store.tienda);
+    badge.textContent = updated
+      ? 'Actualizado: ' + updated.toLocaleString('es-UY', {dateStyle:'medium', timeStyle:'short'})
+      : 'Sin fecha';
+    if (staleStores.length) {
+      badge.classList.add('stale');
+      badge.textContent = 'Actualización parcial';
+      badge.title = `Datos anteriores: ${staleStores.join(', ')}`;
+    } else if (updated && Date.now() - updated.getTime() > 48 * 60 * 60 * 1000) {
+      badge.classList.add('stale');
+      badge.title = 'Los datos tienen más de 48 horas';
+    }
+
+    populateFilters();
+    render();
+  } catch (e) {
+    document.getElementById('resultsMeta').textContent = 'No se pudo cargar data/products.json. ¿Ya corriste el scraper?';
+    document.getElementById('updatedBadge').textContent = 'Sin datos';
+    console.error(e);
+  }
+}
+
+function populateFilters() {
+  const stores = [...new Set(ALL_PRODUCTS.map(p => p.tienda))].sort();
+  const storesField = document.getElementById('storesField');
+  storesField.replaceChildren();
+  stores.forEach(store => {
+    const label = document.createElement('label');
+    label.className = 'chk';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = store;
+    checkbox.className = 'storeChk';
+    checkbox.checked = true;
+    label.append(checkbox, document.createTextNode(' ' + store));
+    storesField.appendChild(label);
+  });
+  storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => render(true)));
+
+  const categories = [...new Set(
+    ALL_PRODUCTS.map(p => p.categoria).filter(Boolean).map(categoryLabel)
+  )].sort((a, b) => a.localeCompare(b, 'es'));
+  const catSelect = document.getElementById('categoria');
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    catSelect.appendChild(opt);
+  });
+}
+
+function getFiltered() {
+  const term = normalizeText(ACTIVE_SEARCH);
+  const searchTokens = term.split(/\s+/).filter(Boolean);
+  const cat = document.getElementById('categoria').value;
+  const min = parseFloat(document.getElementById('minPrice').value);
+  const max = parseFloat(document.getElementById('maxPrice').value);
+  const soloOfertas = document.getElementById('soloOfertas').checked;
+  const activeStores = [...document.querySelectorAll('.storeChk:checked')].map(el => el.value);
+  const orden = document.getElementById('orden').value;
+
+  let groups = PRODUCT_GROUPS.map(group => {
+    const visibleOffers = group.offers.filter(product => {
+      if (!activeStores.includes(product.tienda)) return false;
+      if (cat && categoryLabel(product.categoria) !== cat) return false;
+      if (!isNaN(min) && (!hasPrice(product) || product.precio_usd < min)) return false;
+      if (!isNaN(max) && (!hasPrice(product) || product.precio_usd > max)) return false;
+      if (soloOfertas && !product.en_oferta) return false;
+      return true;
+    });
+    return {...group, visibleOffers};
+  }).filter(group => {
+    if (!group.visibleOffers.length) return false;
+    if (!searchTokens.length) return true;
+    return group.offers.some(product => {
+      const searchable = normalizeText(`${product.nombre} ${categoryLabel(product.categoria)} ${product.tienda}`);
+      return searchTokens.every(token => searchable.includes(token));
+    });
+  });
+
+  const lowestPrice = group => {
+    const priced = group.visibleOffers.find(hasPrice);
+    return priced ? priced.precio_usd : Number.POSITIVE_INFINITY;
+  };
+  if (orden === 'precio_asc') groups.sort((a,b) => lowestPrice(a) - lowestPrice(b));
+  else if (orden === 'precio_desc') groups.sort((a,b) => {
+    const aPrice = lowestPrice(a), bPrice = lowestPrice(b);
+    if (!Number.isFinite(aPrice)) return 1;
+    if (!Number.isFinite(bPrice)) return -1;
+    return bPrice - aPrice;
+  });
+  else if (orden === 'nombre_asc') groups.sort((a,b) => a.name.localeCompare(b.name, 'es'));
+
+  return groups;
+}
+
+function render(resetLimit = false) {
+  if (resetLimit === true) visibleLimit = PAGE_SIZE;
+  const items = getFiltered();
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('emptyState');
+  const meta = document.getElementById('resultsMeta');
+  const loadMoreWrap = document.getElementById('loadMoreWrap');
+  const visibleItems = items.slice(0, visibleLimit);
+
+  const offersShown = items.reduce((total, group) => total + group.visibleOffers.length, 0);
+  const pricedShown = items.reduce((total, group) =>
+    total + group.visibleOffers.filter(hasPrice).length, 0);
+  const unavailable = offersShown - pricedShown;
+  const shownText = items.length > visibleItems.length ? ` · mostrando ${visibleItems.length}` : '';
+  meta.textContent = `${items.length} producto${items.length === 1 ? '' : 's'}${shownText} · ${pricedShown} precio${pricedShown === 1 ? '' : 's'} disponible${pricedShown === 1 ? '' : 's'}${unavailable ? ` · ${unavailable} sin precio` : ''} · ${ALL_PRODUCTS.length} publicaciones totales`;
+
+  if (items.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    loadMoreWrap.hidden = true;
+    return;
+  }
+  empty.style.display = 'none';
+  loadMoreWrap.hidden = visibleItems.length >= items.length;
+
+  const cards = visibleItems.map(createProductCard);
+  grid.replaceChildren(...cards);
+}
+
+function waitForPaint() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function runSearch() {
+  const status = document.getElementById('searchStatus');
+  const button = document.getElementById('searchButton');
+  const meta = document.getElementById('resultsMeta');
+  status.classList.add('visible');
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  await waitForPaint();
+
+  ACTIVE_SEARCH = document.getElementById('search').value.trim();
+  render(true);
+
+  status.classList.remove('visible');
+  button.disabled = false;
+  button.removeAttribute('aria-busy');
+  meta.classList.remove('search-complete');
+  void meta.offsetWidth;
+  meta.classList.add('search-complete');
+}
+
+function addImagePlaceholder(container) {
+  container.replaceChildren();
+  const noImage = document.createElement('span');
+  noImage.className = 'noimg';
+  noImage.textContent = 'Imagen no disponible';
+  container.appendChild(noImage);
+}
+
+function createStoreTag(storeName) {
+  const button = document.createElement('button');
+  button.className = 'card-store';
+  button.type = 'button';
+  button.textContent = storeName;
+  button.setAttribute('aria-label', `Ver información de ${storeName}`);
+  button.addEventListener('click', event => {
+    event.stopPropagation();
+    openStoreInfo(storeName);
+  });
+  return button;
+}
+
+function createProductCard(group) {
+  const offers = group.visibleOffers;
+  const product = offers[0];
+  const displayName = [...offers].sort((a, b) => b.nombre.length - a.nombre.length)[0].nombre;
+  const storeCount = new Set(offers.map(offer => offer.tienda)).size;
+  const card = document.createElement('article');
+  card.className = storeCount > 1 ? 'card comparison-card' : 'card';
+
+  const imageBox = document.createElement('div');
+  imageBox.className = 'card-img';
+  const imageUrl = safeHttpUrl(offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || group.image);
+  if (imageUrl) {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.loading = 'lazy';
+    img.alt = displayName;
+    img.addEventListener('error', () => addImagePlaceholder(imageBox), {once:true});
+    imageBox.appendChild(img);
+  } else {
+    addImagePlaceholder(imageBox);
+  }
+
+  const body = document.createElement('div');
+  body.className = 'card-body';
+  const storeTags = document.createElement('div');
+  storeTags.className = 'store-tags';
+  [...new Set(offers.map(offer => offer.tienda))].forEach(storeName => {
+    storeTags.appendChild(createStoreTag(storeName));
+  });
+  body.appendChild(storeTags);
+
+  const badges = document.createElement('div');
+  badges.className = 'badge-row';
+  if (product.en_oferta) {
+    const offer = document.createElement('span');
+    offer.className = 'badge-oferta';
+    offer.textContent = 'Oferta';
+    badges.appendChild(offer);
+  }
+  if (storeCount > 1) {
+    const comparison = document.createElement('span');
+    comparison.className = 'badge-best';
+    comparison.textContent = `${offers.length} precios`;
+    badges.appendChild(comparison);
+  }
+  body.appendChild(badges);
+
+  const name = document.createElement('div');
+  name.className = 'card-name';
+  name.textContent = displayName;
+  body.appendChild(name);
+
+  const priceRow = document.createElement('div');
+  priceRow.className = 'card-price-row';
+  const price = document.createElement('span');
+  price.className = hasPrice(product) ? 'card-price' : 'price-unavailable';
+  price.textContent = hasPrice(product)
+    ? `${storeCount > 1 ? 'Desde ' : ''}${priceLabel(product.precio_usd)}`
+    : 'Precio no disponible';
+  priceRow.appendChild(price);
+  if (product.en_oferta && Number.isFinite(product.precio_original_usd) && product.precio_original_usd > 0) {
+    const oldPrice = document.createElement('span');
+    oldPrice.className = 'card-price-old';
+    oldPrice.textContent = priceLabel(product.precio_original_usd);
+    priceRow.appendChild(oldPrice);
+  }
+  body.appendChild(priceRow);
+  if (storeCount > 1) {
+    const hint = document.createElement('div');
+    hint.className = 'comparison-hint';
+    hint.textContent = 'Seleccioná para comparar las tiendas';
+    body.appendChild(hint);
+  }
+  card.append(imageBox, body);
+
+  if (storeCount > 1) {
+    const button = document.createElement('button');
+    button.className = 'card-action';
+    button.type = 'button';
+    button.textContent = 'Comparar precios';
+    button.addEventListener('click', () => openComparison(displayName, offers));
+    card.appendChild(button);
+  } else {
+    const productUrl = safeHttpUrl(product.url);
+    if (!productUrl) return card;
+    const link = document.createElement('a');
+    link.className = 'card-link';
+    link.href = productUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = `Ver en ${product.tienda} ↗`;
+    link.setAttribute('aria-label', `Ver ${product.nombre} en ${product.tienda}`);
+    card.appendChild(link);
+  }
+  return card;
+}
+
+function openComparison(name, offers) {
+  const dialog = document.getElementById('comparisonDialog');
+  const list = document.getElementById('comparisonList');
+  const sorted = [...offers].sort(compareOfferPrices);
+  document.getElementById('dialogTitle').textContent = name;
+  document.getElementById('dialogSubtitle').textContent =
+    `${new Set(sorted.map(offer => offer.tienda)).size} tiendas · precios de menor a mayor`;
+
+  const rows = sorted.map((offer, index) => {
+    const row = document.createElement('div');
+    row.className = index === 0 && hasPrice(offer) ? 'offer-row cheapest' : 'offer-row';
+
+    const info = document.createElement('div');
+    const store = document.createElement('button');
+    store.className = 'offer-store store-link-plain';
+    store.type = 'button';
+    store.textContent = offer.tienda;
+    store.addEventListener('click', () => openStoreInfo(offer.tienda));
+    const offerName = document.createElement('div');
+    offerName.className = 'offer-name';
+    offerName.textContent = offer.nombre;
+    info.append(store, offerName);
+
+    const price = document.createElement('div');
+    price.className = 'offer-price';
+    price.textContent = hasPrice(offer) ? priceLabel(offer.precio_usd) : 'No disponible';
+    if (index === 0 && hasPrice(offer)) {
+      const cheapest = document.createElement('span');
+      cheapest.className = 'cheapest-label';
+      cheapest.textContent = 'Precio más bajo';
+      price.appendChild(cheapest);
+    }
+
+    const productUrl = safeHttpUrl(offer.url);
+    const link = document.createElement(productUrl ? 'a' : 'span');
+    link.className = 'offer-link';
+    link.textContent = productUrl ? 'Ver en tienda ↗' : 'Sin enlace';
+    if (productUrl) {
+      link.href = productUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    }
+    row.append(info, price, link);
+    return row;
+  });
+  list.replaceChildren(...rows);
+  dialog.showModal();
+}
+
+function appendStoreDetail(container, label, value) {
+  if (!value) return;
+  const item = document.createElement('div');
+  item.className = 'store-detail';
+  const title = document.createElement('span');
+  title.className = 'store-detail-label';
+  title.textContent = label;
+  const text = document.createElement('span');
+  text.textContent = value;
+  item.append(title, text);
+  container.appendChild(item);
+}
+
+function openStoreInfo(storeName) {
+  const dialog = document.getElementById('storeDialog');
+  const container = document.getElementById('storeInfo');
+  const info = STORE_INFO[storeName] || {};
+  document.getElementById('storeDialogTitle').textContent = info.nombre_completo || storeName;
+  container.replaceChildren();
+  appendStoreDetail(container, 'Dirección', info.direccion);
+  appendStoreDetail(container, 'Teléfono', info.telefono);
+  appendStoreDetail(container, 'Correo', info.email);
+  appendStoreDetail(container, 'Horario', info.horario);
+  appendStoreDetail(container, 'Información', info.nota);
+
+  const links = document.createElement('div');
+  links.className = 'store-links';
+  const destinations = {sitio_web:'Sitio oficial', instagram:'Instagram', facebook:'Facebook', telegram:'Telegram', whatsapp:'WhatsApp'};
+  const urls = {sitio_web:info.sitio_web, ...(info.redes || {})};
+  Object.entries(destinations).forEach(([key, label]) => {
+    const url = safeHttpUrl(urls[key]);
+    if (!url) return;
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = label;
+    links.appendChild(link);
+  });
+  if (links.childElementCount) container.appendChild(links);
+  if (!container.childElementCount) appendStoreDetail(container, 'Información', 'No hay información adicional disponible.');
+  dialog.showModal();
+}
+
+document.getElementById('dialogClose').addEventListener('click', () => {
+  document.getElementById('comparisonDialog').close();
+});
+
+document.getElementById('comparisonDialog').addEventListener('click', event => {
+  if (event.target === event.currentTarget) event.currentTarget.close();
+});
+
+document.getElementById('storeDialogClose').addEventListener('click', () => {
+  document.getElementById('storeDialog').close();
+});
+
+document.getElementById('storeDialog').addEventListener('click', event => {
+  if (event.target === event.currentTarget) event.currentTarget.close();
+});
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('comparador-theme', next); } catch {}
+});
+
+document.getElementById('searchForm').addEventListener('submit', event => {
+  event.preventDefault();
+  runSearch();
+});
+
+['categoria','orden','soloOfertas'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => render(true));
+});
+
+['minPrice','maxPrice'].forEach(id => {
+  const input = document.getElementById(id);
+  input.addEventListener('change', () => render(true));
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') render(true);
+  });
+});
+
+document.getElementById('loadMore').addEventListener('click', () => {
+  visibleLimit += PAGE_SIZE;
+  render(false);
+});
+
+const stockNotice = document.getElementById('stockNotice');
+try {
+  if (localStorage.getItem('rivfree-stock-notice-dismissed') === 'true') stockNotice.hidden = true;
+} catch {}
+
+document.getElementById('stockNoticeClose').addEventListener('click', () => {
+  stockNotice.hidden = true;
+  try { localStorage.setItem('rivfree-stock-notice-dismissed', 'true'); } catch {}
+});
+
+document.getElementById('clearFilters').addEventListener('click', () => {
+  document.getElementById('search').value = '';
+  ACTIVE_SEARCH = '';
+  document.getElementById('categoria').value = '';
+  document.getElementById('minPrice').value = '';
+  document.getElementById('maxPrice').value = '';
+  document.getElementById('orden').value = 'precio_asc';
+  document.getElementById('soloOfertas').checked = false;
+  document.querySelectorAll('.storeChk').forEach(el => { el.checked = true; });
+  render(true);
+});
+
+loadData();
+</script>
+
+</body>
+</html>
