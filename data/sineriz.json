@@ -381,16 +381,6 @@
   },
   {
     "tienda": "Sineriz",
-    "nombre": "Geleia Mackays Laranja",
-    "precio_usd": 3.7,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-laranja/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
-  },
-  {
-    "tienda": "Sineriz",
     "nombre": "Geleia Mackays lima & limão",
     "precio_usd": 3.6,
     "precio_original_usd": null,
@@ -591,26 +581,6 @@
   },
   {
     "tienda": "Sineriz",
-    "nombre": "Molho Shoyu Kikkoman",
-    "precio_usd": 3.6,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-shoyu-kikkoman/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Molho Shoyu Kikkoman 1",
-    "precio_usd": 3.7,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-shoyu-kikkoman-1/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
-  },
-  {
-    "tienda": "Sineriz",
     "nombre": "Molho Shoyu Orgânico Kikkoman",
     "precio_usd": 7.2,
     "precio_original_usd": null,
@@ -698,6 +668,36 @@
     "categoria": "comestiveis-1",
     "url": "https://www.sineriz.com.uy/produtos/massas/rummo-penne-rigate-n066/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8074/26/019161812071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Toblerone Crunchy Almonds 360g",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-1",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-crunchy-almonds-360g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1914/33/019050610831.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Toblerone Fruit&Nut 360g",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-1",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-fruit-nut-360g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1737/33/019050410831.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Toblerone Dark 360g",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-1",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-dark-360g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4942/33/019050110831.jpg_q70@2.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -971,16 +971,6 @@
   },
   {
     "tienda": "Sineriz",
-    "nombre": "Cerveja Becks",
-    "precio_usd": 0.89,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas-1",
-    "url": "https://www.sineriz.com.uy/produtos/cervejas/cerveja-becks/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
-  },
-  {
-    "tienda": "Sineriz",
     "nombre": "CERVEJA CORONA",
     "precio_usd": 0.99,
     "precio_original_usd": null,
@@ -998,16 +988,6 @@
     "categoria": "bebidas-1",
     "url": "https://www.sineriz.com.uy/produtos/cervejas/cerveja-leffe-blonde/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7032/26/404030212471_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Cerveja Modelo Especial",
-    "precio_usd": 1.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas-1",
-    "url": "https://www.sineriz.com.uy/produtos/cervejas/cerveja-modelo-especial/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
   },
   {
     "tienda": "Sineriz",
@@ -1138,16 +1118,6 @@
     "categoria": "bebidas-1",
     "url": "https://www.sineriz.com.uy/produtos/whisky/glen-deveron-16-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8117/26/104047412721_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Glen Moray 12 Anos",
-    "precio_usd": 32.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas-1",
-    "url": "https://www.sineriz.com.uy/produtos/whisky/glen-moray-12-anos/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
   },
   {
     "tienda": "Sineriz",
@@ -1431,6 +1401,476 @@
   },
   {
     "tienda": "Sineriz",
+    "nombre": "VODKA CIROC PINEAPPLE",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-pineapple/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2028/33/004032004601.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VODKA CIROC REDBERRY",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-redberry/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1887/33/004031204601.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VODKA CIROC COCONUT",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-coconut/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1934/33/004031104601.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VODKA CIROC PREMIUM",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-premium/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1719/33/004030404601.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "TEQUILA SAUZA HORNITOS",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-sauza-hornitos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1840/33/004070500131.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "TEQUILA SAUZA GOLD",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-sauza-gold/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1891/33/004070200131.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "LICOR LUXARDO SAMBUCA",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/licor-luxardo-sambuca/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2030/33/204070409451.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "LUXARDO CHERRY SANGUE MORLACCO",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/luxardo-cherry-sangue-morlacco/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1853/33/204070309451.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VILLA MASSA Limoncello",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/villa-massa-limoncello/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2016/33/204020402471.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY BALLANTINES",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-ballantines/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1953/33/104150404851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY LONGMORN DISTILLER'S CHOICE",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-longmorn-distiller-s-choice/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1831/33/104113204851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY JAMESON BLACK BARREL",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-jameson-black-barrel/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2044/33/104082804851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY JAMESON",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-jameson/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2002/33/104080404851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY ABERLOUR 12",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-aberlour-12/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1716/33/104071304851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY CHIVAS MIZUNARA",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-mizunara/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1870/33/104038104851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY CHIVAS REGAL 25",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-regal-25/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2069/33/104036304851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY ROYAL SALUTE 21",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-royal-salute-21/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1781/33/104034304851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY CHIVAS REGAL 18",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-regal-18/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1618/33/104032304851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WHISKY CHIVAS REGAL 12",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-regal-12/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1671/33/104031404851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenfiddich 25 anos",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenfiddich-25-anos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1723/33/104116409451.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenmorangie The Original",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-the-original/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2065/33/104010311631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenmorangie Nectar Dor 12 anos",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-nectar-dor-12-anos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2018/33/104012311631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenmorangie 18 anos",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-18-anos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1684/33/104014311631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenmorangie Lasanta",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-lasanta/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1828/33/104011311631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenlivet 18 anos",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenlivet-18-anos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4858/33/104063404851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisky Glenmorangie Quinta Ruban",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-quinta-ruban/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1858/33/104013311631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut Lime",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-lime/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1860/33/004034004851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut Raspberry Flavored",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-raspberry-flavored/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1851/33/004031504851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut Pears Flavored",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-pears-flavored/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2062/33/004031404851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut Mango Flavored",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-mango-flavored/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1921/33/004031304851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut Vanilla Flavored",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-vanilla-flavored/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1911/33/004031204851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut  Apeach Peach Flavored",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-apeach-peach-flavored/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1998/33/004031104851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut Mandarin Flavored",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-mandarin-flavored/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1646/33/004031004851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1932/33/004030804851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Absolut 100",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-100/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1909/33/004030604851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Wyborowa",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-wyborowa/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1702/33/004030204851.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vodka Belvedere",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-belvedere/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1933/33/004030511631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Whisk Jura Origin 10 anos",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/whisk-jura-origin-10-anos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1863/33/104011410751.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Licor Tia Maria",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/licor-tia-maria/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2124/33/204070403061.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Licor Isolabella Sambuca",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/licor-isolabella-sambuca/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2096/33/204030403061.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Licor Disaronno",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/licor-disaronno/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1848/33/204010403061.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Piña Colada Old Nick",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/pina-colada-old-nick/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2106/33/204050400131.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Licor Frangelico",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/licores/licor-frangelico/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1965/33/204010411431.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Tequila Jose Cuervo Silver Especial",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-jose-cuervo-silver-especial/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1715/33/004070610901.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Tequila Jose Cuervo Gold Especial",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-jose-cuervo-gold-especial/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1924/33/004070510901.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Tequila Reserva Jose Cuervo 1800 Silver",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-reserva-jose-cuervo-1800-silver/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2120/33/004070310901.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Tequila Reserva Jose Cuervo 1800 Reposado",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-reserva-jose-cuervo-1800-reposado/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2112/33/004070210901.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
     "nombre": "Babá Eletrônica Motorola",
     "precio_usd": 199.0,
     "precio_original_usd": null,
@@ -1511,16 +1951,6 @@
   },
   {
     "tienda": "Sineriz",
-    "nombre": "Body Mist Para Corpo E Cabelo Rituals Sakura",
-    "precio_usd": 11.25,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
-    "url": "https://www.sineriz.com.uy/produtos/cosmeticos/body-mist-para-corpo-e-cabelo-rituals-sakura/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
-  },
-  {
-    "tienda": "Sineriz",
     "nombre": "Creme Corporal Rituals AYURVEDA",
     "precio_usd": 12.5,
     "precio_original_usd": null,
@@ -1568,16 +1998,6 @@
     "categoria": "perfumaria-e-beleza",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/creme-para-maos-rituals-sakura/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8025/26/002010812511_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Difusor Aromatizador De Ambiente Rituals Ayurveda",
-    "precio_usd": 8.75,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
-    "url": "https://www.sineriz.com.uy/produtos/cosmeticos/difusor-aromatizador-de-ambiente-rituals-ayurveda/",
-    "imagen": "/assets/images/static/product-placeholder.svg"
   },
   {
     "tienda": "Sineriz",
@@ -1998,5 +2418,195 @@
     "categoria": "perfumaria-e-beleza",
     "url": "https://www.sineriz.com.uy/produtos/edition-privee-1/perfume-edp-bdk-pas-ce-soir-100ml/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/9383/26/001240115111_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Serum Revitalizante Sisley Hair Rituel",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/cosmeticos/serum-revitalizante-sisley-hair-rituel/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1751/33/002660103631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Hugo Boss",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-hugo-boss-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1774/33/001210203631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume La Vie Est Belle",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-la-vie-est-belle/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2034/33/001711100631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Thierry Mugler Angel",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-thierry-mugler-angel/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1700/33/001570200411.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Hugo Boss",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-hugo-boss/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1807/33/001210303631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Kenzo Flower By Kenzo",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-kenzo-flower-by-kenzo/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1773/33/001140311261.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Givenchy Ange ou Demon",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-givenchy-ange-ou-demon/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1816/33/001030111261.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume MontBlanc Legend",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-montblanc-legend/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2089/33/001210203871.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume JPG Le Male",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-jpg-le-male/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1865/33/101410207631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Paco Rabanne One Million",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-one-million/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1738/33/001080507631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Polo Black",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-polo-black/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1780/33/001290100631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Polo Blue",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-polo-blue-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1665/33/101450200631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Polo Blue",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-polo-blue/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1803/33/101450100631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume YSL Black Opium",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-ysl-black-opium-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1874/33/101230200631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume YSL Black Opium",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-ysl-black-opium/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2130/33/101230100631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Paco Rabanne Invictus",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-invictus-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1929/33/001890207631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Paco Rabanne Invictus",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-invictus/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1899/33/001890107631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Paco Rabanne Lady Million",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-lady-million-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1937/33/001410307631.jpg_q70@2.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Perfume Paco Rabanne Lady Million",
+    "precio_usd": 11.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-e-beleza",
+    "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-lady-million/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2024/33/001410107631.jpg_q70@2.jpg"
   }
 ]
