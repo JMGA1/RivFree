@@ -596,6 +596,39 @@
   .topbar a:focus-visible,.topbar button:focus-visible,.dialog-header button:focus-visible{outline-color:#fff;}
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
 
+
+  [data-store="neutral"]{--store-bg:#FFDF28;--store-fg:#222000;--store-border:#877400;}
+  [data-store="barao"]{--store-bg:#176A3A;--store-fg:#fff;--store-border:#176A3A;}
+  [data-store="yury"]{--store-bg:#184B9C;--store-fg:#fff;--store-border:#184B9C;}
+  [data-store="dfa"]{--store-bg:#fff;--store-fg:#154F96;--store-border:#154F96;}
+  [data-store="sineriz"]{--store-bg:#A42435;--store-fg:#fff;--store-border:#A42435;}
+  [data-store="oprha"]{--store-bg:#29252D;--store-fg:#F5E5B5;--store-border:#A98E56;}
+  .card-store[data-store]{background:var(--store-bg,var(--paper-dim));color:var(--store-fg,var(--ink));border:1px solid var(--store-border,var(--line));font-weight:700;}
+  .card-store[data-store]:hover{filter:brightness(.92);text-decoration:underline;}
+  .stores-field label.chk[data-store]{border-left:5px solid var(--store-border,var(--line));}
+  #languageToggle{background:#81192A;color:#fff;max-width:170px;}
+  #languageToggle option{background:#fff;color:#222;}
+  .product-target{cursor:pointer;text-decoration:none;border:0;color:inherit;font:inherit;}
+  button.card-name,a.card-name{background:transparent;text-align:left;padding:0;font-size:14.5px;font-weight:600;}
+  .card-name.product-target:hover{text-decoration:underline;color:var(--teal);}
+  .card-img.product-target{width:100%;position:relative;}
+  .card-img.product-target:hover{box-shadow:inset 0 0 0 3px var(--teal);}
+  .product-target:active{opacity:.75;}
+  .action-feedback{font-size:11px;color:var(--teal);font-weight:600;}
+  #backToTop{position:fixed;bottom:24px;right:24px;z-index:10;width:48px;height:48px;border:2px solid #fff;border-radius:50%;background:#B42335;color:#fff;font-size:25px;cursor:pointer;box-shadow:0 4px 18px #0004;}
+  #backToTop[hidden],#actionStatus[hidden]{display:none;}
+  #actionStatus{position:fixed;bottom:82px;right:20px;max-width:calc(100% - 40px);padding:12px 16px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:10px;z-index:20;box-shadow:0 5px 20px #0003;}
+
+
+ .category-picker{position:relative;}
+ #categoria[hidden]{display:none;}
+ #categoryOptions{position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:25;max-height:270px;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:9px;box-shadow:0 8px 22px #0002;}
+ #categoryOptions[hidden]{display:none;}
+ #categoryOptions [role="option"],.category-empty{padding:11px 12px;font-size:14px;}
+ #categoryOptions [role="option"]{cursor:pointer;}
+ #categoryOptions [role="option"]:hover,#categoryOptions .active{background:var(--accent-soft);color:var(--teal);}
+ #categoryOptions [aria-selected="true"]{font-weight:700;}
+ .category-empty{color:var(--muted);}
 </style>
 </head>
 <body>
@@ -612,6 +645,9 @@
       </div>
     </a>
     <div class="header-actions">
+      <select id="languageToggle" class="theme-toggle" aria-label="Cambiar idioma">
+        <option value="es">Español</option><option value="pt-BR">Português (BR)</option>
+      </select>
       <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">🌙 Modo oscuro</button>
       <div class="updated-badge" id="updatedBadge">cargando...</div>
     </div>
@@ -647,8 +683,12 @@
     </form>
 
     <div class="field">
-      <label for="categoria">Categoría</label>
-      <select id="categoria"><option value="">Todas</option></select>
+      <label for="categorySearch">Categoría</label>
+      <div class="category-picker">
+        <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Escribí o seleccioná una categoría">
+        <div id="categoryOptions" role="listbox" hidden></div>
+      </div>
+      <select id="categoria" hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
     </div>
 
     <div class="field">
@@ -714,6 +754,8 @@
   <div class="store-info" id="storeInfo"></div>
 </dialog>
 
+<button id="backToTop" type="button" hidden aria-label="Volver arriba" title="Volver arriba">↑</button>
+<div id="actionStatus" role="status" aria-live="polite" hidden></div>
 <footer>
   <strong>RivFree · Comparador independiente</strong><br>
   No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar.
@@ -721,6 +763,184 @@
 </footer>
 
 <script>
+const Catalog = (() => {
+const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const categories = {
+ cosmetica:['Cosmética y cuidado personal','Cosméticos e cuidados pessoais'],
+ perfumes:['Perfumes','Perfumes'], bebidas:['Bebidas','Bebidas'], alimentos:['Alimentos y chocolates','Alimentos e chocolates'],
+ electronica:['Electrónica','Eletrônicos'], informatica:['Informática','Informática'], hogar:['Hogar y decoración','Casa e decoração'],
+ electrodomesticos:['Electrodomésticos','Eletrodomésticos'], ropa:['Ropa y calzado','Roupas e calçados'],
+ accesorios:['Bolsos y accesorios','Bolsas e acessórios'], juguetes:['Juguetes e infantil','Brinquedos e infantil'],
+ relojes:['Relojes','Relógios'], optica:['Óptica','Óptica'], deportes:['Deportes','Esportes'], herramientas:['Herramientas','Ferramentas'], otros:['Otros','Outros']
+};
+function category(raw, name='') {
+ const s=norm(raw).replace(/[-_]/g,' ');
+ if(/cosmet|cabelo|olaplex|maquill|maquiag|cuidado|skincare/.test(s)) return 'cosmetica';
+ if(/perfum/.test(s)) {
+  if(/beleza/.test(s) && /crem|shampoo|champu|locion|locao|batom|labial|mascara|maqui|desodor|sabon|jabon|serum/.test(norm(name))) return 'cosmetica';
+  return 'perfumes';
+ }
+ if(/bebida|vinho|vino|whisk|licor|espum|vodka|\bgim\b|\bgin\b|cerve|tequila|rum|pisco|energet/.test(s)) return 'bebidas';
+ if(/comest|alimenta|alimento|chocol|alfajor|azeite|biscoit|gallet|doce/.test(s)) return 'alimentos';
+ if(/informat|tablet|notebook|comput/.test(s)) return 'informatica';
+ if(/eletrodom|electrodom|ar ?condicionado/.test(s)) return 'electrodomesticos';
+ if(/eletron|eletron|electron|audio|video|camera|gps|celular|\btvs\b|\bjbl\b|samsung|apple|games/.test(s)) return 'electronica';
+ if(/bazar|cozinha|cocina|decor|crista|vidro|porcelana/.test(s)) return 'hogar';
+ if(/roupa|ropa|vestimenta|nike|vans|calzado|calcado/.test(s)) return 'ropa';
+ if(/accesor|acessor|bolsa|mala|mochila/.test(s)) return 'accesorios';
+ if(/juguet|brinquedo|infantil|bebe/.test(s)) return 'juguetes';
+ if(/reloj|relog/.test(s)) return 'relojes';
+ if(/optic|oculos/.test(s)) return 'optica';
+ if(/deport|esport/.test(s)) return 'deportes';
+ if(/herramient|ferrament/.test(s)) return 'herramientas';
+ return 'otros';
+}
+const aliases = {
+ electronicos:'electronica',eletronicos:'electronica',eletronica:'electronica',
+ cosmetica:'cosmetica',cosmeticos:'cosmetica',maquillajes:'maquillaje',
+ comestiveis:'alimentos',comestibles:'alimentos',alimento:'alimentos',
+ decoracao:'decoracion',cozinha:'cocina',relojeria:'reloj',jugueteria:'juguete',
+ ferramentas:'herramientas',esportes:'deportes',bebida:'bebidas',
+ 
+ perfumes:'perfume',perfumaria:'perfume',perfumeria:'perfume',perfum:'perfume',
+ cosmeticos:'cosmetica',cosmetico:'cosmetica',cosmeticas:'cosmetica',
+ maquiagem:'maquillaje',maquiagem:'maquillaje',batom:'labial',labiales:'labial',
+ shampoo:'champu',shampoos:'champu',cabelo:'cabello',cabelos:'cabello',
+ hidratante:'hidratante',creme:'crema',cremes:'crema',locao:'locion',sabonete:'jabon',
+ masculino:'hombre',masculinos:'hombre',masculina:'hombre',masc:'hombre',men:'hombre',man:'hombre',homme:'hombre',homem:'hombre',hombres:'hombre',
+ feminino:'mujer',femininos:'mujer',feminina:'mujer',fem:'mujer',women:'mujer',woman:'mujer',femme:'mujer',mulher:'mujer',mujeres:'mujer',
+ whisky:'whisky',whiskey:'whisky',uisque:'whisky',vinho:'vino',vinhos:'vino',vinos:'vino',
+ cerveja:'cerveza',cervejas:'cerveza',cervezas:'cerveza',licores:'licor',gim:'gin',
+ chocolates:'chocolate',biscoito:'galleta',biscoitos:'galleta',galletas:'galleta',azeite:'aceite',
+ fone:'auricular',fones:'auricular',auriculares:'auricular',audifonos:'auricular',headphones:'auricular',headphone:'auricular',
+ parlantes:'parlante',altavoz:'parlante',altavoces:'parlante',speaker:'parlante',speakers:'parlante',
+ relogio:'reloj',relogios:'reloj',relojes:'reloj',brinquedo:'juguete',brinquedos:'juguete',juguetes:'juguete',
+ roupas:'ropa',camiseta:'remera',tenis:'zapatilla',calcados:'calzado',oculos:'gafas',
+ preto:'negro',preta:'negro',black:'negro',branco:'blanco',branca:'blanco',white:'blanco',azul:'azul',blue:'azul',
+ vermelho:'rojo',vermelha:'rojo',red:'rojo',verde:'verde',green:'verde',rosa:'rosa',pink:'rosa',
+ anos:'anos',years:'anos',year:'anos',anios:'anos',unidades:'unidad',unidade:'unidad',unidades:'unidad',pcs:'unidad'
+};
+function normalized(s) {
+ return norm(s)
+ .replace(/\beau\s+de\s+parfum\b|\be\s*\.\s*d\s*\.\s*p\s*\.?/g,' edp ')
+ .replace(/\beau\s+de\s+toilette\b|\be\s*\.\s*d\s*\.\s*t\s*\.?/g,' edt ')
+ .replace(/\beau\s+de\s+cologne\b/g,' edc ')
+ .replace(/\bcaixa\s+de\s+som\b|\bcaixa\s+som\b/g,' parlante ')
+ .replace(/\bjohnny\s+walker\b/g,' johnnie walker ')
+ .replace(/\bjean\s+paul\s+gaultier\b/g,' jpg ')
+ .replace(/\byves\s+saint\s+laurent\b/g,' ysl ')
+ .replace(/\bdolce\s*(?:&|and|e|y)\s*gabbana\b/g,' dolce gabbana ')
+ .replace(/\b(?:edp|edt|edc)(?=\d)/g, m=>m+' ')
+ .replace(/(\d+)\s*[x×]\s*(?=\d)/g,' $1 pack ')
+ .replace(/\b(?:pack|kit|set)\s*(?:de|com|con)?\s*(\d+)/g,' $1 pack ')
+ .replace(/\bcarolina\s+herrera\b/g,' carolina herrera ')
+ .replace(/\bmililitros?\b/g,'ml').replace(/\blitros?\b|\blts?\b/g,'l')
+ .replace(/\bgramas?\b|\bgramos?\b|\bgr\b/g,'g')
+ .replace(/(\d+(?:[.,]\d+)?)\s*(ml|cl|cc|l|kg|g)\b/g,(_,v,u)=>{
+  let n=Number(v.replace(',','.')); const unit=['kg','g'].includes(u)?'g':'ml';
+  n*=u==='l'||u==='kg'?1000:u==='cl'?10:1;return ' '+Number(n.toFixed(3))+unit+' ';
+ }).replace(/(\d+)\s*(gb|tb|cm|mm|oz)\b/g,' $1$2 ');
+}
+const stop=new Set('de da do del dos das para por com con e y the and un una'.split(' '));
+function tokens(s) {return (normalized(s).match(/[a-z0-9]+(?:\.[0-9]+)?/g)||[]).map(t=>aliases[t]||t).filter(t=>!stop.has(t));}
+function search(s) {return tokens(s).join(' ');}
+// Descriptor words may differ between stores; identity, measures and variants remain.
+const descriptors=new Set('perfume spray vaporizador vaporisateur vaporizer natural importado original bebida whisky vino licor cerveza'.split(' '));
+function identity(p) {
+ const ts=tokens(p.nombre).filter(t=>!descriptors.has(t));
+ const family=category(p.categoria,p.nombre);
+ const measures=ts.filter(t=>/^\d+(?:\.\d+)?(?:ml|g|gb|tb|cm|mm|oz)$/.test(t));
+ const model=ts.some(t=>/\d/.test(t)&&/[a-z]/.test(t));
+ const concentration=ts.some(t=>['edp','edt','edc','parfum','extrait'].includes(t));
+ const distinct=ts.filter(t=>!/^\d/.test(t)&&!['edp','edt','edc','parfum','hombre','mujer'].includes(t));
+ const safe=distinct.length>=2 && (measures.length>0||model) && (family!=='perfumes'||concentration);
+ // Do not merge incomplete descriptions across stores.
+ return family+'|'+ts.sort().join(' ') + (safe?'':'|'+p.tienda+'|'+(p.url||p.nombre));
+}
+return {norm,categories,category,tokens,search,identity};
+})();
+
+let LANG = 'es';
+try { LANG = localStorage.getItem('rivfree-language') === 'pt-BR' ? 'pt-BR' : 'es'; } catch {}
+const translations = {
+ 'Explorá y compará los free shops de Rivera':'Explore e compare os free shops de Rivera',
+ 'Disponibilidad orientativa':'Disponibilidade indicativa',
+ 'La cantidad de productos publicada aquí no refleja el stock real. En las tiendas físicas suele haber más productos disponibles que los mostrados en sus catálogos web.':'A quantidade de produtos publicada aqui não reflete o estoque real. Nas lojas físicas costuma haver mais produtos disponíveis do que nos catálogos on-line.',
+ 'Escribí o seleccioná una categoría':'Digite ou selecione uma categoria',
+ 'Sin categorías coincidentes':'Nenhuma categoria correspondente',
+ 'Buscar producto':'Buscar produto','Buscar':'Buscar','Categoría':'Categoria','Todas':'Todas',
+ 'Precio USD':'Preço em USD','Ordenar por':'Ordenar por','Precio: menor a mayor':'Preço: menor para maior',
+ 'Precio: mayor a menor':'Preço: maior para menor','Nombre: A-Z':'Nome: A-Z','Solo ofertas':'Somente ofertas',
+ 'Limpiar filtros':'Limpar filtros','Mostrar más productos':'Mostrar mais produtos',
+ 'Escribí tu búsqueda completa y presioná Enter.':'Digite sua busca completa e pressione Enter.',
+ 'Buscando productos…':'Buscando produtos…','Cargando productos...':'Carregando produtos...',
+ 'No se encontraron productos con esos filtros.':'Nenhum produto encontrado com esses filtros.',
+ 'Probá ampliar la búsqueda.':'Tente ampliar a busca.',
+ 'Comparar precios':'Comparar preços','Información de la tienda':'Informações da loja',
+ 'Datos de contacto y enlaces oficiales':'Contatos e links oficiais',
+ 'RivFree · Comparador independiente':'RivFree · Comparador independente',
+ 'No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar.\n  Consultá la información actualizada en la publicación oficial de cada tienda.':'Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.',
+ 'Imagen no disponible':'Imagem indisponível','Precio no disponible':'Preço indisponível',
+ 'Seleccioná para comparar las tiendas':'Selecione para comparar as lojas','Oferta':'Oferta',
+ 'No disponible':'Indisponível','Precio más bajo':'Menor preço','Ver en tienda ↗':'Ver na loja ↗','Sin enlace':'Sem link',
+ 'Dirección':'Endereço','Teléfono':'Telefone','Correo':'E-mail','Horario':'Horário','Información':'Informações',
+ 'Sitio oficial':'Site oficial','No hay información adicional disponible.':'Não há informações adicionais disponíveis.',
+ '☀️ Modo claro':'☀️ Modo claro','🌙 Modo oscuro':'🌙 Modo escuro',
+ 'Cerrar':'Fechar','Cerrar aviso':'Fechar aviso','Volver al inicio y recargar':'Voltar ao início e recarregar',
+ 'Aviso sobre disponibilidad':'Aviso sobre disponibilidade',
+ 'Ej.: perfume Dior, whisky, parlante JBL':'Ex.: perfume Dior, whisky, caixa de som JBL',
+ 'Sin datos':'Sem dados','Sin fecha':'Sem data','Actualización parcial':'Atualização parcial',
+ 'Los datos tienen más de 48 horas':'Os dados têm mais de 48 horas',
+ 'No se pudo cargar data/products.json. ¿Ya corriste el scraper?':'Não foi possível carregar o catálogo. Tente recarregar a página.',
+ 'Abriendo la publicación original en otra pestaña':'Abrindo a publicação original em outra aba',
+ 'Volver arriba':'Voltar ao topo','Cambiar idioma':'Alterar idioma',
+};
+function tr(value) {
+ if(LANG==='es') return value;
+ if(translations[value]) return translations[value];
+ return value.replace(/^Actualizado: /,'Atualizado: ').replace(/^Datos anteriores: /,'Dados anteriores: ')
+ .replace(/^Ver información de /,'Ver informações de ').replace(/^Ver en /,'Ver em ')
+ .replace(/^Desde /,'A partir de ').replace(/tiendas · precios de menor a mayor/,'lojas · preços do menor para o maior')
+ .replace(/\bproductos?\b/g,m=>m==='producto'?'produto':'produtos')
+ .replace(/\bprecios?\b/g,m=>m==='precio'?'preço':'preços')
+ .replace(/\bdisponibles?\b/g,m=>m==='disponible'?'disponível':'disponíveis')
+ .replace(/\bsin precio\b/g,'sem preço').replace(/\bsin preço\b/g,'sem preço')
+ .replace(/publicaciones totales/,'publicações no total').replace(/mostrando/,'exibindo');
+}
+const textSources = new WeakMap();
+function translateUI() {
+ document.documentElement.lang=LANG;
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ while(walker.nextNode()) {
+  const n=walker.currentNode;
+  if(n.parentElement.closest('script,style,.card-name,.offer-name,.card-store,#dialogTitle,#storeDialogTitle,.store-detail > span:not(.store-detail-label)')) continue;
+  const prev=textSources.get(n);
+  const source=prev && n.nodeValue===prev.output ? prev.source : n.nodeValue;
+  const trimmed=source.trim(); if(!trimmed) continue;
+  const output=source.replace(trimmed,tr(trimmed)); n.nodeValue=output; textSources.set(n,{source,output});
+ }
+ document.querySelectorAll('[aria-label],[placeholder],[title]').forEach(el=>{
+  if(el.matches('.product-target')) return;
+  for(const attr of ['aria-label','placeholder','title']) {
+   if(!el.hasAttribute(attr)) continue;
+   const key='source'+attr.replace('-','');
+   const source=el.dataset[key] || el.getAttribute(attr);
+   el.dataset[key]=source;el.setAttribute(attr,tr(source));
+  }
+ });
+ document.querySelectorAll('#categoria option').forEach(o=>{o.textContent=o.value?Catalog.categories[o.value][LANG==='pt-BR'?1:0]:tr('Todas');});
+ document.getElementById('languageToggle').value=LANG;
+ syncCategoryInput();
+}
+function storeKey(name) {
+ const s=Catalog.norm(name);
+ return s.includes('neutral')?'neutral':s.includes('barao')?'barao':s.includes('yury')?'yury':s.includes('dfa')?'dfa':s.includes('sineriz')?'sineriz':s.includes('oprha')||s.includes('orpha')?'oprha':'other';
+}
+function announce(message) {
+ const el=document.getElementById('actionStatus');el.textContent=message;el.hidden=false;
+ clearTimeout(announce.timer);announce.timer=setTimeout(()=>{el.hidden=true;},3500);
+}
+
 let ALL_PRODUCTS = [];
 let PRODUCT_GROUPS = [];
 let STORE_INFO = {};
@@ -746,50 +966,6 @@ function initialTheme() {
 
 applyTheme(initialTheme());
 
-const CATEGORY_NAMES = {
-  'articulos-deportivos':'Artículos deportivos',
-  'bazar':'Bazar', 'bazar-1':'Bazar', 'bebidas-1':'Bebidas',
-  'bebidas-varias':'Bebidas', 'comestibles':'Comestibles',
-  'comestiveis-1':'Comestibles', 'electronica':'Electrónica',
-  'eletronicos-1':'Electrónica', 'esportes-1':'Deportes',
-  'ferramentas-1':'Herramientas', 'infantil-1':'Infantil',
-  'informatica':'Informática', 'jugueteria':'Juguetería',
-  'optica':'Óptica', 'perfumeria':'Perfumería',
-  'perfumaria-e-beleza':'Perfumería y belleza', 'relojeria':'Relojería',
-  'relogios-1':'Relojería', 'vestimenta':'Vestimenta', 'vinos':'Vinos',
-  'whisky':'Whisky'
-};
-
-const normalizeText = value => String(value || '')
-  .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-const MATCH_STOP_WORDS = new Set([
-  'perfume','perfumes','producto','produtos','free','shop','the','de','da','do',
-  'del','para','com','con','and','e','y','x','un','una'
-]);
-
-function canonicalProductName(name) {
-  let value = normalizeText(name)
-    .replace(/\beau\s+de\s+parfum\b/g, ' edp ')
-    .replace(/\beau\s+de\s+toilette\b/g, ' edt ')
-    .replace(/\bmililitros?\b/g, ' ml ')
-    .replace(/\blitros?\b/g, ' l ')
-    .replace(/(\d+(?:[.,]\d+)?)\s*(ml|kg|gb|tb|oz|cc|l|g)\b/g,
-      (_, number, unit) => `${number.replace(',', '.')}${unit}`);
-  const tokens = value.match(/[a-z0-9]+(?:\.[0-9]+)?(?:ml|kg|gb|tb|oz|cc|l|g)?/g) || [];
-  return [...new Set(tokens.filter(token => !MATCH_STOP_WORDS.has(token)))].sort().join(' ');
-}
-
-function hasStrongVariant(name) {
-  const value = normalizeText(name);
-  return /\d+(?:[.,]\d+)?\s*(?:ml|kg|gb|tb|oz|cc|l|g|cm|mm|v|hz|btu)\b/.test(value) ||
-    /\b(?=[a-z0-9]*[a-z])(?=[a-z0-9]*\d)[a-z0-9-]{4,}\b/.test(value);
-}
-
-function needsVariant(category) {
-  return /perf|cosmet|beb|vin|whisk|licor|cerve|comest/.test(normalizeText(category));
-}
-
 function groupProducts(products) {
   const groups = new Map();
   const seenUrls = new Set();
@@ -798,10 +974,8 @@ function groupProducts(products) {
     if (url && seenUrls.has(url)) return;
     if (url) seenUrls.add(url);
 
-    const canonical = canonicalProductName(product.nombre);
-    const conservativeKey = needsVariant(product.categoria) && !hasStrongVariant(product.nombre)
-      ? `${canonical}::${normalizeText(product.tienda)}`
-      : canonical;
+    const canonical = Catalog.identity(product);
+    const conservativeKey = canonical;
     const key = conservativeKey || `product-${index}`;
     if (!groups.has(key)) groups.set(key, {key, offers:[]});
     groups.get(key).offers.push(product);
@@ -818,12 +992,6 @@ function groupProducts(products) {
     group.storeCount = new Set(group.offers.map(offer => offer.tienda)).size;
     return group;
   });
-}
-
-function categoryLabel(value) {
-  if (CATEGORY_NAMES[value]) return CATEGORY_NAMES[value];
-  return String(value).replace(/-\d+$/, '').replace(/-/g, ' ')
-    .replace(/^./, char => char.toUpperCase());
 }
 
 function safeHttpUrl(value) {
@@ -868,6 +1036,10 @@ async function loadData() {
       (p.precio_usd === null || p.precio_usd === undefined ||
         (Number.isFinite(p.precio_usd) && p.precio_usd > 0))
     );
+    ALL_PRODUCTS.forEach(p => {
+      p.categoryId = Catalog.category(p.categoria, p.nombre);
+      p.searchIndex = Catalog.search(`${p.nombre} ${p.categoria} ${Catalog.categories[p.categoryId].join(' ')} ${p.tienda}`);
+    });
     PRODUCT_GROUPS = groupProducts(ALL_PRODUCTS);
 
     const updated = data.actualizado ? new Date(data.actualizado) : null;
@@ -891,6 +1063,7 @@ async function loadData() {
   } catch (e) {
     document.getElementById('resultsMeta').textContent = 'No se pudo cargar data/products.json. ¿Ya corriste el scraper?';
     document.getElementById('updatedBadge').textContent = 'Sin datos';
+    translateUI();
     console.error(e);
   }
 }
@@ -902,6 +1075,7 @@ function populateFilters() {
   stores.forEach(store => {
     const label = document.createElement('label');
     label.className = 'chk';
+    label.dataset.store = storeKey(store);
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = store;
@@ -913,19 +1087,19 @@ function populateFilters() {
   storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => render(true)));
 
   const categories = [...new Set(
-    ALL_PRODUCTS.map(p => p.categoria).filter(Boolean).map(categoryLabel)
+    ALL_PRODUCTS.map(p => p.categoryId)
   )].sort((a, b) => a.localeCompare(b, 'es'));
   const catSelect = document.getElementById('categoria');
   categories.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c;
-    opt.textContent = c;
+    opt.textContent = Catalog.categories[c][LANG === 'pt-BR' ? 1 : 0];
     catSelect.appendChild(opt);
   });
 }
 
 function getFiltered() {
-  const term = normalizeText(ACTIVE_SEARCH);
+  const term = Catalog.search(ACTIVE_SEARCH);
   const searchTokens = term.split(/\s+/).filter(Boolean);
   const cat = document.getElementById('categoria').value;
   const min = parseFloat(document.getElementById('minPrice').value);
@@ -937,7 +1111,7 @@ function getFiltered() {
   let groups = PRODUCT_GROUPS.map(group => {
     const visibleOffers = group.offers.filter(product => {
       if (!activeStores.includes(product.tienda)) return false;
-      if (cat && categoryLabel(product.categoria) !== cat) return false;
+      if (cat && product.categoryId !== cat) return false;
       if (!isNaN(min) && (!hasPrice(product) || product.precio_usd < min)) return false;
       if (!isNaN(max) && (!hasPrice(product) || product.precio_usd > max)) return false;
       if (soloOfertas && !product.en_oferta) return false;
@@ -948,7 +1122,7 @@ function getFiltered() {
     if (!group.visibleOffers.length) return false;
     if (!searchTokens.length) return true;
     return group.offers.some(product => {
-      const searchable = normalizeText(`${product.nombre} ${categoryLabel(product.categoria)} ${product.tienda}`);
+      const searchable = product.searchIndex;
       return searchTokens.every(token => searchable.includes(token));
     });
   });
@@ -989,6 +1163,7 @@ function render(resetLimit = false) {
     grid.innerHTML = '';
     empty.style.display = 'block';
     loadMoreWrap.hidden = true;
+    translateUI();
     return;
   }
   empty.style.display = 'none';
@@ -996,6 +1171,7 @@ function render(resetLimit = false) {
 
   const cards = visibleItems.map(createProductCard);
   grid.replaceChildren(...cards);
+  translateUI();
 }
 
 function waitForPaint() {
@@ -1033,6 +1209,7 @@ function addImagePlaceholder(container) {
 function createStoreTag(storeName) {
   const button = document.createElement('button');
   button.className = 'card-store';
+  button.dataset.store = storeKey(storeName);
   button.type = 'button';
   button.textContent = storeName;
   button.setAttribute('aria-label', `Ver información de ${storeName}`);
@@ -1051,7 +1228,9 @@ function createProductCard(group) {
   const card = document.createElement('article');
   card.className = storeCount > 1 ? 'card comparison-card' : 'card';
 
-  const imageBox = document.createElement('div');
+  const targetUrl = safeHttpUrl(product.url);
+  const interactive = storeCount > 1 || targetUrl;
+  const imageBox = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
   imageBox.className = 'card-img';
   const imageUrl = safeHttpUrl(offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || group.image);
   if (imageUrl) {
@@ -1090,7 +1269,7 @@ function createProductCard(group) {
   }
   body.appendChild(badges);
 
-  const name = document.createElement('div');
+  const name = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
   name.className = 'card-name';
   name.textContent = displayName;
   body.appendChild(name);
@@ -1116,6 +1295,25 @@ function createProductCard(group) {
     hint.textContent = 'Seleccioná para comparar las tiendas';
     body.appendChild(hint);
   }
+  [imageBox, name].forEach(el => {
+    if (!interactive) return;
+    el.classList.add('product-target');
+    const action = storeCount > 1 ? tr('Comparar precios') : tr('Ver en tienda ↗');
+    el.title = action;
+    el.setAttribute('aria-label', `${action}: ${displayName}`);
+    if (storeCount > 1) {
+      el.type = 'button';
+      el.setAttribute('aria-haspopup', 'dialog');
+      el.addEventListener('click', () => openComparison(displayName, offers));
+    } else {
+      el.href = targetUrl; el.target = '_blank'; el.rel = 'noopener noreferrer';
+      el.addEventListener('click', () => announce(tr('Abriendo la publicación original en otra pestaña')));
+    }
+  });
+  const actionHint = document.createElement('span');
+  actionHint.className = 'action-feedback';
+  actionHint.textContent = storeCount > 1 ? tr('Comparar precios') : targetUrl ? tr('Ver en tienda ↗') : '';
+  body.appendChild(actionHint);
   card.append(imageBox, body);
 
   if (storeCount > 1) {
@@ -1154,7 +1352,8 @@ function openComparison(name, offers) {
 
     const info = document.createElement('div');
     const store = document.createElement('button');
-    store.className = 'offer-store store-link-plain';
+    store.className = 'offer-store store-link-plain card-store';
+    store.dataset.store = storeKey(offer.tienda);
     store.type = 'button';
     store.textContent = offer.tienda;
     store.addEventListener('click', () => openStoreInfo(offer.tienda));
@@ -1186,7 +1385,8 @@ function openComparison(name, offers) {
     return row;
   });
   list.replaceChildren(...rows);
-  dialog.showModal();
+  translateUI();
+  if (!dialog.open) dialog.showModal();
 }
 
 function appendStoreDetail(container, label, value) {
@@ -1230,7 +1430,8 @@ function openStoreInfo(storeName) {
   });
   if (links.childElementCount) container.appendChild(links);
   if (!container.childElementCount) appendStoreDetail(container, 'Información', 'No hay información adicional disponible.');
-  dialog.showModal();
+  translateUI();
+  if (!dialog.open) dialog.showModal();
 }
 
 document.getElementById('dialogClose').addEventListener('click', () => {
@@ -1252,6 +1453,7 @@ document.getElementById('storeDialog').addEventListener('click', event => {
 document.getElementById('themeToggle').addEventListener('click', () => {
   const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   applyTheme(next);
+  translateUI();
   try { localStorage.setItem('comparador-theme', next); } catch {}
 });
 
@@ -1299,6 +1501,78 @@ document.getElementById('clearFilters').addEventListener('click', () => {
   render(true);
 });
 
+
+let categoryActive = -1;
+function syncCategoryInput() {
+ const input=document.getElementById('categorySearch');
+ const select=document.getElementById('categoria');
+ input.value=select.value ? Catalog.categories[select.value][LANG==='pt-BR'?1:0] : '';
+ closeCategoryOptions();
+}
+function closeCategoryOptions() {
+ document.getElementById('categoryOptions').hidden=true;
+ const input=document.getElementById('categorySearch');
+ input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');
+ categoryActive=-1;
+}
+function showCategoryOptions() {
+ const input=document.getElementById('categorySearch');
+ const list=document.getElementById('categoryOptions');
+ const terms=Catalog.search(input.value).split(/\s+/).filter(Boolean);
+ const options=[...document.getElementById('categoria').options].filter(o=>{
+  const text=o.value ? Catalog.search(Catalog.categories[o.value].join(' ')) : Catalog.search('Todas Todos');
+  return !terms.length || terms.every(t=>text.includes(t));
+ });
+ list.replaceChildren();categoryActive=-1;input.removeAttribute('aria-activedescendant');
+ options.forEach((o,i)=>{
+  const item=document.createElement('div');item.role='option';item.id='category-option-'+i;
+  item.dataset.value=o.value;item.textContent=o.textContent;
+  item.setAttribute('aria-selected',String(o.value===document.getElementById('categoria').value));
+  item.addEventListener('mousedown',e=>e.preventDefault());
+  item.addEventListener('click',()=>chooseCategory(o.value));list.appendChild(item);
+ });
+ if(!options.length){const empty=document.createElement('div');empty.className='category-empty';empty.textContent=tr('Sin categorías coincidentes');list.appendChild(empty);}
+ list.hidden=false;input.setAttribute('aria-expanded','true');
+}
+function chooseCategory(value) {
+ document.getElementById('categoria').value=value;
+ render(true);syncCategoryInput();document.getElementById('categorySearch').focus();closeCategoryOptions();
+}
+const categorySearch=document.getElementById('categorySearch');
+categorySearch.addEventListener('focus',showCategoryOptions);
+categorySearch.addEventListener('click',showCategoryOptions);
+categorySearch.addEventListener('input',()=>{
+ if(!categorySearch.value){document.getElementById('categoria').value='';render(true);}
+ showCategoryOptions();
+});
+categorySearch.addEventListener('blur',syncCategoryInput);
+categorySearch.addEventListener('keydown',event=>{
+ if(event.key==='Escape'){event.preventDefault();syncCategoryInput();return;}
+ if(!['ArrowDown','ArrowUp','Enter'].includes(event.key))return;
+ event.preventDefault();
+ if(document.getElementById('categoryOptions').hidden)showCategoryOptions();
+ const items=[...document.querySelectorAll('#categoryOptions [role="option"]')];
+ if(!items.length)return;
+ if(event.key==='Enter'){chooseCategory(items[Math.max(0,categoryActive)].dataset.value);return;}
+ categoryActive=(categoryActive+(event.key==='ArrowDown'?1:-1)+items.length)%items.length;
+ items.forEach((item,i)=>item.classList.toggle('active',i===categoryActive));
+ categorySearch.setAttribute('aria-activedescendant',items[categoryActive].id);
+ items[categoryActive].scrollIntoView?.({block:'nearest'});
+});
+
+document.getElementById('languageToggle').addEventListener('change', event => {
+ LANG=event.target.value;
+ try {localStorage.setItem('rivfree-language',LANG);} catch {}
+ document.querySelectorAll('dialog[open]').forEach(d=>d.close());
+ render(); translateUI();
+});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.hidden=window.scrollY<600;},{passive:true});
+backToTop.addEventListener('click',()=>{
+ window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+ document.querySelector('.brand-link').focus({preventScroll:true});
+});
+translateUI();
 loadData();
 </script>
 
