@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RivFree — Comparador de precios de free shops</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
@@ -629,6 +630,12 @@
  #categoryOptions [role="option"]:hover,#categoryOptions .active{background:var(--accent-soft);color:var(--teal);}
  #categoryOptions [aria-selected="true"]{font-weight:700;}
  .category-empty{color:var(--muted);}
+
+ .price-range{min-width:0;}
+ .money-input{position:relative;flex:1;min-width:0;}
+ .money-input > span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:var(--muted);pointer-events:none;}
+ .field .money-input input[type=number]{padding-left:42px;appearance:textfield;-moz-appearance:textfield;}
+ .money-input input::-webkit-inner-spin-button,.money-input input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
 </style>
 </head>
 <body>
@@ -694,8 +701,8 @@
     <div class="field">
       <label>Precio USD</label>
       <div class="price-range">
-        <input type="number" id="minPrice" placeholder="min">
-        <input type="number" id="maxPrice" placeholder="max">
+        <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="minPrice" placeholder="min" min="0" step="0.01" inputmode="decimal" aria-label="Precio mínimo en dólares"></div>
+        <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="maxPrice" placeholder="max" min="0" step="0.01" inputmode="decimal" aria-label="Precio máximo en dólares"></div>
       </div>
     </div>
 
@@ -868,6 +875,8 @@ const translations = {
  'La cantidad de productos publicada aquí no refleja el stock real. En las tiendas físicas suele haber más productos disponibles que los mostrados en sus catálogos web.':'A quantidade de produtos publicada aqui não reflete o estoque real. Nas lojas físicas costuma haver mais produtos disponíveis do que nos catálogos on-line.',
  'Escribí o seleccioná una categoría':'Digite ou selecione uma categoria',
  'Sin categorías coincidentes':'Nenhuma categoria correspondente',
+ 'Precio mínimo en dólares':'Preço mínimo em dólares',
+ 'Precio máximo en dólares':'Preço máximo em dólares',
  'Buscar producto':'Buscar produto','Buscar':'Buscar','Categoría':'Categoria','Todas':'Todas',
  'Precio USD':'Preço em USD','Ordenar por':'Ordenar por','Precio: menor a mayor':'Preço: menor para maior',
  'Precio: mayor a menor':'Preço: maior para menor','Nombre: A-Z':'Nome: A-Z','Solo ofertas':'Somente ofertas',
@@ -1468,6 +1477,7 @@ document.getElementById('searchForm').addEventListener('submit', event => {
 
 ['minPrice','maxPrice'].forEach(id => {
   const input = document.getElementById(id);
+  input.addEventListener('wheel', event => { if (document.activeElement === input) event.preventDefault(); }, {passive:false});
   input.addEventListener('change', () => render(true));
   input.addEventListener('keydown', event => {
     if (event.key === 'Enter') render(true);
