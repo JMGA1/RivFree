@@ -1566,12 +1566,12 @@ document.getElementById('loadMore').addEventListener('click', () => {
 
 const stockNotice = document.getElementById('stockNotice');
 try {
-  if (localStorage.getItem('rivfree-stock-notice-dismissed') === 'true') stockNotice.hidden = true;
+  if (sessionStorage.getItem('rivfree-stock-notice-dismissed') === 'true') stockNotice.hidden = true;
 } catch {}
 
 document.getElementById('stockNoticeClose').addEventListener('click', () => {
   stockNotice.hidden = true;
-  try { localStorage.setItem('rivfree-stock-notice-dismissed', 'true'); } catch {}
+  try { sessionStorage.setItem('rivfree-stock-notice-dismissed', 'true'); } catch {}
 });
 
 document.getElementById('clearFilters').addEventListener('click', () => {
