@@ -1,1 +1,642 @@
-[]
+[
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 202.12,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-12000-Btus-quente-e-frio-com-Kit-220V-60hz-p582327471",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/582327471/6149301442.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 365.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-18000-Btus-quente-e-frio-com-Kit-220V-60hz-p582326931",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/582326931/6149302141.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 231.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Aiwa-12000-BTUs-Inverter-wi-fi-quente-e-frio-220-60hz-com-kit-de-cobre-p860255472",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/860255472/6196899964.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 250.28,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Hyundai-12000-Btus-inverter-wifi-com-IA-quente-e-frio-com-kit-de-cobre-220-60hz-p856168764",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856168764/6149314349.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 69.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Alexa-Echo-dot-5a-Gera%C3%A7%C3%A3o-p857656549",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/857656549/6139460070.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 202.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-condicionado-Aiwa-12000-BTUs-quente-e-frio-220-60HZ-p532590754",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/532590754/6067340255.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 231.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-condicionado-Aiwa-12000-BTUs-inverter-quente-e-frio-220-60HZ-p532588755",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/532588755/6067328475.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 289.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Ar-condicionado-Gree-12000-BTUs-inverter-com-IA-p857699565",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/857699565/6196480684.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 4.82,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Barra-de-chocolate-Milka-grande-v%C3%A1rios-sabores-p860247801",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/860247801/6196657619.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 577.84,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Drone-DJI-Mini-4K-Kit-co-2-baterias-estojo-p860255421",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/860255421/6196808507.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 1.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Iphone-17-Apple-256GB-p860247848",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/860247848/6196760703.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 99.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Alexa",
+    "url": "https://mantrafreeshop.com/Alexa-Echo-Show-5-graves-2x-mais-potentes-e-som-mais-n%C3%ADtido-p530311193",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/530311193/6139879069.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 333.8,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "varios",
+    "url": "https://mantrafreeshop.com/Smart-Tv-Hyundai-55-4k-QLED-Web-Os-Magic-Remote-p605886760",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/605886760/6122240349.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 89.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Alexa",
+    "url": "https://mantrafreeshop.com/Echo-Spot-com-Alexa-Gera%C3%A7%C3%A3o-mais-recente-Despertador-inteligente-com-som-vibrante-Cor-Preta-p858044716",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/858044716/6144893341.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 69.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Alexa",
+    "url": "https://mantrafreeshop.com/Speaker-Amazon-Echo-Dot-com-Alexa-Azul-5ta-Gera%C3%A7%C3%A3o-p857710931",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/857710931/6139845054.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 154.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Alexa",
+    "url": "https://mantrafreeshop.com/Speaker-Amazon-Echo-Show-8-Com-Alexa-3%C2%AA-Gera%C3%A7%C3%A3o-Tela-8-Touchscreen-Bluetooth-Wi-Fi-Branco-p858050130",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/858050130/6144447278.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 173.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Aspirador-Rob%C3%B4",
+    "url": "https://mantrafreeshop.com/Aspirador-Robo-Midea-S6-p858141328",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/858141328/6148411350.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 199.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Aspirador-Rob%C3%B4",
+    "url": "https://mantrafreeshop.com/Rob%C3%B4-de-Limpeza-Xiaomi-Robot-Vacuum-S40C-Bivolt-p858141330",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/858141330/6148439012.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 58.74,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Aspirador-Rob%C3%B4",
+    "url": "https://mantrafreeshop.com/Rob%C3%B4-Aspirador-de-P%C3%B3-Midea-F4-480Pa-140ml-Recarreg%C3%A1vel-Preto-p856928194",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856928194/6123669391.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 153.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Aspirador-Rob%C3%B4",
+    "url": "https://mantrafreeshop.com/Rob%C3%B4-Aspirador-de-P%C3%B3-Midea-VCRMI6BK-Bivolt-p856950785",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856950785/6123629825.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 279.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Aire-Acondicionado-AIWA-12000-BTU-Split-inverter-Fr%C3%ADo-Calor-Blanco-AW12ONOFF50HZ-p861916860",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/861916860/6211074110.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 239.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Aire-Acondicionado-AIWA-12000-BTU-Split-ON-OFF-Fr%C3%ADo-Calor-Blanco-AW12ONOFF50HZ-p861927385",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/861927385/6212573708.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 439.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Aire-Acondicionado-AIWA-18000-BTU-Split-inverter-Fr%C3%ADo-Calor-Blanco-AW12ONOFF50HZ-p861927469",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/861927469/6211074110.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 240.85,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-12000-Btus-inverter-quente-e-frio-com-Kit-220V-60hz-p855881075",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/855881075/6149301634.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 539.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-2400-Btus-inverter-quente-e-frio-com-Kit-220V-60hz-p613918586",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/613918586/6149299991.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 236.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-9000-Btus-INVERTER-quente-e-frio-com-Kit-220V-60hz-p617952611",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/617952611/6149299884.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 385.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-18000-Btus-INVERTER-quente-e-frio-com-Kit-220V-60hz-p628133046",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/628133046/6149300878.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 192.48,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Airway-9000-Btus-quente-e-frio-com-Kit-220V-60hz-p582327953",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/582327953/6149299783.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 250.28,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Good-Air-12000-Btus-inverter-quente-e-frio-220V-60hz-p596096552",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/596096552/6149312409.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 250.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Good-Air-12-000-BTUs-inverter-com-kit-cobre-quente-e-frio-p524478531",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/524478531/6149302668.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 539.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Good-Air-Inverter-24000-Btus-quente-e-frio-220V-60hz-p605892251",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/605892251/6149308963.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 231.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Hyundai-12000-Btus-quente-e-frio-com-kit-de-cobre-p596096551",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/596096551/6149332194.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 399.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Gree-Split-Inverter-12000-BTUs-G-Diamond-quente-e-frio-220-60hz-p858143575",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/858143575/6148705419.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 539.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-Condicionado-Hyundai-24000-Btus-inverter-quente-e-frio-com-kit-de-cobre-p605861670",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/605861670/6149334337.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 616.37,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Ar-Condicionado",
+    "url": "https://mantrafreeshop.com/Ar-condicionado-Gree-24000-BTUs-inverter-quente-e-fr%C3%ADo-220-60hz-p855887529",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/855887529/6089774792.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 75.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Caixas-de-som",
+    "url": "https://mantrafreeshop.com/Aiwa-Boombox-AWS244BT-120-watts-P-M-P-O-com-Bluetooth-Auxiliar-Preto-p856237629",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856237629/6100819288.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 192.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Caixas-de-som",
+    "url": "https://mantrafreeshop.com/Caixa-de-Som-Aiwa-AWPOH6D-2-de-10-1-000-watts-P-M-P-O-com-Bluetooth-USB-FM-Preta-p856244623",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856244623/6101044773.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 52.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Caixas-de-som",
+    "url": "https://mantrafreeshop.com/Speaker-Aiwa-AWS600BT-50-watts-com-Bluetooth-USB-Auxiliar-e-R%C3%A1dio-FM-Preto-p856244622",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856244622/6100979080.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 1.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Celulares",
+    "url": "https://mantrafreeshop.com/Celular-Apple-iPhone-17-256GB-8GB-RAM-de-6-3-48-48MP-18MP-Mist-Blue-p856802326",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856802326/6119030352.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 269.55,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Celulares",
+    "url": "https://mantrafreeshop.com/Celular-Xiaomi-Redmi-17-Dual-SIM-de-256GB-6-6-GB-RAM-de-6-9-50MP-8MP-Verde-Escuro-p864714450",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/864714450/6253000653.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 152.94,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Celulares",
+    "url": "https://mantrafreeshop.com/Celular-Xiaomi-Redmi-A7-Pro-LTE-Dual-Sim-6-9-4GB-128GB-Verde-Palmeira-p856828753",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/856828753/6119331114.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 49.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Smart-TV-Box",
+    "url": "https://mantrafreeshop.com/Adaptador-Multim%C3%ADdia-Amazon-Fire-TV-Stick-HD-Full-HD-Wi-Fi-Bluetooth-p857623494",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/857623494/6139290558.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 32.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Som-Automotivo",
+    "url": "https://mantrafreeshop.com/Som-Automotivo-Multimedia-com-painel-led-North-Tech-Ca650-Tiger-2-p864748651",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/864748651/6253290990.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 135.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Soud-Bar",
+    "url": "https://mantrafreeshop.com/Soundbar-Aiwa-AWSBH23WW-2-1-160-watts-RMS-com-Bluetooth-HDMI-USB-Cinza-p860296720",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/860296720/6197267310.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 25.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Stanley",
+    "url": "https://mantrafreeshop.com/Caneca-T%C3%A9rmica-de-Cerveja-0-709L-Verde-p313542121",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/2104107398.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 15.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Stanley",
+    "url": "https://mantrafreeshop.com/Copo-T%C3%A9rmico-Stanley-Adventure-Stacking-Beer-Pint-473mL-Branco-p537016591",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/537016591/3499910680.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 23.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Stanley",
+    "url": "https://mantrafreeshop.com/Cuia-Stanley-Classic-Mate-236mL-Verde-Hammertone-p317577413",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3085009004.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 50.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Stanley",
+    "url": "https://mantrafreeshop.com/Garrafa-T%C3%A9rmica-Stanley-Classic-Legendary-1L-Vermelho-p317826157",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/2121040250.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 499.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tablets",
+    "url": "https://mantrafreeshop.com/Apple-iPad-11th-Generation-A16-A3354-MD3Y4LL-128GB-11-12MP-12MP-Yellow-p859677061",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/859677061/6189641764.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 329.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Televisores",
+    "url": "https://mantrafreeshop.com/Smart-TV-55-AIWA-Google-TV-Ultra-HD-4K-AW-55B4KFL-p837942777",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/837942777/5788364873.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 125.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Televisores",
+    "url": "https://mantrafreeshop.com/Smart-TV-LED-32-Aiwa-Google-TV-Wi-Fi-y-Bluetooth-con-Conversor-Digital-p134468254",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/134468254/5785790116.webp"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 1.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Cervejas",
+    "url": "https://mantrafreeshop.com/Cerveja-Leffe-Blonde-330ml-p533071262",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3475399652.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 0.89,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Energ%C3%A9ticos",
+    "url": "https://mantrafreeshop.com/Energetico-shark-lata-250-ml-p537005274",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3499550352.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 8.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Gin",
+    "url": "https://mantrafreeshop.com/Gin-Gilbeys-700ml-p533071032",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3475627219.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 15.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Licores",
+    "url": "https://mantrafreeshop.com/Licor-43-p394836119",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/394836119/2559352352.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 2.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Licores",
+    "url": "https://mantrafreeshop.com/Licor-J%C3%A4germeister-40-ml-p139929759",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078712633.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 21.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Vinhos",
+    "url": "https://mantrafreeshop.com/Vinho-Reservado-Santa-Helena-Merlot-6-garrafas-p136997208",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1057904723.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 83.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Vodka",
+    "url": "https://mantrafreeshop.com/Vodka-Blue-Absolut-4-5L-p139929795",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/139929795/1078752013.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 59.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Whisky",
+    "url": "https://mantrafreeshop.com/Whisky-Gold-Reserve-Johnnie-Walker-1L-p137182968",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1059465133.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 45.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Whisky",
+    "url": "https://mantrafreeshop.com/Whisky-Single-Barrel-Jack-Daniels-750ml-p117833459",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/921152145.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 23.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Eletrodomesticos",
+    "url": "https://mantrafreeshop.com/Planchita-para-Cabello-Aiwa-Beauty-AW-TP5538-230-%C2%B0C-220-240-V-~-50-60-Hz-Negra-p537016543",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3499706535.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 31.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Eletrodomesticos",
+    "url": "https://mantrafreeshop.com/Mixer-Aiwa-AW-LD5010-800-watts-Batidor-de-Varilla-Procesador-de-Alimentos-220V-~-50-60-Hz-Preto-Prata-p537007789",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/products/537007789/3499728309.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 27.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Eletrodomesticos",
+    "url": "https://mantrafreeshop.com/Torradeira-Aiwa-2-paes-AW-TD1408-p238840323",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1677600278.jpg"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "",
+    "precio_usd": 79.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Videogames",
+    "url": "https://mantrafreeshop.com/Controle-Sony-Sem-Fio-Dualshock-PS4-Red-p134030022",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3458632215.jpg"
+  }
+]

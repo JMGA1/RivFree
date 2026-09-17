@@ -11942,7 +11942,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Vinho Porta Lisboa Porta 6 Tinto 1.5 litros",
-    "precio_usd": 19.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "bebidasmagnum",
@@ -11982,7 +11982,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Vinho Tomas Postigo Tinto 1.5 litros",
-    "precio_usd": 203.5,
+    "precio_usd": 178.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "bebidasmagnum",
@@ -11992,7 +11992,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Vinho Alion 2021 Magnum 1.5 litros",
-    "precio_usd": 271.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "bebidasmagnum",
@@ -12012,7 +12012,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky Chivas Regal 4.5 litros",
-    "precio_usd": 169.0,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "bebidasmagnum",
@@ -12712,7 +12712,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "ENERGIZANTE - Red Bull S/Azucar 250ml",
-    "precio_usd": 1.25,
+    "precio_usd": 1.35,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "energeticos",
@@ -12741,6 +12741,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "Energético Red Bull Tropical 250ml",
+    "precio_usd": 1.35,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "energeticos",
+    "url": "https://www.baraofreeshop.com.br/product-page/energético-red-bull-tropical-250ml",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_0aaeb9e1b1ae40b0bfcf1ba3bbdedb69~mv2.jpg/v1/fill/w_250,h_250,al_c,q_80,enc_avif,quality_auto/6a24b0_0aaeb9e1b1ae40b0bfcf1ba3bbdedb69~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "Energético Monster Energy Ultra 500ml",
     "precio_usd": null,
     "precio_original_usd": null,
@@ -12752,7 +12762,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Energético Red Bull - 250 ml",
-    "precio_usd": 1.25,
+    "precio_usd": 1.35,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "energeticos",
@@ -12818,16 +12828,6 @@
     "categoria": "energeticos",
     "url": "https://www.baraofreeshop.com.br/product-page/energético-monster-energy-ultra-peachy-keen-500ml",
     "imagen": "https://static.wixstatic.com/media/6a24b0_e5f72761775a410ba0ee93fe2adf4787~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_e5f72761775a410ba0ee93fe2adf4787~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "Energético Red Bull Tropical - 250 ml",
-    "precio_usd": null,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "energeticos",
-    "url": "https://www.baraofreeshop.com.br/product-page/energético-red-bull-tropical-250-ml",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_0e390149f04e4c8f82978d547acd7542~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_0e390149f04e4c8f82978d547acd7542~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -16461,6 +16461,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "Whisky Glenfiddich 15Y 750ml",
+    "precio_usd": 80.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky-s",
+    "url": "https://www.baraofreeshop.com.br/product-page/whisky-glenfiddich-15y-750ml",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_2780d41064e4402e8a9682a4e2ebc0e7~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_2780d41064e4402e8a9682a4e2ebc0e7~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "BUNNAHABHAIN - An Caldach Tube 1lt",
     "precio_usd": 74.9,
     "precio_original_usd": null,
@@ -16492,7 +16502,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky - Glen Moray 12y",
-    "precio_usd": 33.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16522,7 +16532,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky - Small Batch  1792 1lt",
-    "precio_usd": 29.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16532,7 +16542,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky - Wild  Turkey 1lt",
-    "precio_usd": 19.5,
+    "precio_usd": 18.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16552,7 +16562,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "WHISKY -Talisker 10 años 1lt",
-    "precio_usd": 69.0,
+    "precio_usd": 77.2,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16612,7 +16622,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "MAKER´S MARK - Whisky 1lts",
-    "precio_usd": 39.9,
+    "precio_usd": 32.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16642,7 +16652,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "JIM BEAM - Whisky Honney 1lts",
-    "precio_usd": 13.9,
+    "precio_usd": 15.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16672,7 +16682,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "GLENFIDDICH- Whisky 12 Años 750ml",
-    "precio_usd": 56.0,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16692,7 +16702,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "SHINOBU BLEND - Whisky + Copos 700ml",
-    "precio_usd": 52.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -17172,7 +17182,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky Johnnie Walker Double Black 1 litro",
-    "precio_usd": 64.0,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -17242,7 +17252,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky Clan Mc Gregor 1lt",
-    "precio_usd": 14.0,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -24441,6 +24451,26 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "AMAZON - Echo Show 5 3 Gen Kids Galaxy",
+    "precio_usd": 92.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "amazon",
+    "url": "https://www.baraofreeshop.com.br/product-page/amazon-echo-show-5-3-gen-kids-galaxy",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_d143f5fe5876476b994c9cbf5e45f659~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_d143f5fe5876476b994c9cbf5e45f659~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "AMAZON - Echo Dot 5th Gen Stardust Kids",
+    "precio_usd": 66.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "amazon",
+    "url": "https://www.baraofreeshop.com.br/product-page/amazon-echo-dot-5th-gen-stardust-kids",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_3daddc14329342e091df8400d3bb9054~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_3daddc14329342e091df8400d3bb9054~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "AMAZON - Echo Dot 5th Gen Kids Rainbow Swirl",
     "precio_usd": 66.9,
     "precio_original_usd": null,
@@ -24532,7 +24562,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "AMAZON - Echo spot smart com assistente virtual Alexa",
-    "precio_usd": null,
+    "precio_usd": 84.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "amazon",
@@ -24562,7 +24592,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "AMAZON - Echo Dot 5th Gen Smart Blue",
-    "precio_usd": null,
+    "precio_usd": 73.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "amazon",
@@ -24582,7 +24612,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "AMAZON - Echo Show 5 3 Gen Smart Charcoal",
-    "precio_usd": null,
+    "precio_usd": 109.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "amazon",
@@ -24601,43 +24631,43 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "APPLE - Macbook Neo 13\" A18Pro 8+256GB Citrus Spanis",
-    "precio_usd": 945.9,
+    "nombre": "APPLE - Iphone 16 128GB Ultramarine",
+    "precio_usd": 1101.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "apple",
-    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18pro-8-256gb-citrus-spanis",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_d525c5a28cf4441094a56676572c50a0~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_d525c5a28cf4441094a56676572c50a0~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-16-128gb-ultramarine",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "APPLE - Macbook Neo 13\" A18Pro 8+256GB Blush Spanis",
-    "precio_usd": 945.9,
+    "nombre": "APPLE - Iphone 16 128GB Black",
+    "precio_usd": 1101.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "apple",
-    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18pro-8-256gb-blush-spanis",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_8444e51575e640639f145e9f910bc19e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_8444e51575e640639f145e9f910bc19e~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-16-128gb-black",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_a6598f4944524ed38c76d1a2e77b0621~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_a6598f4944524ed38c76d1a2e77b0621~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "APPLE - Pencil USB-C White",
-    "precio_usd": 115.9,
+    "nombre": "APPLE - Iphone 17 Air 256GB Space Black",
+    "precio_usd": 1335.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "apple",
-    "url": "https://www.baraofreeshop.com.br/product-page/apple-pencil-usb-c-white",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_d277c45b07b540cc976c5330042acf17~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_d277c45b07b540cc976c5330042acf17~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-17-air-256gb-space-black",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_1e5e2a2fa09a48f1a69132385003629a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_1e5e2a2fa09a48f1a69132385003629a~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "APPLE - Iphone 17 Air 1TB Light Gold",
-    "precio_usd": 1540.9,
+    "nombre": "APPLE -  Iphone 17 Air 256GB Sky Blue",
+    "precio_usd": 1335.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "apple",
-    "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-17-air-1tb-light-gold",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_91001348d4814235844f80872713d39e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_91001348d4814235844f80872713d39e~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-17-air-256gb-sky-blue",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_7704c0cacfd74297bbf02b7c1b39df90~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_7704c0cacfd74297bbf02b7c1b39df90~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -24648,6 +24678,16 @@
     "categoria": "apple",
     "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-15-128gb-blue",
     "imagen": "https://static.wixstatic.com/media/81a4e0_487c4ea02c4842e28e7026f75721102e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_487c4ea02c4842e28e7026f75721102e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Iphone 17 Air 1TB Light Gold",
+    "precio_usd": 1540.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-iphone-17-air-1tb-light-gold",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_91001348d4814235844f80872713d39e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_91001348d4814235844f80872713d39e~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -24671,23 +24711,63 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "APPLE - Auricular AirPods Max 2 USB-C Starlight",
-    "precio_usd": 705.9,
+    "nombre": "APPLE - Pencil USB-C White",
+    "precio_usd": 115.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "apple",
-    "url": "https://www.baraofreeshop.com.br/product-page/apple-auricular-airpods-max-2-usb-c-starlight",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_0d17955bcfdc491bad1ddf50e8e07c62~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0d17955bcfdc491bad1ddf50e8e07c62~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-pencil-usb-c-white",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_d277c45b07b540cc976c5330042acf17~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_d277c45b07b540cc976c5330042acf17~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "APPLE - Auricular AirPods Max 2 USB-C Blue",
-    "precio_usd": 705.9,
+    "nombre": "APPLE - Macbook Neo 13\" A18Pro 8+256GB Silver Spanis",
+    "precio_usd": 945.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "apple",
-    "url": "https://www.baraofreeshop.com.br/product-page/apple-auricular-airpods-max-2-usb-c-blue",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_18ca9c0f44b54f9db7723af8384c792e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_18ca9c0f44b54f9db7723af8384c792e~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18pro-8-256gb-silver-spanis",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_3e08d894a9b04fce9db0d00fd13ede9b~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_3e08d894a9b04fce9db0d00fd13ede9b~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Macbook Neo 13\" A18Pro 8+512GB Silver Spanis",
+    "precio_usd": 1101.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18pro-8-512gb-silver-spanis",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_bea9a6b6f93a4b82b9dae4d32a7d5842~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_bea9a6b6f93a4b82b9dae4d32a7d5842~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Macbook Neo 13\" A18Pro 8+256GB Citrus Spanis",
+    "precio_usd": 945.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18pro-8-256gb-citrus-spanis",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_d525c5a28cf4441094a56676572c50a0~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_d525c5a28cf4441094a56676572c50a0~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Macbook Neo 13\" A18Pro 8+256GB Blush Spanis",
+    "precio_usd": 945.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18pro-8-256gb-blush-spanis",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_8444e51575e640639f145e9f910bc19e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_8444e51575e640639f145e9f910bc19e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Macbook Neo 13\" A18 Pro 8+256GB Citrus",
+    "precio_usd": 945.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18-pro-8-256gb-citrus",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_60cf64b14f584d7d918e90fc040c785c~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_60cf64b14f584d7d918e90fc040c785c~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -24708,6 +24788,26 @@
     "categoria": "apple",
     "url": "https://www.baraofreeshop.com.br/product-page/apple-macbook-neo-13-a18-pro-8-256gb-silver",
     "imagen": "https://static.wixstatic.com/media/81a4e0_eef2c8c1ac9246118f704e60c7691012~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_eef2c8c1ac9246118f704e60c7691012~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Auricular AirPods Max 2 USB-C Starlight",
+    "precio_usd": 705.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-auricular-airpods-max-2-usb-c-starlight",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_0d17955bcfdc491bad1ddf50e8e07c62~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0d17955bcfdc491bad1ddf50e8e07c62~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "APPLE - Auricular AirPods Max 2 USB-C Blue",
+    "precio_usd": 705.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "apple",
+    "url": "https://www.baraofreeshop.com.br/product-page/apple-auricular-airpods-max-2-usb-c-blue",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_18ca9c0f44b54f9db7723af8384c792e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_18ca9c0f44b54f9db7723af8384c792e~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -26261,6 +26361,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Poco C85 6+128GB Green",
+    "precio_usd": 161.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "celulares",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-poco-c85-6-128gb-green",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_b724a8f256b24664ad3a4463417796b9~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_b724a8f256b24664ad3a4463417796b9~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "XIAOMI - Redmi 17 4+256GB Black",
     "precio_usd": 274.9,
     "precio_original_usd": null,
@@ -26361,6 +26471,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Poco M8 5G 8+512GB Silver",
+    "precio_usd": 341.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "celulares",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-poco-m8-5g-8-512gb-silver",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_ea6174e07e334b6b98cfd1dd356f5d71~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_ea6174e07e334b6b98cfd1dd356f5d71~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "XIAOMI - Poco X8 Pro 5G 8ram + 512GB Green",
     "precio_usd": 507.9,
     "precio_original_usd": null,
@@ -26372,7 +26492,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "XIAOMI - Poco C85 8+256GB Black",
-    "precio_usd": 205.5,
+    "precio_usd": 229.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "celulares",
@@ -26441,6 +26561,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "POCO - C85 Dual sim 6RAM + 128GB",
+    "precio_usd": 198.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "celulares",
+    "url": "https://www.baraofreeshop.com.br/product-page/poco-c85-dual-sim-128gb",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_209f057b4d6442cfacaddd7aa2d270e6~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_209f057b4d6442cfacaddd7aa2d270e6~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "XIAOMI - Poco X7 pro 5Gb+ 8Ram+256Gb",
     "precio_usd": 418.5,
     "precio_original_usd": null,
@@ -26468,6 +26598,16 @@
     "categoria": "celulares",
     "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-redmi-note-13-pro-5g-8-256gb-black-1",
     "imagen": "https://static.wixstatic.com/media/81a4e0_917f6d7d2cac466ebf15dd2068eb5e93~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_917f6d7d2cac466ebf15dd2068eb5e93~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - CP.Secador P/Cabello H500 XI-H500",
+    "precio_usd": 70.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidadopessoal",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-cp-secador-p-cabello-h500-xi-h500",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_8d64a0373c1b456fa1d275a8dc3b20e2~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_8d64a0373c1b456fa1d275a8dc3b20e2~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -27061,6 +27201,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "Termômetro infrared",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidadopessoal",
+    "url": "https://www.baraofreeshop.com.br/product-page/termômetro-infrared",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_13d2db2962c84c51995ca866798bb87e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_13d2db2962c84c51995ca866798bb87e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "XION - Tender D/Ropa Electrico TENDER-2",
     "precio_usd": 40.5,
     "precio_original_usd": null,
@@ -27551,6 +27701,36 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Balanza Inteligente Scale XI-S200WH White",
+    "precio_usd": 19.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrodomesticos",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-balanza-inteligente-scale-xi-s200wh-white",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_dfe19ed8e6154969bb58440033dc0f63~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_dfe19ed8e6154969bb58440033dc0f63~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Balanza Inteligente Scale S400 XI-S400",
+    "precio_usd": 25.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrodomesticos",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-balanza-inteligente-scale-s400-xi-s400",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_31e249d112fe4074aa49f027ebf9c8dd~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_31e249d112fe4074aa49f027ebf9c8dd~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Aspiradora Inalambrica Mini XI-SSXCQ01XY",
+    "precio_usd": 50.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrodomesticos",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-aspiradora-inalambrica-mini-xi-ssxcq01xy",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_08652fe9ce024939b9f142a37dbb76e8~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_08652fe9ce024939b9f142a37dbb76e8~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "NORTH TECH - Horno Elect.NT-HT45 45L",
     "precio_usd": 72.9,
     "precio_original_usd": null,
@@ -27832,7 +28012,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "CUORI - Ferro a vapor Venetto 220W CUO4139",
-    "precio_usd": 17.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrodomesticos",
@@ -28661,6 +28841,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Hidrolavadora XI-490334",
+    "precio_usd": 130.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "copia-eletrodomesticos",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-hidrolavadora-xi-490334",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_360a5467090c44198d6f3fbaa856403e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_360a5467090c44198d6f3fbaa856403e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "XIAOMI - Linterna Multifuncional XI-4538",
     "precio_usd": 44.5,
     "precio_original_usd": null,
@@ -29361,6 +29551,46 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "JBL - Speaker Boombox 4 Black",
+    "precio_usd": 437.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "jbl",
+    "url": "https://www.baraofreeshop.com.br/product-page/jbl-speaker-boombox-4-black",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_bf12d248c23a413da56f46e38599b7ce~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_bf12d248c23a413da56f46e38599b7ce~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "JBL - Band Box Solo Guitar Amplificador/Speaker",
+    "precio_usd": 233.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "jbl",
+    "url": "https://www.baraofreeshop.com.br/product-page/jbl-band-box-solo-guitar-amplificador-speaker",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_b9e59e8699b54fa2900a56d8c682d48f~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_b9e59e8699b54fa2900a56d8c682d48f~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "JBL - Cinema Soundbar 3.1.2 SB595 W/Subwoofer",
+    "precio_usd": 233.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "jbl",
+    "url": "https://www.baraofreeshop.com.br/product-page/jbl-cinema-soundbar-3-1-2-sb595-w-subwoofer",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_1b326fdc73024c4482742a28c7465369~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_1b326fdc73024c4482742a28c7465369~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "JBL - Parlante JBL-SB180 2.1 Subwoofer Inalamb.",
+    "precio_usd": 182.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "jbl",
+    "url": "https://www.baraofreeshop.com.br/product-page/jbl-parlante-jbl-sb180-2-1-subwoofer-inalamb",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_6ce45aba56ee4a6c8c53bb747880c85a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_6ce45aba56ee4a6c8c53bb747880c85a~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "JBL - Speaker Charge 6 BT Waterproof Blue",
     "precio_usd": 171.8,
     "precio_original_usd": null,
@@ -29632,7 +29862,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "JBL - Auricular T520C On-ear  USB-C Purple",
-    "precio_usd": 30.5,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "jbl",
@@ -29642,7 +29872,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "JBL - Auricular T500 C/cable Black",
-    "precio_usd": 24.5,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "jbl",
@@ -29652,7 +29882,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "JBL - Horizon 3 Alam Clock Radio BT Speaker Black",
-    "precio_usd": 98.38,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "jbl",
@@ -31081,13 +31311,53 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Tablet Redmi Pad 2 Pro 12.1\" 8+256GB Grey",
-    "precio_usd": 401.9,
+    "nombre": "HP - Laptop 16\" 2K Touch Core Ultra7 16GB 512GB",
+    "precio_usd": 1214.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-pro-12-1-8-256gb-grey",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_f94f6a5ffc564e3daddc19ceba5caefe~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_f94f6a5ffc564e3daddc19ceba5caefe~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/hp-laptop-16-2k-touch-core-ultra7-16gb-512gb",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_db3d2956bfbd4aa1a33aa0c5ef9912e4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_db3d2956bfbd4aa1a33aa0c5ef9912e4~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LENOVO - Laptop Slim 3 15.6\" Ryzen 5 8GB 512GB Blue",
+    "precio_usd": 700.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/lenovo-laptop-slim-3-15-6-ryzen-5-8gb-512gb-blue",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_6f78a1d39cca4b4f826c0f77a0201b2c~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_6f78a1d39cca4b4f826c0f77a0201b2c~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "HP - Notebook 15.6\" HP15-FB2063D Victus",
+    "precio_usd": 917.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/hp-notebook-15-6-hp15-fb2063d-victus",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_cf49ed4e2b1d4e10866a4f097386c02d~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_cf49ed4e2b1d4e10866a4f097386c02d~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "HP Laptop 14\" Intel N150 4GB 128GB Honey Lavender",
+    "precio_usd": 332.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/hp-laptop-14-intel-n150-4gb-128gb-honey-lavender",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_85d72641e7ba4db0838e0631a3dfdb95~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_85d72641e7ba4db0838e0631a3dfdb95~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "DELL - Laptop Ryzen 15.6\" 8GB 512GB Black",
+    "precio_usd": 691.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/dell-laptop-ryzen-15-6-8gb-512gb-black",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_820fe1894cf94f7db1350a1da5635b1e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_820fe1894cf94f7db1350a1da5635b1e~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31098,16 +31368,6 @@
     "categoria": "tabletsenotebooks",
     "url": "https://www.baraofreeshop.com.br/product-page/asus-laptop-vivobook-14-core-i3-1315u-8gb-128gb",
     "imagen": "https://static.wixstatic.com/media/81a4e0_20cffaf97c464b5db45462b5c3f2d70d~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_20cffaf97c464b5db45462b5c3f2d70d~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Tablet Redmi Pad 2 9.7\" 4+128GB Grey Wifi",
-    "precio_usd": 213.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-9-7-4-128gb-grey-wifi",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_db6245327e0940b5bcd0e88df1726d1f~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_db6245327e0940b5bcd0e88df1726d1f~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31131,36 +31391,6 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Tablet Redmi Pad 2 11\"4+128GB Grey Wifi",
-    "precio_usd": 260.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-11-4-128gb-grey-wifi",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_32a991d397da402d94c25e28b37904e6~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_32a991d397da402d94c25e28b37904e6~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Tablet Redmi Pad 2 11\" 6+128GB Green Wifi",
-    "precio_usd": 260.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-11-6-128gb-green-wifi",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_59e3fea903e6453db75771907b9bf48e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_59e3fea903e6453db75771907b9bf48e~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Tablet Redmi Pad 2 11\" 8+256gb grey wifi",
-    "precio_usd": 282.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-11-8-256gb-grey-wifi",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_079c756d59a4474fa3a709278f8b224f~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_079c756d59a4474fa3a709278f8b224f~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
     "nombre": "Notebook - Asus Vivobook X10VA",
     "precio_usd": 932.5,
     "precio_original_usd": null,
@@ -31168,16 +31398,6 @@
     "categoria": "tabletsenotebooks",
     "url": "https://www.baraofreeshop.com.br/product-page/notebook-asus-vivobook-x10va",
     "imagen": "https://static.wixstatic.com/media/6a24b0_6c94bfced86c42f89eb2157df76b11f1~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_6c94bfced86c42f89eb2157df76b11f1~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "HP - Laptop 15.8\" CI7 8G 56Gb SSD silver",
-    "precio_usd": 876.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/hp-laptop-15-8-ci7-8g-56gb-ssd-silver",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_a3a631692e6143f1b7fae0453a9f901c~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_a3a631692e6143f1b7fae0453a9f901c~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31201,6 +31421,86 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Tablet Redmi Pad 2 Pro 12.1\" 8+256GB Grey",
+    "precio_usd": 401.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-pro-12-1-8-256gb-grey",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_f94f6a5ffc564e3daddc19ceba5caefe~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_f94f6a5ffc564e3daddc19ceba5caefe~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Tablet Redmi Pad 2 9.7\" 4+128GB Grey Wifi",
+    "precio_usd": 213.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-9-7-4-128gb-grey-wifi",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_db6245327e0940b5bcd0e88df1726d1f~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_db6245327e0940b5bcd0e88df1726d1f~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Tablet Redmi Pad 2 11\" 6+128GB Green Wifi",
+    "precio_usd": 260.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-11-6-128gb-green-wifi",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_59e3fea903e6453db75771907b9bf48e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_59e3fea903e6453db75771907b9bf48e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Tablet Redmi Pad 2 11\"4+128GB Grey Wifi",
+    "precio_usd": 260.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-11-4-128gb-grey-wifi",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_32a991d397da402d94c25e28b37904e6~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_32a991d397da402d94c25e28b37904e6~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XIAOMI - Tablet Redmi Pad 2 11\" 8+256gb grey wifi",
+    "precio_usd": 282.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-tablet-redmi-pad-2-11-8-256gb-grey-wifi",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_079c756d59a4474fa3a709278f8b224f~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_079c756d59a4474fa3a709278f8b224f~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "HP - Laptop 15.8\" CI7 8G 56Gb SSD silver",
+    "precio_usd": 876.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/hp-laptop-15-8-ci7-8g-56gb-ssd-silver",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_a3a631692e6143f1b7fae0453a9f901c~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_a3a631692e6143f1b7fae0453a9f901c~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "BLACKVIEW - Tablet 50 Kids 8\" 3+64GB WiFi Blue",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/blackview-tablet-50-kids-8-3-64gb-wifi-blue",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_43002085da624ade974f0cb3c7dc05e4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_43002085da624ade974f0cb3c7dc05e4~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "BLACKVIEW - Tablet 50 Kids 8\" 3+64GB WiFi Purple",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tabletsenotebooks",
+    "url": "https://www.baraofreeshop.com.br/product-page/blackview-tablet-50-kids-8-3-64gb-wifi-purple",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_fd593b0663a54c248447539a10e39a1e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_fd593b0663a54c248447539a10e39a1e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "BLACKVIEW - Tablet 3 Kids 7\" 2+32GB WiFi Blue",
     "precio_usd": 76.9,
     "precio_original_usd": null,
@@ -31218,26 +31518,6 @@
     "categoria": "tabletsenotebooks",
     "url": "https://www.baraofreeshop.com.br/product-page/blackview-tablet-30-kids-10-1-2-64gb-wifi-blue",
     "imagen": "https://static.wixstatic.com/media/6a24b0_90a167ab6cb94dfd9d442380d3b94263~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_90a167ab6cb94dfd9d442380d3b94263~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "BLACKVIEW - Tablet 50 Kids 8\" 3+64GB WiFi Purple",
-    "precio_usd": null,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/blackview-tablet-50-kids-8-3-64gb-wifi-purple",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_fd593b0663a54c248447539a10e39a1e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_fd593b0663a54c248447539a10e39a1e~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "BLACKVIEW - Tablet 50 Kids 8\" 3+64GB WiFi Blue",
-    "precio_usd": null,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "tabletsenotebooks",
-    "url": "https://www.baraofreeshop.com.br/product-page/blackview-tablet-50-kids-8-3-64gb-wifi-blue",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_43002085da624ade974f0cb3c7dc05e4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_43002085da624ade974f0cb3c7dc05e4~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31581,13 +31861,33 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "RAPOO - Controller Wireless Black",
-    "precio_usd": 38.5,
+    "nombre": "PS5 - Sony Slim Disc Gt7-Astrobot PS5S-DISCT7AS",
+    "precio_usd": 889.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/rapoo-controller-wireless-black",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_e7815f7e6ec946a8860b4ea4f52c5688~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_e7815f7e6ec946a8860b4ea4f52c5688~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-slim-disc-gt7-astrobot-ps5s-disct7as",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_b9bcaf86806647d1a0e4790a7da7d2d4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_b9bcaf86806647d1a0e4790a7da7d2d4~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "PS5 - Sony Slim Digital Gt7-Astrobot PS5S-DIGGT7AS",
+    "precio_usd": 818.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "games-acessorios",
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-slim-digital-gt7-astrobot-ps5s-diggt7as",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_a4e88e87adc94f0b994be422e748222d~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_a4e88e87adc94f0b994be422e748222d~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Nintendo Switch Game S.Mario OLED Wonder Bundle",
+    "precio_usd": 465.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "games-acessorios",
+    "url": "https://www.baraofreeshop.com.br/product-page/nintendo-switch-game-s-mario-oled-wonder-bundle",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_6822a5f215c3435e9223f8a4f9489355~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_6822a5f215c3435e9223f8a4f9489355~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31611,43 +31911,23 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "Nintendo Switch Game S.Mario OLED Wonder Bundle",
-    "precio_usd": 465.5,
+    "nombre": "RAPOO - Controller Wireless Black",
+    "precio_usd": 38.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/nintendo-switch-game-s-mario-oled-wonder-bundle",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_6822a5f215c3435e9223f8a4f9489355~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_6822a5f215c3435e9223f8a4f9489355~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/rapoo-controller-wireless-black",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_e7815f7e6ec946a8860b4ea4f52c5688~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_e7815f7e6ec946a8860b4ea4f52c5688~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "PS5 Sony Controller Dualsens Rhythm Blue",
-    "precio_usd": 92.5,
+    "nombre": "XION - Consola de juegos stick HDMI 64GB",
+    "precio_usd": 41.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-controller-dualsens-rhythm-blue",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_55ebf28a51f54cf397dd6a2b3d9d5014~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_55ebf28a51f54cf397dd6a2b3d9d5014~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Sony Controller Dualsense Gray Camo",
-    "precio_usd": 83.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-controller-dualsense-gray-camo",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_17dbc7ea7ddb4436a4def78a65afc147~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_17dbc7ea7ddb4436a4def78a65afc147~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Sony Controller Dualsense Purple",
-    "precio_usd": 83.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-controller-dualsense-purple",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_6ac32ef360c0483bb9679e195c0bf6a7~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_6ac32ef360c0483bb9679e195c0bf6a7~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/xion-consola-de-juegos-stick-hdmi-64gb",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_edab4e1d23d54b13992fe27535211ee2~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_edab4e1d23d54b13992fe27535211ee2~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31671,16 +31951,6 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "NINTENDO SWITCH -  Lite Yellow NIN-SWLTCO",
-    "precio_usd": 281.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/nintendo-switch-lite-yellow-nin-swltco",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_2e0a5ce6dde34d3d98479e4d318dcaf4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_2e0a5ce6dde34d3d98479e4d318dcaf4~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
     "nombre": "NINTENDO SWITCH -  Lite Coral NIN-SWLTCO",
     "precio_usd": 281.9,
     "precio_original_usd": null,
@@ -31688,6 +31958,16 @@
     "categoria": "games-acessorios",
     "url": "https://www.baraofreeshop.com.br/product-page/nintendo-switch-lite-coral-nin-swltco",
     "imagen": "https://static.wixstatic.com/media/81a4e0_a4be961da814420d983d264a0d77acde~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_a4be961da814420d983d264a0d77acde~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "NINTENDO SWITCH -  Lite Yellow NIN-SWLTCO",
+    "precio_usd": 281.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "games-acessorios",
+    "url": "https://www.baraofreeshop.com.br/product-page/nintendo-switch-lite-yellow-nin-swltco",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_2e0a5ce6dde34d3d98479e4d318dcaf4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_2e0a5ce6dde34d3d98479e4d318dcaf4~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31701,43 +31981,43 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Sony Slim Digital Gt7-Astrobot PS5S-DIGGT7AS",
-    "precio_usd": 818.9,
+    "nombre": "PS5 - Wireless Controller Dualsense red",
+    "precio_usd": 83.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-slim-digital-gt7-astrobot-ps5s-diggt7as",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_a4e88e87adc94f0b994be422e748222d~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_a4e88e87adc94f0b994be422e748222d~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-wireless-controller-dualsense-red",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_8b18c374abf048aaab85f4b2eccb15c1~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_8b18c374abf048aaab85f4b2eccb15c1~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Sony Slim Disc Gt7-Astrobot PS5S-DISCT7AS",
-    "precio_usd": 889.5,
+    "nombre": "PS5 - Sony Controller Dualsense Gray Camo",
+    "precio_usd": 83.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-slim-disc-gt7-astrobot-ps5s-disct7as",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_b9bcaf86806647d1a0e4790a7da7d2d4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_b9bcaf86806647d1a0e4790a7da7d2d4~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-controller-dualsense-gray-camo",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_17dbc7ea7ddb4436a4def78a65afc147~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_17dbc7ea7ddb4436a4def78a65afc147~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "XION - Consola de juegos stick HDMI 64GB",
-    "precio_usd": 41.5,
+    "nombre": "PS5 - Sony Controller Dualsense Purple",
+    "precio_usd": 83.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/xion-consola-de-juegos-stick-hdmi-64gb",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_edab4e1d23d54b13992fe27535211ee2~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_edab4e1d23d54b13992fe27535211ee2~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-controller-dualsense-purple",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_6ac32ef360c0483bb9679e195c0bf6a7~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_6ac32ef360c0483bb9679e195c0bf6a7~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "LEDSTAR - Soporte de carga rápida p/joy SND-459A",
-    "precio_usd": 32.0,
+    "nombre": "PS5 Sony Controller Dualsens Rhythm Blue",
+    "precio_usd": 92.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ledstar-soporte-de-carga-rápida-p-joy-snd-459a",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_84bc849fcfff4d019dc472a0e9fb1223~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_84bc849fcfff4d019dc472a0e9fb1223~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-sony-controller-dualsens-rhythm-blue",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_55ebf28a51f54cf397dd6a2b3d9d5014~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_55ebf28a51f54cf397dd6a2b3d9d5014~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31751,13 +32031,13 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Controle Dualsense Chroma Pearl",
-    "precio_usd": 82.0,
+    "nombre": "PS5 - Controle Dualsense Chroma Teal",
+    "precio_usd": 86.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-controle-dualsense-chroma-pearl",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_ad3cd07d031c41ea85f524b028558460~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_ad3cd07d031c41ea85f524b028558460~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-controle-dualsense-chroma-teal",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_b95088d3eca442bea787216621e135c6~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_b95088d3eca442bea787216621e135c6~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31771,13 +32051,13 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Controle Dualsense Chroma Teal",
-    "precio_usd": 86.5,
+    "nombre": "PS5 - Controle Dualsense Chroma Pearl",
+    "precio_usd": 82.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-controle-dualsense-chroma-teal",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_b95088d3eca442bea787216621e135c6~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_b95088d3eca442bea787216621e135c6~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ps5-controle-dualsense-chroma-pearl",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_ad3cd07d031c41ea85f524b028558460~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_ad3cd07d031c41ea85f524b028558460~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31788,16 +32068,6 @@
     "categoria": "games-acessorios",
     "url": "https://www.baraofreeshop.com.br/product-page/ps5-wireless-controller",
     "imagen": "https://static.wixstatic.com/media/6a24b0_755226bb0ae04ed6b06d5e8ed48f5ca5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_755226bb0ae04ed6b06d5e8ed48f5ca5~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XION -  Microfone gamer",
-    "precio_usd": null,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/xion-microfone-gamer",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_a931e01b8a7b4f8795f4059e44051d9e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_a931e01b8a7b4f8795f4059e44051d9e~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31821,13 +32091,23 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "PS5 - Wireless Controller Dualsense red",
-    "precio_usd": 83.9,
+    "nombre": "LEDSTAR - Soporte de carga rápida p/joy SND-459A",
+    "precio_usd": 32.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "games-acessorios",
-    "url": "https://www.baraofreeshop.com.br/product-page/ps5-wireless-controller-dualsense-red",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_8b18c374abf048aaab85f4b2eccb15c1~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_8b18c374abf048aaab85f4b2eccb15c1~mv2.jpg"
+    "url": "https://www.baraofreeshop.com.br/product-page/ledstar-soporte-de-carga-rápida-p-joy-snd-459a",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_84bc849fcfff4d019dc472a0e9fb1223~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_84bc849fcfff4d019dc472a0e9fb1223~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "XION -  Microfone gamer",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "games-acessorios",
+    "url": "https://www.baraofreeshop.com.br/product-page/xion-microfone-gamer",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_a931e01b8a7b4f8795f4059e44051d9e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_a931e01b8a7b4f8795f4059e44051d9e~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -34352,7 +34632,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Tabasco Sriracha 256ml",
-    "precio_usd": null,
+    "precio_usd": 3.75,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34362,7 +34642,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri S/Sal Pet 350gr",
-    "precio_usd": null,
+    "precio_usd": 3.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34372,7 +34652,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "REMIA - Salsa Blue Cheese Dressing 250ml",
-    "precio_usd": null,
+    "precio_usd": 2.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34382,7 +34662,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Bornier Mostaza Dijon 210gr",
-    "precio_usd": null,
+    "precio_usd": 3.2,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34392,7 +34672,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "BORNIER - Mostaza Ajo y Perejil 210gr",
-    "precio_usd": null,
+    "precio_usd": 3.45,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34402,7 +34682,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri 1Kg",
-    "precio_usd": null,
+    "precio_usd": 16.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34412,7 +34692,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri S/Picante 1Kg",
-    "precio_usd": null,
+    "precio_usd": 16.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34422,7 +34702,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri S/Picante Doy Pack 250gr",
-    "precio_usd": null,
+    "precio_usd": 5.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34442,7 +34722,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Arrecife Adobo Parrillero 500gr",
-    "precio_usd": null,
+    "precio_usd": 2.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34452,7 +34732,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Arrecife Chimichurri Hot 500gr",
-    "precio_usd": null,
+    "precio_usd": 2.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34462,7 +34742,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Pesto Pet 350gr",
-    "precio_usd": null,
+    "precio_usd": 3.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34472,7 +34752,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Gaucho Pesto Pet 350gr",
-    "precio_usd": null,
+    "precio_usd": 3.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34482,7 +34762,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri Hot Pet 350gr",
-    "precio_usd": null,
+    "precio_usd": 3.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34492,7 +34772,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "TABASCO - Chipotle 60ml",
-    "precio_usd": null,
+    "precio_usd": 2.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34502,7 +34782,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "TABASCO - Green Pepper Suce  60ml",
-    "precio_usd": null,
+    "precio_usd": 2.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34512,7 +34792,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI- Caramelo Vanilla",
-    "precio_usd": null,
+    "precio_usd": 3.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34522,7 +34802,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI - Moli.Sal Marina C/Jengibre y Citronela 66g",
-    "precio_usd": null,
+    "precio_usd": 3.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34532,7 +34812,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI - Molinillo Hierbas Italianas 48gr",
-    "precio_usd": null,
+    "precio_usd": 3.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34542,7 +34822,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI - Moedor de Caril 45g",
-    "precio_usd": null,
+    "precio_usd": 3.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34552,7 +34832,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "EL AVION - Moedor de quatro pimentas 160g",
-    "precio_usd": null,
+    "precio_usd": 12.6,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34562,7 +34842,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DE NIGRIS - Glacê Aceto Balsâmico Pesto 250ml",
-    "precio_usd": null,
+    "precio_usd": 5.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34582,7 +34862,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "BORNIER - Mostarda em grão 720g",
-    "precio_usd": null,
+    "precio_usd": 7.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34592,7 +34872,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "BORNIER - Mostarda e mel 235g",
-    "precio_usd": null,
+    "precio_usd": 3.45,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34602,7 +34882,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Alho e salsinha 350g",
-    "precio_usd": null,
+    "precio_usd": 3.7,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34612,7 +34892,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "MONARI FEDERZONI - Vinagre Balsâmico de Modena 250ml",
-    "precio_usd": null,
+    "precio_usd": 3.1,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34622,7 +34902,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "HEINZ - Mostarda 396gr",
-    "precio_usd": null,
+    "precio_usd": 6.1,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34632,7 +34912,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KRAFT - Salsa Barbecue 510g",
-    "precio_usd": null,
+    "precio_usd": 4.2,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34642,7 +34922,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "EL AVION - Sal Marinho 340g",
-    "precio_usd": null,
+    "precio_usd": 7.3,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -38518,6 +38798,46 @@
     "categoria": "decoracao",
     "url": "https://www.baraofreeshop.com.br/product-page/elefante-decorativo-prata",
     "imagen": "https://static.wixstatic.com/media/6a24b0_47f918b2b76e4babb29e0bb91f2c6e41~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_47f918b2b76e4babb29e0bb91f2c6e41~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Espejo x3",
+    "precio_usd": 32.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "miuruguay",
+    "url": "https://www.baraofreeshop.com.br/product-page/espejo-x3",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_e19a32f402a44c42b62b85126d6ed8e3~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_e19a32f402a44c42b62b85126d6ed8e3~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Espelho com base 50x13x60cm",
+    "precio_usd": 29.9,
+    "precio_original_usd": 59.8,
+    "en_oferta": true,
+    "categoria": "miuruguay",
+    "url": "https://www.baraofreeshop.com.br/product-page/espelho-com-base-50x13x60cm",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_5e39c5876762472e978e6fc3c839878a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_5e39c5876762472e978e6fc3c839878a~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Espelho 61x2.5x91cm",
+    "precio_usd": 56.65,
+    "precio_original_usd": 113.3,
+    "en_oferta": true,
+    "categoria": "miuruguay",
+    "url": "https://www.baraofreeshop.com.br/product-page/espelho-61x2-5x91cm",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_4898ebcbdfc74c14afa242c3388b0e26~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_4898ebcbdfc74c14afa242c3388b0e26~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Espelho 45x3x45cm",
+    "precio_usd": 29.1,
+    "precio_original_usd": 58.2,
+    "en_oferta": true,
+    "categoria": "miuruguay",
+    "url": "https://www.baraofreeshop.com.br/product-page/espelho-45x3x45cm",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_446e1858aded47688cffb02aab8a6eb4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_446e1858aded47688cffb02aab8a6eb4~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -47538,5 +47858,16 @@
     "categoria": "showroom",
     "url": "https://www.baraofreeshop.com.br/product-page/merletto-adesivos-navideños-p-presente",
     "imagen": "https://static.wixstatic.com/media/6a24b0_a6872149c4b842d89bfb9f032f90a2a3~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_a6872149c4b842d89bfb9f032f90a2a3~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Energético Red Bull Tropical - 250 ml",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "energeticos",
+    "url": "https://www.baraofreeshop.com.br/product-page/energético-red-bull-tropical-250-ml",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_0e390149f04e4c8f82978d547acd7542~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_0e390149f04e4c8f82978d547acd7542~mv2.jpg",
+    "datos_anteriores": true
   }
 ]
