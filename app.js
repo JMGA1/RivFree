@@ -85,22 +85,6 @@ function storeKey(name) {
  const s=Catalog.norm(name);
  return s.includes('neutral')?'neutral':s.includes('barao')?'barao':s.includes('yury')?'yury':s.includes('dfa')?'dfa':s.includes('mantra')?'mantra':s.includes('sineriz')?'sineriz':s.includes('oprha')||s.includes('orpha')?'oprha':'other';
 }
-const STORE_LOGOS = {
- dfa:'https://pbs.twimg.com/profile_images/1695035204841164800/patXn-Ir_400x400.png',
- barao:'https://pbs.twimg.com/profile_images/1259848068230524929/R0GRp85B.jpg',
- yury:'https://static.wixstatic.com/media/2d75da_9878c96857394a23a64910197954dce8~mv2.png/v1/fill/w_277,h_93,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo%20Yury%202024.png',
- neutral:'https://i0.wp.com/comprasimportadas.com/wp-content/uploads/2018/03/neutral-free-shop-138468.jpg?fit=600%2C600&ssl=1',
- sineriz:'https://www.sineriz.com.uy/assets/images/static/avatar.jpg',
- mantra:'https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1239324602.jpg'
-};
-function createStoreLogo(storeName, className='store-logo') {
- const key=storeKey(storeName),src=STORE_LOGOS[key];
- if(!src)return null;
- const img=document.createElement('img');
- img.className=className;img.src=src;img.alt='';img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';
- img.addEventListener('error',()=>img.remove(),{once:true});
- return img;
-}
 function announce(message) {
  const el=document.getElementById('actionStatus');el.textContent=message;el.hidden=false;
  clearTimeout(announce.timer);announce.timer=setTimeout(()=>{el.hidden=true;},3500);
@@ -111,7 +95,12 @@ const CARD_DATA=new WeakMap();
 document.getElementById('grid').addEventListener('click',event=>{
  const target=event.target.closest('[data-action]');
  if(!target||!event.currentTarget.contains(target))return;
- if(target.dataset.action==='store'){openStoreInfo(target.dataset.storeName);return;}
+ if(target.dataset.action==='store'){
+  event.preventDefault();
+  event.stopPropagation();
+  openStoreInfo(target.dataset.storeName);
+  return;
+ }
  const data=CARD_DATA.get(target.closest('.card'));
  if(target.dataset.action==='history'&&data){openPriceHistory(data.offers);return;}
  if(target.dataset.action==='favorite'&&data){toggleFavorite(data.key);return;}
@@ -255,9 +244,9 @@ function populateFilters() {
     checkbox.value = store;
     checkbox.className = 'storeChk';
     checkbox.checked = true;
-    const logo=createStoreLogo(store,'store-filter-logo');
     const text=document.createElement('span');text.className='store-filter-name';text.textContent=store;
-    label.append(checkbox);if(logo)label.appendChild(logo);label.appendChild(text);
+    // Advanced filters intentionally use store names only: no third-party logos.
+    label.append(checkbox,text);
     storesField.appendChild(label);
   });
   storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => render(true)));
@@ -395,9 +384,8 @@ function createStoreTag(storeName) {
   button.className = 'card-store';
   button.dataset.store = storeKey(storeName);
   button.type = 'button';
-  const logo=createStoreLogo(storeName,'card-store-logo');
   const label=document.createElement('span');label.className='card-store-label';label.textContent=storeName;
-  if(logo)button.appendChild(logo);button.appendChild(label);
+  button.appendChild(label);
   button.setAttribute('aria-label', tr(`Ver información de ${storeName}`));
   button.dataset.action='store';button.dataset.storeName=storeName;
   return button;
