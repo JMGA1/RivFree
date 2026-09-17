@@ -106,7 +106,21 @@ function groupProducts(products) {
 
     const canonical = Catalog.identity(product);
     const conservativeKey = canonical;
-    const key = conservativeKey || `product-${index}`;
+    const baseKey = conservativeKey || `product-${index}`;
+    let key = baseKey;
+
+    // Nunca colapsar dos publicaciones distintas de la MISMA tienda.
+    // La agrupación sirve para comparar el mismo producto entre tiendas, no para
+    // ocultar SKUs/variantes diferentes de Barão/Yury/etc. con nombres parecidos.
+    const existing = groups.get(baseKey);
+    if (existing && existing.offers.some(offer => {
+      if (offer.tienda !== product.tienda) return false;
+      const previousUrl = safeHttpUrl(offer.url);
+      return !url || !previousUrl || previousUrl !== url;
+    })) {
+      key = `${baseKey}|same-store|${product.tienda}|${url || index}`;
+    }
+
     if (!groups.has(key)) groups.set(key, {key, offers:[]});
     groups.get(key).offers.push(product);
   });

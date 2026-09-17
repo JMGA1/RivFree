@@ -384,7 +384,13 @@ async def _run_async():
         raise RuntimeError("Yury's: no se obtuvo ningún producto válido")
 
     pending = sum(p.get("precio_usd") is None for p in merged)
-    cached_prices = sum(p.get("datos_anteriores") and p.get("precio_usd") is not None for p in merged)
+    # p.get("datos_anteriores") puede devolver None. Usarlo directamente dentro
+    # de sum() produce int + NoneType. Contamos explícitamente registros válidos.
+    cached_prices = sum(
+        1
+        for p in merged
+        if bool(p.get("datos_anteriores")) and p.get("precio_usd") is not None
+    )
     metrics = catalog_metrics(merged)
     metrics.update({
         "categorias_totales": len(CATEGORIES),

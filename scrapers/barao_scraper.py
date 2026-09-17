@@ -25,8 +25,8 @@ from utils import (
 
 LAST_RUN_STATUS = {}
 BASE_URL = "https://www.baraofreeshop.com.br"
-DETAIL_RECOVERY_LIMIT = 300
-DETAIL_RECOVERY_BUDGET_SECONDS = 20 * 60
+DETAIL_RECOVERY_LIMIT = 500
+DETAIL_RECOVERY_BUDGET_SECONDS = 25 * 60
 
 RESERVED_PATHS = {
     "", "shop", "blog", "contato", "turista", "social", "trabalhe-conosco",
@@ -93,6 +93,34 @@ def discover_categories():
     return slugs
 
 
+
+def _discover_categories_rendered(page):
+    """Segunda fuente para categorías: menú renderizado por Chromium."""
+    try:
+        navigate(page, BASE_URL, attempts=2)
+        page.wait_for_timeout(700)
+        hrefs = page.locator('nav a[href], header a[href], [role="navigation"] a[href]').evaluate_all(
+            "els => els.map(a => a.href)"
+        )
+    except Exception as exc:
+        print(f"[Barao] [aviso] no se pudo validar el menú renderizado: {exc}")
+        return []
+
+    base_host = urlparse(BASE_URL).netloc.removeprefix("www.")
+    slugs = []
+    for href in hrefs:
+        try:
+            parsed = urlparse(urljoin(BASE_URL, href))
+        except Exception:
+            continue
+        if parsed.netloc.removeprefix("www.") != base_host:
+            continue
+        slug = parsed.path.strip("/")
+        if _valid_category_slug(slug) and slug not in slugs:
+            slugs.append(slug)
+    return slugs
+
+
 def _prices_from_text(text):
     """Devuelve (actual, anterior) leyendo sólo texto visible de una tarjeta."""
     if not text:
@@ -106,6 +134,67 @@ def _prices_from_text(text):
     original = prices[0] if len(prices) > 1 and prices[0] > current else None
     return current, original
 
+
+
+
+def _collapse_visible_text(value):
+    return " ".join((value or "").replace("\xa0", " ").split())
+
+
+def _fill_prices_from_listing_text(products, visible_text):
+    """Completa precios usando el texto realmente visible del listado.
+
+    Wix/Barão a veces renderiza nombre y precio como componentes hermanos, por
+    lo que page.content() y el product-item-root no siempre los dejan juntos.
+    Acá ubicamos los nombres visibles en orden y limitamos cada búsqueda hasta
+    el siguiente producto para no robar el precio de la tarjeta vecina.
+    """
+    text = _collapse_visible_text(visible_text)
+    if not text or not products:
+        return 0
+
+    folded = text.casefold()
+    located = []
+    cursor = 0
+
+    # Mantener el orden que entrega la grilla es importante: si hay nombres
+    # repetidos, buscamos cada aparición a partir de la anterior.
+    for index, product in enumerate(products):
+        name = _collapse_visible_text(product.get("nombre"))
+        if not name:
+            continue
+        needle = name.casefold()
+        pos = folded.find(needle, cursor)
+        if pos < 0:
+            pos = folded.find(needle)
+        if pos < 0:
+            continue
+        located.append((pos, index, name))
+        cursor = pos + len(name)
+
+    located.sort(key=lambda item: item[0])
+    observed = 0
+    for position, (pos, index, name) in enumerate(located):
+        start = pos + len(name)
+        end = min(len(text), start + 320)
+        if position + 1 < len(located):
+            next_pos = located[position + 1][0]
+            if next_pos > start:
+                end = min(end, next_pos)
+
+        segment = text[start:end]
+        current, original = _prices_from_text(segment)
+        if current is None:
+            continue
+
+        product = products[index]
+        product["precio_usd"] = current
+        product["precio_original_usd"] = original
+        product["en_oferta"] = bool(original and original > current)
+        product["precio_fuente"] = "listado_visible"
+        observed += 1
+
+    return observed
 
 def _name_from_text(text):
     text = " ".join((text or "").replace("\xa0", " ").split())
@@ -264,6 +353,13 @@ def scrape_category(slug, page):
                 found = _extract_rendered_products(page, category)
                 if not found:
                     raise RuntimeError("categoría sin productos legibles")
+
+                try:
+                    visible_text = page.locator("body").inner_text(timeout=10000)
+                except Exception:
+                    visible_text = ""
+                visible_prices = _fill_prices_from_listing_text(found, visible_text)
+
                 signature = tuple(sorted(p["url"] for p in found if p.get("url")))
                 if signature in signatures:
                     raise RuntimeError("página repetida")
@@ -273,7 +369,7 @@ def scrape_category(slug, page):
                 priced = sum(p.get("precio_usd") is not None for p in found)
                 print(
                     f"[Barao]   {slug} página {page_no}: {len(found)} productos, "
-                    f"{priced} con precio (DOM {loaded} links)"
+                    f"{priced} con precio ({visible_prices} confirmados por texto visible; DOM {loaded} links)"
                 )
 
                 next_button = page.locator('[data-hook="pagination__next"], a[rel="next"]').first
@@ -377,7 +473,15 @@ def run():
         })
 
         categories = discover_categories()
-        print(f"[Barao] {len(categories)} categorías descubiertas en el menú")
+        html_category_count = len(categories)
+        rendered_categories = _discover_categories_rendered(page)
+        for slug in rendered_categories:
+            if slug not in categories:
+                categories.append(slug)
+        print(
+            f"[Barao] {len(categories)} categorías únicas "
+            f"(HTML {html_category_count}, renderizado {len(rendered_categories)})"
+        )
         for slug in categories:
             print(f"[Barao] recorriendo categoria: {slug}")
             found = scrape_category(slug, page)

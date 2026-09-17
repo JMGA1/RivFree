@@ -13,3 +13,11 @@ test('invalid prices do not remove entries and observed Oprha prices are preserv
  assert.equal(result.products.length,3);assert.equal(result.groups.length,1);assert.equal(result.groups[0].offers[0].precio_usd,10);assert.equal(result.products[0].precio_usd,999);assert.equal(result.products[1].precio_usd,null);
 });
 test('duplicate URLs are removed from groups',()=>{const product=p('Acqua Example EDP 100ml');assert.equal(prepareCatalog({productos:[product,product]}).groups[0].offers.length,1);});
+
+test('different URLs from the same store never collapse into one group',()=>{
+ const a=p('JBL Flip 6 20W Preto','Barão Free Shop',100);
+ const b={...a,url:'https://barao.example/jbl-flip-6-preto-variant-2'};
+ const result=prepareCatalog({productos:[a,b]});
+ assert.equal(result.products.length,2);
+ assert.equal(result.groups.length,2);
+});
