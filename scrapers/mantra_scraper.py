@@ -69,69 +69,137 @@ async def _goto(page, url, retries=4, timeout_ms=NAV_TIMEOUT_MS):
 
 
 def _extract_listing_products_from_html(html, category):
-    """Extrae nombre/precio/imagen directamente de la grilla Ecwid."""
+    """Extrae una fila por tarjeta Ecwid usando selectores propios de Ecwid.
+
+    La versión anterior subía por ancestros desde cada enlace hasta encontrar
+    cualquier texto con ``U$``. Eso podía asociar a un producto el precio de un
+    bloque vecino o tomar el precio de comparación como vigente. Acá el precio
+    queda estrictamente limitado al ``.grid-product`` correspondiente.
+    """
     from bs4 import BeautifulSoup
 
     soup = BeautifulSoup(html, "html.parser")
     products = {}
-    for link in soup.find_all("a", href=True):
-        href = urljoin(BASE_URL, link.get("href", ""))
-        if not PRODUCT_RE.search(href):
+
+    # Ecwid documenta .grid-product como la tarjeta de catálogo y
+    # .grid-product__price-amount / .grid-product__price-value.ec-price-item
+    # como el precio mostrado en esa tarjeta.
+    cards = soup.select('.grid-product')
+
+    # Respaldo para snapshots/tests antiguos que no traigan la clase exacta.
+    if not cards:
+        cards = []
+        seen = set()
+        for link in soup.find_all('a', href=True):
+            href = urljoin(BASE_URL, link.get('href', ''))
+            if not PRODUCT_RE.search(href):
+                continue
+            node = link
+            candidate = link
+            for _ in range(6):
+                if node is None:
+                    break
+                urls = {
+                    urljoin(BASE_URL, a.get('href', ''))
+                    for a in node.find_all('a', href=True)
+                    if PRODUCT_RE.search(urljoin(BASE_URL, a.get('href', '')))
+                }
+                if len(urls) > 1:
+                    break
+                candidate = node
+                if node.select_one('.grid-product__price, .grid-product__price-amount, .grid-product__price-value'):
+                    break
+                node = node.parent
+            identity = id(candidate)
+            if identity not in seen:
+                seen.add(identity)
+                cards.append(candidate)
+
+    for card in cards:
+        links = [
+            a for a in card.find_all('a', href=True)
+            if PRODUCT_RE.search(urljoin(BASE_URL, a.get('href', '')))
+        ]
+        if not links:
             continue
-        if urlparse(href).netloc.removeprefix("www.") != "mantrafreeshop.com":
+        link = links[0]
+        href = urljoin(BASE_URL, link.get('href', '')).split('#')[0]
+        if urlparse(href).netloc.removeprefix('www.') != 'mantrafreeshop.com':
             continue
 
-        container = link
-        best = link
-        for _ in range(7):
-            if container is None:
-                break
-            product_urls = {
-                urljoin(BASE_URL, a.get("href", ""))
-                for a in container.find_all("a", href=True)
-                if PRODUCT_RE.search(urljoin(BASE_URL, a.get("href", "")))
-            }
-            if len(product_urls) > 1:
-                break
-            best = container
-            if PRICE_RE.search(container.get_text(" ", strip=True)):
-                break
-            container = container.parent
-
-        text = best.get_text(" ", strip=True)
-        prices = [clean_price(m.group(0)) for m in PRICE_RE.finditer(text)]
-        prices = [p for p in prices if p is not None and p > 0]
-        current = prices[-1] if prices else None
-        original = prices[0] if len(prices) > 1 and prices[0] > current else None
-
-        name = link.get_text(" ", strip=True)
-        img = best.find("img") if best else None
+        title = card.select_one('.grid-product__title-inner, .grid-product__title')
+        name = title.get_text(' ', strip=True) if title else ''
+        img = card.find('img')
         if not name and img:
-            name = img.get("alt", "").strip()
-        # En Ecwid el enlace puede contener precio+nombre; quitamos los importes.
-        if name:
-            name = PRICE_RE.sub("", name).strip(" -–|:")
+            name = img.get('alt', '').strip()
         if not name:
-            title = best.select_one(".grid-product__title, .ec-store__product-page--title, h2, h3") if best else None
-            name = title.get_text(" ", strip=True) if title else None
+            # Solo usamos el texto del enlace como último respaldo y limpiamos
+            # cualquier importe para que no contamine el nombre.
+            name = PRICE_RE.sub('', link.get_text(' ', strip=True)).strip(' -–|:')
         if not name:
             continue
+
+        current = None
+        original = None
+
+        # Fuente primaria: clases oficiales del precio actual en la grilla.
+        current_tag = card.select_one(
+            '.grid-product__price-amount, '
+            '.grid-product__price-value.ec-price-item'
+        )
+        if current_tag:
+            current = clean_price(current_tag.get_text(' ', strip=True))
+
+        # Si existe precio anterior/comparativo, nunca debe convertirse en el
+        # precio vigente del producto.
+        compare_tag = card.select_one(
+            '.grid-product__price-compare, '
+            '.grid-product__price-compare-at, '
+            '.grid-product__price-old, '
+            '.grid-product__price--compare'
+        )
+        if compare_tag:
+            original = clean_price(compare_tag.get_text(' ', strip=True))
+
+        # Fallback estrictamente dentro del bloque de precio de ESTA tarjeta.
+        # Si hay dos importes y no hay semántica suficiente, el menor es el
+        # precio vigente y el mayor el precio anterior; es la relación válida
+        # para una rebaja y evita elegir el compare-at por posición textual.
+        price_box = card.select_one('.grid-product__price')
+        if price_box:
+            observed = [
+                clean_price(match.group(0))
+                for match in PRICE_RE.finditer(price_box.get_text(' ', strip=True))
+            ]
+            observed = [value for value in observed if value is not None and value > 0]
+            if current is None and observed:
+                current = min(observed)
+            if original is None and len(observed) > 1 and current is not None:
+                higher = [value for value in observed if value > current]
+                original = max(higher) if higher else None
+
+        if current is not None and current <= 0:
+            current = None
+        if original is not None and (current is None or original <= current):
+            original = None
 
         image = None
         if img:
-            image = img.get("data-src") or img.get("src")
+            image = img.get('data-src') or img.get('data-lazy-src') or img.get('src')
+
         product = {
-            "tienda": "Mantra Free Shop",
-            "nombre": name,
-            "precio_usd": current,
-            "precio_original_usd": original,
-            "en_oferta": bool(original and current and original > current),
-            "categoria": category,
-            "url": href.split("#")[0],
-            "imagen": image,
-            "precio_fuente": "listado" if current is not None else None,
+            'tienda': 'Mantra Free Shop',
+            'nombre': name,
+            'precio_usd': current,
+            'precio_original_usd': original,
+            'en_oferta': bool(original and current and original > current),
+            'categoria': category,
+            'url': href,
+            'imagen': image,
+            'precio_fuente': 'listado' if current is not None else None,
         }
-        products[product["url"]] = merge_product_records(products.get(product["url"]), product)
+        products[href] = merge_product_records(products.get(href), product)
+
     return list(products.values())
 
 

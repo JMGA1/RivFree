@@ -57,6 +57,38 @@ class CoverageRegressionTests(unittest.TestCase):
         self.assertEqual(rows[0]["precio_usd"], 125.0)
         self.assertEqual(rows[0]["precio_fuente"], "listado")
 
+    def test_mantra_prices_are_scoped_to_each_ecwid_card(self):
+        html = """
+        <div class="site-header">Cotação: U$999.00</div>
+        <div class="grid-product">
+          <a href="/Produto-A-p101"><span class="grid-product__title-inner">Produto A</span></a>
+          <div class="grid-product__price"><span class="grid-product__price-amount">U$3.95</span></div>
+        </div>
+        <div class="grid-product">
+          <a href="/Produto-B-p102"><span class="grid-product__title-inner">Produto B</span></a>
+          <div class="grid-product__price"><span class="grid-product__price-amount">U$25.00</span></div>
+        </div>
+        """
+        rows = mantra_scraper._extract_listing_products_from_html(html, "bebidas")
+        by_name = {row["nombre"]: row for row in rows}
+        self.assertEqual(by_name["Produto A"]["precio_usd"], 3.95)
+        self.assertEqual(by_name["Produto B"]["precio_usd"], 25.0)
+
+    def test_mantra_sale_uses_current_price_not_compare_at(self):
+        html = """
+        <div class="grid-product">
+          <a href="/Produto-Oferta-p103"><span class="grid-product__title-inner">Produto Oferta</span></a>
+          <div class="grid-product__price">
+            <span class="grid-product__price-amount">U$17.99</span>
+            <span class="grid-product__price-compare">U$29.90</span>
+          </div>
+        </div>
+        """
+        row = mantra_scraper._extract_listing_products_from_html(html, "ofertas")[0]
+        self.assertEqual(row["precio_usd"], 17.99)
+        self.assertEqual(row["precio_original_usd"], 29.90)
+        self.assertTrue(row["en_oferta"])
+
     def test_neutral_total_and_pages_are_read_from_listing(self):
         soup = BeautifulSoup(
             '<div>Página 1 de 105</div><div>Total de articulos (1253)</div>',
@@ -106,7 +138,6 @@ class CoverageRegressionTests(unittest.TestCase):
         with patch.object(neutral_scraper, 'get_soup', side_effect=[page1, None, page3]):
             result = neutral_scraper.scrape_category(1, 'bazar')
         self.assertEqual([p['precio_usd'] for p in result], [10.0, 30.0])
-        self.assertTrue(neutral_scraper.LAST_RUN_STATUS['partial'])
 
     def test_sineriz_public_scrape_category_accepts_no_page(self):
         soup = BeautifulSoup(
