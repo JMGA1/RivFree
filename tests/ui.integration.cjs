@@ -118,16 +118,14 @@ const fixture = {
     assert.ok(d.querySelector('.card'), 'Catalog renders');
     assert.equal(d.querySelector('#search').value, 'JBL');
 
-    // La UI de tiendas debe ser únicamente texto.
-    // No deben existir logos de terceros.
+    // No deben existir logos de free shops en filtros ni tarjetas.
     assert.equal(
       d.querySelectorAll('.store-filter-chip img, .card-store img').length,
       0,
       'Store UI does not contain logos'
     );
 
-    // La etiqueta de la tienda debe ser independiente de la acción
-    // que abre el producto para evitar ejecutar dos acciones a la vez.
+    // La etiqueta de tienda no debe estar dentro de la acción del producto.
     const storeTag = d.querySelector('.card .card-store');
 
     assert.ok(storeTag, 'Store tag renders');
@@ -138,7 +136,7 @@ const fixture = {
       'Store tag is independent from product action'
     );
 
-    // Click en la tienda: debe abrir únicamente información de la tienda.
+    // Click en la tienda: debe abrir solamente la información de la tienda.
     storeTag.click();
 
     const storeDialog = d.querySelector('#storeDialog');
@@ -151,8 +149,7 @@ const fixture = {
       'Store tag opens only store information'
     );
 
-    // CORREGIDO:
-    // antes buscaba #closeStoreDialog, pero el botón real es #storeDialogClose.
+    // Botón correcto según index.html.
     const storeDialogClose = d.querySelector('#storeDialogClose');
 
     assert.ok(
@@ -219,7 +216,7 @@ const fixture = {
       'BRL conversion renders'
     );
 
-    // IndexedDB: si la versión no cambió, no debe bajar products.json nuevamente.
+    // IndexedDB: si la versión no cambió, no debe volver a descargar products.json.
     const productRequestsBefore = calls.filter(url =>
       url.includes('products.json')
     ).length;
@@ -231,7 +228,7 @@ const fixture = {
       productRequestsBefore
     );
 
-    // Modo offline: debe conservar el catálogo anterior.
+    // Modo offline: debe seguir usando el catálogo guardado.
     w.fetch = async () => {
       throw Error('offline');
     };
@@ -250,7 +247,6 @@ const fixture = {
     );
   } finally {
     dom?.window.close();
-
     server.closeAllConnections();
 
     await new Promise(resolve => server.close(resolve));
