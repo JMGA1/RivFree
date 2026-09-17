@@ -36,8 +36,6 @@ jobs:
     steps:
       - name: Descargar proyecto
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Preparar Python
         uses: actions/setup-python@v5
@@ -62,45 +60,29 @@ jobs:
           npm run test:ui
 
       - name: Instalar navegador para scrapers
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
-        run: |
-          playwright install --with-deps chromium
+        if: github.event_name == 'schedule' || inputs.actualizar_precios == true
+        run: playwright install --with-deps chromium
 
       - name: Ejecutar scrapers
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
-        run: |
-          python scrapers/run_all.py
+        if: github.event_name == 'schedule' || inputs.actualizar_precios == true
+        run: python scrapers/run_all.py
 
       - name: Preparar versión y datos públicos
-        run: |
-          python scrapers/publish_data.py
+        run: python scrapers/publish_data.py
 
       - name: Guardar productos actualizados
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        if: github.event_name == 'schedule' || inputs.actualizar_precios == true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           git add data/
-
-          if git diff --staged --quiet; then
-            echo "No hubo cambios en los datos."
-            exit 0
+          if ! git diff --staged --quiet; then
+            git commit -m "Actualizar precios"
+            git push
           fi
 
-          git commit -m "Actualizar precios"
-
-          echo "Sincronizando con la versión más reciente de main..."
-          git fetch origin main
-
-          echo "Reaplicando los datos actualizados sobre main..."
-          git rebase origin/main
-
-          echo "Subiendo catálogo actualizado..."
-          git push origin HEAD:main
-
       - name: Alertar fallas repetidas
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        if: github.event_name == 'schedule' || inputs.actualizar_precios == true
         uses: actions/github-script@v7
         with:
           script: |
