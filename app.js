@@ -96,8 +96,11 @@ document.getElementById('grid').addEventListener('click',event=>{
  const target=event.target.closest('[data-action]');
  if(!target||!event.currentTarget.contains(target))return;
  if(target.dataset.action==='store'){
+  // Store chips are informational controls only. They must never trigger
+  // the product link / comparison action underneath them.
   event.preventDefault();
   event.stopPropagation();
+  event.stopImmediatePropagation();
   openStoreInfo(target.dataset.storeName);
   return;
  }
@@ -388,6 +391,14 @@ function createStoreTag(storeName) {
   button.appendChild(label);
   button.setAttribute('aria-label', tr(`Ver información de ${storeName}`));
   button.dataset.action='store';button.dataset.storeName=storeName;
+  // Handle the store chip at the control itself so the click cannot bubble
+  // into a product link/card action in any browser.
+  button.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    openStoreInfo(storeName);
+  });
   return button;
 }
 
@@ -430,9 +441,12 @@ function createProductCard(group) {
     addImagePlaceholder(imageStage);
   }
   imageBox.appendChild(imageStage);
+
+  // Keep store controls OUTSIDE the product anchor/button. Nesting a button
+  // inside a link is invalid interactive HTML and can fire both actions in
+  // some browsers. As a sibling overlay, clicking a store only opens its info.
   const overlay=document.createElement('span');overlay.className='store-tags store-tags-overlay';
   stores.forEach(storeName=>overlay.appendChild(createStoreTag(storeName)));
-  imageBox.appendChild(overlay);
 
   const body = document.createElement('div');
   body.className = 'card-body';
@@ -498,7 +512,7 @@ function createProductCard(group) {
       el.dataset.action='external';
     }
   });
-  card.append(imageBox, body);
+  card.append(imageBox, overlay, body);
 
   if (storeCount > 1) {
     const button = document.createElement('button');

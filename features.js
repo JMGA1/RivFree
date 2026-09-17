@@ -62,7 +62,7 @@ document.getElementById('openShoppingList').addEventListener('click',()=>{
  if(favorites.size){const totalNode=document.createElement('p');totalNode.textContent='Subtotal orientativo (1 unidad por producto con precio) / Subtotal estimado: '+priceLabel(total);container.append(totalNode);}
  const dialog=document.getElementById('shoppingDialog');if(!dialog.open)dialog.showModal();
 });
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(console.warn));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(console.warn));
 let priceHistoryPromise;
 async function openPriceHistory(offers){
  const dialog=document.getElementById('historyDialog'),container=document.getElementById('historyContent');

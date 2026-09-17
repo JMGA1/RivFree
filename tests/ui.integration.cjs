@@ -30,6 +30,13 @@ const fixture={actualizado:'2026-09-17T00:00:00Z',resumen:[],productos:[
   const w=dom.window,d=w.document;
   for(let i=0;i<200&&!d.querySelector('.card');i++)await new Promise(r=>setTimeout(r,100));
   assert.ok(d.querySelector('.card'),'Catalog renders');assert.equal(d.querySelector('#search').value,'JBL');
+  // Store UI must be text-only (no third-party logos), and store tags must not
+  // be nested inside the product anchor/button, which could trigger two actions.
+  assert.equal(d.querySelectorAll('.store-filter-chip img,.card-store img').length,0);
+  const storeTag=d.querySelector('.card .card-store');
+  assert.ok(storeTag,'Store tag renders');
+  assert.equal(Boolean(storeTag.closest('.product-target')),false,'Store tag is independent from product action');
+  storeTag.click();assert.equal(d.querySelector('#storeDialog').open,true,'Store tag opens only store information');d.querySelector('#closeStoreDialog').click();
   d.querySelector('[data-action=favorite]').click();d.querySelector('#favoritesOnly').checked=true;d.querySelector('#favoritesOnly').dispatchEvent(new w.Event('change'));
   assert.equal(d.querySelectorAll('.card').length,1);assert.ok(w.location.search.includes('favorites=1'));
   d.querySelector('#openShoppingList').click();assert.ok(d.querySelector('#shoppingList').textContent.includes('Subtotal'));d.querySelector('#closeShoppingList').click();

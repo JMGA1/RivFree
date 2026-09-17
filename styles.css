@@ -689,7 +689,7 @@ body{min-height:100vh;}
 
 /* Product cards are the visual focus. */
 .grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:20px;margin-top:14px;}
-.card{border-radius:var(--rf-radius);background:var(--surface);border:1px solid var(--line);box-shadow:var(--rf-card-shadow);overflow:hidden;isolation:isolate;}
+.card{position:relative;border-radius:var(--rf-radius);background:var(--surface);border:1px solid var(--line);box-shadow:var(--rf-card-shadow);overflow:hidden;isolation:isolate;}
 .card:hover{transform:translateY(-3px);box-shadow:0 15px 36px rgba(31,28,35,.13);}
 .card-img,.card-img.product-target,:root[data-theme="dark"] .card-img{position:relative;height:205px;padding:12px;background:transparent!important;overflow:visible;}
 .card-image-stage{display:flex;width:100%;height:100%;align-items:center;justify-content:center;background:#fff;border-radius:14px;border:1px solid rgba(24,24,30,.08);overflow:hidden;padding:14px;}
@@ -855,4 +855,14 @@ body{min-height:100vh;}
 :root:not([data-theme="dark"]) .field select:hover,
 :root:not([data-theme="dark"]) .search-row input:hover{
   border-color:#BEC5CF;
+}
+
+
+/* Privacy/branding rule: RivFree never renders third-party store logos in its UI. */
+.store-filter-chip img,
+.card-store img,
+.offer-store img,
+.store-info img.store-logo,
+.store-logo{
+  display:none!important;
 }
