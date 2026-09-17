@@ -89,6 +89,32 @@ class CoverageRegressionTests(unittest.TestCase):
         self.assertEqual(row["precio_original_usd"], 29.90)
         self.assertTrue(row["en_oferta"])
 
+
+    def test_mantra_split_thousands_price_is_not_truncated_to_one(self):
+        html = """
+        <div class="grid-product">
+          <a href="/Iphone-17-p999"><span class="grid-product__title-inner">iPhone 17</span></a>
+          <div class="grid-product__price">
+            <span class="grid-product__price-amount"><span>U$</span><span>1</span><span>149</span><span>.00</span></span>
+          </div>
+        </div>
+        """
+        row = mantra_scraper._extract_listing_products_from_html(html, "celulares")[0]
+        self.assertEqual(row["precio_usd"], 1149.0)
+
+    def test_mantra_detail_split_thousands_price_is_not_truncated_to_one(self):
+        soup = BeautifulSoup(
+            '<h1 class="product-details__product-title">iPhone 17</h1>'
+            '<div class="product-details__product-price">'
+            '<span class="details-product-price__value"><span>U$</span><span>1</span><span>149</span><span>.00</span></span>'
+            '</div>',
+            'html.parser',
+        )
+        product = mantra_scraper._extract_detail_soup(
+            soup, 'https://mantrafreeshop.com/Iphone-17-p999', 'celulares'
+        )
+        self.assertEqual(product['precio_usd'], 1149.0)
+
     def test_neutral_total_and_pages_are_read_from_listing(self):
         soup = BeautifulSoup(
             '<div>Página 1 de 105</div><div>Total de articulos (1253)</div>',

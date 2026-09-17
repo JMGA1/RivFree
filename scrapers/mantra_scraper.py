@@ -33,6 +33,63 @@ MAX_DETAIL_RECOVERY = 120
 LAST_RUN_STATUS = {}
 
 
+
+
+def _extract_usd_prices(raw_text):
+    """Parsea importes USD aunque Ecwid divida los miles entre varios spans.
+
+    Ejemplos reales posibles en el DOM renderizado:
+      ``U$1149.00``
+      ``U$ 1 149.00``
+      ``U$ 1 149 . 00``
+
+    ``clean_price`` funciona bien cuando el número llega continuo, pero el
+    ``get_text(" ")`` de BeautifulSoup puede insertar espacios entre spans y
+    convertir 1149.00 en ``1 149 . 00``. En ese caso el regex normal veía solo
+    el primer ``1`` y RivFree terminaba mostrando USD 1.00.
+    """
+    if not raw_text:
+        return []
+    text = str(raw_text).replace("\xa0", " ")
+    pattern = re.compile(r"(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*([0-9][0-9\s.,]*)", re.I)
+    values = []
+    for match in pattern.finditer(text):
+        numeric = re.sub(r"\s+", "", match.group(1)).strip(".,")
+        if not numeric:
+            continue
+        value = clean_price("U$" + numeric)
+        if value is not None and value > 0:
+            values.append(value)
+    return values
+
+
+def _price_from_node(node):
+    """Extrae el precio de un nodo Ecwid usando atributos y texto visible."""
+    if node is None:
+        return None
+
+    # Ecwid y plantillas intermedias pueden exponer el valor crudo en atributos.
+    # Preferimos esos valores porque no sufren separación visual en spans.
+    for attr in (
+        "data-price", "data-price-value", "data-product-price", "data-ec-price",
+        "data-value", "content", "aria-label",
+    ):
+        raw = node.get(attr) if hasattr(node, "get") else None
+        if not raw:
+            continue
+        raw = str(raw).strip()
+        values = _extract_usd_prices(raw)
+        if values:
+            return values[0]
+        compact = re.sub(r"\s+", "", raw)
+        if re.fullmatch(r"[0-9]+(?:[.,][0-9]{1,2})?", compact):
+            value = clean_price("U$" + compact)
+            if value is not None and value > 0:
+                return value
+
+    values = _extract_usd_prices(node.get_text(" ", strip=True))
+    return values[0] if values else None
+
 def _slug_from_url(url):
     path = urlparse(url).path.strip("/")
     return re.sub(r"-c\d+$", "", path) or "varios"
@@ -148,7 +205,7 @@ def _extract_listing_products_from_html(html, category):
             '.grid-product__price-value.ec-price-item'
         )
         if current_tag:
-            current = clean_price(current_tag.get_text(' ', strip=True))
+            current = _price_from_node(current_tag)
 
         # Si existe precio anterior/comparativo, nunca debe convertirse en el
         # precio vigente del producto.
@@ -159,7 +216,7 @@ def _extract_listing_products_from_html(html, category):
             '.grid-product__price--compare'
         )
         if compare_tag:
-            original = clean_price(compare_tag.get_text(' ', strip=True))
+            original = _price_from_node(compare_tag)
 
         # Fallback estrictamente dentro del bloque de precio de ESTA tarjeta.
         # Si hay dos importes y no hay semántica suficiente, el menor es el
@@ -167,11 +224,7 @@ def _extract_listing_products_from_html(html, category):
         # para una rebaja y evita elegir el compare-at por posición textual.
         price_box = card.select_one('.grid-product__price')
         if price_box:
-            observed = [
-                clean_price(match.group(0))
-                for match in PRICE_RE.finditer(price_box.get_text(' ', strip=True))
-            ]
-            observed = [value for value in observed if value is not None and value > 0]
+            observed = _extract_usd_prices(price_box.get_text(' ', strip=True))
             if current is None and observed:
                 current = min(observed)
             if original is None and len(observed) > 1 and current is not None:
@@ -357,14 +410,15 @@ def _extract_detail_soup(soup, url, category):
         ".product-details__product-price .details-product-price__compare-at-price"
     )
 
-    price = clean_price(price_tag.get_text(" ", strip=True)) if price_tag else None
+    price = _price_from_node(price_tag) if price_tag else None
     if price is None and price_scope is not None:
-        matches = [clean_price(m.group(0)) for m in PRICE_RE.finditer(price_scope.get_text(" ", strip=True))]
-        matches = [value for value in matches if value is not None and value > 0]
+        matches = _extract_usd_prices(price_scope.get_text(" ", strip=True))
         if matches:
-            price = matches[-1]
+            # En una ficha sin selector semántico específico, el primer precio
+            # visible del bloque principal es el vigente.
+            price = matches[0]
 
-    original = clean_price(old_tag.get_text(" ", strip=True)) if old_tag else None
+    original = _price_from_node(old_tag) if old_tag else None
     if original is not None and (price is None or original <= price):
         original = None
 
