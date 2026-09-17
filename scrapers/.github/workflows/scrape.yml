@@ -1,0 +1,156 @@
+name: Actualizar precios y publicar RivFree
+
+on:
+  push:
+    branches: ["main"]
+
+  schedule:
+    # Diario a las 08:15 UTC = 05:15 en Uruguay
+    - cron: "15 8 * * *"
+
+  workflow_dispatch:
+    inputs:
+      actualizar_precios:
+        description: "Ejecutar los scrapers antes de publicar"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: rivfree-pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONUNBUFFERED: "1"
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements.txt
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Verificar lógica y scrapers
+        run: |
+          python -m unittest discover -s tests -v
+          npm ci
+          npm test
+          npm run test:ui
+
+      - name: Instalar navegador para scrapers
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        run: |
+          playwright install --with-deps chromium
+
+      - name: Ejecutar scrapers
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        timeout-minutes: 150
+        run: |
+          python scrapers/run_all.py
+
+      - name: Preparar versión y datos públicos
+        run: |
+          python scrapers/publish_data.py
+
+      # Guardamos el resultado del scraping aunque falle Git posteriormente.
+      - name: Guardar respaldo del scraping
+        if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true))
+        uses: actions/upload-artifact@v4
+        with:
+          name: rivfree-datos-${{ github.run_id }}
+          path: data/
+          retention-days: 7
+
+      - name: Guardar productos actualizados
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/
+
+          if git diff --staged --quiet; then
+            echo "No hubo cambios en los datos."
+            exit 0
+          fi
+
+          git commit -m "Actualizar precios"
+
+          for intento in 1 2 3 4 5; do
+            echo "Intento $intento de publicación..."
+
+            git fetch origin main
+
+            if ! git rebase origin/main; then
+              echo "No se pudo reaplicar el commit sobre main."
+              git rebase --abort
+              exit 1
+            fi
+
+            if git push origin HEAD:main; then
+              echo "Datos publicados correctamente."
+              exit 0
+            fi
+
+            echo "main cambió mientras se publicaban los datos."
+            echo "Esperando antes de volver a intentar..."
+            sleep 10
+          done
+
+          echo "No se pudo publicar después de 5 intentos."
+          exit 1
+
+      - name: Alertar fallas repetidas
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = require('./.github/scraper-alerts.cjs');
+            await run({github, context});
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar archivos públicos
+        run: |
+          mkdir -p _site
+          cp index.html styles.css *.js manifest.webmanifest social-card.png _site/
+          cp -r icons _site/icons
+          mkdir -p _site/data
+          cp data/products.json data/meta.json data/stores.json data/exchange.json data/price-history.json _site/data/
+
+      - name: Subir archivos de la página
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "_site"
+
+      - name: Publicar RivFree
+        id: deployment
+        uses: actions/deploy-pages@v4
