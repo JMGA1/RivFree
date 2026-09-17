@@ -144,13 +144,32 @@ def _scrape_category_with_stats(category_id, slug):
 
 
 def scrape_category(category_id, slug):
-    """API histórica: devuelve solamente la lista de productos.
+    """API histórica: devuelve la lista y conserva el estado de cobertura.
 
-    El detalle de cobertura se usa internamente en ``run``. Mantener esta
-    firma evita romper tests/utilidades que ya llamaban scrape_category()
-    directamente.
+    Algunos consumidores llaman esta función directamente y esperan que
+    ``LAST_RUN_STATUS`` refleje si hubo páginas fallidas. ``run()`` usa la
+    variante interna con estadísticas para agregar todas las categorías.
     """
-    products, _ = _scrape_category_with_stats(category_id, slug)
+    global LAST_RUN_STATUS
+    products, stats = _scrape_category_with_stats(category_id, slug)
+    warning = None
+    if stats.get("parcial"):
+        warning = (
+            f"Neutral parcial en {slug}: "
+            f"{len(stats.get('paginas_fallidas') or [])} páginas fallidas"
+        )
+    LAST_RUN_STATUS = {
+        "partial": bool(stats.get("parcial")),
+        "warning": warning,
+        "metrics": {
+            "categoria": slug,
+            "paginas_esperadas": stats.get("paginas_esperadas", 0),
+            "paginas_fallidas": len(stats.get("paginas_fallidas") or []),
+            "productos_esperados": stats.get("productos_esperados"),
+            "productos_observados": stats.get("productos_observados", len(products)),
+            "cobertura": stats.get("cobertura"),
+        },
+    }
     return products
 
 

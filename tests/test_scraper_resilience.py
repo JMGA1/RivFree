@@ -106,6 +106,7 @@ class CoverageRegressionTests(unittest.TestCase):
         with patch.object(neutral_scraper, 'get_soup', side_effect=[page1, None, page3]):
             result = neutral_scraper.scrape_category(1, 'bazar')
         self.assertEqual([p['precio_usd'] for p in result], [10.0, 30.0])
+        self.assertTrue(neutral_scraper.LAST_RUN_STATUS['partial'])
 
     def test_sineriz_public_scrape_category_accepts_no_page(self):
         soup = BeautifulSoup(
