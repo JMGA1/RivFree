@@ -1,16 +1,20 @@
 """Scraper de Yury's: precios del listado primero, fichas solo como respaldo."""
 import asyncio
+import re
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent))
 from utils import (
+    PRICE_RE,
     catalog_metrics,
-    collect_wix_category_async,
+    clean_price,
     dedupe_products_prefer_complete,
     extract_wix_detail_price,
+    extract_wix_products,
     finalize_scrape,
     load_previous_store,
+    merge_product_records,
 )
 
 BASE_URL = "https://www.yurysfreeshop.com"
@@ -35,6 +39,7 @@ DETAIL_TIMEOUT_MS = 18000
 # Si el listado cambia y faltan demasiados precios, recuperamos una cantidad
 # acotada y el resto queda explícitamente como pendiente.
 MAX_DETAIL_RECOVERY = 300
+MAX_CATEGORY_PAGES = 300
 LAST_RUN_STATUS = {}
 
 
@@ -57,23 +62,179 @@ async def _goto(page, url, retries=3, timeout_ms=NAV_TIMEOUT_MS):
     raise RuntimeError(f"no se pudo cargar {url}: {last}")
 
 
+def _collapse_visible_text(value):
+    return " ".join((value or "").replace("\xa0", " ").split())
+
+
+def _price_from_product_segment(segment):
+    """Extrae únicamente precios visibles dentro del bloque textual de un producto.
+
+    Yury/Wix a veces renderiza el nombre y el precio en componentes hermanos. El
+    HTML serializado por page.content() puede dejar el precio fuera del
+    product-item-root aunque visualmente esté en la misma tarjeta. El texto
+    visible del navegador sí conserva la relación por orden.
+    """
+    values = []
+    for match in PRICE_RE.finditer(segment or ""):
+        price = clean_price(match.group(0))
+        if price is not None and price > 0:
+            values.append(price)
+    if not values:
+        return None, None
+
+    lowered = (segment or "").casefold()
+    has_sale = any(token in lowered for token in (
+        "preço promocional", "preco promocional", "precio promocional",
+        "sale price", "preço normal", "preco normal", "precio normal",
+    ))
+    if has_sale and len(values) >= 2:
+        current = values[-1]
+        original = values[0] if values[0] > current else None
+        return current, original
+    return values[0], None
+
+
+def _fill_prices_from_listing_text(products, visible_text):
+    """Completa precios usando el texto *renderizado* del listado de Yury.
+
+    La búsqueda se limita desde el nombre del producto hasta el próximo marcador
+    de "Visualização rápida" (o un máximo corto), por lo que un producto sin
+    precio no puede apropiarse del precio de la tarjeta siguiente.
+    """
+    text = _collapse_visible_text(visible_text)
+    folded = text.casefold()
+    markers = (
+        "visualização rápida", "visualizacao rapida", "visualización rápida",
+        "visualizacion rapida", "quick view", "vista rápida", "vista rapida",
+    )
+    observed = 0
+
+    for product in products:
+        name = _collapse_visible_text(product.get("nombre"))
+        if not name:
+            continue
+        needle = name.casefold()
+        search_at = 0
+        observation = None
+
+        while True:
+            pos = folded.find(needle, search_at)
+            if pos < 0:
+                break
+            after = pos + len(needle)
+            max_end = min(len(text), after + 320)
+            next_marker = max_end
+            for marker in markers:
+                marker_pos = folded.find(marker, after, max_end)
+                if marker_pos >= 0:
+                    next_marker = min(next_marker, marker_pos)
+            segment = text[after:next_marker]
+            current, original = _price_from_product_segment(segment)
+            if current is not None:
+                observation = (current, original)
+                break
+            search_at = after
+
+        if observation is None:
+            continue
+
+        current, original = observation
+        product["precio_usd"] = current
+        product["precio_original_usd"] = original
+        product["en_oferta"] = bool(original and original > current)
+        product["precio_fuente"] = "listado_visible"
+        observed += 1
+
+    return observed
+
+
 async def _scrape_category(context, slug):
+    """Recorre Yury por ?page=N y guarda cada página antes de avanzar.
+
+    Yury expone páginas numeradas aunque el frontend muestre "Ver mais". Usar
+    URLs numeradas evita depender del estado interno del widget Wix y nos deja
+    leer el texto visible de cada lote antes de cambiar de página.
+    """
+    from bs4 import BeautifulSoup
+
     page = await context.new_page()
-    url = f"{BASE_URL}/{slug}"
+    products = {}
+    signatures = set()
+    warnings = []
+    consecutive_failures = 0
+    pages_ok = 0
+
     try:
-        await _goto(page, url, retries=3)
-        try:
-            await page.wait_for_selector('a[href*="/product-page/"], [data-hook="product-item-root"]', timeout=25000)
-        except Exception:
-            pass
-        products, partial_warning = await collect_wix_category_async(
-            page, "Yury's Free Shop", slug, BASE_URL, with_status=True
-        )
-        if not products:
-            raise RuntimeError("categoría sin productos legibles")
-        return slug, products, partial_warning
-    except Exception as exc:
-        return slug, [], str(exc)
+        for page_no in range(1, MAX_CATEGORY_PAGES + 1):
+            url = f"{BASE_URL}/{slug}"
+            if page_no > 1:
+                url += f"?page={page_no}"
+
+            try:
+                await _goto(page, url, retries=3)
+            except Exception as exc:
+                message = str(exc)
+                # En paginación directa un 404 después de páginas válidas es un
+                # final normal del catálogo, no una categoría fallida.
+                if pages_ok and "HTTP 404" in message:
+                    break
+                if not pages_ok:
+                    return slug, [], message
+                warnings.append(f"página {page_no} no respondió: {message}")
+                consecutive_failures += 1
+                if consecutive_failures >= 2:
+                    break
+                continue
+
+            consecutive_failures = 0
+            try:
+                await page.wait_for_selector(
+                    'a[href*="/product-page/"], [data-hook="product-item-root"]',
+                    timeout=25000,
+                )
+            except Exception:
+                pass
+
+            # Wix suele pintar el precio unos instantes después del enlace.
+            await page.wait_for_timeout(900)
+            soup = BeautifulSoup(await page.content(), "html.parser")
+            found = extract_wix_products(soup, "Yury's Free Shop", slug, BASE_URL)
+
+            if not found:
+                if pages_ok:
+                    break
+                return slug, [], "categoría sin productos legibles"
+
+            signature = tuple(sorted(p.get("url") for p in found if p.get("url")))
+            if signature in signatures:
+                break
+            signatures.add(signature)
+
+            try:
+                visible_text = await page.locator("body").inner_text(timeout=10000)
+            except Exception:
+                visible_text = ""
+            visible_prices = _fill_prices_from_listing_text(found, visible_text)
+
+            for item in found:
+                url_key = item.get("url")
+                if url_key:
+                    products[url_key] = merge_product_records(products.get(url_key), item)
+
+            pages_ok += 1
+            with_price = sum(p.get("precio_usd") is not None for p in found)
+            print(
+                f"[Yury's] {slug} página {page_no}: {len(found)} productos; "
+                f"{with_price} con precio ({visible_prices} confirmados por texto visible)"
+            )
+        else:
+            warnings.append(f"se alcanzó el límite de {MAX_CATEGORY_PAGES} páginas")
+
+        rows = list(products.values())
+        if not rows:
+            return slug, [], "categoría sin productos legibles"
+        warning = "; ".join(warnings) if warnings else None
+        return slug, rows, warning
     finally:
         await page.close()
 
