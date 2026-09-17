@@ -25,3 +25,25 @@ class PublishTests(unittest.TestCase):
             output={'productos':[{'tienda':'Oprha Free Shop','precio_usd':99}],'resumen':[]}
             publish(tmp,output)
             self.assertEqual(output['productos'][0]['precio_usd'], 99)
+
+# Partial store updates are visible to the UI but should not count as a full
+# scraper failure for the repeated-failure alert.
+class PublishPartialTests(unittest.TestCase):
+    def test_partial_update_does_not_increment_full_failure_streak(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            output = {
+                'actualizado': '2026-09-17',
+                'intento_actualizacion': '2026-09-17',
+                'resumen': [{
+                    'tienda': 'DFA',
+                    'error': '2 paginas fallidas',
+                    'datos_anteriores': True,
+                    'parcial': True,
+                }],
+                'productos': [],
+            }
+            publish(directory, output, {'DFA'})
+            state = json.loads((directory / 'health.json').read_text())['DFA']
+            self.assertEqual(state['fallos_consecutivos'], 0)
+            self.assertEqual(state['estado'], 'parcial')

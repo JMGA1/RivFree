@@ -12,11 +12,12 @@ import json
 import argparse
 import sys
 import traceback
-from publish_data import publish
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent))
+from publish_data import publish
 
 # --- Lista de tiendas activas ---------------------------------------------
 # Cada entrada es (nombre_para_mostrar, modulo_python)
@@ -57,6 +58,7 @@ def load_previous_data():
 
 def load_store_caches(interrupted=False):
     """Combina los JSON individuales, incluso si el proceso fue detenido."""
+    _, previous = load_previous_data()
     products = []
     summary = []
     for store_name, filename in CACHE_FILES.items():
@@ -68,6 +70,8 @@ def load_store_caches(interrupted=False):
                 cached = []
         except (OSError, json.JSONDecodeError):
             cached = []
+        if not cached:
+            cached = [p for p in previous if p.get("tienda") == store_name]
         products.extend(cached)
         summary.append({
             "tienda": store_name,
@@ -104,25 +108,36 @@ def main(selected_store=None):
             })
             continue
         print(f"\n=== Procesando {display_name} ===")
+        started = time.monotonic()
         try:
             module = __import__(module_name)
             productos = module.run()
             if not productos:
                 raise RuntimeError("el scraper no encontro productos")
+            elapsed = round(time.monotonic() - started, 1)
             all_products.extend(productos)
             fresh_store_count += 1
+            status = getattr(module, "LAST_RUN_STATUS", {}) or {}
+            warning = status.get("warning") if status.get("partial") else None
             resumen.append({
                 "tienda": display_name,
                 "productos": len(productos),
-                "error": None,
-                "datos_anteriores": False,
+                "error": warning,
+                # Conservador: si el scraper mezcló cache para cubrir fallos
+                # puntuales, la UI lo marca como actualización parcial y no
+                # genera una observación histórica como si todo fuera fresco.
+                "datos_anteriores": bool(warning),
+                "parcial": bool(warning),
+                "duracion_segundos": elapsed,
             })
+            print(f"[{display_name}] terminado en {elapsed:.1f}s" + (" (parcial)" if warning else ""))
         except KeyboardInterrupt:
             print("\n[AVISO] Proceso detenido. Reconstruyendo products.json con los datos guardados...")
             interrupted = True
             break
         except Exception as e:
-            print(f"[ERROR] Fallo el scraper de {display_name}: {e}", file=sys.stderr)
+            elapsed = round(time.monotonic() - started, 1)
+            print(f"[ERROR] Fallo el scraper de {display_name} tras {elapsed:.1f}s: {e}", file=sys.stderr)
             traceback.print_exc()
             fallback = previous_by_store.get(display_name, [])
             all_products.extend(fallback)
@@ -131,6 +146,8 @@ def main(selected_store=None):
                 "productos": len(fallback),
                 "error": str(e),
                 "datos_anteriores": bool(fallback),
+                "parcial": False,
+                "duracion_segundos": elapsed,
             })
 
     if interrupted:
@@ -158,6 +175,8 @@ def main(selected_store=None):
     for r in resumen:
         if r["error"] is None:
             estado = "OK"
+        elif r.get("parcial"):
+            estado = f"PARCIAL: {r['error']}"
         elif r["datos_anteriores"]:
             estado = f"ERROR, se conservan datos anteriores: {r['error']}"
         else:

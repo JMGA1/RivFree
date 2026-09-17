@@ -14,6 +14,11 @@ on:
         description: "Ejecutar los scrapers antes de publicar"
         type: boolean
         default: false
+      tienda:
+        description: "Tienda a actualizar (todas por defecto)"
+        type: choice
+        default: todas
+        options: [todas, barao, dfa, mantra, neutral, oprha, sineriz, yurys]
 
 permissions:
   contents: write
@@ -28,6 +33,9 @@ concurrency:
 jobs:
   publicar:
     runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      PYTHONUNBUFFERED: "1"
 
     environment:
       name: github-pages
@@ -67,9 +75,15 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Ejecutar scrapers
+        env:
+          SCRAPER_STORE: ${{ inputs.tienda }}
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
         run: |
-          python scrapers/run_all.py
+          if [ "$SCRAPER_STORE" = "todas" ] || [ -z "$SCRAPER_STORE" ]; then
+            python scrapers/run_all.py
+          else
+            python scrapers/run_all.py --store "$SCRAPER_STORE"
+          fi
 
       - name: Preparar versión y datos públicos
         run: |

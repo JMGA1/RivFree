@@ -14,7 +14,9 @@ from pathlib import Path
 from urllib.parse import urljoin
 
 sys.path.append(str(Path(__file__).parent))
-from utils import get_soup, clean_price, save_products, extract_image_url
+from utils import finalize_scrape, load_previous_store, navigate, discover_menu_categories, get_soup, clean_price, save_products, extract_image_url
+
+LAST_RUN_STATUS = {}
 
 BASE_URL = "https://www.sineriz.com.uy"
 
@@ -38,25 +40,48 @@ def scrape_category(slug, page=None):
     else:
         from bs4 import BeautifulSoup
         try:
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            navigate(page, url)
             page.wait_for_selector('a[href*="/produtos/"]', timeout=15000)
-            # Siñeriz carga mas productos al llegar al final. Esperamos hasta
-            # que la cantidad de enlaces permanezca estable tres veces.
-            previous_count = 0
-            stable_rounds = 0
-            for _ in range(40):
-                count = page.locator('a[href*="/produtos/"]').count()
-                stable_rounds = stable_rounds + 1 if count == previous_count else 0
-                if stable_rounds >= 3:
+            fragments = []
+            signatures = set()
+            for page_no in range(300):
+                previous = -1
+                stable = 0
+                for round_no in range(200):
+                    count = page.locator('a[href*="/produtos/"]').count()
+                    stable = stable + 1 if count == previous else 0
+                    previous = count
+                    more = page.get_by_role('button', name=re.compile(r'ver mais|carregar mais|mostrar mais|load more', re.I)).first
+                    active = more.count() and more.is_visible() and more.is_enabled()
+                    if active:
+                        more.click(timeout=10000)
+                    if stable >= 4 and not active:
+                        break
+                    if stable >= 8 or round_no == 199:
+                        raise RuntimeError('Carga de productos incompleta')
+                    page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+                    page.wait_for_timeout(1500)
+                fragment = BeautifulSoup(page.content(), 'html.parser')
+                signature = tuple(sorted({a['href'] for a in fragment.select('a[href]')
+                    if re.search(r'/produtos/[^/]+/[^/]+/?$', a['href'])}))
+                if signature in signatures:
+                    raise RuntimeError('Página repetida')
+                signatures.add(signature)
+                fragments.append(str(fragment))
+                button = page.locator('a[rel="next"], .pagination .next a, .paginacao .next a').first
+                if not button.count() or not button.is_visible() or not button.is_enabled() or button.get_attribute('aria-disabled') == 'true':
                     break
-                previous_count = count
-                page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                page.wait_for_timeout(900)
-            soup = BeautifulSoup(page.content(), "html.parser")
+                button.click(timeout=10000)
+                page.wait_for_timeout(2000)
+            else:
+                raise RuntimeError('Límite de paginación alcanzado')
+            soup = BeautifulSoup(''.join(fragments), 'html.parser')
         except Exception as exc:
+            LAST_RUN_STATUS.update(partial=True, warning="Sineriz: categorías fallidas; catálogo parcial")
             print(f"  [aviso] no se pudo cargar {url}: {exc}")
             return products
     if soup is None:
+        LAST_RUN_STATUS.update(partial=True, warning="Sineriz: categoría sin respuesta")
         return products
 
     # Cada producto es un link a una ficha bajo /produtos/<categoria>/<slug-producto>/
@@ -67,6 +92,7 @@ def scrape_category(slug, page=None):
     ]
 
     if not product_links:
+        LAST_RUN_STATUS.update(partial=True, warning="Sineriz: categoría sin productos legibles")
         return products
 
     links_by_url = {}
@@ -94,7 +120,12 @@ def scrape_category(slug, page=None):
                 if container.parent is None:
                     break
                 container = container.parent
-                match = re.search(r"USD\s*[\d.,]+", container.get_text(" ", strip=True))
+                related = {urljoin(BASE_URL, a['href']) for a in container.select('a[href]')
+                           if re.search(r"/produtos/[^/]+/[^/]+/?$", a['href'])}
+                if len(related) > 1:
+                    break
+                from utils import PRICE_RE
+                match = PRICE_RE.search(container.get_text(" ", strip=True))
                 if match:
                     price = clean_price(match.group(0))
                     product_container = container
@@ -124,6 +155,7 @@ def scrape_category(slug, page=None):
 
 
 def run():
+    LAST_RUN_STATUS.clear()
     from playwright.sync_api import sync_playwright
 
     all_products = []
@@ -146,7 +178,7 @@ def run():
             unique.append(p)
 
     out_dir = Path(__file__).parent.parent / "data"
-    save_products(unique, "sineriz", out_dir)
+    finalize_scrape(unique, "sineriz", out_dir, LAST_RUN_STATUS)
     return unique
 
 

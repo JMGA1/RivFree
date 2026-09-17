@@ -1,112 +1,309 @@
-"""Scraper de Mantra Free Shop (Ecwid embebido en mantrafreeshop.com).
+"""Scraper concurrente de Mantra Free Shop (Ecwid embebido).
 
-Descubre categorías y productos desde la tienda renderizada para no mantener
-IDs manualmente. Los enlaces de Ecwid terminan en -c<ID> (categoría) y -p<ID>
-(producto). Luego visita cada ficha y extrae nombre, precio e imagen.
+La versión anterior visitaba cada ficha secuencialmente con una sola página de
+Playwright. Esta versión usa asyncio + varios workers reutilizando páginas del
+mismo contexto del browser, de modo que categorías y fichas se procesan en
+paralelo sin crear cientos de browsers.
 """
+import asyncio
+import json
 import re
 import sys
-from collections import deque
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 sys.path.append(str(Path(__file__).parent))
-from utils import clean_price, save_products
+from utils import finalize_scrape, load_previous_store, navigate, discover_menu_categories, clean_price, save_products
 
-BASE_URL="https://mantrafreeshop.com"
-CATEGORY_RE=re.compile(r"-c\d+(?:$|[?#])", re.I)
-PRODUCT_RE=re.compile(r"-p\d+(?:$|[?#])", re.I)
+BASE_URL = "https://mantrafreeshop.com"
+CATEGORY_RE = re.compile(r"-c\d+/?(?:$|[?#])", re.I)
+PRODUCT_RE = re.compile(r"-p\d+/?(?:$|[?#])", re.I)
+CATEGORY_WORKERS = 3
+DETAIL_WORKERS = 6
+NAV_TIMEOUT_MS = 45000
+DETAIL_TIMEOUT_MS = 20000
+DETAIL_BUDGET_SECONDS = 60 * 60
+LAST_RUN_STATUS = {}
+
 
 def _slug_from_url(url):
-    path=urlparse(url).path.strip("/")
-    path=re.sub(r"-c\d+$", "", path)
+    path = urlparse(url).path.strip("/")
+    path = re.sub(r"-c\d+$", "", path)
     return path or "varios"
 
-def _collect_links(page):
-    links=page.locator("a[href]").evaluate_all("els => els.map(a => a.href)")
-    cats=[]; products=[]
+
+def _load_previous():
+    return load_previous_store("mantra", Path(__file__).parent.parent / "data")
+
+
+async def _goto(page, url, retries=3, timeout_ms=NAV_TIMEOUT_MS):
+    last = None
+    for attempt in range(1, retries + 1):
+        try:
+            response = await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+            if response is not None and response.status >= 400:
+                raise RuntimeError(f"HTTP {response.status}: {url}")
+            await page.wait_for_timeout(350)
+            return True
+        except Exception as exc:
+            last = exc
+            if attempt < retries:
+                await page.wait_for_timeout(700 * attempt)
+    raise RuntimeError(f"no se pudo cargar {url}: {last}")
+
+
+async def _collect_links(page):
+    links = await page.locator("a[href]").evaluate_all("els => els.map(a => a.href)")
+    cats = []
+    products = []
     for href in links:
-        if not href or "mantrafreeshop.com" not in href: continue
-        if CATEGORY_RE.search(href): cats.append(href.split('#')[0])
-        elif PRODUCT_RE.search(href): products.append(href.split('#')[0])
+        if not href or urlparse(href).netloc.removeprefix("www.") != "mantrafreeshop.com":
+            continue
+        clean = href.split("#")[0]
+        if CATEGORY_RE.search(clean):
+            cats.append(clean)
+        elif PRODUCT_RE.search(clean):
+            products.append(clean)
     return list(dict.fromkeys(cats)), list(dict.fromkeys(products))
 
-def _expand(page, rounds=50):
-    previous=-1; stable=0
-    for _ in range(rounds):
-        count=page.locator("a[href]").count()
-        stable=stable+1 if count==previous else 0
-        if stable>=3: break
-        previous=count
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(700)
 
-def _extract_detail(page, url, category):
+async def _expand(page, rounds=200):
+    categories = set()
+    products = set()
+    stable = 0
+    signatures = set()
+    for _ in range(rounds):
+        cats, found = await _collect_links(page)
+        before = len(products)
+        categories.update(cats)
+        products.update(found)
+        stable = stable + 1 if len(products) == before else 0
+        more = page.get_by_role('button', name=re.compile(r'load more|show more|mostrar mais|carregar mais|ver mais', re.I)).first
+        if await more.count() and await more.is_visible() and await more.is_enabled():
+            if stable >= 8:
+                raise RuntimeError('Mantra: cargar más no agrega productos')
+            await more.click(timeout=10000)
+        elif stable >= 4:
+            next_link = page.locator('.ec-pager__next a, a.ec-pager__next, a[rel="next"]').first
+            if await next_link.count() and await next_link.is_visible() and await next_link.is_enabled() and await next_link.get_attribute('aria-disabled') != 'true':
+                signature = tuple(sorted(found))
+                if signature in signatures:
+                    raise RuntimeError('Mantra: paginación repetida')
+                signatures.add(signature)
+                await next_link.click(timeout=10000)
+                stable = 0
+            else:
+                return sorted(categories), sorted(products)
+        await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+        await page.wait_for_timeout(1500)
+    raise RuntimeError('Mantra: límite de carga alcanzado')
+
+
+def _extract_detail_soup(soup, url, category):
+    title = soup.select_one('.product-details__product-title, .ecwid-productBrowser-head')
+    if title is None:
+        return None
+    name = title.get_text(' ', strip=True)
+    price_tag = soup.select_one('.product-details__product-price .details-product-price__value, .product-details__product-price-value, .ecwid-productBrowser-price')
+    old_tag = soup.select_one('.product-details__product-price .details-product-price__compare')
+    price = clean_price(price_tag.get_text(' ', strip=True)) if price_tag else None
+    old = clean_price(old_tag.get_text(' ', strip=True)) if old_tag else None
+    if price is not None and price <= 0:
+        price = None
+    old = old if old and price and old > price else None
+    og = soup.find('meta', attrs={'property': 'og:image'})
+    image = og.get('content') if og else None
+    return {'tienda':'Mantra Free Shop', 'nombre':name, 'precio_usd':price,
+            'precio_original_usd':old, 'en_oferta':old is not None,
+            'categoria':category, 'url':url, 'imagen':image}
+
+
+async def _extract_detail(page, url, category):
     from bs4 import BeautifulSoup
-    page.goto(url, wait_until="domcontentloaded", timeout=30000)
-    page.wait_for_timeout(700)
-    soup=BeautifulSoup(page.content(),"html.parser")
-    h1=soup.find("h1")
-    name=h1.get_text(" ",strip=True) if h1 else None
-    if not name:
-        title=soup.find("meta",attrs={"property":"og:title"})
-        name=title.get("content") if title else None
-    if not name: return None
-    # En Ecwid el precio visible aparece como U$25.00 / U$ 3.95.
-    price=None
-    candidates=[]
-    for tag in soup.find_all(["div","span","p"], limit=500):
-        text=tag.get_text(" ",strip=True)
-        if re.search(r"(?:USD|US\s*\$|U\$)\s*[\d.,]+", text, re.I):
-            candidates.append(text)
-    for text in sorted(candidates,key=len):
-        price=clean_price(text)
-        if price is not None and price>0: break
-    image=None
-    og=soup.find("meta",attrs={"property":"og:image"})
-    if og: image=og.get("content")
-    if not image:
-        img=soup.find("img")
-        image=img.get("src") if img else None
-    return {"tienda":"Mantra Free Shop","nombre":name,"precio_usd":price,
-            "precio_original_usd":None,"en_oferta":False,"categoria":category,
-            "url":url,"imagen":image}
+
+    await _goto(page, url, retries=2, timeout_ms=DETAIL_TIMEOUT_MS)
+    await page.wait_for_selector('.product-details__product-title, .ecwid-productBrowser-head', state='attached', timeout=15000)
+    await page.wait_for_timeout(1000)
+    return _extract_detail_soup(BeautifulSoup(await page.content(), 'html.parser'), url, category)
+
+
+async def _discover_catalog(context):
+    product_categories = {}
+    failed_categories = []
+    scheduled = set()
+    queue = asyncio.Queue()
+
+    first = await context.new_page()
+    try:
+        await _goto(first, BASE_URL, retries=4)
+        initial_cats, initial_products = await _expand(first)
+    finally:
+        await first.close()
+
+    for url in initial_products:
+        product_categories.setdefault(url, "varios")
+    for cat in initial_cats:
+        if cat not in scheduled:
+            scheduled.add(cat)
+            await queue.put(cat)
+
+    async def worker(worker_id):
+        page = await context.new_page()
+        try:
+            while True:
+                cat = await queue.get()
+                try:
+                    await _goto(page, cat, retries=3)
+                    subcats, products = await _expand(page)
+                    label = _slug_from_url(cat)
+                    for url in products:
+                        product_categories.setdefault(url, label)
+                    for sub in subcats:
+                        if sub not in scheduled:
+                            scheduled.add(sub)
+                            await queue.put(sub)
+                    print(
+                        f"[Mantra] worker {worker_id} {label}: {len(products)} productos; "
+                        f"total URLs {len(product_categories)}"
+                    )
+                except Exception as exc:
+                    failed_categories.append(cat)
+                    print(f"[Mantra] [aviso] categoría {cat}: {exc}")
+                finally:
+                    queue.task_done()
+        except asyncio.CancelledError:
+            pass
+        finally:
+            await page.close()
+
+    workers = [asyncio.create_task(worker(i + 1)) for i in range(CATEGORY_WORKERS)]
+    await queue.join()
+    for worker_task in workers:
+        worker_task.cancel()
+    await asyncio.gather(*workers, return_exceptions=True)
+
+    return product_categories, failed_categories
+
+
+async def _scrape_details(context, product_categories):
+    queue = asyncio.Queue()
+    for item in product_categories.items():
+        await queue.put(item)
+
+    products = []
+    failed_urls = []
+    processed = 0
+    lock = asyncio.Lock()
+    total = queue.qsize()
+    deadline = asyncio.get_running_loop().time() + DETAIL_BUDGET_SECONDS
+
+    async def worker(worker_id):
+        nonlocal processed
+        page = await context.new_page()
+        try:
+            while True:
+                url, category = await queue.get()
+                try:
+                    if asyncio.get_running_loop().time() >= deadline:
+                        failed_urls.append(url)
+                        continue
+                    item = await _extract_detail(page, url, category)
+                    if item:
+                        products.append(item)
+                    else:
+                        failed_urls.append(url)
+                except Exception as exc:
+                    failed_urls.append(url)
+                    print(f"[Mantra] [aviso] ficha {url}: {exc}")
+                finally:
+                    async with lock:
+                        processed += 1
+                        if processed % 50 == 0 or processed == total:
+                            print(
+                                f"[Mantra] fichas {processed}/{total}; "
+                                f"válidas {len(products)}, fallidas {len(failed_urls)}"
+                            )
+                    queue.task_done()
+        except asyncio.CancelledError:
+            pass
+        finally:
+            await page.close()
+
+    workers = [asyncio.create_task(worker(i + 1)) for i in range(DETAIL_WORKERS)]
+    await queue.join()
+    for worker_task in workers:
+        worker_task.cancel()
+    await asyncio.gather(*workers, return_exceptions=True)
+    return products, failed_urls
+
+
+def _merge_previous(products, previous, failed_urls, failed_categories=None):
+    previous_by_url = {p.get("url"): p for p in previous if isinstance(p, dict) and p.get("url")}
+    current_by_url = {p.get("url"): p for p in products if p.get("url")}
+    for url in failed_urls:
+        if url not in current_by_url and url in previous_by_url:
+            current_by_url[url] = dict(previous_by_url[url], datos_anteriores=True)
+
+    failed_labels = {_slug_from_url(url) for url in (failed_categories or [])}
+    if failed_labels:
+        for old in previous:
+            if isinstance(old, dict) and old.get("categoria") in failed_labels and old.get("url"):
+                current_by_url.setdefault(old["url"], dict(old, datos_anteriores=True))
+    return list(current_by_url.values())
+
+
+async def _run_async():
+    global LAST_RUN_STATUS
+    LAST_RUN_STATUS = {}
+
+    from playwright.async_api import async_playwright
+
+    previous = _load_previous()
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+        context = await browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 Chrome/124 Safari/537.36"
+            )
+        )
+        try:
+            product_categories, failed_categories = await _discover_catalog(context)
+            if not product_categories:
+                raise RuntimeError("Mantra: no se descubrieron productos en la tienda Ecwid")
+
+            print(
+                f"[Mantra] {len(product_categories)} fichas descubiertas; "
+                f"procesando con {DETAIL_WORKERS} workers"
+            )
+            products, failed_urls = await _scrape_details(context, product_categories)
+        finally:
+            await context.close()
+            await browser.close()
+
+    merged = _merge_previous(products, previous, failed_urls, failed_categories)
+    if not merged:
+        raise RuntimeError("Mantra: no se pudo extraer ninguna ficha")
+
+    warnings = []
+    if failed_categories:
+        warnings.append(f"{len(failed_categories)} categorías fallaron")
+    if failed_urls:
+        warnings.append(f"{len(failed_urls)} fichas fallaron")
+    if warnings:
+        warning = "Mantra parcial: " + "; ".join(warnings)
+        LAST_RUN_STATUS = {"partial": True, "warning": warning}
+        print(f"[Mantra] [aviso] {warning}")
+    else:
+        LAST_RUN_STATUS = {"partial": False}
+
+    finalize_scrape(merged, "mantra", Path(__file__).parent.parent / "data", LAST_RUN_STATUS)
+    return merged
+
 
 def run():
-    from playwright.sync_api import sync_playwright
-    product_categories={}
-    with sync_playwright() as pw:
-        browser=pw.chromium.launch(headless=True)
-        page=browser.new_page()
-        page.set_extra_http_headers({"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36"})
-        page.goto(BASE_URL,wait_until="domcontentloaded",timeout=30000); page.wait_for_timeout(1200); _expand(page)
-        initial_cats, initial_products=_collect_links(page)
-        for u in initial_products: product_categories.setdefault(u,"varios")
-        queue=deque(initial_cats); seen_cats=set()
-        while queue:
-            cat=queue.popleft()
-            if cat in seen_cats: continue
-            seen_cats.add(cat)
-            page.goto(cat,wait_until="domcontentloaded",timeout=30000); page.wait_for_timeout(700); _expand(page)
-            subcats, products=_collect_links(page)
-            label=_slug_from_url(cat)
-            for u in products: product_categories.setdefault(u,label)
-            for sub in subcats:
-                if sub not in seen_cats: queue.append(sub)
-            print(f"[Mantra] {label}: {len(products)} productos; total URLs {len(product_categories)}")
-        if not product_categories:
-            browser.close(); raise RuntimeError("Mantra: no se descubrieron productos en la tienda Ecwid")
-        products=[]
-        for i,(url,category) in enumerate(product_categories.items(),1):
-            try:
-                item=_extract_detail(page,url,category)
-                if item: products.append(item)
-            except Exception as exc:
-                print(f"  [aviso] Mantra no pudo leer {url}: {exc}")
-            if i%50==0: print(f"[Mantra] fichas {i}/{len(product_categories)}")
-        browser.close()
-    if not products: raise RuntimeError("Mantra: no se pudo extraer ninguna ficha")
-    save_products(products,"mantra",Path(__file__).parent.parent/"data")
-    return products
+    return asyncio.run(_run_async())
 
-if __name__=="__main__": run()
+
+if __name__ == "__main__":
+    run()

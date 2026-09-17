@@ -15,13 +15,15 @@ import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent))
-from utils import save_products, expand_wix_catalog, extract_wix_products
+from utils import collect_wix_category, finalize_scrape, load_previous_store, navigate, discover_menu_categories, save_products, expand_wix_catalog, extract_wix_products
+
+LAST_RUN_STATUS = {}
 
 BASE_URL = "https://www.baraofreeshop.com.br"
 
 RESERVED_PATHS = {
     "", "shop", "blog", "contato", "turista", "social", "trabalhe-conosco",
-    "lista-de-desejos", "home", "inicio", "o-barao", "seguranca-e-saude-no-trabalho",
+    "my-wishlist", "wishlist", "cart", "checkout", "lista-de-desejos", "home", "inicio", "o-barao", "seguranca-e-saude-no-trabalho",
     "blog-barao", "politica-de-privacidade"
 }
 
@@ -75,25 +77,19 @@ def scrape_category(slug, page):
     from bs4 import BeautifulSoup
     url = f"{BASE_URL}/{slug}"
     try:
-        page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        page.wait_for_selector('[data-hook="product-item-root"]', timeout=20000)
-        loaded = expand_wix_catalog(page)
-        soup = BeautifulSoup(page.content(), "html.parser")
-        products = extract_wix_products(
-            soup, "Barão Free Shop", CATEGORY_LABELS.get(slug, slug), BASE_URL
-        )
-        if loaded and len(products) < loaded:
-            print(f"  [aviso] se cargaron {loaded} tarjetas pero solo se pudieron leer {len(products)}")
-        return products
+        navigate(page, url, '[data-hook="product-item-root"]')
+        return collect_wix_category(page, "Barão Free Shop", CATEGORY_LABELS.get(slug, slug), BASE_URL)
     except Exception as e:
         # El menú también puede contener páginas institucionales de una sola ruta.
         # Las ignoramos, pero la validación final evita publicar un catálogo
         # sospechosamente pequeño si realmente cambió la tienda.
+        LAST_RUN_STATUS.update(partial=True, warning="Barão: categorías fallidas; se conservan productos anteriores")
         print(f"  [aviso] se omite {url}: {e}")
         return []
 
 
 def run():
+    LAST_RUN_STATUS.clear()
     from playwright.sync_api import sync_playwright
 
     all_products = []
@@ -123,10 +119,8 @@ def run():
             seen.add(key)
             unique.append(pr)
 
-    if len(unique) < 1000:
-        raise RuntimeError(f"Barão incompleto: solo se extrajeron {len(unique)} productos")
     out_dir = Path(__file__).parent.parent / "data"
-    save_products(unique, "barao", out_dir)
+    finalize_scrape(unique, "barao", out_dir, LAST_RUN_STATUS)
     return unique
 
 

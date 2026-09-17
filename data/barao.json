@@ -16461,16 +16461,6 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "Whisky Glenfiddich 15Y 750ml",
-    "precio_usd": 80.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "whisky-s",
-    "url": "https://www.baraofreeshop.com.br/product-page/whisky-glenfiddich-15y-750ml",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_2780d41064e4402e8a9682a4e2ebc0e7~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_2780d41064e4402e8a9682a4e2ebc0e7~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
     "nombre": "BUNNAHABHAIN - An Caldach Tube 1lt",
     "precio_usd": 74.9,
     "precio_original_usd": null,
@@ -16502,7 +16492,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky - Glen Moray 12y",
-    "precio_usd": null,
+    "precio_usd": 33.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16532,7 +16522,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky - Small Batch  1792 1lt",
-    "precio_usd": null,
+    "precio_usd": 29.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16542,7 +16532,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky - Wild  Turkey 1lt",
-    "precio_usd": 18.9,
+    "precio_usd": 19.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16562,7 +16552,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "WHISKY -Talisker 10 años 1lt",
-    "precio_usd": 77.2,
+    "precio_usd": 69.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16622,7 +16612,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "MAKER´S MARK - Whisky 1lts",
-    "precio_usd": 32.9,
+    "precio_usd": 39.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16652,7 +16642,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "JIM BEAM - Whisky Honney 1lts",
-    "precio_usd": 15.9,
+    "precio_usd": 13.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16682,7 +16672,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "GLENFIDDICH- Whisky 12 Años 750ml",
-    "precio_usd": null,
+    "precio_usd": 56.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -16702,7 +16692,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "SHINOBU BLEND - Whisky + Copos 700ml",
-    "precio_usd": null,
+    "precio_usd": 52.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -17182,7 +17172,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky Johnnie Walker Double Black 1 litro",
-    "precio_usd": null,
+    "precio_usd": 64.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -17252,7 +17242,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Whisky Clan Mc Gregor 1lt",
-    "precio_usd": null,
+    "precio_usd": 14.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "whisky-s",
@@ -20658,6 +20648,136 @@
     "categoria": "copia-de-kristo-belga-1",
     "url": "https://www.baraofreeshop.com.br/product-page/karl-lagerfeld-bolsa-feminina",
     "imagen": "https://static.wixstatic.com/media/81a4e0_f9ec7a81fc9646a3b9afc1ddef1ecc58~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_f9ec7a81fc9646a3b9afc1ddef1ecc58~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN´S - Posatermos",
+    "precio_usd": 31.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-posatermos-1",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_d1ca767b1c8f49a494568237c1f5c06c~mv2.png/v1/fill/w_171,h_300,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_d1ca767b1c8f49a494568237c1f5c06c~mv2.png"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN´S - Termo Y mate",
+    "precio_usd": 29.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-termo-y-mate-2",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_aa5886cd97fa46b3bea413be9c2e4624~mv2.png/v1/fill/w_171,h_300,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_aa5886cd97fa46b3bea413be9c2e4624~mv2.png"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN´S - Termo y Mate",
+    "precio_usd": 27.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-termo-y-mate-1",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_79b6ddefa17c4434aaf59824619b8f63~mv2.jpg/v1/fill/w_171,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_79b6ddefa17c4434aaf59824619b8f63~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN´S - Mate inox",
+    "precio_usd": 27.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-mate-inox",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_779ca5bd1a0a4822adfa8724e926a2b3~mv2.png/v1/fill/w_171,h_300,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_779ca5bd1a0a4822adfa8724e926a2b3~mv2.png"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN´S - Termo y Mate",
+    "precio_usd": 27.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-termo-y-mate",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_b0e2783168e5411ca5298169a109e28f~mv2.png/v1/fill/w_200,h_300,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_b0e2783168e5411ca5298169a109e28f~mv2.png"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Porta celular Giona",
+    "precio_usd": 21.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-porta-celular-giona",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_62ae0599bb324ef0a6f402d013c95898~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_62ae0599bb324ef0a6f402d013c95898~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Bolsa Cincinnati",
+    "precio_usd": 26.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-bolsa-cincinnati",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_e3f6dd7fe2564d37a8f1a0523957f06f~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_e3f6dd7fe2564d37a8f1a0523957f06f~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Bolsa Greese",
+    "precio_usd": 29.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-bolsa-greese",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_1539303a040f4443a5f012a379508cb2~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_1539303a040f4443a5f012a379508cb2~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Bolsa Puebla",
+    "precio_usd": 26.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-bolsa-puebla",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_05a0d952891c4a6d981dc130251aa5d7~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_05a0d952891c4a6d981dc130251aa5d7~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Mochila Mili 11564",
+    "precio_usd": 34.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-mochila-mili-11564",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_857e2f3d98b749a6bce0f1244a0edcc5~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_857e2f3d98b749a6bce0f1244a0edcc5~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Mochila Corcega",
+    "precio_usd": 34.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-mochila-corcega",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_bb11539ffaa24e02a82f354d8bd2a7c0~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_bb11539ffaa24e02a82f354d8bd2a7c0~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Mochila Ursa",
+    "precio_usd": 36.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-mochila-ursa",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_e689d4722db64aca9a61932f030a047c~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_e689d4722db64aca9a61932f030a047c~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "LINCOLN'S - Mochila Granate",
+    "precio_usd": 35.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "lincolns",
+    "url": "https://www.baraofreeshop.com.br/product-page/lincoln-s-mochila-granate",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_c3480a065e1347eda237e91163e95aa0~mv2.jpg/v1/fill/w_300,h_300,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_c3480a065e1347eda237e91163e95aa0~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -26351,16 +26471,6 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - CP.Secador P/Cabello H500 XI-H500",
-    "precio_usd": 70.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "cuidadopessoal",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-cp-secador-p-cabello-h500-xi-h500",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_8d64a0373c1b456fa1d275a8dc3b20e2~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_8d64a0373c1b456fa1d275a8dc3b20e2~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
     "nombre": "XION - CP.Afeitadora XI-SHAVERPRO3 Nariz/Oido",
     "precio_usd": 57.5,
     "precio_original_usd": null,
@@ -26951,16 +27061,6 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "Termômetro infrared",
-    "precio_usd": null,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "cuidadopessoal",
-    "url": "https://www.baraofreeshop.com.br/product-page/termômetro-infrared",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_13d2db2962c84c51995ca866798bb87e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_13d2db2962c84c51995ca866798bb87e~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
     "nombre": "XION - Tender D/Ropa Electrico TENDER-2",
     "precio_usd": 40.5,
     "precio_original_usd": null,
@@ -27451,36 +27551,6 @@
   },
   {
     "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Balanza Inteligente Scale XI-S200WH White",
-    "precio_usd": 19.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletrodomesticos",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-balanza-inteligente-scale-xi-s200wh-white",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_dfe19ed8e6154969bb58440033dc0f63~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_dfe19ed8e6154969bb58440033dc0f63~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Balanza Inteligente Scale S400 XI-S400",
-    "precio_usd": 25.6,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletrodomesticos",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-balanza-inteligente-scale-s400-xi-s400",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_31e249d112fe4074aa49f027ebf9c8dd~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_31e249d112fe4074aa49f027ebf9c8dd~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Aspiradora Inalambrica Mini XI-SSXCQ01XY",
-    "precio_usd": 50.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletrodomesticos",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-aspiradora-inalambrica-mini-xi-ssxcq01xy",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_08652fe9ce024939b9f142a37dbb76e8~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_08652fe9ce024939b9f142a37dbb76e8~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
     "nombre": "NORTH TECH - Horno Elect.NT-HT45 45L",
     "precio_usd": 72.9,
     "precio_original_usd": null,
@@ -27762,7 +27832,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "CUORI - Ferro a vapor Venetto 220W CUO4139",
-    "precio_usd": null,
+    "precio_usd": 17.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrodomesticos",
@@ -28588,16 +28658,6 @@
     "categoria": "eletrodomesticos",
     "url": "https://www.baraofreeshop.com.br/product-page/grill-de-prensa-griglia-cuo-3324-cuori",
     "imagen": "https://static.wixstatic.com/media/6a24b0_b92bc1f39acd4d92ae7b94bcca7a9977~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_b92bc1f39acd4d92ae7b94bcca7a9977~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "XIAOMI - Hidrolavadora XI-490334",
-    "precio_usd": 130.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "copia-eletrodomesticos",
-    "url": "https://www.baraofreeshop.com.br/product-page/xiaomi-hidrolavadora-xi-490334",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_360a5467090c44198d6f3fbaa856403e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_360a5467090c44198d6f3fbaa856403e~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -31521,6 +31581,16 @@
   },
   {
     "tienda": "Barão Free Shop",
+    "nombre": "RAPOO - Controller Wireless Black",
+    "precio_usd": 38.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "games-acessorios",
+    "url": "https://www.baraofreeshop.com.br/product-page/rapoo-controller-wireless-black",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_e7815f7e6ec946a8860b4ea4f52c5688~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_e7815f7e6ec946a8860b4ea4f52c5688~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
     "nombre": "Nintendo Switch 2 256GB Black",
     "precio_usd": 742.5,
     "precio_original_usd": null,
@@ -34282,7 +34352,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Tabasco Sriracha 256ml",
-    "precio_usd": 3.75,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34292,7 +34362,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri S/Sal Pet 350gr",
-    "precio_usd": 3.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34302,7 +34372,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "REMIA - Salsa Blue Cheese Dressing 250ml",
-    "precio_usd": 2.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34312,7 +34382,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "Bornier Mostaza Dijon 210gr",
-    "precio_usd": 3.2,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34322,7 +34392,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "BORNIER - Mostaza Ajo y Perejil 210gr",
-    "precio_usd": 3.45,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34332,7 +34402,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri 1Kg",
-    "precio_usd": 16.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34342,7 +34412,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri S/Picante 1Kg",
-    "precio_usd": 16.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34352,7 +34422,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri S/Picante Doy Pack 250gr",
-    "precio_usd": 5.5,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34372,7 +34442,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Arrecife Adobo Parrillero 500gr",
-    "precio_usd": 2.5,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34382,7 +34452,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Arrecife Chimichurri Hot 500gr",
-    "precio_usd": 2.5,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34392,7 +34462,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Pesto Pet 350gr",
-    "precio_usd": 3.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34402,7 +34472,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Gaucho Pesto Pet 350gr",
-    "precio_usd": 3.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34412,7 +34482,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Chimichurri Hot Pet 350gr",
-    "precio_usd": 3.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34422,7 +34492,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "TABASCO - Chipotle 60ml",
-    "precio_usd": 2.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34432,7 +34502,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "TABASCO - Green Pepper Suce  60ml",
-    "precio_usd": 2.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34442,7 +34512,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI- Caramelo Vanilla",
-    "precio_usd": 3.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34452,7 +34522,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI - Moli.Sal Marina C/Jengibre y Citronela 66g",
-    "precio_usd": 3.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34462,7 +34532,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI - Molinillo Hierbas Italianas 48gr",
-    "precio_usd": 3.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34472,7 +34542,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KOTANYI - Moedor de Caril 45g",
-    "precio_usd": 3.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34482,7 +34552,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "EL AVION - Moedor de quatro pimentas 160g",
-    "precio_usd": 12.6,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34492,7 +34562,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DE NIGRIS - Glacê Aceto Balsâmico Pesto 250ml",
-    "precio_usd": 5.9,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34512,7 +34582,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "BORNIER - Mostarda em grão 720g",
-    "precio_usd": 7.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34522,7 +34592,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "BORNIER - Mostarda e mel 235g",
-    "precio_usd": 3.45,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34532,7 +34602,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "DEL GAUCHO - Alho e salsinha 350g",
-    "precio_usd": 3.7,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34542,7 +34612,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "MONARI FEDERZONI - Vinagre Balsâmico de Modena 250ml",
-    "precio_usd": 3.1,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34552,7 +34622,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "HEINZ - Mostarda 396gr",
-    "precio_usd": 6.1,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34562,7 +34632,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "KRAFT - Salsa Barbecue 510g",
-    "precio_usd": 4.2,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -34572,7 +34642,7 @@
   {
     "tienda": "Barão Free Shop",
     "nombre": "EL AVION - Sal Marinho 340g",
-    "precio_usd": 7.3,
+    "precio_usd": null,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "condimentos",
@@ -35408,6 +35478,156 @@
     "categoria": "doces-de-leite",
     "url": "https://www.baraofreeshop.com.br/product-page/helios-geléia-de-mirtilos-340g",
     "imagen": "https://static.wixstatic.com/media/6a24b0_27d615bdf64d45859486ef46ac4d753a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_27d615bdf64d45859486ef46ac4d753a~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Almendras Tostadas 250gr",
+    "precio_usd": 8.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-almendras-tostadas-250gr",
+    "imagen": "https://static.wixstatic.com/media/81a4e0_732f6602e940461e9211b37d0039c0ad~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_732f6602e940461e9211b37d0039c0ad~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "PASEO - Galletitas clasicas 300gr",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/paseo-galletitas-clasicas-300gr",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_0226282db04c4be494aef549bd6b17e0~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_0226282db04c4be494aef549bd6b17e0~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "PASEO - Galletitas Mix de cereales",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/paseo-galletitas-mix-de-cereales",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_fb8dd85b22ec4ab7a17b6e29aede2f77~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_fb8dd85b22ec4ab7a17b6e29aede2f77~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "PASEO - Galletita Salvado 300gr",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/paseo-galletita-salvado-300gr",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_282ed218ceaf4d40b3ff9a12fe6b566e~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_282ed218ceaf4d40b3ff9a12fe6b566e~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Amendoim salgado 100g",
+    "precio_usd": 2.05,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-amendoim-salgado-100g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_ecf3bcb6de16464393cd8a421a8de47c~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_ecf3bcb6de16464393cd8a421a8de47c~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Amêndoas torradas 75g",
+    "precio_usd": 2.8,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-amêndoas-torradas-75g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_ed7e71efc0da400fb70218eafd7ec7d3~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_ed7e71efc0da400fb70218eafd7ec7d3~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Amendoim com mel e sal 50g",
+    "precio_usd": 1.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-amendoim-com-mel-e-sal-50g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_7f85220aec9f4e7c950606109f164fa0~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_7f85220aec9f4e7c950606109f164fa0~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - coquetel de frutos secos 50g",
+    "precio_usd": 1.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-coquetel-de-frutos-secos-50g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_909ff5158d2943c883a889f19b9e4708~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_909ff5158d2943c883a889f19b9e4708~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Amêndoas Açucaradas 45g",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-amêndoas-açucaradas-45g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_661223486d1646f9b677566773056826~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_661223486d1646f9b677566773056826~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Pistache",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-pistache-36g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_7d6e4f71724f4aafb44820e2ad36dd96~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_7d6e4f71724f4aafb44820e2ad36dd96~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL -  Coquetel picante de frutos secos 90g",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-coquetel-picante-de-frutos-secos-90g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_eb224b6fd6344874b15ba31fd255206c~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_eb224b6fd6344874b15ba31fd255206c~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Amendoim mel e sal 250g",
+    "precio_usd": 5.8,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-amendoim-mel-e-sal-250g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_b8e2de551d6a45ed92675e06785930e8~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_b8e2de551d6a45ed92675e06785930e8~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Frutos secos 250g",
+    "precio_usd": 7.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-frutos-secos-250g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_94555ed09ef549758e4d90ce1ec012e1~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_94555ed09ef549758e4d90ce1ec012e1~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "SALYSOL - Amendoim chocolate 300g",
+    "precio_usd": null,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/salysol-amendoim-chocolate-300g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_0677efc9202a40d9aeda98049bfa39bf~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_0677efc9202a40d9aeda98049bfa39bf~mv2.jpg"
+  },
+  {
+    "tienda": "Barão Free Shop",
+    "nombre": "Pringles Origininal 149g",
+    "precio_usd": 2.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "salgados",
+    "url": "https://www.baraofreeshop.com.br/product-page/pringles-190g",
+    "imagen": "https://static.wixstatic.com/media/6a24b0_9c0969f4306b4d5ba45b6537f0d27a7a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_9c0969f4306b4d5ba45b6537f0d27a7a~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",
@@ -38298,46 +38518,6 @@
     "categoria": "decoracao",
     "url": "https://www.baraofreeshop.com.br/product-page/elefante-decorativo-prata",
     "imagen": "https://static.wixstatic.com/media/6a24b0_47f918b2b76e4babb29e0bb91f2c6e41~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_47f918b2b76e4babb29e0bb91f2c6e41~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "Espejo x3",
-    "precio_usd": 32.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "miuruguay",
-    "url": "https://www.baraofreeshop.com.br/product-page/espejo-x3",
-    "imagen": "https://static.wixstatic.com/media/81a4e0_e19a32f402a44c42b62b85126d6ed8e3~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_e19a32f402a44c42b62b85126d6ed8e3~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "Espelho com base 50x13x60cm",
-    "precio_usd": 29.9,
-    "precio_original_usd": 59.8,
-    "en_oferta": true,
-    "categoria": "miuruguay",
-    "url": "https://www.baraofreeshop.com.br/product-page/espelho-com-base-50x13x60cm",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_5e39c5876762472e978e6fc3c839878a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_5e39c5876762472e978e6fc3c839878a~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "Espelho 61x2.5x91cm",
-    "precio_usd": 56.65,
-    "precio_original_usd": 113.3,
-    "en_oferta": true,
-    "categoria": "miuruguay",
-    "url": "https://www.baraofreeshop.com.br/product-page/espelho-61x2-5x91cm",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_4898ebcbdfc74c14afa242c3388b0e26~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_4898ebcbdfc74c14afa242c3388b0e26~mv2.jpg"
-  },
-  {
-    "tienda": "Barão Free Shop",
-    "nombre": "Espelho 45x3x45cm",
-    "precio_usd": 29.1,
-    "precio_original_usd": 58.2,
-    "en_oferta": true,
-    "categoria": "miuruguay",
-    "url": "https://www.baraofreeshop.com.br/product-page/espelho-45x3x45cm",
-    "imagen": "https://static.wixstatic.com/media/6a24b0_446e1858aded47688cffb02aab8a6eb4~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_446e1858aded47688cffb02aab8a6eb4~mv2.jpg"
   },
   {
     "tienda": "Barão Free Shop",

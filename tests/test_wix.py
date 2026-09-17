@@ -13,6 +13,13 @@ class WixTests(unittest.TestCase):
     def test_detail_price_excludes_recommendations(self):
         soup=BeautifulSoup('''<span data-hook="formatted-primary-price">US$ 999,00</span><div data-hook="product-prices-wrapper"><span data-hook="formatted-primary-price">US$ 269,00</span></div>''','html.parser')
         self.assertEqual(extract_wix_detail_price(soup),(269,None))
+    def test_detail_price_falls_back_to_wrapper_text(self):
+        soup = BeautifulSoup(
+            '<div data-hook="product-prices-wrapper">Preço normal US$ 120,00 Preço promocional US$ 89,90</div>',
+            'html.parser',
+        )
+        self.assertEqual(extract_wix_detail_price(soup), (89.9, 120.0))
+
     def test_oprha_metadata_is_not_a_public_price(self):
         soup=BeautifulSoup('<meta property="product:price:amount" content="999"><meta property="og:title" content="Example | Oprha">','html.parser')
         with patch('scrapers.oprha_scraper.get_soup',return_value=soup):

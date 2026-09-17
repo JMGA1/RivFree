@@ -28,9 +28,16 @@ def publish(data_dir, output, attempted_stores=None):
         if attempted_stores is not None and name in attempted_stores and state.get('ultimo_intento') != attempted_at:
             state['ultimo_intento'] = attempted_at
             state['error'] = row.get('error')
-            state['fallos_consecutivos'] = state['fallos_consecutivos'] + 1 if row.get('error') else 0
-            if not row.get('error'):
+            if row.get('parcial'):
+                state['ultimo_parcial'] = attempted_at
+                state['estado'] = 'parcial'
+            elif row.get('error'):
+                state['fallos_consecutivos'] = state['fallos_consecutivos'] + 1
+                state['estado'] = 'error'
+            else:
+                state['fallos_consecutivos'] = 0
                 state['ultimo_exito'] = attempted_at
+                state['estado'] = 'ok'
         row['ultimo_exito'] = state.get('ultimo_exito')
     write_json(data_dir / 'health.json', health)
     # Only observed prices are snapshots: fallbacks are not new observations.
