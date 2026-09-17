@@ -6,7 +6,7 @@
 <title>RivFree — Comparador de precios de free shops</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <meta name="description" content="Compará precios de free shops de Rivera: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
@@ -27,7 +27,13 @@
   <div class="topbar-inner">
     <a class="brand brand-link" href="./" aria-label="Volver al inicio y recargar">
       <div class="brand-lockup">
-        <span class="brand-mark" aria-hidden="true">RF</span>
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" focusable="false">
+            <path class="brand-bag" d="M11 17.5h26l-2.2 22H13.2L11 17.5Z"/>
+            <path class="brand-handle" d="M18 19v-2.2a6 6 0 0 1 12 0V19"/>
+            <path class="brand-pin" d="M24 23.2a5.2 5.2 0 0 0-5.2 5.2c0 4.2 5.2 8.7 5.2 8.7s5.2-4.5 5.2-8.7a5.2 5.2 0 0 0-5.2-5.2Zm0 7.1a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8Z"/>
+          </svg>
+        </span>
         <div>
           <h1>Riv<span class="brand-name-free">Free</span></h1>
           <p>Explorá y compará los free shops de Rivera</p>
@@ -38,31 +44,21 @@
       <select id="languageToggle" class="theme-toggle" aria-label="Cambiar idioma">
         <option value="es">Español</option><option value="pt-BR">Português (BR)</option>
       </select>
-      <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">🌙 Modo oscuro</button>
+      <button class="theme-toggle theme-mode" id="themeToggle" type="button" aria-pressed="false"><span class="theme-mode-icon" aria-hidden="true"></span><span class="theme-mode-label">Modo oscuro</span></button>
       <div class="updated-badge" id="updatedBadge">cargando...</div>
     </div>
   </div>
 </div>
 
-<aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
-  <div class="stock-notice-inner">
-    <span class="stock-notice-icon" aria-hidden="true">ⓘ</span>
-    <div class="stock-notice-text">
-      <strong>Disponibilidad orientativa</strong>
-      La cantidad de productos publicada aquí no refleja el stock real. En las tiendas físicas suele haber más productos disponibles que los mostrados en sus catálogos web.
-    </div>
-    <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
-  </div>
-</aside>
 
 <div class="controls">
-  <div class="controls-card">
+  <div class="controls-card search-hero">
     <form class="field search-field" id="searchForm" role="search">
       <label for="search">Buscar producto</label>
       <div class="search-row">
         <input type="search" id="search" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
         <button class="search-button" id="searchButton" type="submit">
-          <span aria-hidden="true">⌕</span> Buscar
+          <span class="search-button-icon" aria-hidden="true"></span><span>Buscar</span>
         </button>
       </div>
       <p class="search-help">Escribí tu búsqueda completa y presioná Enter.</p>
@@ -72,47 +68,67 @@
       </div>
     </form>
 
-    <div class="field">
-      <label for="categorySearch">Categoría</label>
-      <div class="category-picker">
-        <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Escribí o seleccioná una categoría">
-        <div id="categoryOptions" role="listbox" hidden></div>
+    <div class="quick-filter-row">
+      <div class="field category-quick-filter">
+        <label for="categorySearch">Categoría</label>
+        <div class="category-picker">
+          <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Escribí o seleccioná una categoría">
+          <div id="categoryOptions" role="listbox" hidden></div>
+        </div>
+        <select id="categoria" hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
       </div>
-      <select id="categoria" hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
-    </div>
 
-    <div class="field">
-      <label>Precio USD</label>
-      <div class="price-range">
-        <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="minPrice" placeholder="min" min="0" step="0.01" inputmode="decimal" aria-label="Precio mínimo en dólares"></div>
-        <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="maxPrice" placeholder="max" min="0" step="0.01" inputmode="decimal" aria-label="Precio máximo en dólares"></div>
-      </div>
-    </div>
+      <details class="advanced-filters" id="advancedFilters">
+        <summary>
+          <span class="filter-summary-icon" aria-hidden="true"></span>
+          <span>Filtros avanzados</span>
+          <span class="filter-summary-note">Precio, orden, ofertas y tiendas</span>
+        </summary>
+        <div class="advanced-grid">
+          <div class="field">
+            <label>Precio USD</label>
+            <div class="price-range">
+              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="minPrice" placeholder="min" min="0" step="0.01" inputmode="decimal" aria-label="Precio mínimo en dólares"></div>
+              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="maxPrice" placeholder="max" min="0" step="0.01" inputmode="decimal" aria-label="Precio máximo en dólares"></div>
+            </div>
+          </div>
 
-    <div class="field">
-      <label for="orden">Ordenar por</label>
-      <select id="orden">
-        <option value="precio_asc">Precio: menor a mayor</option>
-        <option value="precio_desc">Precio: mayor a menor</option>
-        <option value="nombre_asc">Nombre: A-Z</option>
-      </select>
-    </div>
+          <div class="field">
+            <label for="orden">Ordenar por</label>
+            <select id="orden">
+              <option value="precio_asc">Precio: menor a mayor</option>
+              <option value="precio_desc">Precio: mayor a menor</option>
+              <option value="nombre_asc">Nombre: A-Z</option>
+            </select>
+          </div>
 
-    <div class="field toggle-oferta">
-      <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
-    </div>
+          <div class="field toggle-oferta">
+            <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
+          </div>
 
-    <div class="stores-field" id="storesField">
-      <!-- checkboxes de tiendas se llenan por JS -->
-    </div>
+          <div class="stores-field" id="storesField">
+            <!-- checkboxes de tiendas se llenan por JS -->
+          </div>
 
-    <div class="filter-actions">
-      <button class="clear-btn" id="clearFilters" type="button">Limpiar filtros</button>
+          <div class="filter-actions">
+            <button class="clear-btn" id="clearFilters" type="button">Limpiar filtros</button>
+          </div>
+        </div>
+      </details>
     </div>
   </div>
 </div>
-
 <div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div>
+
+<aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
+  <div class="stock-notice-inner">
+    <span class="stock-notice-icon" aria-hidden="true">i</span>
+    <div class="stock-notice-text">
+      <strong>Disponibilidad orientativa.</strong> La web refleja catálogos online, no el stock físico completo de cada tienda.
+    </div>
+    <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
+  </div>
+</aside>
 
 <div id="priceError" role="alert" hidden></div>
 <div id="loadError" role="alert" hidden><p id="loadErrorText"></p><button type="button" id="retryLoad" class="clear-btn">Reintentar</button></div>

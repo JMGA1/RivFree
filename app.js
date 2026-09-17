@@ -31,9 +31,12 @@ const translations = {
  'No disponible':'Indisponível','Precio más bajo':'Menor preço','Ver en tienda ↗':'Ver na loja ↗','Sin enlace':'Sem link',
  'Dirección':'Endereço','Teléfono':'Telefone','Correo':'E-mail','Horario':'Horário','Información':'Informações',
  'Sitio oficial':'Site oficial','No hay información adicional disponible.':'Não há informações adicionais disponíveis.',
- '☀️ Modo claro':'☀️ Modo claro','🌙 Modo oscuro':'🌙 Modo escuro',
+ 'Modo claro':'Modo claro','Modo oscuro':'Modo escuro',
  'Cerrar':'Fechar','Cerrar aviso':'Fechar aviso','Volver al inicio y recargar':'Voltar ao início e recarregar',
  'Aviso sobre disponibilidad':'Aviso sobre disponibilidade',
+ 'Disponibilidad orientativa.':'Disponibilidade indicativa.',
+ 'La web refleja catálogos online, no el stock físico completo de cada tienda.':'A web reflete catálogos online, não o estoque físico completo de cada loja.',
+ 'Filtros avanzados':'Filtros avançados','Precio, orden, ofertas y tiendas':'Preço, ordem, ofertas e lojas',
  'Ej.: perfume Dior, whisky, parlante JBL':'Ex.: perfume Dior, whisky, caixa de som JBL',
  'Sin datos':'Sem dados','Sin fecha':'Sem data','Actualización parcial':'Atualização parcial',
  'Los datos tienen más de 48 horas':'Os dados têm mais de 48 horas',
@@ -81,6 +84,22 @@ function translateUI() {
 function storeKey(name) {
  const s=Catalog.norm(name);
  return s.includes('neutral')?'neutral':s.includes('barao')?'barao':s.includes('yury')?'yury':s.includes('dfa')?'dfa':s.includes('mantra')?'mantra':s.includes('sineriz')?'sineriz':s.includes('oprha')||s.includes('orpha')?'oprha':'other';
+}
+const STORE_LOGOS = {
+ dfa:'https://pbs.twimg.com/profile_images/1695035204841164800/patXn-Ir_400x400.png',
+ barao:'https://pbs.twimg.com/profile_images/1259848068230524929/R0GRp85B.jpg',
+ yury:'https://static.wixstatic.com/media/2d75da_9878c96857394a23a64910197954dce8~mv2.png/v1/fill/w_277,h_93,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Logo%20Yury%202024.png',
+ neutral:'https://i0.wp.com/comprasimportadas.com/wp-content/uploads/2018/03/neutral-free-shop-138468.jpg?fit=600%2C600&ssl=1',
+ sineriz:'https://www.sineriz.com.uy/assets/images/static/avatar.jpg',
+ mantra:'https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1239324602.jpg'
+};
+function createStoreLogo(storeName, className='store-logo') {
+ const key=storeKey(storeName),src=STORE_LOGOS[key];
+ if(!src)return null;
+ const img=document.createElement('img');
+ img.className=className;img.src=src;img.alt='';img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';
+ img.addEventListener('error',()=>img.remove(),{once:true});
+ return img;
 }
 function announce(message) {
  const el=document.getElementById('actionStatus');el.textContent=message;el.hidden=false;
@@ -148,7 +167,9 @@ function applyTheme(theme) {
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
   const button = document.getElementById('themeToggle');
   button.setAttribute('aria-pressed', String(isDark));
-  button.textContent = isDark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+  const label=button.querySelector('.theme-mode-label');
+  if(label) label.textContent = isDark ? tr('Modo claro') : tr('Modo oscuro');
+  else button.textContent = isDark ? tr('Modo claro') : tr('Modo oscuro');
 }
 
 function initialTheme() {
@@ -191,19 +212,20 @@ async function loadData() {
 
     const updated = data.actualizado ? new Date(data.actualizado) : null;
     const badge = document.getElementById('updatedBadge');
-    badge.classList.remove('stale'); badge.title='';
+    badge.classList.remove('stale'); badge.title='';badge.dataset.status='fresh';
     const staleStores = (Array.isArray(data.resumen) ? data.resumen : [])
       .filter(store => store.datos_anteriores || store.error).map(store => store.tienda);
     badge.textContent = updated
-      ? 'Actualizado: ' + updated.toLocaleString('es-UY', {dateStyle:'medium', timeStyle:'short'})
-      : 'Sin fecha';
+      ? updated.toLocaleString('es-UY', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})
+      : tr('Sin fecha');
+    if(updated) badge.title='Actualizado: '+updated.toLocaleString('es-UY', {dateStyle:'medium',timeStyle:'short'});
     if (staleStores.length) {
-      badge.classList.add('stale');
-      badge.textContent = 'Actualización parcial';
+      badge.classList.add('stale');badge.dataset.status='partial';
+      badge.textContent = tr('Actualización parcial');
       badge.title = `Datos anteriores: ${staleStores.join(', ')}`;
     } else if (updated && Date.now() - updated.getTime() > 48 * 60 * 60 * 1000) {
-      badge.classList.add('stale');
-      badge.title = 'Los datos tienen más de 48 horas';
+      badge.classList.add('stale');badge.dataset.status='stale';
+      badge.title = tr('Los datos tienen más de 48 horas');
     }
 
     populateFilters();
@@ -226,14 +248,16 @@ function populateFilters() {
   storesField.replaceChildren();
   stores.forEach(store => {
     const label = document.createElement('label');
-    label.className = 'chk';
+    label.className = 'chk store-filter-chip';
     label.dataset.store = storeKey(store);
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = store;
     checkbox.className = 'storeChk';
     checkbox.checked = true;
-    label.append(checkbox, document.createTextNode(' ' + store));
+    const logo=createStoreLogo(store,'store-filter-logo');
+    const text=document.createElement('span');text.className='store-filter-name';text.textContent=store;
+    label.append(checkbox);if(logo)label.appendChild(logo);label.appendChild(text);
     storesField.appendChild(label);
   });
   storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => render(true)));
@@ -371,17 +395,31 @@ function createStoreTag(storeName) {
   button.className = 'card-store';
   button.dataset.store = storeKey(storeName);
   button.type = 'button';
-  button.textContent = storeName;
+  const logo=createStoreLogo(storeName,'card-store-logo');
+  const label=document.createElement('span');label.className='card-store-label';label.textContent=storeName;
+  if(logo)button.appendChild(logo);button.appendChild(label);
   button.setAttribute('aria-label', tr(`Ver información de ${storeName}`));
   button.dataset.action='store';button.dataset.storeName=storeName;
   return button;
+}
+
+function appendCardPrice(container,value,multiple=false){
+  if(!Number.isFinite(value)||value<=0){container.className='price-unavailable';container.textContent=tr('Precio no disponible');return;}
+  container.className='card-price';
+  if(multiple){const prefix=document.createElement('span');prefix.className='card-price-prefix';prefix.textContent=tr('Desde');container.appendChild(prefix);}
+  const main=document.createElement('span');main.className='card-price-main';
+  const currency=document.createElement('span');currency.className='card-price-currency';currency.textContent='USD';
+  const amount=document.createElement('strong');amount.className='card-price-amount';amount.textContent=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value);
+  main.append(currency,amount);container.appendChild(main);
+  if(validExchange()){const secondary=document.createElement('span');secondary.className='card-price-secondary';secondary.textContent='≈ '+new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(value*exchange.usd_brl);container.appendChild(secondary);}
 }
 
 function createProductCard(group) {
   const offers = group.visibleOffers;
   const product = offers[0];
   const displayName = [...offers].sort((a, b) => b.nombre.length - a.nombre.length)[0].nombre;
-  const storeCount = new Set(offers.map(offer => offer.tienda)).size;
+  const stores=[...new Set(offers.map(offer => offer.tienda))];
+  const storeCount = stores.length;
   const card = document.createElement('article');
   CARD_DATA.set(card,{name:displayName,offers,key:group.key});
   card.className = storeCount > 1 ? 'card comparison-card' : 'card';
@@ -390,6 +428,7 @@ function createProductCard(group) {
   const interactive = storeCount > 1 || targetUrl;
   const imageBox = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
   imageBox.className = 'card-img';
+  const imageStage=document.createElement('span');imageStage.className='card-image-stage';
   const imageUrl = safeHttpUrl(offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || group.image);
   if (imageUrl) {
     const img = document.createElement('img');
@@ -397,25 +436,25 @@ function createProductCard(group) {
     img.loading = 'lazy';
     img.decoding = 'async';
     img.alt = displayName;
-    img.addEventListener('error', () => addImagePlaceholder(imageBox), {once:true});
-    imageBox.appendChild(img);
+    img.addEventListener('error', () => addImagePlaceholder(imageStage), {once:true});
+    imageStage.appendChild(img);
   } else {
-    addImagePlaceholder(imageBox);
+    addImagePlaceholder(imageStage);
   }
+  imageBox.appendChild(imageStage);
+  const overlay=document.createElement('span');overlay.className='store-tags store-tags-overlay';
+  stores.forEach(storeName=>overlay.appendChild(createStoreTag(storeName)));
+  imageBox.appendChild(overlay);
 
   const body = document.createElement('div');
   body.className = 'card-body';
-  const storeTags = document.createElement('div');
-  storeTags.className = 'store-tags';
-  [...new Set(offers.map(offer => offer.tienda))].forEach(storeName => {
-    storeTags.appendChild(createStoreTag(storeName));
-  });
-  body.appendChild(storeTags);
+
+  const utilityRow=document.createElement('div');utilityRow.className='card-utility-row';
   const favorite=document.createElement('button');favorite.type='button';favorite.className='favorite-button';
   favorite.dataset.action='favorite';favorite.setAttribute('aria-pressed',String(favorites.has(group.key)));
-  favorite.textContent=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');body.appendChild(favorite);
-  const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';body.appendChild(historyButton);
-
+  favorite.textContent=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
+  const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';
+  utilityRow.append(favorite,historyButton);body.appendChild(utilityRow);
 
   const badges = document.createElement('div');
   badges.className = 'badge-row';
@@ -431,7 +470,7 @@ function createProductCard(group) {
     comparison.textContent = tr(`${offers.length} precios`);
     badges.appendChild(comparison);
   }
-  body.appendChild(badges);
+  if(badges.childElementCount)body.appendChild(badges);
 
   const name = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
   name.className = 'card-name';
@@ -440,16 +479,13 @@ function createProductCard(group) {
 
   const priceRow = document.createElement('div');
   priceRow.className = 'card-price-row';
-  const price = document.createElement('span');
-  price.className = hasPrice(product) ? 'card-price' : 'price-unavailable';
-  price.textContent = tr(hasPrice(product)
-    ? `${storeCount > 1 ? 'Desde ' : ''}${priceLabel(product.precio_usd)}`
-    : 'Precio no disponible');
+  const price = document.createElement('div');
+  appendCardPrice(price,hasPrice(product)?product.precio_usd:null,storeCount>1);
   priceRow.appendChild(price);
   if (product.en_oferta && Number.isFinite(product.precio_original_usd) && product.precio_original_usd > 0) {
     const oldPrice = document.createElement('span');
     oldPrice.className = 'card-price-old';
-    oldPrice.textContent = priceLabel(product.precio_original_usd);
+    oldPrice.textContent = priceLabel(product.precio_original_usd).split(' · ')[0];
     priceRow.appendChild(oldPrice);
   }
   body.appendChild(priceRow);
@@ -474,10 +510,6 @@ function createProductCard(group) {
       el.dataset.action='external';
     }
   });
-  const actionHint = document.createElement('span');
-  actionHint.className = 'action-feedback';
-  actionHint.textContent = storeCount > 1 ? tr('Comparar precios') : targetUrl ? tr('Ver en tienda ↗') : '';
-  body.appendChild(actionHint);
   card.append(imageBox, body);
 
   if (storeCount > 1) {
@@ -491,7 +523,7 @@ function createProductCard(group) {
     const productUrl = safeHttpUrl(product.url);
     if (!productUrl) return card;
     const link = document.createElement('a');
-    link.className = 'card-link';
+    link.className = 'card-link card-cta';
     link.dataset.action='external';
     link.href = productUrl;
     link.target = '_blank';
