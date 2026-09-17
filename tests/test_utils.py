@@ -12,6 +12,7 @@ class CleanPriceTests(unittest.TestCase):
             "USD 1234.50": 1234.50,
             "US$ 80": 80.0,
             "U$S 99,90": 99.90,
+            "U$25.00": 25.0,
         }
         for raw, expected in cases.items():
             with self.subTest(raw=raw):

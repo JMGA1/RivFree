@@ -19,30 +19,32 @@ from utils import save_products, expand_wix_catalog, extract_wix_products
 
 BASE_URL = "https://www.baraofreeshop.com.br"
 
-CATEGORIES = [
-    # Perfumes
-    "femininos", "masculinos", "nicho-perfumes",
-    # Cosmeticos / pele (una seleccion representativa, no las 40 marcas)
-    "esteelauder", "lancomecosmeticos", "clinique", "loreal", "maybelline",
-    "larocheposay", "cerave", "victorias",
-    # Cabelo
-    "kerastase", "wella", "olaplex-cabelo",
-    # Bebidas
-    "whisky-s", "vinhos", "espumantes", "vodka-s", "gim", "licores",
-    "cervejas", "energeticos", "rumepisco", "tequilas",
-    # Eletronicos
-    "celulares", "informatica", "tabletsenotebooks", "tvs", "audioevideo",
-    "jbl", "apple", "samsung", "cameras-e-gps", "ar-condicionado",
-    "eletrodomesticos", "relogio", "games-acessorios",
-    # Comestiveis
-    "copia-de-condimentos", "alfajores", "azeites-de-oliva", "biscoitos",
-    # Bazar
-    "decoracao", "cozinha", "cristais-vidros-finos", "porcelanas",
-    # Vestuario / calcados
-    "nike", "vans", "tommy-vestimesta", "bolsas-malas-mochilas",
-    # Kids
-    "barbie", "funkopop", "pokemon", "diversosinfantil",
-]
+RESERVED_PATHS = {
+    "", "shop", "blog", "contato", "turista", "social", "trabalhe-conosco",
+    "lista-de-desejos", "home", "inicio", "o-barao", "seguranca-e-saude-no-trabalho",
+    "blog-barao", "politica-de-privacidade"
+}
+
+def discover_categories():
+    """Descubre categorías del menú actual para no depender de una lista manual."""
+    from urllib.parse import urlparse
+    from utils import get_soup
+    soup = get_soup(BASE_URL)
+    if soup is None:
+        raise RuntimeError("Barão no respondió al descubrir categorías")
+    slugs=[]
+    for a in soup.find_all("a", href=True):
+        parsed=urlparse(a["href"] if a["href"].startswith("http") else BASE_URL+a["href"])
+        if parsed.netloc and "baraofreeshop.com.br" not in parsed.netloc:
+            continue
+        path=parsed.path.strip("/")
+        if not path or "/" in path or path in RESERVED_PATHS or path.startswith("product-page"):
+            continue
+        if path not in slugs: slugs.append(path)
+    if len(slugs) < 20:
+        raise RuntimeError(f"Barão: solo se descubrieron {len(slugs)} categorías; menú posiblemente cambió")
+    return slugs
+
 
 # Algunas categorias de Barao son solo el nombre de una marca (ej: "clinique",
 # "kerastase") sin ninguna palabra que indique de que rubro son. Para que el
@@ -84,7 +86,10 @@ def scrape_category(slug, page):
             print(f"  [aviso] se cargaron {loaded} tarjetas pero solo se pudieron leer {len(products)}")
         return products
     except Exception as e:
-        print(f"  [aviso] no se pudo procesar {url}: {e}")
+        # El menú también puede contener páginas institucionales de una sola ruta.
+        # Las ignoramos, pero la validación final evita publicar un catálogo
+        # sospechosamente pequeño si realmente cambió la tienda.
+        print(f"  [aviso] se omite {url}: {e}")
         return []
 
 
@@ -100,7 +105,9 @@ def run():
                           "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
         })
 
-        for slug in CATEGORIES:
+        categories = discover_categories()
+        print(f"[Barao] {len(categories)} categorías descubiertas en el menú")
+        for slug in categories:
             print(f"[Barao] recorriendo categoria: {slug}")
             found = scrape_category(slug, page)
             print(f"[Barao]   -> {len(found)} productos")
@@ -116,6 +123,8 @@ def run():
             seen.add(key)
             unique.append(pr)
 
+    if len(unique) < 1000:
+        raise RuntimeError(f"Barão incompleto: solo se extrajeron {len(unique)} productos")
     out_dir = Path(__file__).parent.parent / "data"
     save_products(unique, "barao", out_dir)
     return unique

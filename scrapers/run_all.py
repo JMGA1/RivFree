@@ -12,6 +12,7 @@ import json
 import argparse
 import sys
 import traceback
+from publish_data import publish
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,6 +23,7 @@ sys.path.append(str(Path(__file__).parent))
 SCRAPERS = [
     ("Barão Free Shop", "barao_scraper"),
     ("DFA", "dfa_scraper"),
+    ("Mantra Free Shop", "mantra_scraper"),
     ("Neutral", "neutral_scraper"),
     ("Oprha Free Shop", "oprha_scraper"),
     ("Sineriz", "sineriz_scraper"),
@@ -30,6 +32,7 @@ SCRAPERS = [
 CACHE_FILES = {
     "Barão Free Shop": "barao.json",
     "DFA": "dfa.json",
+    "Mantra Free Shop": "mantra.json",
     "Neutral": "neutral.json",
     "Oprha Free Shop": "oprha.json",
     "Sineriz": "sineriz.json",
@@ -145,8 +148,10 @@ def main(selected_store=None):
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     out_path = DATA_DIR / "products.json"
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    attempted_stores = {name for name, module in SCRAPERS if not selected_store or module == selected_store + '_scraper'}
+    if interrupted:
+        attempted_stores = set()  # An interruption is not a completed attempt.
+    publish(DATA_DIR, output, attempted_stores)
 
     print(f"\n=== LISTO ===")
     print(f"Total productos: {len(all_products)}")

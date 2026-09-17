@@ -129,7 +129,7 @@ STORES = {
             "facebook": "https://facebook.com/mantradutyfree",
             "whatsapp": "https://wa.me/555591261678",
         },
-        "nota": "No publica precios online: catálogo solo disponible en el local.",
-        "catalogo_online": False,
+        "nota": "Catálogo online disponible; los precios y la disponibilidad pueden cambiar sin aviso.",
+        "catalogo_online": True,
     },
 }

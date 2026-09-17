@@ -35,7 +35,7 @@ CATEGORIES = {
     10: "varios",
 }
 
-HARD_SAFETY_CAP = 150  # nunca recorrer mas paginas que esto por categoria, pase lo que pase
+HARD_SAFETY_CAP = 500  # nunca recorrer mas paginas que esto por categoria, pase lo que pase
 
 
 def _total_pages(soup, fallback=1):
@@ -108,6 +108,8 @@ def scrape_category(category_id, slug):
 
         if total_pages is None:
             total_pages = _total_pages(soup, fallback=1)
+            if total_pages > HARD_SAFETY_CAP:
+                raise RuntimeError(f"Neutral {slug}: {total_pages} páginas supera el límite de seguridad")
             print(f"[Neutral]   {slug}: {total_pages} paginas en total")
 
         found = _extract_products(soup, slug)

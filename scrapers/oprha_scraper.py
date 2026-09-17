@@ -1,24 +1,12 @@
-"""
-Scraper para Oprha Free Shop (https://www.oprhafreeshop.com.br/)
-
-A diferencia de Barao y Yury's (que tambien son Wix pero necesitan Playwright
-porque cargan productos con JavaScript), este sitio SI funciona con pedidos
-HTTP simples -- la grilla de productos viene en el HTML inicial.
-
-En la pagina de categoria (listado) SOLO aparece el nombre del producto, no
-el precio. El precio esta escondido en una etiqueta meta que solo se ve en
-la ficha de cada producto individual. Por eso este scraper trabaja en 2 pasos:
-  1. Recorre las paginas de categoria y junta los links a cada ficha de producto.
-  2. Entra a CADA ficha de producto (una por una) para sacar el precio.
-Es mas lento que los otros scrapers porque hace un pedido por producto, no
-por pagina. Es normal que tarde varios minutos.
+"""Catálogo de Oprha: nombres y enlaces, sin precios públicos.
+Usa HTML y un fallback renderizado si Wix no entrega enlaces estáticos.
 """
 import re
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent))
-from utils import get_soup, save_products
+from utils import get_soup, save_products, extract_wix_detail_price
 
 BASE_URL = "https://www.oprhafreeshop.com.br"
 
@@ -80,14 +68,9 @@ def scrape_product_page(url, slug):
     if soup is None:
         return None
 
-    price_tag = soup.find("meta", attrs={"property": "product:price:amount"})
-    price = None
-    try:
-        if price_tag and price_tag.get("content"):
-            parsed_price = round(float(price_tag["content"]), 2)
-            price = parsed_price if parsed_price > 0 else None
-    except (ValueError, TypeError):
-        price = None
+    # Leer únicamente el precio visible dentro del bloque principal de la ficha.
+    # No usamos JSON-LD/SEO porque puede contener importes viejos o placeholders.
+    price, original = extract_wix_detail_price(soup)
 
     title_tag = soup.find("meta", attrs={"property": "og:title"})
     name = title_tag["content"] if title_tag and title_tag.get("content") else None
@@ -106,8 +89,8 @@ def scrape_product_page(url, slug):
         "tienda": "Oprha Free Shop",
         "nombre": name,
         "precio_usd": price,
-        "precio_original_usd": None,
-        "en_oferta": False,
+        "precio_original_usd": original,
+        "en_oferta": price is not None and original is not None,
         "categoria": CATEGORY_LABELS.get(slug, slug),
         "url": url,
         "imagen": image,
@@ -122,6 +105,26 @@ def run():
         print(f"[Oprha]   -> {len(found_urls)} fichas de producto encontradas")
         for u in found_urls:
             all_urls.setdefault(u, slug)
+
+    if not all_urls:
+        from playwright.sync_api import sync_playwright
+        from utils import expand_wix_catalog
+        from urllib.parse import urljoin
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            page = browser.new_page()
+            try:
+                for slug in CATEGORIES:
+                    page.goto(f"{BASE_URL}/{slug}", wait_until="domcontentloaded", timeout=30000)
+                    page.wait_for_selector('a[href*="/product-page/"]', timeout=20000)
+                    expand_wix_catalog(page)
+                    for href in page.locator('a[href*="/product-page/"]').evaluate_all('(links)=>links.map(a=>a.href)'):
+                        all_urls.setdefault(urljoin(BASE_URL, href), slug)
+            finally:
+                browser.close()
+
+    if not all_urls:
+        raise RuntimeError("Oprha no expone actualmente un catálogo accesible; se conserva el último catálogo válido")
 
     print(f"[Oprha] visitando {len(all_urls)} fichas de producto para sacar el precio...")
     products = []

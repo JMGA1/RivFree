@@ -14,7 +14,9 @@ HEADERS = {
                   "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 }
 
-PRICE_RE = re.compile(r"(?:USD\s*\$?|US\$|U\$S)\s*([\d.,]+)", re.IGNORECASE)
+PRICE_RE = re.compile(
+    r"(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*([\d.,]+)", re.IGNORECASE
+)
 POLITE_DELAY = 0.35
 
 
@@ -153,10 +155,32 @@ def extract_wix_products(soup, store_name, category, base_url):
         current_raw = None
         if current_tag:
             current_raw = current_tag.get("data-wix-price") or current_tag.get_text(" ", strip=True)
-        price = clean_price(current_raw)
+        # Wix can put a bare machine number in data-wix-price.
+        # Prefer visible currency text, then that explicit price attribute.
+        price = clean_price(current_tag.get_text(" ", strip=True)) if current_tag else None
+        if price is None and current_tag:
+            raw = current_tag.get("data-wix-price", "").strip()
+            price = clean_price(raw)
+            if price is None and re.fullmatch(r"\d+(?:[.,]\d{1,2})?", raw):
+                price = float(raw.replace(",", "."))
+        if price is None:
+            fallback_tag = root.select_one('[data-hook="product-item-price"], [data-hook="formatted-primary-price"]')
+            price = clean_price(fallback_tag.get_text(" ", strip=True)) if fallback_tag else None
+
+        # Wix cambia seguido los data-hook. Como respaldo, leer el texto visible
+        # completo de la tarjeta (ej.: "Preço normal US$ 29,90 Preço promocional US$ 17,99").
+        parsed_card = parse_wix_product_text(root.get_text(" ", strip=True))
+        if parsed_card:
+            parsed_name, parsed_current, parsed_original = parsed_card
+            if price is None:
+                price = parsed_current
+            if not name and parsed_name:
+                name = parsed_name
         if price is not None and price <= 0:
             price = None
         original = clean_price(old_tag.get_text(" ", strip=True)) if old_tag else None
+        if original is None and parsed_card:
+            original = parsed_card[2]
         if original is not None and (price is None or original <= price):
             original = None
 
@@ -182,3 +206,16 @@ def save_products(products, store_name, out_dir):
         json.dump(products, f, ensure_ascii=False, indent=2)
     print(f"[{store_name}] guardados {len(products)} productos en {path}")
     return path
+
+
+def extract_wix_detail_price(soup):
+    """Read the product's visible primary price, never related-item prices."""
+    primary = soup.select_one('[data-hook="product-prices-wrapper"] [data-hook="formatted-primary-price"]')
+    if primary is None:
+        return None, None
+    current = clean_price(primary.get_text(' ', strip=True))
+    old = soup.select_one('[data-hook="product-prices-wrapper"] [data-hook="formatted-secondary-price"]')
+    original = clean_price(old.get_text(' ', strip=True)) if old else None
+    if current is None or current <= 0:
+        return None, None
+    return current, original if original and original > current else None

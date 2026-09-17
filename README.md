@@ -1,10 +1,10 @@
-# Comparador Frontera 🛃
+# RivFree 🛃
 
 Compará precios de los freeshops de Rivera en un solo lugar, con filtros por
 tienda, categoría, precio y ofertas.
 
 El proyecto incluye datos guardados en `data/products.json` y scrapers para
-**Barão, DFA, Neutral, Oprha, Sineriz y Yury's**. 
+**Barão, DFA, Mantra, Neutral, Oprha, Sineriz y Yury's**. 
 
 Cuando el mismo producto y su variante aparecen en varias tiendas, el sitio
 los reúne en una tarjeta. El botón **Comparar precios** abre el detalle ordenado
@@ -25,3 +25,7 @@ inicio y el modo oscuro queda guardado para la próxima visita.
 
 
 
+
+## Actualización
+
+Ver [ACTUALIZACION.md](ACTUALIZACION.md) para instalación, funciones nuevas, configuración y pruebas.
