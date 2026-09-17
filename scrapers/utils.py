@@ -96,7 +96,9 @@ def expand_wix_catalog(page, max_rounds=200):
     previous_count = -1
     stable_rounds = 0
     for _ in range(max_rounds):
-        count = page.locator('[data-hook="product-item-root"]').count()
+        roots_count = page.locator('[data-hook="product-item-root"]').count()
+        links_count = page.locator('a[href*="/product-page/"]').count()
+        count = max(roots_count, links_count)
         stable_rounds = stable_rounds + 1 if count == previous_count else 0
         previous_count = count
         buttons = page.get_by_role("button", name=re.compile(
@@ -116,35 +118,99 @@ def expand_wix_catalog(page, max_rounds=200):
     raise RuntimeError("Límite de carga alcanzado; no se considera catálogo completo")
 
 
-def collect_wix_category(page, store, category, base_url):
+def collect_wix_category(page, store, category, base_url, with_status=False):
+    """Recorre una categoría Wix conservando lo ya leído si una página falla.
+
+    with_status=True devuelve (productos, warning_parcial). Sin esa opción se
+    mantiene la API histórica y devuelve solamente la lista.
+    """
     from bs4 import BeautifulSoup
     products = {}
     signatures = set()
+    warning = None
+
+    def finish():
+        rows = list(products.values())
+        return (rows, warning) if with_status else rows
+
     for _ in range(300):
-        loaded = expand_wix_catalog(page)
-        found = extract_wix_products(BeautifulSoup(page.content(), 'html.parser'), store, category, base_url)
-        signature = tuple(sorted(x['url'] for x in found))
-        if not found or signature in signatures or len(found) < loaded:
-            raise RuntimeError("Página vacía, repetida o con tarjetas ilegibles")
+        expand_error = None
+        try:
+            loaded = expand_wix_catalog(page)
+        except Exception as exc:
+            # Aunque "cargar más" falle, el DOM puede contener decenas de
+            # productos válidos. Los extraemos antes de decidir abortar.
+            expand_error = str(exc)
+            loaded = max(
+                page.locator('[data-hook="product-item-root"]').count(),
+                page.locator('a[href*="/product-page/"]').count(),
+            )
+
+        found = extract_wix_products(
+            BeautifulSoup(page.content(), 'html.parser'), store, category, base_url
+        )
+        signature = tuple(sorted(x['url'] for x in found if x.get('url')))
+        if not found:
+            if products:
+                warning = warning or "página posterior vacía/ilegible; se conserva avance"
+                return finish()
+            raise RuntimeError("Página Wix vacía o ilegible")
+        if signature in signatures:
+            if products:
+                warning = warning or "paginación repetida; se conserva avance"
+                return finish()
+            raise RuntimeError("Página Wix repetida")
+        if loaded and len(found) < loaded:
+            # No descartamos la página: guardamos las tarjetas legibles y
+            # reportamos la diferencia para el resumen.
+            warning = warning or f"tarjetas legibles {len(found)}/{loaded}"
+
         signatures.add(signature)
-        products.update((x['url'], x) for x in found)
+        for item in found:
+            products[item['url']] = merge_product_records(products.get(item['url']), item)
+
+        if expand_error:
+            warning = warning or f"carga parcial: {expand_error}"
+            return finish()
+
         next_button = page.locator('[data-hook="pagination__next"], a[rel="next"]').first
-        if not next_button.count() or not next_button.is_visible() or not next_button.is_enabled() or next_button.get_attribute('aria-disabled') == 'true':
-            return list(products.values())
-        next_button.click(timeout=10000)
-        page.wait_for_timeout(2000)
-    raise RuntimeError("Límite de paginación Wix alcanzado")
+        if (not next_button.count() or not next_button.is_visible()
+                or not next_button.is_enabled()
+                or next_button.get_attribute('aria-disabled') == 'true'):
+            return finish()
+        try:
+            next_button.click(timeout=10000)
+            page.wait_for_timeout(2000)
+        except Exception as exc:
+            warning = warning or f"no se pudo abrir página siguiente: {exc}"
+            return finish()
+
+    if products:
+        warning = warning or "límite de paginación Wix alcanzado"
+        return finish()
+    raise RuntimeError("Límite de paginación Wix alcanzado sin productos")
 
 
-async def collect_wix_category_async(page, store, category, base_url):
+async def collect_wix_category_async(page, store, category, base_url, with_status=False):
+    """Versión async que conserva avances por página igual que la síncrona."""
     from bs4 import BeautifulSoup
     products = {}
     signatures = set()
+    warning = None
+
+    def finish():
+        rows = list(products.values())
+        return (rows, warning) if with_status else rows
+
     for _ in range(300):
         previous = -1
         stable = 0
+        load_error = None
+        count = 0
         for round_no in range(200):
-            count = await page.locator('[data-hook="product-item-root"]').count()
+            roots_count = await page.locator('[data-hook="product-item-root"]').count()
+            links_count = await page.locator('a[href*="/product-page/"]').count()
+            count = max(roots_count, links_count)
             stable = stable + 1 if count == previous else 0
             previous = count
             buttons = page.get_by_role('button', name=re.compile(
@@ -154,25 +220,63 @@ async def collect_wix_category_async(page, store, category, base_url):
                 button = buttons.last
                 active = await button.is_visible() and await button.is_enabled()
                 if active:
-                    await button.click(timeout=10000)
+                    try:
+                        await button.click(timeout=10000)
+                    except Exception as exc:
+                        load_error = f"cargar más: {exc}"
+                        break
             if stable >= 4 and not active:
                 break
-            if stable >= 8 or round_no == 199:
-                raise RuntimeError('Carga Wix incompleta')
+            if stable >= 8:
+                load_error = "la grilla dejó de crecer con cargar-más activo"
+                break
+            if round_no == 199:
+                load_error = "límite de carga Wix alcanzado"
+                break
             await page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
             await page.wait_for_timeout(1500)
-        found = extract_wix_products(BeautifulSoup(await page.content(), 'html.parser'), store, category, base_url)
-        signature = tuple(sorted(x['url'] for x in found))
-        if not found or signature in signatures or len(found) < count:
-            raise RuntimeError('Página Wix vacía, repetida o ilegible')
+
+        found = extract_wix_products(
+            BeautifulSoup(await page.content(), 'html.parser'), store, category, base_url
+        )
+        signature = tuple(sorted(x['url'] for x in found if x.get('url')))
+        if not found:
+            if products:
+                warning = warning or "página posterior vacía/ilegible; se conserva avance"
+                return finish()
+            raise RuntimeError('Página Wix vacía o ilegible')
+        if signature in signatures:
+            if products:
+                warning = warning or 'paginación repetida; se conserva avance'
+                return finish()
+            raise RuntimeError('Página Wix repetida')
+        if count and len(found) < count:
+            warning = warning or f"tarjetas legibles {len(found)}/{count}"
+
         signatures.add(signature)
-        products.update((x['url'], x) for x in found)
+        for item in found:
+            products[item['url']] = merge_product_records(products.get(item['url']), item)
+
+        if load_error:
+            warning = warning or load_error
+            return finish()
+
         button = page.locator('[data-hook="pagination__next"], a[rel="next"]').first
-        if not await button.count() or not await button.is_visible() or not await button.is_enabled() or await button.get_attribute('aria-disabled') == 'true':
-            return list(products.values())
-        await button.click(timeout=10000)
-        await page.wait_for_timeout(2000)
-    raise RuntimeError('Límite de paginación Wix alcanzado')
+        if (not await button.count() or not await button.is_visible()
+                or not await button.is_enabled()
+                or await button.get_attribute('aria-disabled') == 'true'):
+            return finish()
+        try:
+            await button.click(timeout=10000)
+            await page.wait_for_timeout(2000)
+        except Exception as exc:
+            warning = warning or f"no se pudo abrir página siguiente: {exc}"
+            return finish()
+
+    if products:
+        warning = warning or 'límite de paginación Wix alcanzado'
+        return finish()
+    raise RuntimeError('Límite de paginación Wix alcanzado sin productos')
 
 
 def extract_image_url(container):
@@ -190,59 +294,152 @@ def extract_image_url(container):
     return None
 
 
+def _price_values_from_text(text):
+    values = []
+    for match in PRICE_RE.finditer(text or ""):
+        value = clean_price(match.group(0))
+        if value is not None and value > 0:
+            values.append(value)
+    return values
+
+
+def _nearest_single_product_container(link, max_levels=7):
+    """Busca un contenedor que pertenezca solo a la ficha enlazada.
+
+    Wix cambia seguido la ubicación del precio. A veces el enlace/nombre queda
+    dentro de product-item-root y el precio en un padre inmediato. Subimos solo
+    mientras el contenedor no mezcle más de un producto para no asociar el
+    precio de una tarjeta vecina.
+    """
+    container = link
+    best = link
+    for _ in range(max_levels):
+        if container is None:
+            break
+        product_urls = {
+            a.get("href") for a in container.select('a[href*="/product-page/"]')
+            if a.get("href")
+        }
+        if len(product_urls) > 1:
+            break
+        best = container
+        if _price_values_from_text(container.get_text(" ", strip=True)):
+            return container
+        container = container.parent
+    return best
+
+
+def merge_product_records(old, new):
+    """Fusiona duplicados conservando la observación más completa.
+
+    Regla principal: un duplicado con precio observado gana sobre uno sin
+    precio. Los campos faltantes se completan sin borrar información útil.
+    """
+    if not old:
+        return dict(new)
+    if not new:
+        return dict(old)
+    merged = dict(old)
+    old_price = old.get("precio_usd")
+    new_price = new.get("precio_usd")
+    prefer_new = new_price is not None or old_price is None
+    if prefer_new:
+        for key, value in new.items():
+            if value is not None and value != "":
+                merged[key] = value
+    else:
+        for key, value in new.items():
+            if key not in merged or merged.get(key) in (None, ""):
+                merged[key] = value
+    # Un registro fresco reemplaza la marca de cache si efectivamente observó
+    # datos de esta corrida.
+    if not new.get("datos_anteriores"):
+        merged.pop("datos_anteriores", None)
+    return merged
+
+
+def dedupe_products_prefer_complete(products):
+    by_key = {}
+    order = []
+    for product in products:
+        if not isinstance(product, dict):
+            continue
+        key = product.get("url") or product.get("nombre")
+        if not key:
+            continue
+        if key not in by_key:
+            order.append(key)
+            by_key[key] = dict(product)
+        else:
+            by_key[key] = merge_product_records(by_key[key], product)
+    return [by_key[key] for key in order]
+
+
+def catalog_metrics(products):
+    products = [p for p in products if isinstance(p, dict)]
+    return {
+        "productos_total": len(products),
+        "productos_anteriores": sum(bool(p.get("datos_anteriores")) for p in products),
+        "precios_disponibles": sum(isinstance(p.get("precio_usd"), (int, float)) and p.get("precio_usd", 0) > 0 for p in products),
+        "precios_pendientes": sum(not (isinstance(p.get("precio_usd"), (int, float)) and p.get("precio_usd", 0) > 0) for p in products),
+    }
+
+
 def extract_wix_products(soup, store_name, category, base_url):
-    """Lee las tarjetas completas de Wix: imagen, nombre, precio y enlace."""
-    products = []
-    roots = soup.select('[data-hook="product-item-root"]')
-    for root in roots:
-        link = root.select_one('a[href*="/product-page/"]')
-        name_tag = root.select_one('[data-hook="product-item-name"]')
-        if not link:
-            continue
-        image_tag = root.find("img")
-        name = name_tag.get_text(" ", strip=True) if name_tag else (image_tag.get("alt", "") if image_tag else link.get_text(" ", strip=True))
+    """Lee tarjetas Wix sin depender de un único data-hook.
+
+    Primero usa product-item-root cuando existe. Luego recorre enlaces de
+    producto y busca el contenedor padre más cercano que pertenezca a una sola
+    ficha. Esto cubre layouts donde Wix deja el precio fuera del root.
+    """
+    by_url = {}
+
+    def build_product(link, container):
         href = urljoin(base_url, link.get("href", ""))
-        if not name or not href:
-            continue
+        if not href:
+            return None
+        name_tag = container.select_one('[data-hook="product-item-name"], [data-hook="product-name"], h2, h3, h4') if container else None
+        image_tag = (container.find("img") if container else None) or link.find("img")
+        name = name_tag.get_text(" ", strip=True) if name_tag else link.get_text(" ", strip=True)
+        if not name and image_tag:
+            name = image_tag.get("alt", "").strip()
+        if not name:
+            return None
 
-        current_tag = root.select_one('[data-hook="product-item-price-to-pay"]')
-        old_tag = root.select_one(
+        current_tag = container.select_one(
+            '[data-hook="product-item-price-to-pay"], '
+            '[data-hook="formatted-primary-price"], '
+            '[data-hook="product-item-price"]'
+        ) if container else None
+        old_tag = container.select_one(
             '[data-hook="product-item-price-before-discount"], '
-            '[data-hook="product-item-price-before-discount-to-pay"]'
-        )
-        current_raw = None
-        if current_tag:
-            current_raw = current_tag.get("data-wix-price") or current_tag.get_text(" ", strip=True)
-        # Wix can put a bare machine number in data-wix-price.
-        # Prefer visible currency text, then that explicit price attribute.
-        price = clean_price(current_tag.get_text(" ", strip=True)) if current_tag else None
-        if price is None and current_tag:
-            raw = current_tag.get("data-wix-price", "").strip()
-            price = clean_price(raw)
-            if price is None and re.fullmatch(r"\d+(?:[.,]\d{1,2})?", raw):
-                price = float(raw.replace(",", "."))
-        if price is None:
-            fallback_tag = root.select_one('[data-hook="product-item-price"], [data-hook="formatted-primary-price"]')
-            price = clean_price(fallback_tag.get_text(" ", strip=True)) if fallback_tag else None
+            '[data-hook="product-item-price-before-discount-to-pay"], '
+            '[data-hook="formatted-secondary-price"]'
+        ) if container else None
 
-        # Wix cambia seguido los data-hook. Como respaldo, leer el texto visible
-        # completo de la tarjeta (ej.: "Preço normal US$ 29,90 Preço promocional US$ 17,99").
-        parsed_card = parse_wix_product_text(root.get_text(" ", strip=True))
-        if parsed_card:
-            parsed_name, parsed_current, parsed_original = parsed_card
+        price = None
+        if current_tag:
+            price = clean_price(current_tag.get_text(" ", strip=True))
             if price is None:
-                price = parsed_current
-            if not name and parsed_name:
-                name = parsed_name
+                raw = (current_tag.get("data-wix-price") or "").strip()
+                price = clean_price(raw)
+                if price is None and re.fullmatch(r"\d+(?:[.,]\d{1,2})?", raw):
+                    price = float(raw.replace(",", "."))
+
+        text = container.get_text(" ", strip=True) if container else link.get_text(" ", strip=True)
+        parsed_card = parse_wix_product_text(text)
+        if parsed_card and price is None:
+            price = parsed_card[1]
         if price is not None and price <= 0:
             price = None
+
         original = clean_price(old_tag.get_text(" ", strip=True)) if old_tag else None
         if original is None and parsed_card:
             original = parsed_card[2]
         if original is not None and (price is None or original <= price):
             original = None
 
-        products.append({
+        return {
             "tienda": store_name,
             "nombre": name,
             "precio_usd": price,
@@ -250,10 +447,27 @@ def extract_wix_products(soup, store_name, category, base_url):
             "en_oferta": price is not None and original is not None,
             "categoria": category,
             "url": href,
-            "imagen": extract_image_url(root),
-        })
-    return products
+            "imagen": extract_image_url(container or link),
+        }
 
+    # Camino normal de Wix.
+    for root in soup.select('[data-hook="product-item-root"]'):
+        link = root.select_one('a[href*="/product-page/"]')
+        if not link:
+            continue
+        product = build_product(link, root)
+        if product:
+            by_url[product["url"]] = merge_product_records(by_url.get(product["url"]), product)
+
+    # Respaldo: el precio puede estar en un padre externo al root o Wix puede
+    # haber cambiado completamente el hook del root.
+    for link in soup.select('a[href*="/product-page/"]'):
+        container = _nearest_single_product_container(link)
+        product = build_product(link, container)
+        if product:
+            by_url[product["url"]] = merge_product_records(by_url.get(product["url"]), product)
+
+    return list(by_url.values())
 
 def save_products(products, store_name, out_dir):
     """Guarda los productos de una tienda en data/<tienda>.json"""

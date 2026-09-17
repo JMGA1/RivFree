@@ -1,23 +1,28 @@
-"""Oprha: descubre categorías y lee su catálogo renderizado con paginación.
-Los fallos se registran como parciales y no eliminan los productos anteriores.
-"""
+"""Oprha Free Shop: resuelve dominio vigente y no confunde sitio caído con 'sin precio'."""
 import re
 import sys
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 sys.path.append(str(Path(__file__).parent))
-from utils import finalize_scrape, load_previous_store, navigate, discover_menu_categories, get_soup, save_products, extract_wix_detail_price
+from utils import (
+    catalog_metrics,
+    clean_price,
+    collect_wix_category,
+    dedupe_products_prefer_complete,
+    extract_wix_detail_price,
+    extract_wix_products,
+    finalize_scrape,
+    get_soup,
+)
 
-BASE_URL = "https://www.oprhafreeshop.com.br"
+BASE_CANDIDATES = [
+    "https://www.oprhafreeshop.com",
+    "https://www.oprhafreeshop.com.br",
+]
 FALLBACK_CATEGORIES = ["masculinos-a-l", "perfumesfemininos", "cosmeticos"]
 CATEGORY_LABELS = {"masculinos-a-l": "perfumeria-masculinos"}
-MAX_PAGES_PER_CATEGORY = 50
-CATEGORY_WORKERS = 5
-DETAIL_WORKERS = 10
 LAST_RUN_STATUS = {}
-
-# Páginas institucionales que no son categorías de catálogo.
 IGNORED_SLUGS = {
     "", "home", "inicio", "sobre", "sobre-nos", "contato", "contact", "contacto",
     "politica-de-privacidade", "politica-privacidade", "termos", "termos-de-uso",
@@ -26,104 +31,82 @@ IGNORED_SLUGS = {
 }
 
 
-def _load_previous():
-    return load_previous_store("oprha", Path(__file__).parent.parent / "data")
+def _probe_base():
+    """Devuelve el primer dominio que responde con una página real, no 404."""
+    import requests
+    from utils import HEADERS
+    for base in BASE_CANDIDATES:
+        try:
+            response = requests.get(base + "/", headers=HEADERS, timeout=30, allow_redirects=True)
+            print(f"[Oprha] prueba {base}: HTTP {response.status_code} -> {response.url}")
+            if response.status_code == 200 and len(response.text) > 500:
+                final = response.url.rstrip("/")
+                parsed = urlparse(final)
+                return f"{parsed.scheme}://{parsed.netloc}"
+        except requests.RequestException as exc:
+            print(f"[Oprha] [aviso] {base}: {exc}")
+    raise RuntimeError(
+        "Oprha: no se encontró una entrada web vigente al catálogo; "
+        "se conservan datos anteriores y NO se interpreta como 'sin precio'"
+    )
 
 
-def _slug_from_url(href):
+def _slug_from_url(base, href=None):
+    # Compatibilidad con tests/uso anterior: _slug_from_url(href).
+    if href is None:
+        href = base
+        base = BASE_CANDIDATES[0]
     try:
-        parsed = urlparse(urljoin(BASE_URL, href))
+        parsed = urlparse(urljoin(base, href))
     except ValueError:
         return None
-    host = parsed.netloc.lower().removeprefix("www.")
-    base_host = urlparse(BASE_URL).netloc.lower().removeprefix("www.")
-    if host and host != base_host:
+    if parsed.netloc.removeprefix("www.") != urlparse(base).netloc.removeprefix("www."):
         return None
     path = parsed.path.strip("/")
     if not path or "/" in path or path.startswith("product-page"):
         return None
     slug = path.lower()
-    if slug in IGNORED_SLUGS or slug.startswith(("_", "wix-")):
+    if slug in IGNORED_SLUGS or slug.startswith(("_", "wix-", "blank-")):
         return None
     return slug
 
 
-def _discover_categories_rendered():
-    """Lee el menú ya renderizado cuando Wix no lo incluye en el HTML inicial."""
-    from playwright.sync_api import sync_playwright
-
+def discover_categories(base):
     candidates = set()
-    try:
-        with sync_playwright() as pw:
-            browser = pw.chromium.launch(headless=True)
-            page = browser.new_page()
-            try:
-                page.goto(BASE_URL, wait_until="domcontentloaded", timeout=40000)
-                page.wait_for_timeout(1200)
-                hrefs = page.locator(
-                    'nav a[href], header a[href], [role="navigation"] a[href]'
-                ).evaluate_all('links => links.map(a => a.href)')
-                if not hrefs:
-                    hrefs = page.locator('a[href]').evaluate_all('links => links.map(a => a.href)')
-                for href in hrefs:
-                    slug = _slug_from_url(href)
-                    if slug:
-                        candidates.add(slug)
-            finally:
-                browser.close()
-    except Exception as exc:
-        print(f"[Oprha] [aviso] no se pudo descubrir el menú renderizado: {exc}")
-    return candidates
-
-
-def discover_categories():
-    """Descubre slugs de categorías desde navegación HTML y sitemap.
-
-    No asumimos que todo enlace sea categoría: después cada candidato se valida
-    porque collect_product_urls solo lo acepta si realmente contiene productos.
-    """
-    candidates = set()
-    home = get_soup(BASE_URL, retries=4, delay=2, timeout=40)
+    home = get_soup(base, retries=2, delay=2, timeout=30)
     if home is not None:
-        selectors = "nav a[href], header a[href], [role='navigation'] a[href]"
-        links = home.select(selectors) or home.find_all("a", href=True)
+        links = home.select("nav a[href], header a[href], [role='navigation'] a[href]") or home.find_all("a", href=True)
         for anchor in links:
-            slug = _slug_from_url(anchor.get("href"))
+            slug = _slug_from_url(base, anchor.get("href"))
             if slug:
                 candidates.add(slug)
 
-    # Si el menú no vino renderizado en el HTML, usamos el sitemap como
-    # segunda fuente. Así evitamos confundir páginas institucionales con
-    # categorías cuando la navegación normal sí está disponible.
-    if len(candidates) < 2:
-        sitemap = get_soup(f"{BASE_URL}/sitemap.xml", retries=2, delay=1, timeout=30)
-        if sitemap is not None:
-            for loc in sitemap.find_all("loc"):
-                slug = _slug_from_url(loc.get_text(" ", strip=True))
-                if slug:
-                    candidates.add(slug)
+    sitemap = get_soup(f"{base}/sitemap.xml", retries=1, delay=1, timeout=20)
+    if sitemap is not None:
+        for loc in sitemap.find_all("loc"):
+            slug = _slug_from_url(base, loc.get_text(" ", strip=True))
+            if slug:
+                candidates.add(slug)
 
-    # Si todavía solo vemos muy pocos candidatos, intentamos el menú ya
-    # renderizado por Wix antes de recurrir a los slugs históricos.
-    if len(candidates) < 4:
-        candidates.update(_discover_categories_rendered())
-
-    # Estos slugs solo sirven de red de seguridad si el menú/sitemap cambia.
+    # Fallback histórico solo si el dominio sí respondió; nunca sirve para
+    # afirmar que el sitio actual publica o no publica precios.
     if not candidates:
         candidates.update(FALLBACK_CATEGORIES)
     return sorted(candidates)
 
 
 def scrape_product_page(url, slug):
-    soup = get_soup(url, retries=3, delay=1, timeout=30)
+    """Compatibilidad y fallback HTTP para una ficha individual.
+
+    Solo acepta como precio el bloque visible principal de Wix; metadatos SEO
+    por sí solos nunca se consideran un precio publicado.
+    """
+    soup = get_soup(url, retries=2, delay=1, timeout=30)
     if soup is None:
         return None
-
-    # Solo precio visible del bloque principal; ignoramos metadatos SEO viejos.
     price, original = extract_wix_detail_price(soup)
-
     title_tag = soup.find("meta", attrs={"property": "og:title"})
-    name = title_tag["content"] if title_tag and title_tag.get("content") else None
+    name = title_tag.get("content") if title_tag else None
     if not name:
         h1 = soup.find("h1")
         name = h1.get_text(" ", strip=True) if h1 else None
@@ -131,62 +114,135 @@ def scrape_product_page(url, slug):
         name = re.sub(r"\s*\|\s*oprha\s*$", "", name, flags=re.IGNORECASE).strip()
     if not name:
         return None
-
-    img_tag = soup.find("meta", attrs={"property": "og:image"})
-    image = img_tag["content"] if img_tag and img_tag.get("content") else None
-
+    image_tag = soup.find("meta", attrs={"property": "og:image"})
+    image = image_tag.get("content") if image_tag else None
     return {
         "tienda": "Oprha Free Shop",
         "nombre": name,
         "precio_usd": price,
         "precio_original_usd": original,
-        "en_oferta": price is not None and original is not None,
+        "en_oferta": bool(price is not None and original is not None),
         "categoria": CATEGORY_LABELS.get(slug, slug),
         "url": url,
         "imagen": image,
     }
 
 
+def _recover_detail(page, product):
+    from bs4 import BeautifulSoup
+    try:
+        response = page.goto(product["url"], wait_until="domcontentloaded", timeout=30000)
+        if response is not None and response.status >= 400:
+            return False
+        page.wait_for_timeout(800)
+        current, old = extract_wix_detail_price(BeautifulSoup(page.content(), "html.parser"))
+        if current is None:
+            return False
+        product.update(precio_usd=current, precio_original_usd=old, en_oferta=bool(old and old > current), precio_fuente="ficha")
+        return True
+    except Exception:
+        return False
+
+
 def run():
     global LAST_RUN_STATUS
     LAST_RUN_STATUS = {}
-    from playwright.sync_api import sync_playwright
     from bs4 import BeautifulSoup
-    from utils import collect_wix_category
-    products = {}
+    from playwright.sync_api import sync_playwright
+
+    base = _probe_base()
+    categories = discover_categories(base)
+    print(f"[Oprha] dominio activo: {base}; {len(categories)} candidatos")
+
+    products = []
     failures = []
-    categories = discover_categories()
+    partial_categories = []
+    ignored = []
+    recovered = 0
+    detail_failed = 0
+
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True)
-        page = browser.new_page()
+        browser = pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+        page = browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36")
         try:
             for slug in categories:
+                url = f"{base}/{slug}"
                 try:
-                    navigate(page, f"{BASE_URL}/{slug}", '[data-hook="product-item-root"]')
-                    found = collect_wix_category(page, 'Oprha Free Shop', CATEGORY_LABELS.get(slug, slug), BASE_URL)
-                    products.update((x['url'], x) for x in found)
-                    print(f"[Oprha] {slug}: {len(found)} productos")
+                    response = page.goto(url, wait_until="domcontentloaded", timeout=40000)
+                    if response is not None and response.status >= 400:
+                        failures.append(slug)
+                        print(f"[Oprha] [aviso] {slug}: HTTP {response.status}")
+                        continue
+                    page.wait_for_timeout(1200)
+                    roots = page.locator('[data-hook="product-item-root"]').count()
+                    links = page.locator('a[href*="/product-page/"]').count()
+                    if roots == 0 and links == 0:
+                        ignored.append(slug)
+                        continue
+                    if roots:
+                        found, partial_warning = collect_wix_category(
+                            page, "Oprha Free Shop", CATEGORY_LABELS.get(slug, slug),
+                            base, with_status=True
+                        )
+                    else:
+                        found = extract_wix_products(
+                            BeautifulSoup(page.content(), "html.parser"),
+                            "Oprha Free Shop", CATEGORY_LABELS.get(slug, slug), base
+                        )
+                        partial_warning = None
+                    if not found:
+                        failures.append(slug)
+                        continue
+                    if partial_warning:
+                        partial_categories.append(slug)
+                        print(f"[Oprha] [aviso] {slug}: parcial ({partial_warning})")
+                    products.extend(found)
+                    print(f"[Oprha] {slug}: {len(found)} productos; {sum(p.get('precio_usd') is not None for p in found)} con precio")
                 except Exception as exc:
                     failures.append(slug)
-                    print(f"[Oprha] categoría {slug}: {exc}")
-            # Only the main product block can supply a public price.
-            for product in products.values():
-                if product.get('precio_usd') is not None:
+                    print(f"[Oprha] [aviso] categoría {slug}: {exc}")
+
+            unique = dedupe_products_prefer_complete(products)
+            for product in unique:
+                if product.get("precio_usd") is not None:
                     continue
-                try:
-                    navigate(page, product['url'], '[data-hook="product-title"], h1', attempts=2)
-                    page.wait_for_timeout(1500)
-                    current, old = extract_wix_detail_price(BeautifulSoup(page.content(), 'html.parser'))
-                    product.update(precio_usd=current, precio_original_usd=old, en_oferta=bool(current and old))
-                except Exception as exc:
-                    failures.append(product['url'])
-                    print(f"[Oprha] ficha no leída: {exc}")
+                if _recover_detail(page, product):
+                    recovered += 1
+                else:
+                    detail_failed += 1
         finally:
             browser.close()
+
+    if not unique:
+        raise RuntimeError(
+            f"Oprha: {base} respondió, pero no se encontró un catálogo legible; "
+            "se conservan los datos anteriores"
+        )
+
+    metrics = catalog_metrics(unique)
+    metrics.update({
+        "dominio_activo": base,
+        "categorias_candidatas": len(categories),
+        "categorias_fallidas": len(failures),
+        "categorias_parciales": len(partial_categories),
+        "rutas_ignoradas": len(ignored),
+        "productos_frescos": len(unique),
+        "precios_observados": metrics["precios_disponibles"] - recovered,
+        "precios_recuperados": recovered,
+        "fichas_pendientes": detail_failed,
+    })
+    warning_parts = []
     if failures:
-        LAST_RUN_STATUS = {'partial': True, 'warning': f'Oprha: {len(failures)} páginas no se pudieron leer'}
-    return finalize_scrape(list(products.values()), 'oprha', Path(__file__).parent.parent / 'data', LAST_RUN_STATUS)
+        warning_parts.append(f"{len(failures)} categorías/rutas fallaron")
+    if partial_categories:
+        warning_parts.append(f"{len(partial_categories)} categorías se conservaron parcialmente")
+    if detail_failed:
+        warning_parts.append(f"{detail_failed} productos siguen sin precio observado")
+    warning = "Oprha parcial: " + "; ".join(warning_parts) if warning_parts else None
+    LAST_RUN_STATUS = {"partial": bool(warning), "warning": warning, "metrics": metrics}
+    finalize_scrape(unique, "oprha", Path(__file__).parent.parent / "data", LAST_RUN_STATUS)
+    return unique
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

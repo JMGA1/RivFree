@@ -15,10 +15,18 @@ on:
         type: boolean
         default: false
       tienda:
-        description: "Tienda a actualizar (todas por defecto)"
+        description: "Tienda a actualizar (all = todas)"
         type: choice
-        default: todas
-        options: [todas, barao, dfa, mantra, neutral, oprha, sineriz, yurys]
+        default: all
+        options:
+          - all
+          - barao
+          - dfa
+          - mantra
+          - neutral
+          - oprha
+          - sineriz
+          - yurys
 
 permissions:
   contents: write
@@ -33,7 +41,8 @@ concurrency:
 jobs:
   publicar:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 180
+
     env:
       PYTHONUNBUFFERED: "1"
 
@@ -75,28 +84,35 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Ejecutar scrapers
-        env:
-          SCRAPER_STORE: ${{ inputs.tienda }}
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        timeout-minutes: 150
+        shell: bash
         run: |
-          if [ "$SCRAPER_STORE" = "todas" ] || [ -z "$SCRAPER_STORE" ]; then
-            python scrapers/run_all.py
+          set -o pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.tienda }}" != "all" ] && [ -n "${{ inputs.tienda }}" ]; then
+            echo "Actualizando solamente: ${{ inputs.tienda }}"
+            python scrapers/run_all.py --store "${{ inputs.tienda }}" 2>&1 | tee scrape.log
           else
-            python scrapers/run_all.py --store "$SCRAPER_STORE"
+            echo "Actualizando todas las tiendas"
+            python scrapers/run_all.py 2>&1 | tee scrape.log
           fi
+
+      # Se ejecuta incluso si el paso de scraping falla o alcanza su timeout.
+      # Los JSON individuales que ya terminaron y el log quedan descargables.
+      - name: Guardar respaldo del scraping
+        if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true))
+        uses: actions/upload-artifact@v4
+        with:
+          name: rivfree-scraping-${{ github.run_id }}
+          path: |
+            data/
+            scrape.log
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Preparar versión y datos públicos
         run: |
           python scrapers/publish_data.py
-
-      # Guardamos el resultado del scraping aunque falle Git posteriormente.
-      - name: Guardar respaldo del scraping
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
-        uses: actions/upload-artifact@v4
-        with:
-          name: rivfree-datos-${{ github.run_id }}
-          path: data/
-          retention-days: 7
 
       - name: Guardar productos actualizados
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
@@ -115,12 +131,11 @@ jobs:
 
           for intento in 1 2 3 4 5; do
             echo "Intento $intento de publicación..."
-
             git fetch origin main
 
             if ! git rebase origin/main; then
               echo "No se pudo reaplicar el commit sobre main."
-              git rebase --abort
+              git rebase --abort || true
               exit 1
             fi
 
@@ -129,16 +144,17 @@ jobs:
               exit 0
             fi
 
-            echo "main cambió mientras se publicaban los datos."
-            echo "Esperando antes de volver a intentar..."
+            if [ "$intento" -eq 5 ]; then
+              echo "No se pudo publicar después de 5 intentos."
+              exit 1
+            fi
+
+            echo "main cambió durante la publicación; reintentando..."
             sleep 10
           done
 
-          echo "No se pudo publicar después de 5 intentos."
-          exit 1
-
       - name: Alertar fallas repetidas
-        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true))
         uses: actions/github-script@v7
         with:
           script: |

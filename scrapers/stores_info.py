@@ -95,7 +95,7 @@ STORES = {
         "telefono": None,
         "email": None,
         "horario": None,
-        "sitio_web": "https://www.oprhafreeshop.com.br/",
+        "sitio_web": "https://www.oprhafreeshop.com/",
         "redes": {
             "instagram": "https://www.instagram.com/oprhafreeshop/",
             "facebook": "https://www.facebook.com/orphafreeshoprivera/",

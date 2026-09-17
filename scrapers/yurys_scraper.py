@@ -1,17 +1,17 @@
-"""Scraper resiliente y concurrente de Yury's Free Shop (Wix).
-
-Un timeout en una categoría ya no invalida toda la tienda. Las categorías se
-procesan con varias páginas Playwright y, para productos cuyo precio no aparece
-en la grilla, las fichas se consultan en paralelo con workers reutilizables.
-"""
+"""Scraper de Yury's: precios del listado primero, fichas solo como respaldo."""
 import asyncio
-import json
-import re
 import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent))
-from utils import collect_wix_category_async, finalize_scrape, load_previous_store, navigate, discover_menu_categories, save_products, extract_wix_products, extract_wix_detail_price
+from utils import (
+    catalog_metrics,
+    collect_wix_category_async,
+    dedupe_products_prefer_complete,
+    extract_wix_detail_price,
+    finalize_scrape,
+    load_previous_store,
+)
 
 BASE_URL = "https://www.yurysfreeshop.com"
 CATEGORIES = [
@@ -27,11 +27,14 @@ CATEGORIES = [
     "comestiveis",
     "brinquedos",
 ]
-CATEGORY_WORKERS = 3
-DETAIL_WORKERS = 6
+CATEGORY_WORKERS = 2
+DETAIL_WORKERS = 3
 NAV_TIMEOUT_MS = 45000
-DETAIL_TIMEOUT_MS = 15000
-PRICE_RECOVERY_BUDGET_SECONDS = 25 * 60
+DETAIL_TIMEOUT_MS = 18000
+# Ya no existe un corte por tiempo que marque miles de fichas como "procesadas".
+# Si el listado cambia y faltan demasiados precios, recuperamos una cantidad
+# acotada y el resto queda explícitamente como pendiente.
+MAX_DETAIL_RECOVERY = 300
 LAST_RUN_STATUS = {}
 
 
@@ -46,29 +49,29 @@ async def _goto(page, url, retries=3, timeout_ms=NAV_TIMEOUT_MS):
             response = await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
             if response is not None and response.status >= 400:
                 raise RuntimeError(f"HTTP {response.status}: {url}")
-            return True
+            return response
         except Exception as exc:
             last = exc
             if attempt < retries:
-                await page.wait_for_timeout(800 * attempt)
+                await page.wait_for_timeout(1200 * attempt)
     raise RuntimeError(f"no se pudo cargar {url}: {last}")
 
 
 async def _scrape_category(context, slug):
-    from bs4 import BeautifulSoup
-
     page = await context.new_page()
     url = f"{BASE_URL}/{slug}"
     try:
         await _goto(page, url, retries=3)
         try:
-            await page.wait_for_selector('[data-hook="product-item-root"]', timeout=25000)
+            await page.wait_for_selector('a[href*="/product-page/"], [data-hook="product-item-root"]', timeout=25000)
         except Exception:
-            # Una categoría realmente vacía y una categoría que no cargó se
-            # distinguen luego por el conteo final.
             pass
-        products = await collect_wix_category_async(page, "Yury's Free Shop", slug, BASE_URL)
-        return slug, products, None
+        products, partial_warning = await collect_wix_category_async(
+            page, "Yury's Free Shop", slug, BASE_URL, with_status=True
+        )
+        if not products:
+            raise RuntimeError("categoría sin productos legibles")
+        return slug, products, partial_warning
     except Exception as exc:
         return slug, [], str(exc)
     finally:
@@ -79,31 +82,33 @@ async def _recover_missing_prices(context, products):
     from bs4 import BeautifulSoup
 
     missing = [p for p in products if p.get("precio_usd") is None and p.get("url")]
-    if not missing:
-        return []
+    to_visit = missing[:MAX_DETAIL_RECOVERY]
+    not_attempted = [p.get("url") for p in missing[MAX_DETAIL_RECOVERY:] if p.get("url")]
+    if not to_visit:
+        return {"recovered": 0, "failed": [], "not_attempted": not_attempted, "visited": 0}
 
     queue = asyncio.Queue()
-    for product in missing:
+    for product in to_visit:
         await queue.put(product)
 
     failed_urls = []
-    total = len(missing)
+    recovered = 0
     processed = 0
     lock = asyncio.Lock()
-    deadline = asyncio.get_running_loop().time() + PRICE_RECOVERY_BUDGET_SECONDS
+    total = len(to_visit)
 
     async def worker(worker_id):
-        nonlocal processed
+        nonlocal processed, recovered
         page = await context.new_page()
         try:
             while True:
                 product = await queue.get()
                 try:
-                    if asyncio.get_running_loop().time() >= deadline:
-                        failed_urls.append(product["url"])
-                        continue
                     await _goto(page, product["url"], retries=2, timeout_ms=DETAIL_TIMEOUT_MS)
-                    await page.wait_for_selector('[data-hook="product-prices-wrapper"]', state="attached", timeout=10000)
+                    try:
+                        await page.wait_for_selector('[data-hook="product-prices-wrapper"]', state="attached", timeout=8000)
+                    except Exception:
+                        pass
                     detail = BeautifulSoup(await page.content(), "html.parser")
                     current, original = extract_wix_detail_price(detail)
                     if current is not None:
@@ -111,7 +116,9 @@ async def _recover_missing_prices(context, products):
                             precio_usd=current,
                             precio_original_usd=original,
                             en_oferta=original is not None and original > current,
+                            precio_fuente="ficha",
                         )
+                        recovered += 1
                     else:
                         failed_urls.append(product["url"])
                 except Exception:
@@ -121,8 +128,8 @@ async def _recover_missing_prices(context, products):
                         processed += 1
                         if processed % 100 == 0 or processed == total:
                             print(
-                                f"[Yury's] recuperación de precios {processed}/{total}; "
-                                f"sin recuperar {len(failed_urls)}"
+                                f"[Yury's] recuperación {processed}/{total}; "
+                                f"recuperados {recovered}, fallidos {len(failed_urls)}"
                             )
                     queue.task_done()
         except asyncio.CancelledError:
@@ -135,36 +142,22 @@ async def _recover_missing_prices(context, products):
     for task in workers:
         task.cancel()
     await asyncio.gather(*workers, return_exceptions=True)
-    return failed_urls
+    return {"recovered": recovered, "failed": failed_urls, "not_attempted": not_attempted, "visited": total}
 
 
-def _dedupe(products):
-    seen = set()
-    unique = []
-    for product in products:
-        key = product.get("url") or product.get("nombre")
-        if key and key not in seen:
-            seen.add(key)
-            unique.append(product)
-    return unique
-
-
-def _merge_previous(unique, previous, failed_categories, failed_price_urls):
-    previous_by_url = {
-        p.get("url"): p for p in previous if isinstance(p, dict) and p.get("url")
-    }
+def _merge_previous(unique, previous, failed_categories, recovery):
+    # Versiones anteriores pasaban directamente una lista de URLs fallidas.
+    if isinstance(recovery, (list, tuple, set)):
+        recovery = {"failed": list(recovery), "not_attempted": []}
+    previous_by_url = {p.get("url"): p for p in previous if isinstance(p, dict) and p.get("url")}
     current_by_url = {p.get("url"): p for p in unique if p.get("url")}
 
-    # Si una categoría completa falló, conservamos sus productos anteriores.
     for old in previous:
-        if not isinstance(old, dict):
-            continue
-        if old.get("categoria") in failed_categories and old.get("url"):
+        if isinstance(old, dict) and old.get("categoria") in failed_categories and old.get("url"):
             current_by_url.setdefault(old["url"], dict(old, datos_anteriores=True))
 
-    # Si la ficha de detalle no dio precio, preservamos el precio anterior si
-    # existía, pero mantenemos nombre/categoría/imágenes frescas de la grilla.
-    for url in failed_price_urls:
+    unresolved = set(recovery["failed"]) | set(recovery["not_attempted"])
+    for url in unresolved:
         current = current_by_url.get(url)
         old = previous_by_url.get(url)
         if current and old and current.get("precio_usd") is None and old.get("precio_usd") is not None:
@@ -172,14 +165,13 @@ def _merge_previous(unique, previous, failed_categories, failed_price_urls):
             current["precio_usd"] = old.get("precio_usd")
             current["precio_original_usd"] = old.get("precio_original_usd")
             current["en_oferta"] = old.get("en_oferta", False)
-
+            current["precio_fuente"] = "cache"
     return list(current_by_url.values())
 
 
 async def _run_async():
     global LAST_RUN_STATUS
     LAST_RUN_STATUS = {}
-
     from playwright.async_api import async_playwright
 
     previous = _load_previous()
@@ -192,54 +184,76 @@ async def _run_async():
             )
         )
         try:
-            # Solo 11 categorías: un gather con semáforo mantiene baja la carga.
             semaphore = asyncio.Semaphore(CATEGORY_WORKERS)
 
             async def limited(slug):
                 async with semaphore:
                     return await _scrape_category(context, slug)
 
-            categories = await asyncio.to_thread(discover_menu_categories, BASE_URL, CATEGORIES)
-            results = await asyncio.gather(*(limited(slug) for slug in categories))
-
+            results = await asyncio.gather(*(limited(slug) for slug in CATEGORIES))
             all_products = []
             failed_categories = []
+            partial_categories = []
             for slug, found, error in results:
-                if error:
+                if error and not found:
                     failed_categories.append(slug)
                     print(f"[Yury's] [aviso] categoría {slug}: {error}")
                     continue
-                print(f"[Yury's] {slug}: {len(found)} productos")
+                if error:
+                    partial_categories.append(slug)
+                    print(f"[Yury's] [aviso] categoría {slug}: parcial ({error})")
+                with_price = sum(p.get("precio_usd") is not None for p in found)
+                print(f"[Yury's] {slug}: {len(found)} productos; {with_price} con precio desde listado")
                 all_products.extend(found)
 
             if not all_products:
                 raise RuntimeError("Yury's: ninguna categoría pudo actualizarse")
 
-            unique = _dedupe(all_products)
-            failed_price_urls = await _recover_missing_prices(context, unique)
+            unique = dedupe_products_prefer_complete(all_products)
+            listing_prices = sum(p.get("precio_usd") is not None for p in unique)
+            missing_before = len(unique) - listing_prices
+            print(f"[Yury's] listado: {len(unique)} productos; {listing_prices} precios; {missing_before} pendientes")
+            recovery = await _recover_missing_prices(context, unique)
         finally:
             await context.close()
             await browser.close()
 
-    merged = _merge_previous(unique, previous, failed_categories, failed_price_urls)
+    merged = _merge_previous(unique, previous, failed_categories, recovery)
     if not merged:
         raise RuntimeError("Yury's: no se obtuvo ningún producto válido")
 
-    remaining_missing = sum(p.get("precio_usd") is None for p in merged)
-    print(f"[Yury's] aún sin precio publicado: {remaining_missing}")
+    pending = sum(p.get("precio_usd") is None for p in merged)
+    cached_prices = sum(p.get("datos_anteriores") and p.get("precio_usd") is not None for p in merged)
+    metrics = catalog_metrics(merged)
+    metrics.update({
+        "categorias_totales": len(CATEGORIES),
+        "categorias_fallidas": len(failed_categories),
+        "categorias_parciales": len(partial_categories),
+        "precios_desde_listado": listing_prices,
+        "fichas_consultadas": recovery["visited"],
+        "precios_recuperados": recovery["recovered"],
+        "fichas_fallidas": len(recovery["failed"]),
+        "fichas_no_visitadas": len(recovery["not_attempted"]),
+        "precios_cacheados": cached_prices,
+        "precios_pendientes": pending,
+        "productos_frescos": len(merged) - metrics["productos_anteriores"],
+    })
 
     warnings = []
     if failed_categories:
         warnings.append(f"categorías fallidas: {', '.join(failed_categories)}")
-    if failed_price_urls:
-        warnings.append(f"{len(failed_price_urls)} precios de detalle no recuperados")
-    if warnings:
-        warning = "Yury's parcial: " + "; ".join(warnings)
-        LAST_RUN_STATUS = {"partial": True, "warning": warning}
+    if partial_categories:
+        warnings.append(f"categorías parciales: {', '.join(partial_categories)}")
+    if recovery["failed"]:
+        warnings.append(f"{len(recovery['failed'])} fichas visitadas sin precio recuperable")
+    if recovery["not_attempted"]:
+        warnings.append(f"{len(recovery['not_attempted'])} fichas pendientes sin visitar")
+    if pending:
+        warnings.append(f"{pending} productos continúan sin precio observado")
+    warning = "Yury's parcial: " + "; ".join(warnings) if warnings else None
+    LAST_RUN_STATUS = {"partial": bool(warning), "warning": warning, "metrics": metrics}
+    if warning:
         print(f"[Yury's] [aviso] {warning}")
-    else:
-        LAST_RUN_STATUS = {"partial": False}
-
     finalize_scrape(merged, "yurys", Path(__file__).parent.parent / "data", LAST_RUN_STATUS)
     return merged
 
