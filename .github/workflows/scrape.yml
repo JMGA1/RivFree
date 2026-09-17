@@ -75,6 +75,15 @@ jobs:
         run: |
           python scrapers/publish_data.py
 
+      # Guardamos el resultado del scraping aunque falle Git posteriormente.
+      - name: Guardar respaldo del scraping
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
+        uses: actions/upload-artifact@v4
+        with:
+          name: rivfree-datos-${{ github.run_id }}
+          path: data/
+          retention-days: 7
+
       - name: Guardar productos actualizados
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
         run: |
@@ -90,32 +99,29 @@ jobs:
 
           git commit -m "Actualizar precios"
 
-          # Puede ocurrir que main cambie durante las horas que tarda
-          # el scraping. Reintentamos la sincronización antes de publicar.
-          for intento in 1 2 3; do
+          for intento in 1 2 3 4 5; do
             echo "Intento $intento de publicación..."
 
             git fetch origin main
 
             if ! git rebase origin/main; then
-              echo "Conflicto durante el rebase."
+              echo "No se pudo reaplicar el commit sobre main."
               git rebase --abort
               exit 1
             fi
 
             if git push origin HEAD:main; then
               echo "Datos publicados correctamente."
-              break
+              exit 0
             fi
 
-            if [ "$intento" -eq 3 ]; then
-              echo "No se pudo publicar después de 3 intentos."
-              exit 1
-            fi
-
-            echo "main volvió a cambiar. Reintentando..."
-            sleep 5
+            echo "main cambió mientras se publicaban los datos."
+            echo "Esperando antes de volver a intentar..."
+            sleep 10
           done
+
+          echo "No se pudo publicar después de 5 intentos."
+          exit 1
 
       - name: Alertar fallas repetidas
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
