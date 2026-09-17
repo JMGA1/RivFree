@@ -7,7 +7,8 @@ import json
 import time
 import sys
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+import unicodedata
+from urllib.parse import parse_qsl, urlencode, unquote, urljoin, urlparse, urlsplit
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -18,6 +19,47 @@ PRICE_RE = re.compile(
     r"(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*([\d.,]+)", re.IGNORECASE
 )
 POLITE_DELAY = 0.35
+
+TRACKING_QUERY_KEYS = {
+    "fbclid", "gclid", "dclid", "msclkid", "mc_cid", "mc_eid",
+}
+
+
+def canonical_product_url(value):
+    """Devuelve una identidad estable para URLs de producto.
+
+    No se usa como enlace visible: sólo para deduplicar. Normaliza www/http(s),
+    Unicode vs percent-encoding, slash final y parámetros de tracking. Esto
+    evita tratar ``/café`` y ``/caf%C3%A9`` como dos productos distintos.
+    """
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        parsed = urlsplit(value.strip())
+    except ValueError:
+        return value.strip()
+    host = (parsed.hostname or "").lower()
+    if host.startswith("www."):
+        host = host[4:]
+    if not host:
+        return value.strip()
+    if parsed.port and not ((parsed.scheme == "http" and parsed.port == 80) or (parsed.scheme == "https" and parsed.port == 443)):
+        host = f"{host}:{parsed.port}"
+    try:
+        path = unicodedata.normalize("NFC", unquote(parsed.path or "/"))
+    except Exception:
+        path = unicodedata.normalize("NFC", parsed.path or "/")
+    if path != "/":
+        path = path.rstrip("/")
+    query = []
+    for key, val in parse_qsl(parsed.query, keep_blank_values=True):
+        low = key.lower()
+        if low.startswith("utm_") or low in TRACKING_QUERY_KEYS:
+            continue
+        query.append((key, val))
+    query.sort()
+    query_text = urlencode(query, doseq=True)
+    return host + path + (f"?{query_text}" if query_text else "")
 
 
 def clean_price(raw_text):
@@ -364,8 +406,11 @@ def dedupe_products_prefer_complete(products):
     for product in products:
         if not isinstance(product, dict):
             continue
-        key = product.get("url") or product.get("nombre")
-        if not key:
+        url_key = canonical_product_url(product.get("url"))
+        key = ("url", url_key) if url_key else (
+            "fallback", product.get("tienda"), product.get("nombre"), product.get("categoria")
+        )
+        if not any(key):
             continue
         if key not in by_key:
             order.append(key)
@@ -537,10 +582,17 @@ def finalize_scrape(products, key, out_dir, status):
     if previous and len(products) < len(previous) * 0.8:
         status.update(partial=True, warning=status.get("warning") or
                       f"{key}: caída de cobertura ({len(products)}/{len(previous)}); revisar catálogo")
-    current = {x.get("url") or x.get("nombre"): dict(x) for x in products}
+    current = {}
+    for item in products:
+        identity = canonical_product_url(item.get("url")) or (
+            item.get("tienda"), item.get("nombre"), item.get("categoria")
+        )
+        current[identity] = merge_product_records(current.get(identity), item)
     if status.get("partial"):
         for old in previous:
-            identity = old.get("url") or old.get("nombre")
+            identity = canonical_product_url(old.get("url")) or (
+                old.get("tienda"), old.get("nombre"), old.get("categoria")
+            )
             if identity not in current:
                 current[identity] = dict(old, datos_anteriores=True)
     products[:] = list(current.values())

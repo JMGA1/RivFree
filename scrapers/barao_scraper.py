@@ -9,12 +9,14 @@ como recuperación secundaria.
 import re
 import sys
 import time
+import unicodedata
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 sys.path.append(str(Path(__file__).parent))
 from utils import (
     PRICE_RE,
+    canonical_product_url,
     clean_price,
     extract_wix_detail_price,
     extract_wix_products,
@@ -68,6 +70,15 @@ def _valid_category_slug(path):
     return True
 
 
+def _category_identity(path):
+    """Iguala slugs Unicode y percent-encoded (cópia == c%C3%B3pia)."""
+    try:
+        value = unquote((path or "").strip("/"))
+    except Exception:
+        value = (path or "").strip("/")
+    return unicodedata.normalize("NFC", value).casefold()
+
+
 def discover_categories():
     """Descubre categorías desde la navegación, evitando páginas institucionales."""
     soup = get_soup(BASE_URL, retries=3, delay=2, timeout=40)
@@ -79,13 +90,16 @@ def discover_categories():
         anchors = soup.find_all("a", href=True)
 
     slugs = []
+    seen = set()
     for anchor in anchors:
         href = anchor.get("href")
         parsed = urlparse(urljoin(BASE_URL, href))
         if parsed.netloc.removeprefix("www.") != urlparse(BASE_URL).netloc.removeprefix("www."):
             continue
         path = parsed.path.strip("/")
-        if _valid_category_slug(path) and path not in slugs:
+        identity = _category_identity(path)
+        if _valid_category_slug(path) and identity not in seen:
+            seen.add(identity)
             slugs.append(path)
 
     if len(slugs) < 20:
@@ -108,6 +122,7 @@ def _discover_categories_rendered(page):
 
     base_host = urlparse(BASE_URL).netloc.removeprefix("www.")
     slugs = []
+    seen = set()
     for href in hrefs:
         try:
             parsed = urlparse(urljoin(BASE_URL, href))
@@ -116,7 +131,9 @@ def _discover_categories_rendered(page):
         if parsed.netloc.removeprefix("www.") != base_host:
             continue
         slug = parsed.path.strip("/")
-        if _valid_category_slug(slug) and slug not in slugs:
+        identity = _category_identity(slug)
+        if _valid_category_slug(slug) and identity not in seen:
+            seen.add(identity)
             slugs.append(slug)
     return slugs
 
@@ -464,6 +481,8 @@ def run():
     from playwright.sync_api import sync_playwright
 
     all_products = {}
+    raw_keys = set()
+    canonical_collisions = 0
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
         page = browser.new_page()
@@ -475,8 +494,11 @@ def run():
         categories = discover_categories()
         html_category_count = len(categories)
         rendered_categories = _discover_categories_rendered(page)
+        category_ids = {_category_identity(slug) for slug in categories}
         for slug in rendered_categories:
-            if slug not in categories:
+            identity = _category_identity(slug)
+            if identity not in category_ids:
+                category_ids.add(identity)
                 categories.append(slug)
         print(
             f"[Barao] {len(categories)} categorías únicas "
@@ -486,12 +508,22 @@ def run():
             print(f"[Barao] recorriendo categoria: {slug}")
             found = scrape_category(slug, page)
             for product in found:
-                key = product.get("url") or product.get("nombre")
-                if key:
-                    all_products[key] = _prefer_complete_duplicate(all_products.get(key), product)
+                raw_key = product.get("url") or product.get("nombre")
+                if raw_key:
+                    raw_keys.add(raw_key)
+                key = canonical_product_url(product.get("url")) or (
+                    "fallback", product.get("nombre"), product.get("categoria")
+                )
+                if key in all_products:
+                    canonical_collisions += 1
+                all_products[key] = _prefer_complete_duplicate(all_products.get(key), product)
             print(f"[Barao]   -> {len(found)} productos")
 
         products = list(all_products.values())
+        print(
+            f"[Barao] normalización: {len(raw_keys)} URLs/registros distintos -> "
+            f"{len(products)} productos canónicos; {canonical_collisions} duplicados fusionados"
+        )
         listing_prices = sum(p.get("precio_usd") is not None for p in products)
         missing_before = len(products) - listing_prices
         print(

@@ -96,13 +96,59 @@ function identity(p) {
 return {norm,categories,category,tokens,search,identity};
 })();
 
+function canonicalProductUrl(value) {
+  const safe = safeHttpUrl(value);
+  if (!safe) return null;
+  try {
+    const url = new URL(safe);
+    let path = url.pathname || '/';
+    try { path = decodeURIComponent(path); } catch {}
+    path = path.normalize('NFC');
+    if (path !== '/') path = path.replace(/\/+$/, '');
+    const host = url.hostname.toLowerCase().replace(/^www\./, '') +
+      ((url.port && !((url.protocol === 'http:' && url.port === '80') || (url.protocol === 'https:' && url.port === '443'))) ? `:${url.port}` : '');
+    const params = [...url.searchParams.entries()]
+      .filter(([key]) => !key.toLowerCase().startsWith('utm_') && !['fbclid','gclid','dclid','msclkid','mc_cid','mc_eid'].includes(key.toLowerCase()))
+      .sort(([a,av],[b,bv]) => a.localeCompare(b) || av.localeCompare(bv));
+    const query = new URLSearchParams(params).toString();
+    return `${host}${path}${query ? `?${query}` : ''}`;
+  } catch {
+    return safe;
+  }
+}
+
+function mergeDuplicateProduct(oldProduct, newProduct) {
+  if (!oldProduct) return {...newProduct};
+  const oldHasPrice = hasPrice(oldProduct);
+  const newHasPrice = hasPrice(newProduct);
+  const preferred = newHasPrice && !oldHasPrice ? newProduct : oldProduct;
+  const secondary = preferred === oldProduct ? newProduct : oldProduct;
+  const merged = {...preferred};
+  for (const [key, value] of Object.entries(secondary)) {
+    if ((merged[key] === null || merged[key] === undefined || merged[key] === '') && value !== null && value !== undefined && value !== '') {
+      merged[key] = value;
+    }
+  }
+  if (!preferred.datos_anteriores || !secondary.datos_anteriores) delete merged.datos_anteriores;
+  return merged;
+}
+
+function dedupeProductsPreferComplete(products) {
+  const byKey = new Map();
+  const order = [];
+  products.forEach((product, index) => {
+    const urlKey = canonicalProductUrl(product.url);
+    const key = urlKey ? `url:${urlKey}` : `fallback:${product.tienda}|${product.nombre}|${product.categoria || ''}|${index}`;
+    if (!byKey.has(key)) order.push(key);
+    byKey.set(key, mergeDuplicateProduct(byKey.get(key), product));
+  });
+  return order.map(key => byKey.get(key));
+}
+
 function groupProducts(products) {
   const groups = new Map();
-  const seenUrls = new Set();
   products.forEach((product, index) => {
     const url = safeHttpUrl(product.url);
-    if (url && seenUrls.has(url)) return;
-    if (url) seenUrls.add(url);
 
     const canonical = Catalog.identity(product);
     const conservativeKey = canonical;
@@ -162,13 +208,14 @@ function compareOfferPrices(a, b) {
 
 function prepareCatalog(data) {
  if(!data || !Array.isArray(data.productos)) throw new Error('Invalid catalog');
- const products=data.productos.filter(p=>p && typeof p.nombre==='string' && typeof p.tienda==='string').map(p=>{
+ const mapped=data.productos.filter(p=>p && typeof p.nombre==='string' && typeof p.tienda==='string').map(p=>{
   const product={...p};
   if(!hasPrice(product)) {product.precio_usd=null;product.precio_original_usd=null;product.en_oferta=false;}
   product.categoryId=Catalog.category(product.categoria,product.nombre);
   product.searchIndex=Catalog.search(`${product.nombre} ${product.categoria} ${Catalog.categories[product.categoryId].join(' ')} ${product.tienda}`);
   return product;
  });
+ const products=dedupeProductsPreferComplete(mapped);
  return {products,groups:groupProducts(products),words:[...new Set(products.flatMap(p=>p.searchIndex.split(' ')))]};
 }
-if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice};
+if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice,canonicalProductUrl,dedupeProductsPreferComplete};
