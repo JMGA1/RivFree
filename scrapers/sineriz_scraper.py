@@ -1,4 +1,9 @@
-"""Siñeriz: descubre categorías, conserva avances y recupera precios desde ficha."""
+"""Siñeriz: descubre categorías, conserva avances y recupera precios desde ficha.
+
+La API pública ``scrape_category(slug, page=None)`` sigue devolviendo una lista
+como en versiones anteriores. ``run()`` usa una variante interna que además
+retorna el estado parcial de la categoría.
+"""
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
 import sys
@@ -45,16 +50,94 @@ def discover_categories():
     return list(FALLBACK_CATEGORIES)
 
 
-def scrape_category(slug, page):
+def _parse_products_from_soup(soup, slug):
+    """Extrae productos sin tomar el precio de una tarjeta vecina."""
+    links_by_url = {}
+    for link in soup.find_all("a", href=True):
+        if re.search(r"/produtos/[^/]+/[^/]+/?$", link["href"]):
+            href = urljoin(BASE_URL, link["href"])
+            links_by_url.setdefault(href, []).append(link)
+
+    products = []
+    invalid_names = {"", "VEJA MAIS", "NENHUMA FOTO DISPONÍVEL", "SEM IMAGEM"}
+    for href, matching_links in links_by_url.items():
+        candidates = [link.get_text(" ", strip=True) for link in matching_links]
+        candidates += [
+            (link.find("img").get("alt", "").strip() if link.find("img") else "")
+            for link in matching_links
+        ]
+        candidates = [name for name in candidates if name.upper() not in invalid_names]
+        name = max(candidates, key=len) if candidates else None
+        if not name:
+            continue
+
+        price = None
+        product_container = None
+        for link in matching_links:
+            container = link
+            for _ in range(5):
+                if container.parent is None:
+                    break
+                container = container.parent
+                related = {
+                    urljoin(BASE_URL, a["href"])
+                    for a in container.select("a[href]")
+                    if re.search(r"/produtos/[^/]+/[^/]+/?$", a["href"])
+                }
+                # Si el contenedor ya incluye otra ficha, cualquier precio que
+                # aparezca ahí es ambiguo y NO puede asignarse a este producto.
+                if len(related) > 1:
+                    break
+                match = PRICE_RE.search(container.get_text(" ", strip=True))
+                if match:
+                    price = clean_price(match.group(0))
+                    product_container = container
+                    break
+            if price is not None:
+                break
+
+        image = next(
+            (extract_image_url(link) for link in matching_links if extract_image_url(link)),
+            None,
+        )
+        if not image and product_container:
+            image = extract_image_url(product_container)
+
+        products.append({
+            "tienda": "Sineriz",
+            "nombre": name,
+            "precio_usd": price if price and price > 0 else None,
+            "precio_original_usd": None,
+            "en_oferta": False,
+            "categoria": slug,
+            "url": href,
+            "imagen": image,
+        })
+    return dedupe_products_prefer_complete(products)
+
+
+def _scrape_category_with_status(slug, page=None):
     from bs4 import BeautifulSoup
+
     url = f"{BASE_URL}/produtos/{slug}/"
+
+    # Camino compatible con tests/utilidades: HTML estático por requests.
+    if page is None:
+        soup = get_soup(url)
+        if soup is None:
+            return [], "categoría sin respuesta"
+        products = _parse_products_from_soup(soup, slug)
+        return products, None if products else "categoría sin productos legibles"
+
     fragments = []
+    signatures = set()
+    partial_error = None
     try:
         response = page.goto(url, wait_until="domcontentloaded", timeout=45000)
         if response is not None and response.status >= 400:
             raise RuntimeError(f"HTTP {response.status}")
         page.wait_for_selector('a[href*="/produtos/"]', timeout=15000)
-        signatures = set()
+
         for _ in range(300):
             previous = -1
             stable = 0
@@ -62,7 +145,10 @@ def scrape_category(slug, page):
                 count = page.locator('a[href*="/produtos/"]').count()
                 stable = stable + 1 if count == previous else 0
                 previous = count
-                more = page.get_by_role("button", name=re.compile(r"ver mais|carregar mais|mostrar mais|load more", re.I)).first
+                more = page.get_by_role(
+                    "button",
+                    name=re.compile(r"ver mais|carregar mais|mostrar mais|load more", re.I),
+                ).first
                 active = more.count() and more.is_visible() and more.is_enabled()
                 if active:
                     more.click(timeout=10000)
@@ -75,8 +161,9 @@ def scrape_category(slug, page):
 
             fragment = BeautifulSoup(page.content(), "html.parser")
             signature = tuple(sorted({
-                urljoin(BASE_URL, a["href"]) for a in fragment.select('a[href]')
-                if re.search(r"/produtos/[^/]+/[^/]+/?$", a["href"])
+                urljoin(BASE_URL, a["href"])
+                for a in fragment.select("a[href]")
+                if re.search(r"/produtos/[^/]+/[^/]+/?$", a.get("href", ""))
             }))
             if not signature:
                 raise RuntimeError("sin productos legibles")
@@ -84,75 +171,48 @@ def scrape_category(slug, page):
                 raise RuntimeError("página repetida")
             signatures.add(signature)
             fragments.append(str(fragment))
-            button = page.locator('a[rel="next"], .pagination .next a, .paginacao .next a').first
-            if not button.count() or not button.is_visible() or not button.is_enabled() or button.get_attribute("aria-disabled") == "true":
+
+            button = page.locator(
+                'a[rel="next"], .pagination .next a, .paginacao .next a'
+            ).first
+            if (
+                not button.count()
+                or not button.is_visible()
+                or not button.is_enabled()
+                or button.get_attribute("aria-disabled") == "true"
+            ):
                 break
             button.click(timeout=10000)
             page.wait_for_timeout(1500)
         else:
             raise RuntimeError("límite de paginación alcanzado")
+
     except Exception as exc:
         partial_error = str(exc)
-        # Una falla al final de la categoría no borra las páginas ya leídas.
-        # Si la página actual alcanzó a renderizar productos, también la sumamos.
+        # Una falla tardía conserva todo lo que ya se alcanzó a renderizar.
         try:
             current = BeautifulSoup(page.content(), "html.parser")
             current_signature = tuple(sorted({
-                urljoin(BASE_URL, a["href"]) for a in current.select('a[href]')
+                urljoin(BASE_URL, a["href"])
+                for a in current.select("a[href]")
                 if re.search(r"/produtos/[^/]+/[^/]+/?$", a.get("href", ""))
             }))
             if current_signature and current_signature not in signatures:
                 fragments.append(str(current))
         except Exception:
             pass
-        if not fragments:
-            return [], partial_error
-    else:
-        partial_error = None
+
+    if not fragments:
+        return [], partial_error or "categoría sin productos legibles"
 
     soup = BeautifulSoup("".join(fragments), "html.parser")
-    links_by_url = {}
-    for link in soup.find_all("a", href=True):
-        if re.search(r"/produtos/[^/]+/[^/]+/?$", link["href"]):
-            href = urljoin(BASE_URL, link["href"])
-            links_by_url.setdefault(href, []).append(link)
+    return _parse_products_from_soup(soup, slug), partial_error
 
-    products = []
-    invalid_names = {"", "VEJA MAIS", "NENHUMA FOTO DISPONÍVEL", "SEM IMAGEM"}
-    for href, matching_links in links_by_url.items():
-        candidates = [link.get_text(" ", strip=True) for link in matching_links]
-        candidates += [(link.find("img").get("alt", "").strip() if link.find("img") else "") for link in matching_links]
-        candidates = [name for name in candidates if name.upper() not in invalid_names]
-        name = max(candidates, key=len) if candidates else None
-        if not name:
-            continue
-        price = None
-        product_container = None
-        for link in matching_links:
-            container = link
-            for _ in range(5):
-                if container.parent is None:
-                    break
-                container = container.parent
-                related = {urljoin(BASE_URL, a["href"]) for a in container.select("a[href]") if re.search(r"/produtos/[^/]+/[^/]+/?$", a["href"])}
-                if len(related) > 1:
-                    break
-                match = PRICE_RE.search(container.get_text(" ", strip=True))
-                if match:
-                    price = clean_price(match.group(0))
-                    product_container = container
-                    break
-            if price is not None:
-                break
-        image = next((extract_image_url(link) for link in matching_links if extract_image_url(link)), None)
-        if not image and product_container:
-            image = extract_image_url(product_container)
-        products.append({
-            "tienda": "Sineriz", "nombre": name, "precio_usd": price if price and price > 0 else None,
-            "precio_original_usd": None, "en_oferta": False, "categoria": slug,
-            "url": href, "imagen": image,
-        })
-    return dedupe_products_prefer_complete(products), partial_error
+
+def scrape_category(slug, page=None):
+    """API pública histórica: siempre devuelve solo la lista de productos."""
+    products, _ = _scrape_category_with_status(slug, page)
+    return products
 
 
 def _recover_detail(product):
@@ -180,10 +240,12 @@ def run():
     print(f"[Sineriz] {len(categories)} categorías descubiertas")
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
-        page = browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36")
+        page = browser.new_page(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
+        )
         try:
             for slug in categories:
-                found, error = scrape_category(slug, page)
+                found, error = _scrape_category_with_status(slug, page)
                 if error and not found:
                     failed_categories.append(slug)
                     print(f"[Sineriz] [aviso] {slug}: {error}")
@@ -191,7 +253,10 @@ def run():
                 if error:
                     failed_categories.append(slug)
                     print(f"[Sineriz] [aviso] {slug}: avance parcial conservado ({error})")
-                print(f"[Sineriz] {slug}: {len(found)} productos; {sum(p.get('precio_usd') is not None for p in found)} con precio")
+                print(
+                    f"[Sineriz] {slug}: {len(found)} productos; "
+                    f"{sum(p.get('precio_usd') is not None for p in found)} con precio"
+                )
                 all_products.extend(found)
         finally:
             browser.close()

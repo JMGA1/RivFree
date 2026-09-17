@@ -83,7 +83,7 @@ def _extract_products(soup, slug):
     return products
 
 
-def scrape_category(category_id, slug):
+def _scrape_category_with_stats(category_id, slug):
     products = []
     total_pages = None
     expected_items = None
@@ -143,6 +143,17 @@ def scrape_category(category_id, slug):
     }
 
 
+def scrape_category(category_id, slug):
+    """API histórica: devuelve solamente la lista de productos.
+
+    El detalle de cobertura se usa internamente en ``run``. Mantener esta
+    firma evita romper tests/utilidades que ya llamaban scrape_category()
+    directamente.
+    """
+    products, _ = _scrape_category_with_stats(category_id, slug)
+    return products
+
+
 def run():
     global LAST_RUN_STATUS
     LAST_RUN_STATUS = {}
@@ -150,7 +161,7 @@ def run():
     category_stats = []
     for category_id, slug in CATEGORIES.items():
         print(f"[Neutral] recorriendo categoría: {slug}")
-        found, stats = scrape_category(category_id, slug)
+        found, stats = _scrape_category_with_stats(category_id, slug)
         category_stats.append(stats)
         all_products.extend(found)
         print(f"[Neutral] -> {len(found)} productos; cobertura {stats['cobertura']:.1%}" if stats["cobertura"] is not None else f"[Neutral] -> {len(found)} productos")

@@ -259,22 +259,85 @@ async def _discover_catalog(context):
     return list(products.values()), failed_categories, partial_categories
 
 
+def _extract_detail_soup(soup, url, category):
+    """Extrae una ficha Ecwid real sin confundirla con una página genérica.
+
+    Se mantiene esta función separada porque los tests de regresión y otros
+    consumidores internos la usan directamente. Un ``h1`` genérico no basta
+    para considerar que estamos en una ficha: exigimos selectores propios de
+    Ecwid y limitamos el precio al bloque principal del producto.
+    """
+    title = soup.select_one(
+        ".product-details__product-title, .ecwid-productBrowser-head"
+    )
+    if title is None:
+        return None
+
+    name = title.get_text(" ", strip=True)
+    if not name:
+        return None
+
+    price_scope = soup.select_one(
+        ".product-details__product-price, .ecwid-productBrowser-price"
+    )
+    price_tag = soup.select_one(
+        ".product-details__product-price .details-product-price__value, "
+        ".product-details__product-price-value, .ecwid-productBrowser-price"
+    )
+    old_tag = soup.select_one(
+        ".product-details__product-price .details-product-price__compare, "
+        ".product-details__product-price .details-product-price__compare-at-price"
+    )
+
+    price = clean_price(price_tag.get_text(" ", strip=True)) if price_tag else None
+    if price is None and price_scope is not None:
+        matches = [clean_price(m.group(0)) for m in PRICE_RE.finditer(price_scope.get_text(" ", strip=True))]
+        matches = [value for value in matches if value is not None and value > 0]
+        if matches:
+            price = matches[-1]
+
+    original = clean_price(old_tag.get_text(" ", strip=True)) if old_tag else None
+    if original is not None and (price is None or original <= price):
+        original = None
+
+    og = soup.find("meta", attrs={"property": "og:image"})
+    image = og.get("content") if og and og.get("content") else None
+
+    return {
+        "tienda": "Mantra Free Shop",
+        "nombre": name,
+        "precio_usd": price,
+        "precio_original_usd": original,
+        "en_oferta": bool(original and price and original > price),
+        "categoria": category,
+        "url": url,
+        "imagen": image,
+    }
+
+
 async def _extract_detail(page, product):
     from bs4 import BeautifulSoup
     await _goto(page, product["url"], retries=3, timeout_ms=DETAIL_TIMEOUT_MS)
     await page.wait_for_timeout(800)
-    soup = BeautifulSoup(await page.content(), "html.parser")
-    title = soup.select_one(".product-details__product-title, .ecwid-productBrowser-head, h1")
-    price_tag = soup.select_one(".product-details__product-price .details-product-price__value, .product-details__product-price-value, .ecwid-productBrowser-price")
-    if title and not product.get("nombre"):
-        product["nombre"] = title.get_text(" ", strip=True)
-    price = clean_price(price_tag.get_text(" ", strip=True)) if price_tag else None
-    if price is not None:
-        product["precio_usd"] = price
+    detail = _extract_detail_soup(
+        BeautifulSoup(await page.content(), "html.parser"),
+        product["url"],
+        product.get("categoria") or "varios",
+    )
+    if detail is None:
+        raise RuntimeError("la página no parece una ficha de producto Ecwid")
+
+    # El listado sigue siendo la fuente primaria: la ficha solo completa campos
+    # que faltaban, en especial el precio.
+    if not product.get("nombre"):
+        product["nombre"] = detail.get("nombre")
+    if product.get("precio_usd") is None and detail.get("precio_usd") is not None:
+        product["precio_usd"] = detail["precio_usd"]
+        product["precio_original_usd"] = detail.get("precio_original_usd")
+        product["en_oferta"] = detail.get("en_oferta", False)
         product["precio_fuente"] = "ficha"
-    og = soup.find("meta", attrs={"property": "og:image"})
-    if og and not product.get("imagen"):
-        product["imagen"] = og.get("content")
+    if not product.get("imagen") and detail.get("imagen"):
+        product["imagen"] = detail["imagen"]
     return product
 
 

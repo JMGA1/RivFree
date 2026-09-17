@@ -14,5 +14,11 @@ Cambios principales:
 - Neutral valida cantidad esperada/cobertura y conserva el duplicado más completo.
 - Siñeriz descubre categorías y recupera precios faltantes desde fichas con un límite acotado.
 - El resumen separa productos frescos/cacheados, precios observados/recuperados y pendientes.
-- El historial de precios admite ejecuciones parciales, pero nunca registra precios cacheados como observaciones nuevas.
+- El historial de precios se genera sólo para corridas completas; una corrida parcial nunca crea un snapshot histórico engañoso.
 - GitHub Actions tiene límites de 180 min por job / 150 min para scraping, logs sin buffer, artifact de respaldo incluso ante fallo y opción de ejecutar una sola tienda manualmente.
+
+Correcciones de compatibilidad después del primer intento:
+- Se restauró `mantra_scraper._extract_detail_soup()` para los tests de regresión y se limita el precio al bloque principal de la ficha.
+- `neutral_scraper.scrape_category()` vuelve a devolver una lista, manteniendo las métricas de cobertura en una función interna.
+- `sineriz_scraper.scrape_category(slug)` vuelve a aceptar llamadas sin una página Playwright y nunca toma el precio de una tarjeta vecina.
+- Se restauró la regla histórica: una actualización parcial no se escribe como un nuevo snapshot de historial.

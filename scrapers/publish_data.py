@@ -40,32 +40,29 @@ def publish(data_dir, output, attempted_stores=None):
                 state['estado'] = 'ok'
         row['ultimo_exito'] = state.get('ultimo_exito')
     write_json(data_dir / 'health.json', health)
-    # Guardamos historia incluso para una tienda PARCIAL, pero únicamente de
-    # observaciones realmente frescas. Un precio completado desde cache nunca se
-    # convierte en una observación nueva.
-    eligible = set()
-    for row in output.get('resumen', []):
-        name = row.get('tienda')
-        if attempted_stores is not None and name not in attempted_stores:
-            continue
-        # Un warning parcial es aceptable; un fallo total no.
-        if row.get('parcial') or not row.get('error'):
-            eligible.add(name)
-
-    if attempted_stores and eligible and attempted_at:
-        observations = []
-        for product in output.get('productos', []):
-            price = product.get('precio_usd')
-            if (product.get('tienda') in eligible
-                    and not product.get('datos_anteriores')
-                    and isinstance(price, (int, float)) and price > 0
-                    and product.get('url')):
-                observations.append([
-                    product['tienda'], product.get('url'),
-                    product.get('nombre'), price
-                ])
+    # El historial público sólo registra corridas completamente exitosas.
+    # Una actualización parcial puede mezclar datos frescos y cacheados; aunque
+    # el resumen distingue ambos, no la tratamos como snapshot histórico para
+    # mantener compatibilidad y evitar series engañosas.
+    fresh = {
+        row['tienda']
+        for row in output.get('resumen', [])
+        if not row.get('error')
+        and not row.get('parcial')
+        and not row.get('datos_anteriores')
+    }
+    if attempted_stores and fresh and attempted_at:
+        observations = [
+            [p['tienda'], p.get('url'), p.get('nombre'), p.get('precio_usd')]
+            for p in output.get('productos', [])
+            if p.get('tienda') in fresh
+            and not p.get('datos_anteriores')
+            and isinstance(p.get('precio_usd'), (int, float))
+            and p.get('precio_usd', 0) > 0
+            and p.get('url')
+        ]
         if observations:
-            stamp = attempted_at.replace(':','-')
+            stamp = attempted_at.replace(':', '-')
             write_json(
                 data_dir / 'history' / f'{stamp}.json',
                 {'actualizado': attempted_at, 'observaciones': observations},
