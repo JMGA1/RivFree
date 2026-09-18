@@ -27,8 +27,8 @@ from utils import (
 
 LAST_RUN_STATUS = {}
 BASE_URL = "https://www.baraofreeshop.com.br"
-DETAIL_RECOVERY_LIMIT = 500
-DETAIL_RECOVERY_BUDGET_SECONDS = 25 * 60
+DETAIL_RECOVERY_LIMIT = None  # recuperar todos los pendientes mientras haya presupuesto
+DETAIL_RECOVERY_BUDGET_SECONDS = 50 * 60
 
 RESERVED_PATHS = {
     "", "shop", "blog", "contato", "turista", "social", "trabalhe-conosco",
@@ -449,23 +449,42 @@ def _recover_missing_prices(page, products):
     started = time.monotonic()
     recovered = 0
     attempted = 0
-    for product in missing[:DETAIL_RECOVERY_LIMIT]:
+    failed = 0
+    limit = len(missing) if DETAIL_RECOVERY_LIMIT is None else min(len(missing), DETAIL_RECOVERY_LIMIT)
+
+    for product in missing[:limit]:
         if time.monotonic() - started >= DETAIL_RECOVERY_BUDGET_SECONDS:
+            print(
+                f"[Barao] [aviso] presupuesto de recuperación agotado tras {attempted}/{len(missing)} fichas; "
+                f"recuperados {recovered}, fallidos {failed}"
+            )
             break
         attempted += 1
         try:
             navigate(page, product["url"], 'h1, [data-hook="product-title"]', attempts=2)
-            page.wait_for_timeout(400)
+            page.wait_for_timeout(350)
             current, original = _detail_price_from_page(page)
             if current is not None:
                 product["precio_usd"] = current
                 product["precio_original_usd"] = original
                 product["en_oferta"] = bool(original and original > current)
+                product["precio_fuente"] = "ficha"
                 recovered += 1
+            else:
+                failed += 1
         except Exception as exc:
+            failed += 1
             print(f"[Barao] [aviso] ficha sin precio {product['url']}: {exc}")
 
-    return recovered, max(0, len(missing) - recovered)
+        if attempted % 100 == 0 or attempted == limit:
+            pending_now = max(0, len(missing) - recovered)
+            print(
+                f"[Barao] recuperación {attempted}/{len(missing)}; "
+                f"recuperados {recovered}; fallidos {failed}; pendientes {pending_now}"
+            )
+
+    pending = sum(p.get("precio_usd") is None for p in products)
+    return recovered, pending
 
 
 def _prefer_complete_duplicate(old, new):
