@@ -26,6 +26,3 @@ inicio y el modo oscuro queda guardado para la próxima visita.
 
 
 
-## Actualización
-
-Ver [ACTUALIZACION.md](ACTUALIZACION.md) para instalación, funciones nuevas, configuración y pruebas.
