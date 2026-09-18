@@ -1,31 +1,11 @@
 [
   {
     "tienda": "Sineriz",
-    "nombre": "Mochila Adidas Adipower Blue",
-    "precio_usd": 35.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "esportes-1",
-    "url": "https://www.sineriz.com.uy/produtos/raquetes/mochila-adidas-adipower-blue/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1763/26/028040611871_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Raqueteira Mochila Adidas Adipower Silver",
-    "precio_usd": 35.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "esportes-1",
-    "url": "https://www.sineriz.com.uy/produtos/raquetes/raqueteira-mochila-adidas-adipower-silver/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1655/26/028040411871_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
     "nombre": "Caçarola oval Lodge",
     "precio_usd": 41.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/cacarola-oval-lodge/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1975/26/040010112031_q90.jpg"
   },
@@ -35,7 +15,7 @@
     "precio_usd": 119.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/chaleira-le-creuset/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1888/26/040046506091_q90.jpg"
   },
@@ -45,7 +25,7 @@
     "precio_usd": 5.75,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "copos-tacas-e-canecas",
     "url": "https://www.sineriz.com.uy/produtos/copos-tacas-e-canecas/copo-pasabahce-barrel/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2005/26/032101310931_q90.jpg"
   },
@@ -55,7 +35,7 @@
     "precio_usd": 27.3,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/frigideira-de-ferro-fundido-lodge-10-25/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1943/26/040011412031_q90.jpg"
   },
@@ -65,7 +45,7 @@
     "precio_usd": 26.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/frigideira-ferro-fundido-lodge-5/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2118/26/040010312031_q90.jpg"
   },
@@ -75,7 +55,7 @@
     "precio_usd": 34.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/frigideira-ferro-fundido-lodge-8/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1631/26/040014312031_q90.jpg"
   },
@@ -85,7 +65,7 @@
     "precio_usd": 61.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/frigideira-ferro-fundido-lodge-edicao-boy-scout-12/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2079/26/040015212031_q90.jpg"
   },
@@ -95,7 +75,7 @@
     "precio_usd": 46.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/frigideira-retangular-ferro-fundido-lodge-10-5/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1896/26/040014412031_q90.jpg"
   },
@@ -105,7 +85,7 @@
     "precio_usd": 284.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/jogo-de-panelas-tramontina-solar-ceramic/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2097/26/040556808622_q90.jpg"
   },
@@ -115,7 +95,7 @@
     "precio_usd": 23.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/jogo-de-talheres-polywood-tramontina/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4806/26/040014208632_q90.jpg"
   },
@@ -125,7 +105,7 @@
     "precio_usd": 22.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/kit-churrasco-tramontina/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1613/26/040031008632_q90.jpg"
   },
@@ -135,7 +115,7 @@
     "precio_usd": 28.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/mini-wok-ferro-fundido-lodge-6-1-4/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1745/26/040014612031_q90.jpg"
   },
@@ -145,7 +125,7 @@
     "precio_usd": 136.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "cozinha",
     "url": "https://www.sineriz.com.uy/produtos/cozinha/panela-ferro-fundido-lodge-9qt/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1877/26/040015112031_q90.jpg"
   },
@@ -155,7 +135,7 @@
     "precio_usd": 6.75,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bazar-1",
+    "categoria": "copos-tacas-e-canecas",
     "url": "https://www.sineriz.com.uy/produtos/copos-tacas-e-canecas/ta-x001f-ca-champagne-pasabahce-monte-carlo/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1662/26/032101010931_q90.jpg"
   },
@@ -165,7 +145,7 @@
     "precio_usd": 795.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "relogios-1",
+    "categoria": "smartwatches",
     "url": "https://www.sineriz.com.uy/produtos/smartwatches/relogio-esportivo-garmin-d2-air-x10/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8049/26/009030106131_q90.jpg"
   },
@@ -175,7 +155,7 @@
     "precio_usd": 5.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "ferramentas-1",
+    "categoria": "ferramentas-manuais",
     "url": "https://www.sineriz.com.uy/produtos/ferramentas-manuais/kit-chaves-allen-hexagonal-total/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/6989/26/036017312581_q90.jpg"
   },
@@ -185,7 +165,7 @@
     "precio_usd": 2.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "ferramentas-1",
+    "categoria": "ferramentas-manuais",
     "url": "https://www.sineriz.com.uy/produtos/ferramentas-manuais/oculos-de-protecao-total/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2060/26/036018112581_q90.jpg"
   },
@@ -195,739 +175,9 @@
     "precio_usd": 46.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "ferramentas-1",
+    "categoria": "ferramentas-eletricas",
     "url": "https://www.sineriz.com.uy/produtos/ferramentas-eletricas/serra-tico-tico-total/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7165/26/036011312581_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Azeite de Oliva com Albahaca Pons",
-    "precio_usd": 12.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-com-albahaca-pons/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1792/26/019114806291_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Azeite de Oliva com Orégano Pons",
-    "precio_usd": 10.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-com-oregano-pons/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5138/26/019114506291_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "AZEITE DE OLIVA OLAVE PREMIUM BLEND 1 LITRO",
-    "precio_usd": 17.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-olave-premium-blend-1-litro/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/9974/26/019111114731_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Azeite de Oliva Pons",
-    "precio_usd": 14.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-pons/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/6581/26/019115006291_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Azeite de Oliva Pons",
-    "precio_usd": 19.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-pons-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4821/26/019110806291_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Azeite de Oliva Santa Laura",
-    "precio_usd": 9.38,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-santa-laura/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4748/26/019110212352_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Azeite de Oliva Santa Laura",
-    "precio_usd": 5.62,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-santa-laura-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5080/26/019110112352_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "CAFE GRÃO JUAN VALDEZ PREMIUM SELECTION 500G",
-    "precio_usd": 27.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-grao-juan-valdez-premium-selection-500g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5853/26/019300105591_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "CAFE JUAN VALDEZ GOURMET SELECTION MOIDO ORGANICO 283G",
-    "precio_usd": 16.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-gourmet-selection-moido-organico-283g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7598/26/019300405591_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "CAFE JUAN VALDEZ GRANULADO 100g",
-    "precio_usd": 13.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-granulado-100g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5053/26/019300805591_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "CAFE JUAN VALDEZ PREMIUM SELECTION MOIDO 250G",
-    "precio_usd": 14.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-premium-selection-moido-250g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7593/26/019300505591_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "CAVENDISH Candy Fruit 300gr",
-    "precio_usd": 5.2,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/cavendish-candy-fruit-300gr/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1796/26/019020800321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Chá Instantâneo Granulado Kruger - Mix de Frutas",
-    "precio_usd": 4.1,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-mix-de-frutas/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8055/26/019070400321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Chá Instantâneo Granulado Kruger Laranja",
-    "precio_usd": 4.6,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-laranja/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8056/26/019070800321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Chá Instantâneo Granulado Kruger Limão",
-    "precio_usd": 4.1,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-limao/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8054/26/019070100321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia Mackays Framboesa",
-    "precio_usd": 4.1,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-framboesa/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8066/26/019131200321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia Mackays Gengibre",
-    "precio_usd": 4.1,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-gengibre/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8067/26/019131300321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia Mackays Groselha Preta",
-    "precio_usd": 4.1,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-groselha-preta/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8065/26/019131000321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia Mackays lima & limão",
-    "precio_usd": 3.6,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-lima-limao/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8069/26/019132000321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia Mackays Mirtilo e Groselha Preta",
-    "precio_usd": 4.1,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-mirtilo-e-groselha-preta/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8068/26/019131900321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour Cranberry & Mirtilo",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-cranberry-mirtilo/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8064/26/019071708321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour Framboesa e Romã",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-framboesa-e-roma/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8062/26/019071508321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour Laranja e Gengibre",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-laranja-e-gengibre/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8060/26/019071308321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour maçã e canela",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-maca-e-canela/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8057/26/019071008321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour Manga & Maracujá",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-manga-maracuja/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8058/26/019071108321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour Morange & Ruibarbo",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-morange-ruibarbo/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8063/26/019071608321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour pêssego",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-pessego/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8061/26/019071408321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Geleia St. Dalfour quatro frutas",
-    "precio_usd": 4.3,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-quatro-frutas/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8059/26/019071208321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Ketchup HEINZ",
-    "precio_usd": 8.2,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/ketchup-heinz/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2006/26/019130600321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Ketchup HEINZ 397g",
-    "precio_usd": 4.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/ketchup-heinz-397g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1752/26/019130400321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Ketchup HEINZ 567g",
-    "precio_usd": 5.7,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/ketchup-heinz-567g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1906/26/019130200321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "KIT Picnic HEINZ pack 1kg",
-    "precio_usd": 14.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/kit-picnic-heinz-pack-1kg/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2093/26/019121600321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Milka Choco & Biscuit 300g",
-    "precio_usd": 7.25,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/chocolates/milka-choco-biscuit-300g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1912/26/019100210831_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Milka Oreo 300g",
-    "precio_usd": 7.25,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/chocolates/milka-oreo-300g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1637/26/019100510831_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Molho de pimenta TABASCO 150ml",
-    "precio_usd": 6.6,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-150ml/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1713/26/019150200321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Molho de pimenta TABASCO Alho e Pimenta",
-    "precio_usd": 2.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-alho-e-pimenta/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2042/26/019150400321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Molho de pimenta TABASCO Chipotle",
-    "precio_usd": 6.6,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-chipotle/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1744/26/019153700321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Molho de pimenta TABASCO Habanero",
-    "precio_usd": 3.8,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-habanero/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1802/26/019150500321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Molho Shoyu Orgânico Kikkoman",
-    "precio_usd": 7.2,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-shoyu-organico-kikkoman/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8070/26/019154300321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Mostarda HEINZ 227g",
-    "precio_usd": 3.7,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/mostarda-heinz-227g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2099/26/019121900321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Mostarda HEINZ 397g",
-    "precio_usd": 6.5,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/mostarda-heinz-397g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2047/26/019122100321_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Oreo Cookie Case 154g",
-    "precio_usd": 6.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/chocolates/oreo-cookie-case-154g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4744/26/019250810831_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "RUMMO FARFALLE N°85",
-    "precio_usd": 3.2,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-farfalle-n085/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8075/26/019162112071_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "RUMMO FUSILLI N°48",
-    "precio_usd": 3.2,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-fusilli-n048/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8072/26/019161312071_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "RUMMO LASAGNE ALL'UOVO N°173",
-    "precio_usd": 6.4,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-lasagne-all-uovo-n0173/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8079/26/019190112071_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "RUMMO PAPPARDELLE ALL'UOVO N°101",
-    "precio_usd": 3.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-pappardelle-all-uovo-n0101/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8076/26/019180312071_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "RUMMO PENNE RIGATE N°66",
-    "precio_usd": 3.2,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-penne-rigate-n066/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8074/26/019161812071_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Toblerone Crunchy Almonds 360g",
-    "precio_usd": 12.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-crunchy-almonds-360g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1914/33/019050610831.jpg_q70@2.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Toblerone Fruit&Nut 360g",
-    "precio_usd": 12.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-fruit-nut-360g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1737/33/019050410831.jpg_q70@2.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Toblerone Dark 360g",
-    "precio_usd": 12.95,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestiveis-1",
-    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-dark-360g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4942/33/019050110831.jpg_q70@2.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "AR CONDICIONADO Split AIWA Inver12000 BTUS 60HZ",
-    "precio_usd": 259.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/ar-condicionado/ar-condicionado-split-aiwa-inver12000-btus-60hz/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8092/26/022300404041_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "AR CONDICIONADO Split MIDEA INVERTER 12000 BTUS 60HZ",
-    "precio_usd": 285.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/ar-condicionado/ar-condicionado-split-midea-inverter-12000-btus-60hz/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8093/26/022300411681_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "BABÁ ELETRÔNICA MOTOROLA MBP33XLC",
-    "precio_usd": 113.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cameras-babas-eletronicas/baba-eletronica-motorola-mbp33xlc/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8045/26/007040212681_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Cabo para Carga 3 em 1 GOLF",
-    "precio_usd": 2.25,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/acessorios-para-pc-e-smartphones/cabo-para-carga-3-em-1-golf/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2092/26/007011612551_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Caixa de som JBL AUTHENTICS 500",
-    "precio_usd": 489.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-authentics-500/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8879/26/007400212891_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Caixa de som JBL BOOMBOX 3 WIFI",
-    "precio_usd": 399.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-boombox-3-wifi/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8876/26/007214312891_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Caixa de som JBL BOOMBOX 4",
-    "precio_usd": 449.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-boombox-4/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8877/26/007214412891_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Caixa de som JBL PARTYBOX CLUB 120",
-    "precio_usd": 399.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-partybox-club-120/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8875/26/007211712891_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Caixa de som JBL PARTYBOX STAGE 320",
-    "precio_usd": 449.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-partybox-stage-320/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8874/26/007211612891_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Carregador de parede + cabo USB C",
-    "precio_usd": 2.48,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/acessorios-para-pc-e-smartphones/carregador-de-parede-cabo-usb-c/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1844/26/007012112551_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Chaleira Elétrica North Tech",
-    "precio_usd": 8.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/eletrodomesticos/chaleira-eletrica-north-tech/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5789/26/022170206981_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "CONTROLE PARA PS4",
-    "precio_usd": 69.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/informatica-e-videogames/controle-para-ps4/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4828/26/008080406981_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Maquina de acabamento Wahl Hero",
-    "precio_usd": 29.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-acabamento-wahl-hero/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1958/26/022162711001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Maquina de corte cabelo sem fio Wahl Super Taper",
-    "precio_usd": 29.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-corte-cabelo-sem-fio-wahl-super-taper/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8087/26/022165211001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Maquina de corte cabelo Wahl Super Taper Chrome",
-    "precio_usd": 29.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-corte-cabelo-wahl-super-taper-chrome/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8086/26/022165111001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Maquina de corte Wahl Designer",
-    "precio_usd": 59.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-corte-wahl-designer/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8088/26/022165311001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Smart TV 50\" AIWA 4K",
-    "precio_usd": 289.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/tv/smart-tv-50-aiwa-4k/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/6240/26/008062104041_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Smart TV 58\" AIWA 4K",
-    "precio_usd": 353.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/tv/smart-tv-58-aiwa-4k/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1834/26/008062204041_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "SOUNDBAR 2.1CH ATHUS",
-    "precio_usd": 59.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/audio/soundbar-2-1ch-athus/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8046/26/007210112641_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "WAHL Barber Combo 120V/60HZ",
-    "precio_usd": 59.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/wahl-barber-combo-120v-60hz/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8085/26/022161411001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "WAHL BERET",
-    "precio_usd": 29.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/wahl-beret/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1952/26/022163511001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "WAHL BERETTO CLIPPER",
-    "precio_usd": 49.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/wahl-beretto-clipper/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1857/26/022164111001_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "WAHL PET TOUCH UP TRIMMER",
-    "precio_usd": 18.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "eletronicos-1",
-    "url": "https://www.sineriz.com.uy/produtos/eletrodomesticos/wahl-pet-touch-up-trimmer/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8089/26/022165611001_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -935,7 +185,7 @@
     "precio_usd": 13.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "outras-bebidas",
     "url": "https://www.sineriz.com.uy/produtos/outras-bebidas/anis-del-mono-seco/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1775/26/004100206281_q90.jpg"
   },
@@ -945,7 +195,7 @@
     "precio_usd": 41.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/auchentoshan-12-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8120/26/104051409451_q90.jpg"
   },
@@ -955,7 +205,7 @@
     "precio_usd": 61.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/auchentoshan-heartwood/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8119/26/104050409451_q90.jpg"
   },
@@ -965,7 +215,7 @@
     "precio_usd": 11.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "rum",
     "url": "https://www.sineriz.com.uy/produtos/rum/capitan-morgan/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1794/26/004110204601_q90.jpg"
   },
@@ -975,7 +225,7 @@
     "precio_usd": 0.99,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "cervejas",
     "url": "https://www.sineriz.com.uy/produtos/cervejas/cerveja-corona/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2010/26/404010112471_q90.jpg"
   },
@@ -985,7 +235,7 @@
     "precio_usd": 1.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "cervejas",
     "url": "https://www.sineriz.com.uy/produtos/cervejas/cerveja-leffe-blonde/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7032/26/404030212471_q90.jpg"
   },
@@ -995,7 +245,7 @@
     "precio_usd": 1.15,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "cervejas",
     "url": "https://www.sineriz.com.uy/produtos/cervejas/cerveja-stella-artois-longneck/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1903/26/404020112471_q90.jpg"
   },
@@ -1005,7 +255,7 @@
     "precio_usd": 29.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/chivas-regal-extra/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1907/26/104037604851_q90.jpg"
   },
@@ -1015,7 +265,7 @@
     "precio_usd": 12.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/dewars-1-litro/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8100/26/104010412721_q90.jpg"
   },
@@ -1025,7 +275,7 @@
     "precio_usd": 1.2,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "outras-bebidas",
     "url": "https://www.sineriz.com.uy/produtos/outras-bebidas/energetico-red-bull/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1930/26/004081006281_q90.jpg"
   },
@@ -1035,7 +285,7 @@
     "precio_usd": 0.89,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "outras-bebidas",
     "url": "https://www.sineriz.com.uy/produtos/outras-bebidas/energetico-shark/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2011/26/004080306281_q90.jpg"
   },
@@ -1045,7 +295,7 @@
     "precio_usd": 13.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/fernet-lazzaroni-40/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/9998/26/004120314221_q90.jpg"
   },
@@ -1055,7 +305,7 @@
     "precio_usd": 11.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "gin",
     "url": "https://www.sineriz.com.uy/produtos/gin/gin-beefeater-pink/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2076/26/004020404851_q90.jpg"
   },
@@ -1065,7 +315,7 @@
     "precio_usd": 9.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "gin",
     "url": "https://www.sineriz.com.uy/produtos/gin/gin-gilbey-s/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2020/26/004020404601_q90.jpg"
   },
@@ -1075,7 +325,7 @@
     "precio_usd": 10.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "gin",
     "url": "https://www.sineriz.com.uy/produtos/gin/gin-gordon-s/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2013/26/004020104601_q90.jpg"
   },
@@ -1085,7 +335,7 @@
     "precio_usd": 33.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "gin",
     "url": "https://www.sineriz.com.uy/produtos/gin/gin-martin-miller-s/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2052/26/004150102471_q90.jpg"
   },
@@ -1095,7 +345,7 @@
     "precio_usd": 38.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "gin",
     "url": "https://www.sineriz.com.uy/produtos/gin/gin-martin-miller-s-westbourne/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2122/26/004150202471_q90.jpg"
   },
@@ -1105,7 +355,7 @@
     "precio_usd": 14.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "gin",
     "url": "https://www.sineriz.com.uy/produtos/gin/gin-tanqueray/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1810/26/004020704601_q90.jpg"
   },
@@ -1115,7 +365,7 @@
     "precio_usd": 129.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/glen-deveron-16-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8117/26/104047412721_q90.jpg"
   },
@@ -1125,7 +375,7 @@
     "precio_usd": 75.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/glenkinchie-12/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8128/26/104141304601_q90.jpg"
   },
@@ -1135,7 +385,7 @@
     "precio_usd": 53.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/glenlivet-12/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8122/26/104062304851_q90.jpg"
   },
@@ -1145,7 +395,7 @@
     "precio_usd": 23.95,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "pisco",
     "url": "https://www.sineriz.com.uy/produtos/pisco/gran-pisco-finca-rotondo/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8042/26/004200105591_q90.jpg"
   },
@@ -1155,7 +405,7 @@
     "precio_usd": 23.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "rum",
     "url": "https://www.sineriz.com.uy/produtos/rum/havana-club-7/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1779/26/004110504851_q90.jpg"
   },
@@ -1165,7 +415,7 @@
     "precio_usd": 9.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "rum",
     "url": "https://www.sineriz.com.uy/produtos/rum/havana-club-anejo-especial/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1971/26/004110404851_q90.jpg"
   },
@@ -1175,7 +425,7 @@
     "precio_usd": 165.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/highland-park-18/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8130/26/104164300131_q90.jpg"
   },
@@ -1185,7 +435,7 @@
     "precio_usd": 13.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/j-b-rare-1lt/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8123/26/104070404601_q90.jpg"
   },
@@ -1195,7 +445,7 @@
     "precio_usd": 100.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jack-daniel-s-sinatra/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8109/26/104011610901_q90.jpg"
   },
@@ -1205,7 +455,7 @@
     "precio_usd": 10.95,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/jagermeister/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1648/26/004120106281_q90.jpg"
   },
@@ -1215,7 +465,7 @@
     "precio_usd": 19.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jim-beam-black-1l/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8125/26/104120200131_q90.jpg"
   },
@@ -1225,7 +475,7 @@
     "precio_usd": 14.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jim-beam-white-1l/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8124/26/104120100131_q90.jpg"
   },
@@ -1235,7 +485,7 @@
     "precio_usd": 6.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/john-barr-red/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8115/26/104030410751_q90.jpg"
   },
@@ -1245,7 +495,7 @@
     "precio_usd": 21.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-black/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8107/26/104011404601_q90.jpg"
   },
@@ -1255,7 +505,7 @@
     "precio_usd": 169.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-blue-label/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8111/26/104013704601_q90.jpg"
   },
@@ -1265,7 +515,7 @@
     "precio_usd": 27.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-double-black/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8131/26/104230404601_q90.jpg"
   },
@@ -1275,7 +525,7 @@
     "precio_usd": 55.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-gold-18-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8112/26/104019504601_q90.jpg"
   },
@@ -1285,7 +535,7 @@
     "precio_usd": 32.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-gold-reserve/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8097/26/104010304601_q90.jpg"
   },
@@ -1295,7 +545,7 @@
     "precio_usd": 66.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-green-15-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8110/26/104013404601_q90.jpg"
   },
@@ -1305,7 +555,7 @@
     "precio_usd": 11.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/johnnie-walker-red/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8098/26/104010404601_q90.jpg"
   },
@@ -1315,7 +565,7 @@
     "precio_usd": 45.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jura-12-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8108/26/104011510751_q90.jpg"
   },
@@ -1325,7 +575,7 @@
     "precio_usd": 48.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jura-seven-wood-700ml/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8101/26/104010510751_q90.jpg"
   },
@@ -1335,7 +585,7 @@
     "precio_usd": 69.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jura-the-loch-700ml/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8105/26/104010810751_q90.jpg"
   },
@@ -1345,7 +595,7 @@
     "precio_usd": 59.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jura-the-road/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8104/26/104010710751_q90.jpg"
   },
@@ -1355,7 +605,7 @@
     "precio_usd": 43.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/jura-the-sound/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8103/26/104010610751_q90.jpg"
   },
@@ -1365,7 +615,7 @@
     "precio_usd": 60.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/laphroaig-10-anos/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8129/26/104150100131_q90.jpg"
   },
@@ -1375,7 +625,7 @@
     "precio_usd": 49.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-43-1750ml/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5956/26/204010602471_q90.jpg"
   },
@@ -1385,7 +635,7 @@
     "precio_usd": 9.95,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-43-350ml/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2057/26/204010202471_q90.jpg"
   },
@@ -1395,7 +645,7 @@
     "precio_usd": 13.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-43-700ml/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1628/26/204010402471_q90.jpg"
   },
@@ -1405,9 +655,9 @@
     "precio_usd": 22.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-pineapple/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2028/33/004032004601.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2028/26/004032004601_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1415,9 +665,9 @@
     "precio_usd": 22.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-redberry/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1887/33/004031204601.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1887/26/004031204601_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1425,9 +675,9 @@
     "precio_usd": 22.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-coconut/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1934/33/004031104601.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1934/26/004031104601_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1435,9 +685,9 @@
     "precio_usd": 22.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-ciroc-premium/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1719/33/004030404601.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1719/26/004030404601_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1445,9 +695,9 @@
     "precio_usd": 42.2,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "tequila",
     "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-sauza-hornitos/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1840/33/004070500131.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1840/26/004070500131_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1455,9 +705,9 @@
     "precio_usd": 15.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "tequila",
     "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-sauza-gold/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1891/33/004070200131.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1891/26/004070200131_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1465,9 +715,9 @@
     "precio_usd": 14.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-luxardo-sambuca/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2030/33/204070409451.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2030/26/204070409451_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1475,9 +725,9 @@
     "precio_usd": 16.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/luxardo-cherry-sangue-morlacco/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1853/33/204070309451.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1853/26/204070309451_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1485,9 +735,9 @@
     "precio_usd": 19.95,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/villa-massa-limoncello/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2016/33/204020402471.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2016/26/204020402471_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1495,9 +745,9 @@
     "precio_usd": 11.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-ballantines/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1953/33/104150404851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1953/26/104150404851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1515,9 +765,9 @@
     "precio_usd": 28.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-jameson-black-barrel/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2044/33/104082804851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2044/26/104082804851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1525,9 +775,9 @@
     "precio_usd": 16.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-jameson/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2002/33/104080404851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2002/26/104080404851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1535,9 +785,9 @@
     "precio_usd": 62.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-aberlour-12/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1716/33/104071304851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1716/26/104071304851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1545,9 +795,9 @@
     "precio_usd": 46.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-mizunara/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1870/33/104038104851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1870/26/104038104851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1555,9 +805,9 @@
     "precio_usd": 365.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-regal-25/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2069/33/104036304851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2069/26/104036304851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1575,9 +825,9 @@
     "precio_usd": 53.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-regal-18/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1618/33/104032304851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1618/26/104032304851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1585,9 +835,9 @@
     "precio_usd": 21.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-chivas-regal-12/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1671/33/104031404851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1671/26/104031404851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1595,9 +845,9 @@
     "precio_usd": 520.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenfiddich-25-anos/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1723/33/104116409451.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1723/26/104116409451_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1605,9 +855,9 @@
     "precio_usd": 42.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-the-original/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2065/33/104010311631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2065/26/104010311631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1615,9 +865,9 @@
     "precio_usd": 55.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-nectar-dor-12-anos/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2018/33/104012311631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2018/26/104012311631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1625,9 +875,9 @@
     "precio_usd": 122.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-18-anos/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1684/33/104014311631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1684/26/104014311631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1635,9 +885,9 @@
     "precio_usd": 62.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-lasanta/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1828/33/104011311631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1828/26/104011311631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1645,9 +895,9 @@
     "precio_usd": 160.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenlivet-18-anos/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4858/33/104063404851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4858/26/104063404851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1655,9 +905,9 @@
     "precio_usd": 47.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisky-glenmorangie-quinta-ruban/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1858/33/104013311631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1858/26/104013311631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1665,9 +915,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-lime/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1860/33/004034004851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1860/26/004034004851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1675,9 +925,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-raspberry-flavored/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1851/33/004031504851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1851/26/004031504851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1685,9 +935,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-pears-flavored/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2062/33/004031404851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2062/26/004031404851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1695,9 +945,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-mango-flavored/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1921/33/004031304851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1921/26/004031304851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1705,9 +955,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-vanilla-flavored/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1911/33/004031204851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1911/26/004031204851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1715,9 +965,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-apeach-peach-flavored/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1998/33/004031104851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1998/26/004031104851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1725,9 +975,9 @@
     "precio_usd": 10.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-mandarin-flavored/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1646/33/004031004851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1646/26/004031004851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1735,9 +985,9 @@
     "precio_usd": 9.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1932/33/004030804851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1932/26/004030804851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1745,9 +995,9 @@
     "precio_usd": 21.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-absolut-100/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1909/33/004030604851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1909/26/004030604851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1755,9 +1005,9 @@
     "precio_usd": 8.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-wyborowa/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1702/33/004030204851.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1702/26/004030204851_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1765,9 +1015,9 @@
     "precio_usd": 29.9,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "vodka",
     "url": "https://www.sineriz.com.uy/produtos/vodka/vodka-belvedere/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1933/33/004030511631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1933/26/004030511631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1775,9 +1025,9 @@
     "precio_usd": 39.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "whisky",
     "url": "https://www.sineriz.com.uy/produtos/whisky/whisk-jura-origin-10-anos/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1863/33/104011410751.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1863/26/104011410751_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1785,9 +1035,9 @@
     "precio_usd": 14.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-tia-maria/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2124/33/204070403061.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2124/26/204070403061_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1795,9 +1045,9 @@
     "precio_usd": 11.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-isolabella-sambuca/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2096/33/204030403061.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2096/26/204030403061_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1805,9 +1055,9 @@
     "precio_usd": 15.95,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-disaronno/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1848/33/204010403061.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1848/26/204010403061_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1815,9 +1065,9 @@
     "precio_usd": 8.2,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/pina-colada-old-nick/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2106/33/204050400131.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2106/26/204050400131_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1825,9 +1075,9 @@
     "precio_usd": 22.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "licores",
     "url": "https://www.sineriz.com.uy/produtos/licores/licor-frangelico/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1965/33/204010411431.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1965/26/204010411431_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1835,9 +1085,9 @@
     "precio_usd": 14.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "tequila",
     "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-jose-cuervo-silver-especial/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1715/33/004070610901.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1715/26/004070610901_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1845,9 +1095,9 @@
     "precio_usd": 14.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "tequila",
     "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-jose-cuervo-gold-especial/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1924/33/004070510901.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1924/26/004070510901_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1855,9 +1105,9 @@
     "precio_usd": 20.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "tequila",
     "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-reserva-jose-cuervo-1800-silver/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2120/33/004070310901.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2120/26/004070310901_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1865,79 +1115,239 @@
     "precio_usd": 20.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "bebidas-1",
+    "categoria": "tequila",
     "url": "https://www.sineriz.com.uy/produtos/tequila/tequila-reserva-jose-cuervo-1800-reposado/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2112/33/004070210901.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2112/26/004070210901_q90.jpg"
   },
   {
     "tienda": "Sineriz",
-    "nombre": "Babá Eletrônica Motorola",
-    "precio_usd": 199.0,
+    "nombre": "AR CONDICIONADO Split AIWA Inver12000 BTUS 60HZ",
+    "precio_usd": 259.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/baba-eletronica-motorola/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1935/26/007020112231_q90.jpg"
+    "categoria": "ar-condicionado",
+    "url": "https://www.sineriz.com.uy/produtos/ar-condicionado/ar-condicionado-split-aiwa-inver12000-btus-60hz/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8092/26/022300404041_q90.jpg"
   },
   {
     "tienda": "Sineriz",
-    "nombre": "Bolsa de Maternidade Trocador Infanti",
-    "precio_usd": 45.0,
+    "nombre": "AR CONDICIONADO Split MIDEA INVERTER 12000 BTUS 60HZ",
+    "precio_usd": 285.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/bolsa-de-maternidade-trocador-infanti/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4803/26/039071303721_q90.jpg"
+    "categoria": "ar-condicionado",
+    "url": "https://www.sineriz.com.uy/produtos/ar-condicionado/ar-condicionado-split-midea-inverter-12000-btus-60hz/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8093/26/022300411681_q90.jpg"
   },
   {
     "tienda": "Sineriz",
-    "nombre": "BOLSA MATERNIDADE INFANTI",
-    "precio_usd": 25.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/bolsa-maternidade-infanti/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2098/26/039042603721_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Bomba Manual Tira Leite Chicco",
-    "precio_usd": 45.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/bomba-manual-tira-leite-chicco/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1882/26/040032608331_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "Carrinho de Bebê Travel System Infanti",
-    "precio_usd": 410.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/carrinho-de-bebe-travel-system-infanti/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1786/26/039070503721_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "INFANTI BOLSA MATERNIDADE",
-    "precio_usd": 25.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/infanti-bolsa-maternidade/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1972/26/039042703721_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "INFANTI PALERMO CARRINHO DE BEBÊ",
+    "nombre": "BABÁ ELETRÔNICA MOTOROLA MBP33XLC",
     "precio_usd": 113.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "infantil-1",
-    "url": "https://www.sineriz.com.uy/produtos/bebes/infanti-palermo-carrinho-de-bebe/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1703/26/039045403721_q90.jpg"
+    "categoria": "cameras-babas-eletronicas",
+    "url": "https://www.sineriz.com.uy/produtos/cameras-babas-eletronicas/baba-eletronica-motorola-mbp33xlc/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8045/26/007040212681_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Cabo para Carga 3 em 1 GOLF",
+    "precio_usd": 2.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "acessorios-para-pc-e-smartphones",
+    "url": "https://www.sineriz.com.uy/produtos/acessorios-para-pc-e-smartphones/cabo-para-carga-3-em-1-golf/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2092/26/007011612551_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Caixa de som JBL AUTHENTICS 500",
+    "precio_usd": 489.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "audio",
+    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-authentics-500/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8879/26/007400212891_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Caixa de som JBL BOOMBOX 3 WIFI",
+    "precio_usd": 399.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "audio",
+    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-boombox-3-wifi/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8876/26/007214312891_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Caixa de som JBL BOOMBOX 4",
+    "precio_usd": 449.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "audio",
+    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-boombox-4/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8877/26/007214412891_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Caixa de som JBL PARTYBOX CLUB 120",
+    "precio_usd": 399.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "audio",
+    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-partybox-club-120/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8875/26/007211712891_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Caixa de som JBL PARTYBOX STAGE 320",
+    "precio_usd": 449.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "audio",
+    "url": "https://www.sineriz.com.uy/produtos/audio/caixa-de-som-jbl-partybox-stage-320/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8874/26/007211612891_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Carregador de parede + cabo USB C",
+    "precio_usd": 2.48,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "acessorios-para-pc-e-smartphones",
+    "url": "https://www.sineriz.com.uy/produtos/acessorios-para-pc-e-smartphones/carregador-de-parede-cabo-usb-c/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1844/26/007012112551_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Chaleira Elétrica North Tech",
+    "precio_usd": 8.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrodomesticos",
+    "url": "https://www.sineriz.com.uy/produtos/eletrodomesticos/chaleira-eletrica-north-tech/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5789/26/022170206981_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "CONTROLE PARA PS4",
+    "precio_usd": 69.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "informatica-e-videogames",
+    "url": "https://www.sineriz.com.uy/produtos/informatica-e-videogames/controle-para-ps4/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4828/26/008080406981_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Maquina de acabamento Wahl Hero",
+    "precio_usd": 29.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-acabamento-wahl-hero/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1958/26/022162711001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Maquina de corte cabelo sem fio Wahl Super Taper",
+    "precio_usd": 29.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-corte-cabelo-sem-fio-wahl-super-taper/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8087/26/022165211001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Maquina de corte cabelo Wahl Super Taper Chrome",
+    "precio_usd": 29.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-corte-cabelo-wahl-super-taper-chrome/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8086/26/022165111001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Maquina de corte Wahl Designer",
+    "precio_usd": 59.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/maquina-de-corte-wahl-designer/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8088/26/022165311001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Smart TV 50\" AIWA 4K",
+    "precio_usd": 289.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tv",
+    "url": "https://www.sineriz.com.uy/produtos/tv/smart-tv-50-aiwa-4k/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/6240/26/008062104041_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Smart TV 58\" AIWA 4K",
+    "precio_usd": 353.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "tv",
+    "url": "https://www.sineriz.com.uy/produtos/tv/smart-tv-58-aiwa-4k/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1834/26/008062204041_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "SOUNDBAR 2.1CH ATHUS",
+    "precio_usd": 59.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "audio",
+    "url": "https://www.sineriz.com.uy/produtos/audio/soundbar-2-1ch-athus/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8046/26/007210112641_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WAHL Barber Combo 120V/60HZ",
+    "precio_usd": 59.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/wahl-barber-combo-120v-60hz/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8085/26/022161411001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WAHL BERET",
+    "precio_usd": 29.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/wahl-beret/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1952/26/022163511001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WAHL BERETTO CLIPPER",
+    "precio_usd": 49.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cuidados-pessoais",
+    "url": "https://www.sineriz.com.uy/produtos/cuidados-pessoais/wahl-beretto-clipper/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1857/26/022164111001_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "WAHL PET TOUCH UP TRIMMER",
+    "precio_usd": 18.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrodomesticos",
+    "url": "https://www.sineriz.com.uy/produtos/eletrodomesticos/wahl-pet-touch-up-trimmer/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8089/26/022165611001_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -1945,7 +1355,7 @@
     "precio_usd": 11.25,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/body-mist-para-corpo-e-cabelo-rituals-ayurveda/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8027/26/002020412511_q90.jpg"
   },
@@ -1955,7 +1365,7 @@
     "precio_usd": 12.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/creme-corporal-rituals-ayurveda/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8030/26/002020712511_q90.jpg"
   },
@@ -1965,7 +1375,7 @@
     "precio_usd": 9.75,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/creme-esfoliante-rituals-ritual-of-sakura/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8024/26/002010112511_q90.jpg"
   },
@@ -1975,7 +1385,7 @@
     "precio_usd": 6.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/creme-para-maos-rituals-ayurveda-1/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8031/26/002020912511_q90.jpg"
   },
@@ -1985,7 +1395,7 @@
     "precio_usd": 6.75,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/creme-para-maos-rituals-ayurveda/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8026/26/002020112511_q90.jpg"
   },
@@ -1995,7 +1405,7 @@
     "precio_usd": 6.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/creme-para-maos-rituals-sakura/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8025/26/002010812511_q90.jpg"
   },
@@ -2005,7 +1415,7 @@
     "precio_usd": 8.75,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/difusor-aromatizador-de-ambiente-rituals-hammam/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8035/26/002040812511_q90.jpg"
   },
@@ -2055,7 +1465,7 @@
     "precio_usd": 120.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-armani-acqua-di-gio-men/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1843/26/001260100631_q90.jpg"
   },
@@ -2065,7 +1475,7 @@
     "precio_usd": 90.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-azzaro-wanted/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1772/26/001120200411_q90.jpg"
   },
@@ -2075,7 +1485,7 @@
     "precio_usd": 64.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-calvin-klein-ck-one-1/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1685/26/001070103631_q90.jpg"
   },
@@ -2085,7 +1495,7 @@
     "precio_usd": 77.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-calvin-klein-ck-one/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2104/26/001070203631_q90.jpg"
   },
@@ -2095,7 +1505,7 @@
     "precio_usd": 84.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-calvin-klein-euphoria-1/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2021/26/001550103631_q90.jpg"
   },
@@ -2105,7 +1515,7 @@
     "precio_usd": 104.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-calvin-klein-euphoria/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1728/26/001550203631_q90.jpg"
   },
@@ -2115,7 +1525,7 @@
     "precio_usd": 113.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-carolina-herrera-212-vip-black/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1950/26/101910107631_q90.jpg"
   },
@@ -2125,7 +1535,7 @@
     "precio_usd": 131.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-carolina-herrera-212-vip-rose/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2058/26/001930107631_q90.jpg"
   },
@@ -2135,7 +1545,7 @@
     "precio_usd": 113.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-carolina-herrera-ch-men/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1701/26/001200507631_q90.jpg"
   },
@@ -2145,7 +1555,7 @@
     "precio_usd": 138.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-carolina-herrera-good-girl/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1993/26/101450307631_q90.jpg"
   },
@@ -2155,7 +1565,7 @@
     "precio_usd": 113.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-dior-j-adore-2/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1718/26/001620403631_q90.jpg"
   },
@@ -2165,7 +1575,7 @@
     "precio_usd": 176.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-dior-j-adore-1/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1649/26/001620303631_q90.jpg"
   },
@@ -2175,7 +1585,7 @@
     "precio_usd": 146.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-dior-j-adore/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2040/26/001620203631_q90.jpg"
   },
@@ -2185,7 +1595,7 @@
     "precio_usd": 132.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-dior-sauvage/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1852/26/101100503631_q90.jpg"
   },
@@ -2195,7 +1605,7 @@
     "precio_usd": 113.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-dior-sauvage-x001f/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1638/26/101100403631_q90.jpg"
   },
@@ -2425,9 +1835,9 @@
     "precio_usd": 194.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "cosmeticos",
     "url": "https://www.sineriz.com.uy/produtos/cosmeticos/serum-revitalizante-sisley-hair-rituel/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1751/33/002660103631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1751/26/002660103631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2435,9 +1845,9 @@
     "precio_usd": 73.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-hugo-boss-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1774/33/001210203631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1774/26/001210203631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2445,9 +1855,9 @@
     "precio_usd": 140.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-la-vie-est-belle/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2034/33/001711100631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2034/26/001711100631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2455,9 +1865,9 @@
     "precio_usd": 114.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-thierry-mugler-angel/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1700/33/001570200411.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1700/26/001570200411_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2465,9 +1875,9 @@
     "precio_usd": 93.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-hugo-boss/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1807/33/001210303631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1807/26/001210303631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2475,9 +1885,9 @@
     "precio_usd": 99.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-kenzo-flower-by-kenzo/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1773/33/001140311261.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1773/26/001140311261_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2485,9 +1895,9 @@
     "precio_usd": 152.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-givenchy-ange-ou-demon/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1816/33/001030111261.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1816/26/001030111261_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2495,9 +1905,9 @@
     "precio_usd": 71.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-montblanc-legend/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2089/33/001210203871.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2089/26/001210203871_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2505,9 +1915,9 @@
     "precio_usd": 116.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-jpg-le-male/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1865/33/101410207631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1865/26/101410207631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2515,9 +1925,9 @@
     "precio_usd": 110.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-one-million/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1738/33/001080507631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1738/26/001080507631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2525,9 +1935,9 @@
     "precio_usd": 82.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-polo-black/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1780/33/001290100631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1780/26/001290100631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2535,9 +1945,9 @@
     "precio_usd": 87.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-polo-blue-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1665/33/101450200631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1665/26/101450200631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2545,9 +1955,9 @@
     "precio_usd": 120.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-polo-blue/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1803/33/101450100631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1803/26/101450100631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2555,9 +1965,9 @@
     "precio_usd": 154.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-ysl-black-opium-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1874/33/101230200631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1874/26/101230200631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2565,9 +1975,9 @@
     "precio_usd": 115.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-ysl-black-opium/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2130/33/101230100631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2130/26/101230100631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2575,9 +1985,9 @@
     "precio_usd": 110.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-invictus-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1929/33/001890207631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1929/26/001890207631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2585,9 +1995,9 @@
     "precio_usd": 80.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-invictus/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1899/33/001890107631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1899/26/001890107631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2595,9 +2005,9 @@
     "precio_usd": 101.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-lady-million-1/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1937/33/001410307631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1937/26/001410307631_q90.jpg"
   },
   {
     "tienda": "Sineriz",
@@ -2605,8 +2015,818 @@
     "precio_usd": 117.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "perfumaria-e-beleza",
+    "categoria": "perfumes",
     "url": "https://www.sineriz.com.uy/produtos/perfumes/perfume-paco-rabanne-lady-million/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2024/33/001410107631.jpg_q70@2.jpg"
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2024/26/001410107631_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Babá Eletrônica Motorola",
+    "precio_usd": 199.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/baba-eletronica-motorola/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1935/26/007020112231_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Bolsa de Maternidade Trocador Infanti",
+    "precio_usd": 45.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/bolsa-de-maternidade-trocador-infanti/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4803/26/039071303721_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "BOLSA MATERNIDADE INFANTI",
+    "precio_usd": 25.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/bolsa-maternidade-infanti/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2098/26/039042603721_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Bomba Manual Tira Leite Chicco",
+    "precio_usd": 45.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/bomba-manual-tira-leite-chicco/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1882/26/040032608331_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Carrinho de Bebê Travel System Infanti",
+    "precio_usd": 410.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/carrinho-de-bebe-travel-system-infanti/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1786/26/039070503721_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "INFANTI BOLSA MATERNIDADE",
+    "precio_usd": 25.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/infanti-bolsa-maternidade/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1972/26/039042703721_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "INFANTI PALERMO CARRINHO DE BEBÊ",
+    "precio_usd": 113.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebes",
+    "url": "https://www.sineriz.com.uy/produtos/bebes/infanti-palermo-carrinho-de-bebe/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1703/26/039045403721_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Azeite de Oliva com Albahaca Pons",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-com-albahaca-pons/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1792/26/019114806291_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Azeite de Oliva com Orégano Pons",
+    "precio_usd": 10.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-com-oregano-pons/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5138/26/019114506291_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "AZEITE DE OLIVA OLAVE PREMIUM BLEND 1 LITRO",
+    "precio_usd": 17.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-olave-premium-blend-1-litro/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/9974/26/019111114731_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Azeite de Oliva Pons",
+    "precio_usd": 14.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-pons/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/6581/26/019115006291_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Azeite de Oliva Pons",
+    "precio_usd": 19.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-pons-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4821/26/019110806291_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Azeite de Oliva Santa Laura",
+    "precio_usd": 9.38,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-santa-laura/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4748/26/019110212352_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Azeite de Oliva Santa Laura",
+    "precio_usd": 5.62,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/azeite-de-oliva-santa-laura-1/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5080/26/019110112352_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "CAFE GRÃO JUAN VALDEZ PREMIUM SELECTION 500G",
+    "precio_usd": 27.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-grao-juan-valdez-premium-selection-500g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5853/26/019300105591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "CAFE JUAN VALDEZ GOURMET SELECTION MOIDO ORGANICO 283G",
+    "precio_usd": 16.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-gourmet-selection-moido-organico-283g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7598/26/019300405591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "CAFE JUAN VALDEZ GRANULADO 100g",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-granulado-100g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5053/26/019300805591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "CAFE JUAN VALDEZ PREMIUM SELECTION MOIDO 250G",
+    "precio_usd": 14.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-premium-selection-moido-250g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7593/26/019300505591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "CAVENDISH Candy Fruit 300gr",
+    "precio_usd": 5.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/cavendish-candy-fruit-300gr/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1796/26/019020800321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Chá Instantâneo Granulado Kruger - Mix de Frutas",
+    "precio_usd": 4.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-mix-de-frutas/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8055/26/019070400321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Chá Instantâneo Granulado Kruger Laranja",
+    "precio_usd": 4.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-laranja/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8056/26/019070800321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Chá Instantâneo Granulado Kruger Limão",
+    "precio_usd": 4.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-limao/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8054/26/019070100321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia Mackays Framboesa",
+    "precio_usd": 4.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-framboesa/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8066/26/019131200321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia Mackays Gengibre",
+    "precio_usd": 4.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-gengibre/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8067/26/019131300321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia Mackays Groselha Preta",
+    "precio_usd": 4.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-groselha-preta/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8065/26/019131000321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia Mackays lima & limão",
+    "precio_usd": 3.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-lima-limao/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8069/26/019132000321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia Mackays Mirtilo e Groselha Preta",
+    "precio_usd": 4.1,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-mackays-mirtilo-e-groselha-preta/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8068/26/019131900321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour Cranberry & Mirtilo",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-cranberry-mirtilo/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8064/26/019071708321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour Framboesa e Romã",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-framboesa-e-roma/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8062/26/019071508321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour Laranja e Gengibre",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-laranja-e-gengibre/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8060/26/019071308321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour maçã e canela",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-maca-e-canela/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8057/26/019071008321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour Manga & Maracujá",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-manga-maracuja/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8058/26/019071108321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour Morange & Ruibarbo",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-morange-ruibarbo/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8063/26/019071608321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour pêssego",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-pessego/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8061/26/019071408321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Geleia St. Dalfour quatro frutas",
+    "precio_usd": 4.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestiveis-varios",
+    "url": "https://www.sineriz.com.uy/produtos/comestiveis-varios/geleia-st-dalfour-quatro-frutas/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8059/26/019071208321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Ketchup HEINZ",
+    "precio_usd": 8.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/ketchup-heinz/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2006/26/019130600321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Ketchup HEINZ 397g",
+    "precio_usd": 4.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/ketchup-heinz-397g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1752/26/019130400321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Ketchup HEINZ 567g",
+    "precio_usd": 5.7,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/ketchup-heinz-567g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1906/26/019130200321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "KIT Picnic HEINZ pack 1kg",
+    "precio_usd": 14.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/kit-picnic-heinz-pack-1kg/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2093/26/019121600321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Milka Choco & Biscuit 300g",
+    "precio_usd": 7.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "chocolates",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/milka-choco-biscuit-300g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1912/26/019100210831_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Milka Oreo 300g",
+    "precio_usd": 7.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "chocolates",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/milka-oreo-300g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1637/26/019100510831_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Molho de pimenta TABASCO 150ml",
+    "precio_usd": 6.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-150ml/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1713/26/019150200321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Molho de pimenta TABASCO Alho e Pimenta",
+    "precio_usd": 2.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-alho-e-pimenta/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2042/26/019150400321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Molho de pimenta TABASCO Chipotle",
+    "precio_usd": 6.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-chipotle/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1744/26/019153700321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Molho de pimenta TABASCO Habanero",
+    "precio_usd": 3.8,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-de-pimenta-tabasco-habanero/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1802/26/019150500321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Molho Shoyu Orgânico Kikkoman",
+    "precio_usd": 7.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/molho-shoyu-organico-kikkoman/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8070/26/019154300321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Mostarda HEINZ 227g",
+    "precio_usd": 3.7,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/mostarda-heinz-227g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2099/26/019121900321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Mostarda HEINZ 397g",
+    "precio_usd": 6.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "temperos-e-molhos",
+    "url": "https://www.sineriz.com.uy/produtos/temperos-e-molhos/mostarda-heinz-397g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2047/26/019122100321_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Oreo Cookie Case 154g",
+    "precio_usd": 6.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "chocolates",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/oreo-cookie-case-154g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4744/26/019250810831_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO FARFALLE N°85",
+    "precio_usd": 3.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-farfalle-n085/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8075/26/019162112071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO FUSILLI N°48",
+    "precio_usd": 3.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-fusilli-n048/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8072/26/019161312071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO LASAGNE ALL'UOVO N°173",
+    "precio_usd": 6.4,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-lasagne-all-uovo-n0173/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8079/26/019190112071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO PAPPARDELLE ALL'UOVO N°101",
+    "precio_usd": 3.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-pappardelle-all-uovo-n0101/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8076/26/019180312071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO PENNE RIGATE N°66",
+    "precio_usd": 3.2,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-penne-rigate-n066/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8074/26/019161812071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Toblerone Crunchy Almonds 360g",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "chocolates",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-crunchy-almonds-360g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1914/26/019050610831_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Toblerone Fruit&Nut 360g",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "chocolates",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-fruit-nut-360g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1737/26/019050410831_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Toblerone Dark 360g",
+    "precio_usd": 12.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "chocolates",
+    "url": "https://www.sineriz.com.uy/produtos/chocolates/toblerone-dark-360g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/4942/26/019050110831_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Mochila Adidas Adipower Blue",
+    "precio_usd": 35.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "raquetes",
+    "url": "https://www.sineriz.com.uy/produtos/raquetes/mochila-adidas-adipower-blue/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1763/26/028040611871_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Raqueteira Mochila Adidas Adipower Silver",
+    "precio_usd": 35.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "raquetes",
+    "url": "https://www.sineriz.com.uy/produtos/raquetes/raqueteira-mochila-adidas-adipower-silver/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1655/26/028040411871_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "MAKER´S MARK 750ml",
+    "precio_usd": 26.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/maker-s-mark-750ml/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8127/26/104130300131_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "OLD PARR 1 litro",
+    "precio_usd": 18.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/old-parr-1-litro/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8126/26/104121404601_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "ROYAL BRACKLA 21",
+    "precio_usd": 275.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/royal-brackla-21/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8121/26/104054312721_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "SIR EDUARD'S",
+    "precio_usd": 6.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/sir-eduard-s/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8114/26/104021400131_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "THE MACALLAN 18 ANOS",
+    "precio_usd": 365.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/the-macallan-18-anos/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1824/26/104043300131_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "THE MACALLAN 25 ANOS ANNIVERSARY",
+    "precio_usd": 2800.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/the-macallan-25-anos-anniversary/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2103/26/104044400131_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "THE MACALLAN RARE CASK",
+    "precio_usd": 325.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "whisky",
+    "url": "https://www.sineriz.com.uy/produtos/whisky/the-macallan-rare-cask/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2019/26/104041200131_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "MALIBU RUM",
+    "precio_usd": 10.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "rum",
+    "url": "https://www.sineriz.com.uy/produtos/rum/malibu-rum/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/2128/26/004110704851_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "PISCO CONTROL 40%",
+    "precio_usd": 6.95,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "pisco",
+    "url": "https://www.sineriz.com.uy/produtos/pisco/pisco-control-40/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8037/26/004180109911_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "PISCO EL GOBERNADOR",
+    "precio_usd": 18.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "pisco",
+    "url": "https://www.sineriz.com.uy/produtos/pisco/pisco-el-gobernador/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8036/26/004180106151_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "PISCO EL GOBERNADOR RESERVADO",
+    "precio_usd": 23.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "pisco",
+    "url": "https://www.sineriz.com.uy/produtos/pisco/pisco-el-gobernador-reservado/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8038/26/004180206151_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "PISCO MISTRAL GRAN NOBEL",
+    "precio_usd": 37.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "pisco",
+    "url": "https://www.sineriz.com.uy/produtos/pisco/pisco-mistral-gran-nobel/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8040/26/004180409911_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "PISCO MISTRAL NOBEL",
+    "precio_usd": 19.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "pisco",
+    "url": "https://www.sineriz.com.uy/produtos/pisco/pisco-mistral-nobel/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8041/26/004180609911_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "PISCO MISTRAL RESERVADO",
+    "precio_usd": 9.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "pisco",
+    "url": "https://www.sineriz.com.uy/produtos/pisco/pisco-mistral-reservado/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8039/26/004180209911_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "SHOWER GEL RITUALS HAMMAN",
+    "precio_usd": 6.25,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cosmeticos",
+    "url": "https://www.sineriz.com.uy/produtos/cosmeticos/shower-gel-rituals-hamman/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8033/26/002040212511_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "SHOWER OIL RITUALS HAPPY BUDDHA",
+    "precio_usd": 4.5,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cosmeticos",
+    "url": "https://www.sineriz.com.uy/produtos/cosmeticos/shower-oil-rituals-happy-buddha/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8032/26/002030712511_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VIDRO CAFE JUAN VALDEZ GRANULADO",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/vidro-cafe-juan-valdez-granulado/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1784/26/019300605591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VIDRO CAFE JUAN VALDEZ VANICANELA 95g",
+    "precio_usd": 14.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/vidro-cafe-juan-valdez-vanicanela-95g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5097/26/019300205591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "Vinagre Edmond Fallot de vinho tinto e chalota",
+    "precio_usd": 2.98,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "azeites-e-vinagres",
+    "url": "https://www.sineriz.com.uy/produtos/azeites-e-vinagres/vinagre-edmond-fallot-de-vinho-tinto-e-chalota/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8078/26/019180709521_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO PENNE RIGATE N°66 GLUTEN FREE",
+    "precio_usd": 4.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-penne-rigate-n066-gluten-free/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8081/26/019210412071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO SPAGHETTI GLUTEN FREE",
+    "precio_usd": 4.6,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-spaghetti-gluten-free/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8080/26/019210112071_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "RUMMO TAGLATELLE ALL'UOVO  N°132",
+    "precio_usd": 3.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "massas",
+    "url": "https://www.sineriz.com.uy/produtos/massas/rummo-taglatelle-all-uovo-n0132/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8077/26/019180412071_q90.jpg"
   }
 ]
