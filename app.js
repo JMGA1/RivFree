@@ -1,5 +1,8 @@
-let LANG = 'es';
-try { LANG = localStorage.getItem('rivfree-language') === 'pt-BR' ? 'pt-BR' : 'es'; } catch {}
+let LANG = 'pt-BR';
+try {
+ const savedLanguage = localStorage.getItem('rivfree-language');
+ LANG = savedLanguage === 'es' || savedLanguage === 'pt-BR' ? savedLanguage : 'pt-BR';
+} catch {}
 const translations = {
  'Detalles del catálogo':'Detalhes do catálogo','Precio, ofertas y tiendas':'Preço, ofertas e lojas','USD → BRL · Cotización':'USD → BRL · Cotação',
  'Ver en el mapa':'Ver no mapa','★ Guardado':'★ Salvo','☆ Guardar':'☆ Salvar','Mi lista':'Minha lista','Solo favoritos':'Só favoritos',
@@ -60,6 +63,7 @@ function tr(value) {
 const textSources = new WeakMap();
 function translateUI() {
  document.documentElement.lang=LANG;
+ document.title = LANG==='pt-BR' ? 'RivFree — Comparador de preços de free shops' : 'RivFree — Comparador de precios de free shops';
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  while(walker.nextNode()) {
   const n=walker.currentNode;
