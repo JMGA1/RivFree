@@ -1,6 +1,7 @@
 let LANG = 'es';
 try { LANG = localStorage.getItem('rivfree-language') === 'pt-BR' ? 'pt-BR' : 'es'; } catch {}
 const translations = {
+ 'Detalles del catálogo':'Detalhes do catálogo','Precio, ofertas y tiendas':'Preço, ofertas e lojas','USD → BRL · Cotización':'USD → BRL · Cotação',
  'Ver en el mapa':'Ver no mapa','★ Guardado':'★ Salvo','☆ Guardar':'☆ Salvar','Mi lista':'Minha lista','Solo favoritos':'Só favoritos',
  'Explorá y compará los free shops de Rivera':'Explore e compare os free shops de Rivera',
  'Disponibilidad orientativa':'Disponibilidade indicativa',
@@ -335,7 +336,8 @@ function render(resetLimit = false) {
     total + group.visibleOffers.filter(hasPrice).length, 0);
   const unavailable = offersShown - pricedShown;
   const shownText = items.length > visibleItems.length ? ` · mostrando ${visibleItems.length}` : '';
-  meta.textContent = tr(`${items.length} producto${items.length === 1 ? '' : 's'}${shownText} · ${pricedShown} precio${pricedShown === 1 ? '' : 's'} disponible${pricedShown === 1 ? '' : 's'}${unavailable ? ` · ${unavailable} sin precio` : ''} · ${ALL_PRODUCTS.length} publicaciones totales`);
+  meta.textContent = tr(`${items.length.toLocaleString(LANG)} producto${items.length === 1 ? '' : 's'}${shownText}`);
+  document.getElementById('resultsDetails').textContent = tr(`${pricedShown} precios disponibles · ${unavailable} sin precio · ${ALL_PRODUCTS.length} publicaciones totales`);
 
   if (items.length === 0) {
     grid.innerHTML = '';
@@ -414,6 +416,14 @@ function appendCardPrice(container,value,multiple=false){
   if(validExchange()){const secondary=document.createElement('span');secondary.className='card-price-secondary';secondary.textContent='≈ '+new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(value*exchange.usd_brl);container.appendChild(secondary);}
 }
 
+function readableProductName(value) {
+  // Only soften all-uppercase catalog names. Preserve acronyms and model codes.
+  if(value !== value.toLocaleUpperCase())return value;
+  const acronyms=new Set(['JBL','LG','HP','USB','LED','TV','EDP','EDT','EDC','USA','UV','SPF','DFA']);
+  return value.replace(/[\p{L}\p{N}]+/gu, word=>acronyms.has(word)||/\d/.test(word)
+    ? word : word[0]+word.slice(1).toLocaleLowerCase());
+}
+
 function createProductCard(group) {
   const offers = group.visibleOffers;
   const product = offers[0];
@@ -445,8 +455,9 @@ function createProductCard(group) {
 
   // Keep store controls OUTSIDE the product anchor/button. Nesting a button
   // inside a link is invalid interactive HTML and can fire both actions in
-  // some browsers. As a sibling overlay, clicking a store only opens its info.
-  const overlay=document.createElement('span');overlay.className='store-tags store-tags-overlay';
+  // some browsers. Below the photo, each store only opens its own information.
+  const overlay=document.createElement('div');overlay.className='store-tags card-stores';
+  if(storeCount>1){const count=document.createElement('span');count.className='store-count';count.textContent=LANG==='pt-BR'?`Em ${storeCount} lojas`:`En ${storeCount} tiendas`;overlay.appendChild(count);}
   stores.forEach(storeName=>overlay.appendChild(createStoreTag(storeName)));
 
   const body = document.createElement('div');
@@ -455,9 +466,12 @@ function createProductCard(group) {
   const utilityRow=document.createElement('div');utilityRow.className='card-utility-row';
   const favorite=document.createElement('button');favorite.type='button';favorite.className='favorite-button';
   favorite.dataset.action='favorite';favorite.setAttribute('aria-pressed',String(favorites.has(group.key)));
-  favorite.textContent=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
+  favorite.textContent=favorites.has(group.key)?'♥':'♡';
+  favorite.classList.add('heart-button');
+  favorite.setAttribute('aria-label',tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar')+': '+displayName);
+  favorite.title=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
   const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';
-  utilityRow.append(favorite,historyButton);body.appendChild(utilityRow);
+  utilityRow.append(favorite,historyButton);
 
   const badges = document.createElement('div');
   badges.className = 'badge-row';
@@ -477,7 +491,7 @@ function createProductCard(group) {
 
   const name = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
   name.className = 'card-name';
-  name.textContent = displayName;
+  name.textContent = readableProductName(displayName);
   body.appendChild(name);
 
   const priceRow = document.createElement('div');
@@ -492,12 +506,6 @@ function createProductCard(group) {
     priceRow.appendChild(oldPrice);
   }
   body.appendChild(priceRow);
-  if (storeCount > 1) {
-    const hint = document.createElement('div');
-    hint.className = 'comparison-hint';
-    hint.textContent = tr('Seleccioná para comparar las tiendas');
-    body.appendChild(hint);
-  }
   [imageBox, name].forEach(el => {
     if (!interactive) return;
     el.classList.add('product-target');
@@ -513,6 +521,7 @@ function createProductCard(group) {
       el.dataset.action='external';
     }
   });
+  body.appendChild(utilityRow);
   card.append(imageBox, overlay, body);
 
   if (storeCount > 1) {

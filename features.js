@@ -64,7 +64,7 @@ document.getElementById('openShoppingList').addEventListener('click',()=>{
   const store=offer?.tienda||'Sin precio disponible / Sem preço disponível';
   if(!byStore.has(store))byStore.set(store,[]);byStore.get(store).push({key,group,offer});if(offer)total+=offer.precio_usd;
  }
- if(!favorites.size)container.textContent='Guardá productos con ☆ / Salve produtos com ☆.';
+ if(!favorites.size)container.textContent='Guardá productos con ♡ / Salve produtos com ♡.';
  for(const [store,items] of byStore){
   const h=document.createElement('h3');h.textContent=store;container.append(h);
   if(STORE_INFO[store]?.direccion){const a=document.createElement('a');a.href=mapUrl(store,STORE_INFO[store].direccion);a.target='_blank';a.rel='noopener noreferrer';a.textContent=tr('Ver en el mapa');container.append(a);}
