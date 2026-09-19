@@ -269,8 +269,8 @@ function populateFilters() {
 }
 
 function getFiltered() {
-  const term = Catalog.search(ACTIVE_SEARCH);
-  const searchTokens = term.split(/\s+/).filter(Boolean);
+  const query = Catalog.searchQuery(ACTIVE_SEARCH);
+  const searchTokens = query.tokens;
 
   const cat = document.getElementById('categoria').value;
   const {min,max}=readPriceRange();
@@ -294,7 +294,7 @@ function getFiltered() {
     return true;
   });
   if(searchTokens.length){
-    const exact=groups.filter(g=>g.visibleOffers.some(p=>searchTokens.every(t=>p.searchIndex.includes(t))));
+    const exact=groups.filter(g=>g.visibleOffers.some(p=>Catalog.matchesSearch(p,query)));
     if(exact.length)groups=exact;
     else {
       const alternatives=searchTokens.map(searchAlternatives);

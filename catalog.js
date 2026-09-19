@@ -84,6 +84,20 @@ function normalized(s) {
 const stop=new Set('de da do del dos das para por com con e y the and un una'.split(' '));
 function tokens(s) {return (normalized(s).match(/[a-z0-9]+(?:\.[0-9]+)?/g)||[]).map(t=>aliases[t]||t).filter(t=>!stop.has(t));}
 function search(s) {return tokens(s).join(' ');}
+// Keep brand spelling before aliases (e.g. red -> rojo). Compact each field
+// separately so a match cannot join the end of a name to its store/category.
+function compact(s) {return norm(s).replace(/[^a-z0-9]/g,'');}
+function searchQuery(s) {
+ return {tokens:tokens(s), literal:(normalized(s).match(/[a-z0-9]+(?:\.[0-9]+)?/g)||[])
+   .filter(t=>!stop.has(t)).map(t=>({compact:compact(t),aliases:tokens(t)}))};
+}
+function matchesSearch(product, query) {
+ if(!query.tokens.length)return true;
+ if(query.tokens.every(t=>product.searchIndex.includes(t)))return true;
+ return query.literal.length>0 && query.literal.every(t=>
+   product.searchCompactFields.some(field=>field.includes(t.compact)) ||
+   t.aliases.some(alias=>product.searchIndex.includes(alias)));
+}
 // Descriptor words may differ between stores; identity, measures and variants remain.
 const descriptors=new Set('perfume spray vaporizador vaporisateur vaporizer natural importado original bebida whisky vino licor cerveza'.split(' '));
 function identity(p) {
@@ -97,7 +111,7 @@ function identity(p) {
  // Do not merge incomplete descriptions across stores.
  return family+'|'+ts.sort().join(' ') + (safe?'':'|'+p.tienda+'|'+(p.url||p.nombre));
 }
-return {norm,categories,category,tokens,search,identity};
+return {norm,categories,category,tokens,search,searchQuery,matchesSearch,compact,identity};
 })();
 
 function canonicalProductUrl(value) {
@@ -194,6 +208,7 @@ function prepareCatalog(data) {
   if(!hasPrice(product)) {product.precio_usd=null;product.precio_original_usd=null;product.en_oferta=false;}
   product.categoryId=Catalog.category(product.categoria,product.nombre);
   product.searchIndex=Catalog.search(`${product.nombre} ${product.categoria} ${Catalog.categories[product.categoryId].join(' ')} ${product.tienda}`);
+  product.searchCompactFields=[product.nombre,product.categoria,...Catalog.categories[product.categoryId],product.tienda].map(Catalog.compact);
   return product;
  });
  const products=dedupeProductsPreferComplete(mapped);
