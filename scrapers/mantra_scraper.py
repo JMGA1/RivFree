@@ -1,9 +1,4 @@
-"""Mantra Free Shop (Ecwid): extrae del listado y evita castigar al servidor.
 
-El catálogo/listado ya expone nombre y precio. Las fichas individuales se usan
-solo para completar registros realmente incompletos. Los HTTP 429 activan
-backoff largo en lugar de aumentar la concurrencia.
-"""
 import asyncio
 import re
 import sys
