@@ -1,9 +1,4 @@
-"""Siñeriz: descubre categorías, conserva avances y recupera precios desde ficha.
 
-La API pública ``scrape_category(slug, page=None)`` sigue devolviendo una lista
-como en versiones anteriores. ``run()`` usa una variante interna que además
-retorna el estado parcial de la categoría.
-"""
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
 import sys
