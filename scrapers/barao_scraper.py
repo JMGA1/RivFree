@@ -1,11 +1,4 @@
-"""Scraper de Barão Free Shop con precios tomados de la grilla renderizada.
 
-Barão usa Wix. En varias categorías el precio visible no queda dentro del
-[data-hook="product-item-root"] que entrega page.content(), aunque el usuario sí
-lo ve junto al producto. Por eso este scraper usa el DOM renderizado por
-Chromium como fuente primaria para precios y deja la ficha individual sólo
-como recuperación secundaria.
-"""
 import re
 import sys
 import time
