@@ -1,9 +1,4 @@
-"""DFA Uruguay: catálogo general con fallback por categorías WooCommerce.
 
-/shop/ es útil cuando responde, pero no es un punto único de falla. Si devuelve
-504/timeout, se recorren las categorías principales verificadas y cada página
-se conserva de forma independiente.
-"""
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import math
 import re
