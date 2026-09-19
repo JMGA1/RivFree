@@ -321,6 +321,27 @@ async def collect_wix_category_async(page, store, category, base_url, with_statu
     raise RuntimeError('Límite de paginación Wix alcanzado sin productos')
 
 
+def normalize_wix_image_url(value):
+    """Reemplaza placeholders Wix por una imagen de hasta 600px sin blur.
+
+    fit conserva el producto completo y el límite evita descargar originales
+    enormes. Solo se reescriben imágenes raster del CDN conocido de Wix.
+    """
+    if not isinstance(value, str):
+        return value
+    try:
+        parsed = urlsplit(value)
+    except ValueError:
+        return value
+    if parsed.scheme not in ("https", "http") or parsed.netloc.lower() != "static.wixstatic.com":
+        return value
+    match = re.fullmatch(r"/media/([^/]+\.(?:png|jpe?g|webp|avif))(?:/v1/.*)?", parsed.path, re.I)
+    if not match:
+        return value
+    asset = match.group(1)
+    return f"https://static.wixstatic.com/media/{asset}/v1/fit/w_600,h_600,q_85/{asset}"
+
+
 def extract_image_url(container):
     """Obtiene una imagen real evitando placeholders data: y fuentes vacias."""
     img = container.find("img") if container else None
@@ -329,10 +350,11 @@ def extract_image_url(container):
     candidates = [img.get("data-src"), img.get("data-lazy-src"), img.get("src")]
     srcset = img.get("srcset")
     if srcset:
-        candidates.extend(part.strip().split(" ")[0] for part in srcset.split(","))
+        # Las URLs de Wix contienen comas dentro de sus transformaciones.
+        candidates.extend(url.rstrip(",") for url in re.findall(r"https?://[^\s]+", srcset))
     for candidate in candidates:
         if candidate and candidate.startswith(("http://", "https://")):
-            return candidate
+            return normalize_wix_image_url(candidate)
     return None
 
 

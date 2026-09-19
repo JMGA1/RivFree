@@ -15,6 +15,7 @@ from utils import (
     finalize_scrape,
     load_previous_store,
     merge_product_records,
+    normalize_wix_image_url,
 )
 
 BASE_URL = "https://www.yurysfreeshop.com"
@@ -380,6 +381,10 @@ async def _run_async():
             await browser.close()
 
     merged = _merge_previous(unique, previous, failed_categories, recovery)
+    # También reparar las imágenes recuperadas del caché de categorías fallidas.
+    for product in merged:
+        if product.get("imagen"):
+            product["imagen"] = normalize_wix_image_url(product["imagen"])
     if not merged:
         raise RuntimeError("Yury's: no se obtuvo ningún producto válido")
 
