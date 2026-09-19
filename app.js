@@ -197,6 +197,7 @@ async function loadData() {
     if(ratesRes?.ok) {try {exchange=await ratesRes.json();} catch {}}
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
+    migrateFavorites(PRODUCT_GROUPS,prepared.legacyKeys);
     SEARCH_WORDS=prepared.words;
     document.getElementById('connectionNote').hidden=!offline;
     updateExchangeNote();

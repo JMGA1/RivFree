@@ -12,6 +12,17 @@ function updateExchangeNote(){
  :'Ingresá una cotización para ver reales / Informe uma cotação para ver reais.';
 }
 function mapUrl(name,address){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(name+' '+address);}
+// El motor de agrupación cambió las claves de grupo: convierte favoritos viejos a las claves nuevas.
+function migrateFavorites(groups,legacyKeys){
+ if(!favorites.size||!legacyKeys)return;
+ const current=new Set(groups.map(g=>g.key));let changed=false;
+ for(const key of [...favorites]){
+  if(current.has(key))continue;
+  const next=legacyKeys[key];
+  if(next&&current.has(next)){favorites.delete(key);favorites.add(next);changed=true;}
+ }
+ if(changed)try{localStorage.setItem('rivfree-favorites',JSON.stringify([...favorites]));}catch{}
+}
 function toggleFavorite(key){
  if(favorites.has(key))favorites.delete(key);else favorites.add(key);
  try{localStorage.setItem('rivfree-favorites',JSON.stringify([...favorites]));}catch{announce('No se pudo guardar la lista / Não foi possível salvar a lista');}

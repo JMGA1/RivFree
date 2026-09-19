@@ -1,6 +1,10 @@
 
+// Motor de agrupación entre tiendas (ver matching.js)
+const MatchEngine = (typeof Matching !== 'undefined') ? Matching : require('./matching.js').Matching;
+
 const Catalog = (() => {
-const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const decode = s => { s = String(s || ''); try { if (/%[0-9a-f]{2}/i.test(s)) s = decodeURIComponent(s); } catch {} return s; };
+const norm = s => decode(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const categories = {
  cosmetica:['Cosmética y cuidado personal','Cosméticos e cuidados pessoais'],
  perfumes:['Perfumes','Perfumes'], bebidas:['Bebidas','Bebidas'], alimentos:['Alimentos y chocolates','Alimentos e chocolates'],
@@ -146,32 +150,9 @@ function dedupeProductsPreferComplete(products) {
 }
 
 function groupProducts(products) {
-  const groups = new Map();
-  products.forEach((product, index) => {
-    const url = safeHttpUrl(product.url);
-
-    const canonical = Catalog.identity(product);
-    const conservativeKey = canonical;
-    const baseKey = conservativeKey || `product-${index}`;
-    let key = baseKey;
-
-    // Nunca colapsar dos publicaciones distintas de la MISMA tienda.
-    // La agrupación sirve para comparar el mismo producto entre tiendas, no para
-    // ocultar SKUs/variantes diferentes de Barão/Yury/etc. con nombres parecidos.
-    const existing = groups.get(baseKey);
-    if (existing && existing.offers.some(offer => {
-      if (offer.tienda !== product.tienda) return false;
-      const previousUrl = safeHttpUrl(offer.url);
-      return !url || !previousUrl || previousUrl !== url;
-    })) {
-      key = `${baseKey}|same-store|${product.tienda}|${url || index}`;
-    }
-
-    if (!groups.has(key)) groups.set(key, {key, offers:[]});
-    groups.get(key).offers.push(product);
-  });
-
-  return [...groups.values()].map(group => {
+  // El emparejamiento por atributos (marca/medida/variante) vive en matching.js.
+  // Regla que se mantiene: un grupo nunca tiene dos ofertas de la misma tienda.
+  return MatchEngine.buildGroups(products).map(group => {
     group.offers.sort(compareOfferPrices);
     const named = [...group.offers].sort((a, b) =>
       b.nombre.length - a.nombre.length || a.nombre.localeCompare(b.nombre, 'es')
@@ -216,6 +197,10 @@ function prepareCatalog(data) {
   return product;
  });
  const products=dedupeProductsPreferComplete(mapped);
- return {products,groups:groupProducts(products),words:[...new Set(products.flatMap(p=>p.searchIndex.split(' ')))]};
+ const groups=groupProducts(products);
+ // Las claves de grupo cambiaron con el nuevo motor: se conserva la equivalencia para migrar favoritos.
+ const legacyKeys={};
+ for(const g of groups)for(const o of g.offers){const old=Catalog.identity(o);if(!(old in legacyKeys))legacyKeys[old]=g.key;}
+ return {products,groups,legacyKeys,words:[...new Set(products.flatMap(p=>p.searchIndex.split(' ')))]};
 }
 if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice,canonicalProductUrl,dedupeProductsPreferComplete};
