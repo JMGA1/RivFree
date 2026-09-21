@@ -3323,72 +3323,6 @@
   },
   {
     "tienda": "Mantra Free Shop",
-    "nombre": "Tequila 1800 Reposado Jose Cuervo 750ml",
-    "precio_usd": 19.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "Tequilas",
-    "url": "https://mantrafreeshop.com/Tequila-1800-Reposado-Jose-Cuervo-750ml-p139958409",
-    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850776.jpg",
-    "precio_fuente": "listado"
-  },
-  {
-    "tienda": "Mantra Free Shop",
-    "nombre": "Tequila Reposado El Jimador 750ml",
-    "precio_usd": 12.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "Tequilas",
-    "url": "https://mantrafreeshop.com/Tequila-Reposado-El-Jimador-750ml-p139958411",
-    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850786.jpg",
-    "precio_fuente": "listado"
-  },
-  {
-    "tienda": "Mantra Free Shop",
-    "nombre": "Tequila Blanco El Jimador 750ml",
-    "precio_usd": 12.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "Tequilas",
-    "url": "https://mantrafreeshop.com/Tequila-Blanco-El-Jimador-750ml-p139958412",
-    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850816.jpg",
-    "precio_fuente": "listado"
-  },
-  {
-    "tienda": "Mantra Free Shop",
-    "nombre": "Tequila Reposado Herradura 750ml",
-    "precio_usd": 28.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "Tequilas",
-    "url": "https://mantrafreeshop.com/Tequila-Reposado-Herradura-750ml-p139958413",
-    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850836.jpg",
-    "precio_fuente": "listado"
-  },
-  {
-    "tienda": "Mantra Free Shop",
-    "nombre": "Tequila Jose Cuervo Especial Gold Reposado 750ml",
-    "precio_usd": 14.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "Tequilas",
-    "url": "https://mantrafreeshop.com/Tequila-Jose-Cuervo-Especial-Gold-Reposado-750ml-p139958425",
-    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850891.jpg",
-    "precio_fuente": "listado"
-  },
-  {
-    "tienda": "Mantra Free Shop",
-    "nombre": "Tequila Jose Cuervo Especial Silver 750mL",
-    "precio_usd": 14.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "Tequilas",
-    "url": "https://mantrafreeshop.com/Tequila-Jose-Cuervo-Especial-Silver-750mL-p139958428",
-    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850941.jpg",
-    "precio_fuente": "listado"
-  },
-  {
-    "tienda": "Mantra Free Shop",
     "nombre": "Vinho Tinto Francês Syrah J.P Chenet 750ml",
     "precio_usd": 5.5,
     "precio_original_usd": null,
@@ -4607,5 +4541,77 @@
     "url": "https://mantrafreeshop.com/Controle-Sony-Dualsense-para-PS5-CFI-ZCT1W-Azul-p530506875",
     "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/3458685627.jpg",
     "precio_fuente": "listado"
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "Tequila 1800 Reposado Jose Cuervo 750ml",
+    "precio_usd": 19.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tequilas",
+    "url": "https://mantrafreeshop.com/Tequila-1800-Reposado-Jose-Cuervo-750ml-p139958409",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850776.jpg",
+    "precio_fuente": "listado",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "Tequila Reposado El Jimador 750ml",
+    "precio_usd": 12.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tequilas",
+    "url": "https://mantrafreeshop.com/Tequila-Reposado-El-Jimador-750ml-p139958411",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850786.jpg",
+    "precio_fuente": "listado",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "Tequila Blanco El Jimador 750ml",
+    "precio_usd": 12.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tequilas",
+    "url": "https://mantrafreeshop.com/Tequila-Blanco-El-Jimador-750ml-p139958412",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850816.jpg",
+    "precio_fuente": "listado",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "Tequila Reposado Herradura 750ml",
+    "precio_usd": 28.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tequilas",
+    "url": "https://mantrafreeshop.com/Tequila-Reposado-Herradura-750ml-p139958413",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850836.jpg",
+    "precio_fuente": "listado",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "Tequila Jose Cuervo Especial Gold Reposado 750ml",
+    "precio_usd": 14.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tequilas",
+    "url": "https://mantrafreeshop.com/Tequila-Jose-Cuervo-Especial-Gold-Reposado-750ml-p139958425",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850891.jpg",
+    "precio_fuente": "listado",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Mantra Free Shop",
+    "nombre": "Tequila Jose Cuervo Especial Silver 750mL",
+    "precio_usd": 14.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "Tequilas",
+    "url": "https://mantrafreeshop.com/Tequila-Jose-Cuervo-Especial-Silver-750mL-p139958428",
+    "imagen": "https://d2j6dbq0eux0bg.cloudfront.net/images/14590206/1078850941.jpg",
+    "precio_fuente": "listado",
+    "datos_anteriores": true
   }
 ]
