@@ -189,7 +189,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "AR CONDICIONADO 12000 BTUs MIDEA 220V/60HZ",
-    "precio_usd": 249.0,
+    "precio_usd": 259.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "arcondicionado",
@@ -239,6 +239,50 @@
     "categoria": "arcondicionado",
     "url": "https://www.yurysfreeshop.com/product-page/ar-condicionado-climax-18000-btus",
     "imagen": "https://static.wixstatic.com/media/2d75da_6c70f25e7a874002ab8c8ec0c584ae56~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_6c70f25e7a874002ab8c8ec0c584ae56~mv2.png",
+    "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "ASPIRADOR ROBÔ COM BASE XION XI-VCROBOT360",
+    "precio_usd": 202.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrônicos",
+    "url": "https://www.yurysfreeshop.com/product-page/aspirador-robô-com-base-xion-xi-vcrobot360",
+    "imagen": "https://static.wixstatic.com/media/2d75da_d75b979901a6429b9a2b3fa08f92e272~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_d75b979901a6429b9a2b3fa08f92e272~mv2.png",
+    "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "COOKTOP DE INDUÇÃO 2 ZONAS XION XI-EHI20",
+    "precio_usd": 131.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrônicos",
+    "url": "https://www.yurysfreeshop.com/product-page/cooktop-de-indução-2-zonas-xion-xi-ehi20",
+    "imagen": "https://static.wixstatic.com/media/2d75da_e0ba5b66633b4ea68e1fbb8748da237c~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_e0ba5b66633b4ea68e1fbb8748da237c~mv2.png",
+    "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "CÂMERA SMART WI-FI INTERNA/EXTERNA XION",
+    "precio_usd": 36.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrônicos",
+    "url": "https://www.yurysfreeshop.com/product-page/câmera-smart-wi-fi-interna-externa-xion",
+    "imagen": "https://static.wixstatic.com/media/2d75da_b782ea72eae84a3193e8911e15e615bd~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_b782ea72eae84a3193e8911e15e615bd~mv2.png",
+    "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "COOKTOP 4 BOCAS DE VIDRO TEMPERADO XION XI-GH48TGL",
+    "precio_usd": 92.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "eletrônicos",
+    "url": "https://www.yurysfreeshop.com/product-page/cooktop-4-bocas-de-vidro-temperado-xion-xi-gh48tgl",
+    "imagen": "https://static.wixstatic.com/media/2d75da_757f2f1b294c45baaa443ed3337437d0~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_757f2f1b294c45baaa443ed3337437d0~mv2.png",
     "precio_fuente": "listado_visible"
   },
   {
@@ -728,7 +772,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "ANAFE 5 BOCAS VIDRO TEMPERADO XION",
-    "precio_usd": 110.0,
+    "precio_usd": 111.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -2950,7 +2994,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "CHAVE DE IMPACTO A BATERIA DOWEN PAGIO",
-    "precio_usd": 119.0,
+    "precio_usd": 159.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -3500,7 +3544,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "SET DE CHAVES COMBINADAS CROSSMASTER",
-    "precio_usd": 36.0,
+    "precio_usd": 26.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -6206,7 +6250,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "CLIMER DE CABELO   MAGNÉTICO XI-HAIR28 XION",
-    "precio_usd": 14.5,
+    "precio_usd": 14.6,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -8373,7 +8417,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "CAFETEIRA XION PARA CÁPSULAS XI-CM23",
-    "precio_usd": 80.0,
+    "precio_usd": 72.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -8659,7 +8703,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "BATEDEIRA COM TIGELA  400W XI-BA550 XION",
-    "precio_usd": 41.0,
+    "precio_usd": 40.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -9132,7 +9176,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "FONE DE OUVIDO BLUETOOTH XI-AUX300 XION",
-    "precio_usd": 19.3,
+    "precio_usd": 19.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -9517,7 +9561,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "FONE DE OUVIDO EXTRA BASS XI-AU18 XION",
-    "precio_usd": 8.5,
+    "precio_usd": 11.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -10012,7 +10056,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "MIXER /BATEDEIRA 600W XI-LI600 XION",
-    "precio_usd": 26.0,
+    "precio_usd": 31.9,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -10034,7 +10078,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "LIQUIDIFICADOR 1.5 LTS  XI-LI500 XION",
-    "precio_usd": 19.9,
+    "precio_usd": 20.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -10100,7 +10144,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "CURLING 33MM CERÂMICO STYLIST LINE XI-CURLER33",
-    "precio_usd": 20.0,
+    "precio_usd": 20.5,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -10408,7 +10452,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "JARRA ELÉTRICA XI-GL15 XION",
-    "precio_usd": 12.0,
+    "precio_usd": 10.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "eletrônicos",
@@ -11030,6 +11074,17 @@
     "categoria": "eletrônicos",
     "url": "https://www.yurysfreeshop.com/product-page/aparador-de-barba-xion-xi-hair46",
     "imagen": "https://static.wixstatic.com/media/2d75da_87fe5497d2b14ea5b0d16380fb91ad88~mv2.jpg/v1/fit/w_600,h_600,q_85/2d75da_87fe5497d2b14ea5b0d16380fb91ad88~mv2.jpg",
+    "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "WHISKY JOHNNIE WALKER BLACK RUBY 1 L",
+    "precio_usd": 26.3,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas-1",
+    "url": "https://www.yurysfreeshop.com/product-page/whisky-johnnie-walker-black-ruby-1-l",
+    "imagen": "https://static.wixstatic.com/media/2d75da_8ea9a06cb54341b2a030947e2dd8b346~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_8ea9a06cb54341b2a030947e2dd8b346~mv2.png",
     "precio_fuente": "listado_visible"
   },
   {
@@ -23410,9 +23465,9 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "GIN PUERTO DE INDIAS CLASSIC 700 ML",
-    "precio_usd": 9.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
+    "precio_usd": 8.99,
+    "precio_original_usd": 13.0,
+    "en_oferta": true,
     "categoria": "bebidas-1",
     "url": "https://www.yurysfreeshop.com/product-page/gin-puerto-de-indias-classic-700-ml",
     "imagen": "https://static.wixstatic.com/media/2d75da_bf580e9a4b3d45148ae6236d327ebf3f~mv2.jpg/v1/fit/w_600,h_600,q_85/2d75da_bf580e9a4b3d45148ae6236d327ebf3f~mv2.jpg",
@@ -48610,6 +48665,17 @@
   },
   {
     "tienda": "Yury's Free Shop",
+    "nombre": "LAVA-LOUÇAS 10 SERVIÇOS XION XI-LVV10",
+    "precio_usd": 335.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bazar-1",
+    "url": "https://www.yurysfreeshop.com/product-page/lava-louças-10-serviços-xion-xi-lvv10",
+    "imagen": "https://static.wixstatic.com/media/2d75da_b2f165c8fa144f5c81f5f271b3c52e5c~mv2.png/v1/fit/w_600,h_600,q_85/2d75da_b2f165c8fa144f5c81f5f271b3c52e5c~mv2.png",
+    "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
     "nombre": "GARRAFA TÉRMICA STANLEY CLASSIC 1 L DRIED PINE",
     "precio_usd": 50.5,
     "precio_original_usd": null,
@@ -61525,7 +61591,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "JACK DANIEL'S TENNESSEE BLACKBERRY 1 L",
-    "precio_usd": 25.0,
+    "precio_usd": 23.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "comestiveis",
@@ -62394,7 +62460,7 @@
   {
     "tienda": "Yury's Free Shop",
     "nombre": "ALFAJOR TRIPLE CHOCOLATE PORTEZUELO – CAIXA COM 12 UNIDADES",
-    "precio_usd": 369.0,
+    "precio_usd": 405.0,
     "precio_original_usd": null,
     "en_oferta": false,
     "categoria": "comestiveis",

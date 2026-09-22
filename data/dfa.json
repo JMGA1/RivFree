@@ -4821,6 +4821,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "RED BULL LATA 0.25 LT.",
+    "precio_usd": 1.35,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas",
+    "url": "https://www.dfauy.com/product/red-bull-lata-0-25-lt/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-06032-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "UXMAL MALBEC 0.75 LTS",
     "precio_usd": 9.9,
     "precio_original_usd": null,
@@ -7668,16 +7678,6 @@
     "categoria": "bebidas",
     "url": "https://www.dfauy.com/product/freixenet-cordon-negro-mini/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-06270-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "RED BULL LATA 0.25 LT.",
-    "precio_usd": 1.25,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas",
-    "url": "https://www.dfauy.com/product/red-bull-lata-0-25-lt/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-06032-300x300.jpg"
   },
   {
     "tienda": "DFA",
