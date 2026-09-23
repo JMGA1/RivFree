@@ -6,6 +6,22 @@ const LAST_CAMPAIGNS_KEY='rivfree-last-campaign-selection';
 const smartCampaignCache=new Map(),campaignImageCache=new Map();
 const consultations=new Map();
 
+// Keep the hero available even if a browser extension, stale service worker or
+// temporary request error blocks the editable JSON inventory. The main pool is
+// still loaded from data/highlights.json; this is only a resilient fallback.
+const FALLBACK_HIGHLIGHTS=[
+ {id:'fallback-perfumes',poolGroup:'beauty',theme:'rose',eyebrow:{es:'PERFUMES PARA DESCUBRIR','pt-BR':'PERFUMES PARA DESCOBRIR'},title:{es:'Una fragancia.\nVarias opciones.','pt-BR':'Uma fragrância.\nVárias opções.'},description:{es:'Explorá perfumes de distintas tiendas y compará antes de elegir.','pt-BR':'Explore perfumes de diferentes lojas e compare antes de escolher.'},cta:{es:'Explorar perfumes','pt-BR':'Explorar perfumes'},category:'perfumes'},
+ {id:'fallback-care',poolGroup:'beauty',theme:'mint',eyebrow:{es:'CUIDADO PERSONAL','pt-BR':'CUIDADO PESSOAL'},title:{es:'Tu rutina,\ncon más opciones.','pt-BR':'Sua rotina,\ncom mais opções.'},description:{es:'Cosmética y cuidado personal reunidos en un solo catálogo.','pt-BR':'Cosméticos e cuidados pessoais reunidos em um só catálogo.'},cta:{es:'Ver cuidado personal','pt-BR':'Ver cuidados pessoais'},category:'cosmetica'},
+ {id:'fallback-whisky',poolGroup:'drinks',theme:'sand',eyebrow:{es:'BEBIDAS','pt-BR':'BEBIDAS'},title:{es:'Whisky, vinos y más.\nCompará primero.','pt-BR':'Whisky, vinhos e mais.\nCompare primeiro.'},description:{es:'Revisá precios entre free shops antes de decidir dónde comprar.','pt-BR':'Confira preços entre free shops antes de decidir onde comprar.'},cta:{es:'Explorar bebidas','pt-BR':'Explorar bebidas'},category:'bebidas'},
+ {id:'fallback-wine',poolGroup:'drinks',theme:'rose',eyebrow:{es:'PARA TU RECORRIDO','pt-BR':'PARA SEU PASSEIO'},title:{es:'Vinos para mirar\ncon calma.','pt-BR':'Vinhos para conferir\ncom calma.'},description:{es:'Encontrá alternativas del catálogo y compará publicaciones.','pt-BR':'Encontre alternativas no catálogo e compare anúncios.'},cta:{es:'Ver bebidas','pt-BR':'Ver bebidas'},category:'bebidas'},
+ {id:'fallback-tech',poolGroup:'tech',theme:'blue',eyebrow:{es:'TECNOLOGÍA','pt-BR':'TECNOLOGIA'},title:{es:'Tecnología para comparar.\nSin abrir diez pestañas.','pt-BR':'Tecnologia para comparar.\nSem abrir dez abas.'},description:{es:'Celulares, audio, informática y accesorios reunidos para explorar.','pt-BR':'Celulares, áudio, informática e acessórios reunidos para explorar.'},cta:{es:'Explorar tecnología','pt-BR':'Explorar tecnologia'},category:'electronica'},
+ {id:'fallback-audio',poolGroup:'tech',theme:'blue',eyebrow:{es:'AUDIO Y ACCESORIOS','pt-BR':'ÁUDIO E ACESSÓRIOS'},title:{es:'Encontrá ese gadget\nque estabas buscando.','pt-BR':'Encontre aquele gadget\nque você procurava.'},description:{es:'Usá RivFree para revisar opciones y precios disponibles.','pt-BR':'Use o RivFree para conferir opções e preços disponíveis.'},cta:{es:'Ver electrónicos','pt-BR':'Ver eletrônicos'},category:'electronica'},
+ {id:'fallback-food',poolGroup:'food',theme:'sand',eyebrow:{es:'CHOCOLATES Y ALIMENTOS','pt-BR':'CHOCOLATES E ALIMENTOS'},title:{es:'Algo rico para llevar.\nMás fácil de encontrar.','pt-BR':'Algo gostoso para levar.\nMais fácil de encontrar.'},description:{es:'Explorá chocolates, dulces y alimentos de diferentes tiendas.','pt-BR':'Explore chocolates, doces e alimentos de diferentes lojas.'},cta:{es:'Explorar alimentos','pt-BR':'Explorar alimentos'},category:'alimentos'},
+ {id:'fallback-pantry',poolGroup:'food',theme:'mint',eyebrow:{es:'PARA LLEVAR','pt-BR':'PARA LEVAR'},title:{es:'Descubrí productos\nfuera de lo de siempre.','pt-BR':'Descubra produtos\nalém do de sempre.'},description:{es:'Una selección para recorrer el catálogo de otra forma.','pt-BR':'Uma seleção para explorar o catálogo de outro jeito.'},cta:{es:'Ver alimentos','pt-BR':'Ver alimentos'},category:'alimentos'},
+ {id:'fallback-smart-compare',poolGroup:'smart',theme:'rose',smartType:'compare',eyebrow:{es:'COMPARACIÓN REAL','pt-BR':'COMPARAÇÃO REAL'},title:{es:'El mismo producto.\nDistintos precios.','pt-BR':'O mesmo produto.\nPreços diferentes.'},description:{es:'Cuando hay equivalencias, RivFree te ayuda a verlas lado a lado.','pt-BR':'Quando há equivalências, o RivFree ajuda você a vê-las lado a lado.'},cta:{es:'Comparar','pt-BR':'Comparar'},category:''},
+ {id:'fallback-smart-offer',poolGroup:'smart',theme:'sand',smartType:'offer',eyebrow:{es:'OFERTAS DEL CATÁLOGO','pt-BR':'OFERTAS DO CATÁLOGO'},title:{es:'Hay ofertas para mirar.','pt-BR':'Há ofertas para conferir.'},description:{es:'Explorá publicaciones marcadas como oferta y compará antes de comprar.','pt-BR':'Explore anúncios marcados como oferta e compare antes de comprar.'},cta:{es:'Ver ofertas','pt-BR':'Ver ofertas'},category:'',action:'offers'}
+];
+
 function shuffled(items){
  const copy=[...items];
  for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}
@@ -51,12 +67,10 @@ async function storefrontJSON(path){
  try{const response=await fetch(path,{cache:'no-cache',signal:controller.signal});if(!response.ok)throw new Error();return await response.json();}finally{clearTimeout(timer);}
 }
 async function initStorefront(){
- const [banners,ranking]=await Promise.allSettled([storefrontJSON('data/campaigns.json'),storefrontJSON('data/popular.json')]);
- if(banners.status==='fulfilled')for(const slot of ['hero']){
-  const entries=banners.value?.[slot];
-  campaigns[slot]=chooseBalancedCampaigns(entries,CAMPAIGN_COUNT);
-  campaignPositions[slot]=0;smartCampaignCache.clear();campaignImageCache.clear();
- }
+ const [banners,ranking]=await Promise.allSettled([storefrontJSON('data/highlights.json'),storefrontJSON('data/popular.json')]);
+ const remoteEntries=banners.status==='fulfilled'&&Array.isArray(banners.value?.hero)?banners.value.hero:[];
+ campaigns.hero=chooseBalancedCampaigns(remoteEntries.length?remoteEntries:FALLBACK_HIGHLIGHTS,CAMPAIGN_COUNT);
+ campaignPositions.hero=0;smartCampaignCache.clear();campaignImageCache.clear();
  if(ranking.status==='fulfilled'&&Array.isArray(ranking.value?.items)&&Number.isFinite(Date.parse(ranking.value.updatedAt))){
   popularFeed={updatedAt:ranking.value.updatedAt,items:ranking.value.items.filter(i=>typeof i.url==='string'&&Number.isInteger(i.views)&&i.views>0).slice(0,1000)};
  }

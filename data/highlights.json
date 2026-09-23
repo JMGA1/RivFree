@@ -1,0 +1,588 @@
+{
+  "hero": [
+    {
+      "id": "beauty-perfumes",
+      "poolGroup": "beauty",
+      "theme": "rose",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "ENCONTRÁ TU NUEVO FAVORITO",
+        "pt-BR": "ENCONTRE SEU NOVO FAVORITO"
+      },
+      "title": {
+        "es": "Perfumes para descubrir.\nPrecios para comparar.",
+        "pt-BR": "Perfumes para descobrir.\nPreços para comparar."
+      },
+      "description": {
+        "es": "Explorá fragancias de distintas tiendas sin perderte entre pestañas.",
+        "pt-BR": "Explore fragrâncias de diferentes lojas sem se perder entre abas."
+      },
+      "cta": {
+        "es": "Explorar perfumes",
+        "pt-BR": "Explorar perfumes"
+      },
+      "category": "perfumes",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "beauty-skincare",
+      "poolGroup": "beauty",
+      "theme": "mint",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "CUIDADO PERSONAL",
+        "pt-BR": "CUIDADO PESSOAL"
+      },
+      "title": {
+        "es": "Tu rutina,\ncon más opciones.",
+        "pt-BR": "Sua rotina,\ncom mais opções."
+      },
+      "description": {
+        "es": "Cosmética y cuidado personal reunidos para que compares antes de elegir.",
+        "pt-BR": "Cosméticos e cuidados pessoais reunidos para você comparar antes de escolher."
+      },
+      "cta": {
+        "es": "Ver cosmética",
+        "pt-BR": "Ver cosméticos"
+      },
+      "category": "cosmetica",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "beauty-compare",
+      "poolGroup": "beauty",
+      "theme": "rose",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "ANTES DE ELEGIR",
+        "pt-BR": "ANTES DE ESCOLHER"
+      },
+      "title": {
+        "es": "Una fragancia.\nVarias tiendas.",
+        "pt-BR": "Uma fragrância.\nVárias lojas."
+      },
+      "description": {
+        "es": "Encontrá publicaciones equivalentes y revisá sus precios en un solo lugar.",
+        "pt-BR": "Encontre anúncios equivalentes e confira os preços em um só lugar."
+      },
+      "cta": {
+        "es": "Comparar perfumes",
+        "pt-BR": "Comparar perfumes"
+      },
+      "category": "perfumes",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "beauty-selfcare",
+      "poolGroup": "beauty",
+      "theme": "mint",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "UN MOMENTO PARA VOS",
+        "pt-BR": "UM MOMENTO PARA VOCÊ"
+      },
+      "title": {
+        "es": "Belleza y cuidado,\nsin apurarte.",
+        "pt-BR": "Beleza e cuidado,\nsem pressa."
+      },
+      "description": {
+        "es": "Recorré maquillaje, skincare y cuidado personal con el catálogo organizado.",
+        "pt-BR": "Explore maquiagem, skincare e cuidados pessoais com o catálogo organizado."
+      },
+      "cta": {
+        "es": "Explorar belleza",
+        "pt-BR": "Explorar beleza"
+      },
+      "category": "cosmetica",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "drinks-whisky",
+      "poolGroup": "drinks",
+      "theme": "sand",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "PARA TU PRÓXIMO BRINDIS",
+        "pt-BR": "PARA O PRÓXIMO BRINDE"
+      },
+      "title": {
+        "es": "Whisky, vinos y más.\nCompará primero.",
+        "pt-BR": "Whisky, vinhos e mais.\nCompare primeiro."
+      },
+      "description": {
+        "es": "Reunimos bebidas de distintos free shops para simplificar tu búsqueda.",
+        "pt-BR": "Reunimos bebidas de diferentes free shops para simplificar sua busca."
+      },
+      "cta": {
+        "es": "Explorar bebidas",
+        "pt-BR": "Explorar bebidas"
+      },
+      "category": "bebidas",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "drinks-wine",
+      "poolGroup": "drinks",
+      "theme": "rose",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "VINO Y ESPUMANTES",
+        "pt-BR": "VINHOS E ESPUMANTES"
+      },
+      "title": {
+        "es": "Opciones para brindar.\nPrecios para mirar.",
+        "pt-BR": "Opções para brindar.\nPreços para conferir."
+      },
+      "description": {
+        "es": "Descubrí qué hay publicado hoy y revisá alternativas entre tiendas.",
+        "pt-BR": "Descubra o que está publicado hoje e compare alternativas entre lojas."
+      },
+      "cta": {
+        "es": "Ver bebidas",
+        "pt-BR": "Ver bebidas"
+      },
+      "category": "bebidas",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "drinks-discover",
+      "poolGroup": "drinks",
+      "theme": "sand",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "RIVERA · SANTANA DO LIVRAMENTO",
+        "pt-BR": "RIVERA · SANTANA DO LIVRAMENTO"
+      },
+      "title": {
+        "es": "Elegí tu próximo brindis.",
+        "pt-BR": "Escolha seu próximo brinde."
+      },
+      "description": {
+        "es": "Explorá el catálogo de bebidas y encontrá opciones sin recorrer cada sitio por separado.",
+        "pt-BR": "Explore o catálogo de bebidas e encontre opções sem abrir cada site separadamente."
+      },
+      "cta": {
+        "es": "Explorar catálogo",
+        "pt-BR": "Explorar catálogo"
+      },
+      "category": "bebidas",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "drinks-compare",
+      "poolGroup": "drinks",
+      "theme": "blue",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "MÁS FÁCIL DE COMPARAR",
+        "pt-BR": "MAIS FÁCIL DE COMPARAR"
+      },
+      "title": {
+        "es": "La misma búsqueda.\nMás de una tienda.",
+        "pt-BR": "A mesma busca.\nMais de uma loja."
+      },
+      "description": {
+        "es": "Usá RivFree para revisar precios publicados y decidir qué tienda querés visitar.",
+        "pt-BR": "Use o RivFree para conferir preços publicados e decidir qual loja visitar."
+      },
+      "cta": {
+        "es": "Comparar bebidas",
+        "pt-BR": "Comparar bebidas"
+      },
+      "category": "bebidas",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "tech-electronics",
+      "poolGroup": "tech",
+      "theme": "blue",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "TECNOLOGÍA PARA TU DÍA",
+        "pt-BR": "TECNOLOGIA PARA SEU DIA"
+      },
+      "title": {
+        "es": "Tecnología,\nsin tantas pestañas.",
+        "pt-BR": "Tecnologia,\nsem tantas abas."
+      },
+      "description": {
+        "es": "Celulares, audio y electrónica de varios free shops en una misma búsqueda.",
+        "pt-BR": "Celulares, áudio e eletrônicos de vários free shops em uma única busca."
+      },
+      "cta": {
+        "es": "Explorar tecnología",
+        "pt-BR": "Explorar tecnologia"
+      },
+      "category": "electronica",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "tech-computing",
+      "poolGroup": "tech",
+      "theme": "mint",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "INFORMÁTICA",
+        "pt-BR": "INFORMÁTICA"
+      },
+      "title": {
+        "es": "Accesorios y equipos.\nTodo más cerca.",
+        "pt-BR": "Acessórios e equipamentos.\nTudo mais perto."
+      },
+      "description": {
+        "es": "Recorré informática y compará publicaciones disponibles en el catálogo.",
+        "pt-BR": "Explore informática e compare os anúncios disponíveis no catálogo."
+      },
+      "cta": {
+        "es": "Ver informática",
+        "pt-BR": "Ver informática"
+      },
+      "category": "informatica",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_19abcb964c0d4175aca390d469f4b508~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_19abcb964c0d4175aca390d469f4b508~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "tech-home",
+      "poolGroup": "tech",
+      "theme": "blue",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "TECNOLOGÍA PARA CASA",
+        "pt-BR": "TECNOLOGIA PARA CASA"
+      },
+      "title": {
+        "es": "Equipá tu casa\ncomparando mejor.",
+        "pt-BR": "Equipe sua casa\ncomparando melhor."
+      },
+      "description": {
+        "es": "Electrodomésticos y opciones para el hogar reunidos para una búsqueda más simple.",
+        "pt-BR": "Eletrodomésticos e opções para casa reunidos para uma busca mais simples."
+      },
+      "cta": {
+        "es": "Ver electrodomésticos",
+        "pt-BR": "Ver eletrodomésticos"
+      },
+      "category": "electrodomesticos",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_0bd8547ba57d466aa40aab6af5d5034a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0bd8547ba57d466aa40aab6af5d5034a~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "tech-audio",
+      "poolGroup": "tech",
+      "theme": "sand",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "AUDIO Y ENTRETENIMIENTO",
+        "pt-BR": "ÁUDIO E ENTRETENIMENTO"
+      },
+      "title": {
+        "es": "Tu música.\nMás opciones.",
+        "pt-BR": "Sua música.\nMais opções."
+      },
+      "description": {
+        "es": "Explorá parlantes, auriculares y electrónica publicada por los free shops.",
+        "pt-BR": "Explore caixas de som, fones e eletrônicos publicados pelos free shops."
+      },
+      "cta": {
+        "es": "Explorar electrónica",
+        "pt-BR": "Explorar eletrônicos"
+      },
+      "category": "electronica",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "food-chocolate",
+      "poolGroup": "food",
+      "theme": "mint",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "ALGO DULCE PARA EL VIAJE",
+        "pt-BR": "ALGO DOCE PARA A VIAGEM"
+      },
+      "title": {
+        "es": "Chocolates y sabores\npara descubrir.",
+        "pt-BR": "Chocolates e sabores\npara descobrir."
+      },
+      "description": {
+        "es": "Encontrá alimentos y chocolates publicados en las tiendas de la frontera.",
+        "pt-BR": "Encontre alimentos e chocolates publicados nas lojas da fronteira."
+      },
+      "cta": {
+        "es": "Explorar alimentos",
+        "pt-BR": "Explorar alimentos"
+      },
+      "category": "alimentos",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "food-gifts",
+      "poolGroup": "food",
+      "theme": "rose",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "PARA COMPARTIR",
+        "pt-BR": "PARA COMPARTILHAR"
+      },
+      "title": {
+        "es": "Un detalle rico.\nMuchas opciones.",
+        "pt-BR": "Um detalhe gostoso.\nMuitas opções."
+      },
+      "description": {
+        "es": "Recorré chocolates, dulces y alimentos sin tener que buscar tienda por tienda.",
+        "pt-BR": "Explore chocolates, doces e alimentos sem precisar buscar loja por loja."
+      },
+      "cta": {
+        "es": "Ver chocolates",
+        "pt-BR": "Ver chocolates"
+      },
+      "category": "alimentos",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "food-discover",
+      "poolGroup": "food",
+      "theme": "sand",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "RIVERA · SANTANA DO LIVRAMENTO",
+        "pt-BR": "RIVERA · SANTANA DO LIVRAMENTO"
+      },
+      "title": {
+        "es": "Un viaje\nun poco más dulce.",
+        "pt-BR": "Uma viagem\num pouco mais doce."
+      },
+      "description": {
+        "es": "Compará productos publicados y encontrá qué opción te conviene revisar.",
+        "pt-BR": "Compare produtos publicados e encontre qual opção vale a pena conferir."
+      },
+      "cta": {
+        "es": "Explorar productos",
+        "pt-BR": "Explorar produtos"
+      },
+      "category": "alimentos",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "food-pantry",
+      "poolGroup": "food",
+      "theme": "mint",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "PARA LLEVAR",
+        "pt-BR": "PARA LEVAR"
+      },
+      "title": {
+        "es": "Sabores para sumar\na tu compra.",
+        "pt-BR": "Sabores para adicionar\nà sua compra."
+      },
+      "description": {
+        "es": "Usá la categoría de alimentos para descubrir productos y precios publicados.",
+        "pt-BR": "Use a categoria de alimentos para descobrir produtos e preços publicados."
+      },
+      "cta": {
+        "es": "Ver alimentos",
+        "pt-BR": "Ver alimentos"
+      },
+      "category": "alimentos",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "smart-compare",
+      "poolGroup": "smart",
+      "theme": "rose",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "COMPARACIÓN DEL CATÁLOGO",
+        "pt-BR": "COMPARAÇÃO DO CATÁLOGO"
+      },
+      "title": {
+        "es": "Productos para comparar.",
+        "pt-BR": "Produtos para comparar."
+      },
+      "description": {
+        "es": "Cuando el catálogo cargue, RivFree va a destacar una comparación real entre tiendas.",
+        "pt-BR": "Quando o catálogo carregar, o RivFree vai destacar uma comparação real entre lojas."
+      },
+      "cta": {
+        "es": "Ver comparación",
+        "pt-BR": "Ver comparação"
+      },
+      "category": "perfumes",
+      "smartType": "compare",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "smart-multistore",
+      "poolGroup": "smart",
+      "theme": "blue",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "EN VARIAS TIENDAS",
+        "pt-BR": "EM VÁRIAS LOJAS"
+      },
+      "title": {
+        "es": "Más opciones para\nel mismo producto.",
+        "pt-BR": "Mais opções para\no mesmo produto."
+      },
+      "description": {
+        "es": "RivFree busca productos publicados por más de un free shop para compararlos.",
+        "pt-BR": "O RivFree busca produtos publicados por mais de um free shop para comparar."
+      },
+      "cta": {
+        "es": "Comparar",
+        "pt-BR": "Comparar"
+      },
+      "category": "electronica",
+      "smartType": "multistore",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "smart-offer",
+      "poolGroup": "smart",
+      "theme": "sand",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "OFERTAS DEL CATÁLOGO",
+        "pt-BR": "OFERTAS DO CATÁLOGO"
+      },
+      "title": {
+        "es": "Hay ofertas\npara revisar.",
+        "pt-BR": "Há ofertas\npara conferir."
+      },
+      "description": {
+        "es": "Cuando haya publicaciones marcadas como oferta, este espacio las llevará al frente.",
+        "pt-BR": "Quando houver anúncios marcados como oferta, este espaço vai destacá-los."
+      },
+      "cta": {
+        "es": "Ver ofertas",
+        "pt-BR": "Ver ofertas"
+      },
+      "category": "bebidas",
+      "smartType": "offer",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "id": "smart-category",
+      "poolGroup": "smart",
+      "theme": "mint",
+      "sponsored": false,
+      "eyebrow": {
+        "es": "MUCHO PARA EXPLORAR",
+        "pt-BR": "MUITO PARA EXPLORAR"
+      },
+      "title": {
+        "es": "Una categoría\ncon mucho para ver.",
+        "pt-BR": "Uma categoria\ncom muito para ver."
+      },
+      "description": {
+        "es": "RivFree puede destacar automáticamente una de las categorías con más productos.",
+        "pt-BR": "O RivFree pode destacar automaticamente uma das categorias com mais produtos."
+      },
+      "cta": {
+        "es": "Explorar",
+        "pt-BR": "Explorar"
+      },
+      "category": "alimentos",
+      "smartType": "category",
+      "images": [
+        {
+          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "alt": ""
+        }
+      ]
+    }
+  ]
+}

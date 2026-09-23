@@ -437,6 +437,23 @@ async function runSearch() {
   meta.classList.remove('search-complete');
   void meta.offsetWidth;
   meta.classList.add('search-complete');
+
+  // A submitted search should take the user directly to the catalog results.
+  // Keep this tied to form submission only, so changing a filter does not move the page.
+  await waitForPaint();
+  const grid = document.getElementById('grid');
+  const emptyState = document.getElementById('emptyState');
+  const resultsAnchor = grid?.children?.length
+    ? grid
+    : (emptyState && getComputedStyle(emptyState).display !== 'none' ? emptyState : meta);
+  if (resultsAnchor && typeof resultsAnchor.scrollIntoView === 'function') {
+    const reduceMotion = typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    resultsAnchor.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start'
+    });
+  }
 }
 
 function addImagePlaceholder(container) {

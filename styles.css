@@ -1007,6 +1007,12 @@ body{min-height:100vh;}
 .topbar .search-field{position:relative;min-width:0;}.topbar .search-field>label,.topbar .search-help{display:none;}
 .topbar .search-row{display:grid;grid-template-columns:minmax(0,1fr) 86px;gap:0;background:white;border-radius:8px;overflow:hidden;}
 .topbar .search-row input{height:46px!important;background:white!important;color:#172337;border:0!important;border-radius:0!important;font-size:13px!important;padding:12px 16px!important;}
+/* Keep the header search readable in every theme/browser. */
+.topbar #search{color:#172337!important;-webkit-text-fill-color:#172337!important;caret-color:#e84765!important;opacity:1!important;}
+.topbar #search::placeholder{color:#6f7784!important;-webkit-text-fill-color:#6f7784!important;opacity:1!important;}
+.topbar #search::selection{background:#ffd4dd;color:#172337;-webkit-text-fill-color:#172337;}
+.topbar #search:-webkit-autofill,.topbar #search:-webkit-autofill:hover,.topbar #search:-webkit-autofill:focus{-webkit-text-fill-color:#172337!important;caret-color:#e84765!important;-webkit-box-shadow:0 0 0 1000px #fff inset!important;}
+#grid,.empty-state{scroll-margin-top:24px;}
 .topbar .search-button{min-height:46px;border:0;border-radius:0;background:#e84765;padding:10px;font-size:12px;box-shadow:none;}
 .topbar .search-status{position:absolute;top:100%;left:0;background:var(--surface);color:var(--ink);z-index:5;padding:8px;}
 .header-actions{gap:8px;flex-wrap:nowrap;}.header-actions .theme-toggle{font-size:11px;padding:9px;min-height:40px;}

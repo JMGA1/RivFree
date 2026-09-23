@@ -1,5 +1,5 @@
-const CACHE='rivfree-shell-v14';
-const SHELL=['./','index.html','styles.css','analytics.js','app.js','features.js','shopping.js','storefront.js','matching.js','catalog.js','catalog-cache.js','catalog-worker.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','data/stores.json','data/exchange.json','data/campaigns.json','data/popular.json'];
+const CACHE='rivfree-shell-v16';
+const SHELL=['./','index.html','styles.css','analytics.js','app.js','features.js','shopping.js','storefront.js','matching.js','catalog.js','catalog-cache.js','catalog-worker.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','data/stores.json','data/exchange.json','data/highlights.json','data/popular.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('rivfree-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
@@ -7,7 +7,7 @@ self.addEventListener('fetch',event=>{
  if(event.request.method!=='GET'||url.origin!==location.origin)return;
  const relative=url.pathname.slice(new URL(self.registration.scope).pathname.length);
  // Version checks and catalogs are owned by IndexedDB, never the shell cache.
- if(relative.startsWith('data/')&&!['data/stores.json','data/exchange.json','data/campaigns.json','data/popular.json'].includes(relative))return;
+ if(relative.startsWith('data/')&&!['data/stores.json','data/exchange.json','data/highlights.json','data/popular.json'].includes(relative))return;
  if(!SHELL.includes(relative)&&event.request.mode!=='navigate')return;
  event.respondWith((async()=>{
   const cache=await caches.open(CACHE);

@@ -333,7 +333,7 @@ const fixture = {
     const realFetch=w.fetch;
     w.fetch=async(url,options)=>{
       if(String(url)==='data/popular.json')return {ok:true,json:async()=>({updatedAt:'2026-09-22',items:[{url:'https://example.com/sale',views:50}]})};
-      if(String(url)==='data/campaigns.json')return {ok:true,json:async()=>({hero:[{id:'sponsor',title:'Sponsor test',sponsored:true,image:'https://example.com/banner.jpg',layout:'banner',href:'https://example.com/campaign'}],middle:[]})};
+      if(String(url)==='data/highlights.json')return {ok:true,json:async()=>({hero:[{id:'sponsor',title:'Sponsor test',sponsored:true,image:'https://example.com/banner.jpg',layout:'banner',href:'https://example.com/campaign'}],middle:[]})};
       return realFetch(url,options);
     };
     await w.initStorefront();
