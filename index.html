@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google tag (gtag.js) · RivFree GA4 -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  window.gtag = window.gtag || gtag;
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied'
+  });
+  gtag('js', new Date());
+  // Register the Google tag so Tag Assistant can detect it, but do not send a page view yet.
+  gtag('config', 'G-DQ9ZN0E47C', {
+    send_page_view: false,
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false
+  });
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9ZN0E47C"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RivFree — Comparador de preços de free shops</title>
@@ -214,7 +234,7 @@
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="analytics.js?v=20260923" defer></script>
+<script src="analytics.js?v=20260923-ga-detect" defer></script>
 <script src="matching.js?v=20260919a" defer></script>
 <script src="catalog.js?v=20260919a" defer></script>
 <script src="catalog-cache.js?v=20260919a" defer></script>

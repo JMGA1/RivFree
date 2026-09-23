@@ -1,6 +1,6 @@
-// RivFree analytics: privacy-first GA4 events + optional Microsoft Clarity.
-// 1) Replace the placeholders below with your own IDs.
-// 2) Keep the consent UI: analytics providers only load after the visitor accepts.
+// RivFree analytics: consent-aware GA4 events + optional Microsoft Clarity.
+// The Google tag itself is registered in <head> so Google/Tag Assistant can detect it.
+// Page views and behavioral events are enabled only after the visitor accepts analytics.
 const RIVFREE_ANALYTICS_CONFIG = Object.freeze({
   googleMeasurementId: 'G-DQ9ZN0E47C',
   clarityProjectId: 'CLARITY_PROJECT_ID'
@@ -18,6 +18,7 @@ const RIVFREE_ANALYTICS_CONFIG = Object.freeze({
   const rejectButton = document.getElementById('analyticsReject');
   const settingsButton = document.getElementById('privacySettings');
   let providersLoaded = false;
+  let gaActivated = false;
   if (!configured && settingsButton) settingsButton.hidden = true;
 
   window.dataLayer = window.dataLayer || [];
@@ -46,20 +47,16 @@ const RIVFREE_ANALYTICS_CONFIG = Object.freeze({
     window.gtag('event', name, clean);
   };
 
-  function loadGoogleAnalytics() {
-    if (!hasGA || document.querySelector('script[data-rivfree-ga]')) return;
+  function activateGoogleAnalytics() {
+    if (!hasGA || gaActivated) return;
     window.gtag('consent', 'update', { analytics_storage: 'granted' });
-    const script = document.createElement('script');
-    script.async = true;
-    script.dataset.rivfreeGa = 'true';
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`;
-    document.head.appendChild(script);
-    window.gtag('js', new Date());
+    // A second config call after consent sends the first page_view.
     window.gtag('config', gaId, {
       send_page_view: true,
       allow_google_signals: false,
       allow_ad_personalization_signals: false
     });
+    gaActivated = true;
   }
 
   function loadClarity() {
@@ -92,7 +89,7 @@ const RIVFREE_ANALYTICS_CONFIG = Object.freeze({
     if (!configured) return;
     if (!providersLoaded) {
       providersLoaded = true;
-      loadGoogleAnalytics();
+      activateGoogleAnalytics();
       loadClarity();
     }
     grantProviderConsent();
