@@ -244,8 +244,11 @@ function advanceCarousels(now=Date.now()){
   const root=document.getElementById(id);
   // Pauses also reset the countdown, so leaving a control never causes a jump.
   if(!canAutoplay(root)){nextAdvance.set(id,now+6000);continue;}
-  if(!nextAdvance.has(id)){nextAdvance.set(id,now+6000);continue;}
-  if(now<nextAdvance.get(id))continue;
+  const scheduled=nextAdvance.get(id);
+  // If the clock moved backwards (or a test uses a synthetic clock), restart the
+  // countdown instead of leaving autoplay blocked by a timestamp far in the future.
+  if(!Number.isFinite(scheduled)||scheduled-now>60000){nextAdvance.set(id,now+6000);continue;}
+  if(now<scheduled)continue;
   if(slot){if(campaigns[slot].length>1){campaignPositions[slot]=(campaignPositions[slot]+1)%campaigns[slot].length;renderCampaign(slot,true);}}
   else scrollProductRail(id);
   nextAdvance.set(id,now+6000);
