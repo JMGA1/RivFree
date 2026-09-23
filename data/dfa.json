@@ -4821,6 +4821,26 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "THE MACALLAN COLOUR 12 YO GTR 0.70LT GB 40%",
+    "precio_usd": 85.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas",
+    "url": "https://www.dfauy.com/product/the-macallan-colour-12-yo-gtr-0-70lt-gb-40/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/12/40-11571-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "RED BULL LATA TROPICAL EDITION 0.25 LT.",
+    "precio_usd": 1.21,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas",
+    "url": "https://www.dfauy.com/product/red-bull-lata-tropical-edition-0-25-lt/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07882-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "RED BULL LATA 0.25 LT.",
     "precio_usd": 1.35,
     "precio_original_usd": null,
@@ -12478,16 +12498,6 @@
     "categoria": "bebidas",
     "url": "https://www.dfauy.com/product/the-macallan-colour-15-yo-gtr-0-70lt-gb-43-2/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/12/40-11572-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "THE MACALLAN COLOUR 12 YO GTR 0.70LT GB 40%",
-    "precio_usd": 85.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas",
-    "url": "https://www.dfauy.com/product/the-macallan-colour-12-yo-gtr-0-70lt-gb-40/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/12/40-11571-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -32561,6 +32571,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "EMIGRANTE CIRUELAS CON CAROZO DP 70 GRS",
+    "precio_usd": 1.7,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestibles",
+    "url": "https://www.dfauy.com/product/emigrante-ciruelas-con-carozo-dp-70-grs/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07628-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "NESTLE AFTER EIGHT MIX MINI SNACKBAG 150 GRS.",
     "precio_usd": 7.1,
     "precio_original_usd": null,
@@ -44588,16 +44608,6 @@
     "categoria": "comestibles",
     "url": "https://www.dfauy.com/product/emigrante-higos-turcos-dp-90-grs-2/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07630-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "EMIGRANTE CIRUELAS CON CAROZO DP 100 GRS",
-    "precio_usd": 1.7,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestibles",
-    "url": "https://www.dfauy.com/product/emigrante-ciruelas-con-carozo-dp-100-grs-2/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07628-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -152138,16 +152148,6 @@
     "categoria": "relojeria",
     "url": "https://www.dfauy.com/product/casio-reloj-w2101avdf/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-10627-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CASIO RELOJ MTP1215A7ADF",
-    "precio_usd": 52.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "relojeria",
-    "url": "https://www.dfauy.com/product/casio-reloj-mtp1215a7adf-2/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-10612-300x300.jpg"
   },
   {
     "tienda": "DFA",

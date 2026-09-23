@@ -26753,17 +26753,6 @@
   },
   {
     "tienda": "Yury's Free Shop",
-    "nombre": "LA VI EST BELLE EDP 75ML",
-    "precio_usd": 112.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "perfumaria-1",
-    "url": "https://www.yurysfreeshop.com/product-page/perf-lancome-la-vida-es-bella-edp-spray-75ml",
-    "imagen": "https://static.wixstatic.com/media/f92c30_fcc2996e59494f17bf5c3a576ef72f73~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_fcc2996e59494f17bf5c3a576ef72f73~mv2.png",
-    "precio_fuente": "listado_visible"
-  },
-  {
-    "tienda": "Yury's Free Shop",
     "nombre": "LATTAFA ASAD BOURBON 100ML EDP",
     "precio_usd": 39.0,
     "precio_original_usd": null,
@@ -28751,17 +28740,6 @@
     "categoria": "perfumaria-1",
     "url": "https://www.yurysfreeshop.com/product-page/perf-dior-eau-sauvage-parfum-spray-100ml",
     "imagen": "https://static.wixstatic.com/media/f92c30_a127561df60e4a3bb4489441f33a35c7~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_a127561df60e4a3bb4489441f33a35c7~mv2.png",
-    "precio_fuente": "listado_visible"
-  },
-  {
-    "tienda": "Yury's Free Shop",
-    "nombre": "LA VI EST BELLE EDP 100ML",
-    "precio_usd": 126.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "perfumaria-1",
-    "url": "https://www.yurysfreeshop.com/product-page/la-vi-est-belle-edp-100ml",
-    "imagen": "https://static.wixstatic.com/media/f92c30_8decf3b8d71e4b71947ba5f3142c15bf~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_8decf3b8d71e4b71947ba5f3142c15bf~mv2.png",
     "precio_fuente": "listado_visible"
   },
   {
@@ -31072,17 +31050,6 @@
     "categoria": "perfumaria-1",
     "url": "https://www.yurysfreeshop.com/product-page/set-kenzo-homme-edt-110ml-sg-75ml",
     "imagen": "https://static.wixstatic.com/media/f92c30_f6ab50f2b1ea49c2993b7095fcc0ef65~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_f6ab50f2b1ea49c2993b7095fcc0ef65~mv2.png",
-    "precio_fuente": "listado_visible"
-  },
-  {
-    "tienda": "Yury's Free Shop",
-    "nombre": "SET KENZO FLOWER EDT 50ML +  BL 75ML + BAG",
-    "precio_usd": 72.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "perfumaria-1",
-    "url": "https://www.yurysfreeshop.com/product-page/set-kenzo-flower-edt-50ml-bl-75ml-bag",
-    "imagen": "https://static.wixstatic.com/media/f92c30_f1f69145d5574ad789114d75caea21d2~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_f1f69145d5574ad789114d75caea21d2~mv2.png",
     "precio_fuente": "listado_visible"
   },
   {
@@ -68066,6 +68033,42 @@
     "url": "https://www.yurysfreeshop.com/product-page/batata-lays-original",
     "imagen": "https://static.wixstatic.com/media/2d75da_72ff4e1f11fe4c97831db698eb7ca8c9~mv2.jpeg/v1/fit/w_600,h_600,q_85/2d75da_72ff4e1f11fe4c97831db698eb7ca8c9~mv2.jpeg",
     "precio_fuente": "listado_visible"
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "LA VI EST BELLE EDP 75ML",
+    "precio_usd": 112.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-1",
+    "url": "https://www.yurysfreeshop.com/product-page/perf-lancome-la-vida-es-bella-edp-spray-75ml",
+    "imagen": "https://static.wixstatic.com/media/f92c30_fcc2996e59494f17bf5c3a576ef72f73~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_fcc2996e59494f17bf5c3a576ef72f73~mv2.png",
+    "precio_fuente": "listado_visible",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "LA VI EST BELLE EDP 100ML",
+    "precio_usd": 126.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-1",
+    "url": "https://www.yurysfreeshop.com/product-page/la-vi-est-belle-edp-100ml",
+    "imagen": "https://static.wixstatic.com/media/f92c30_8decf3b8d71e4b71947ba5f3142c15bf~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_8decf3b8d71e4b71947ba5f3142c15bf~mv2.png",
+    "precio_fuente": "listado_visible",
+    "datos_anteriores": true
+  },
+  {
+    "tienda": "Yury's Free Shop",
+    "nombre": "SET KENZO FLOWER EDT 50ML +  BL 75ML + BAG",
+    "precio_usd": 72.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "perfumaria-1",
+    "url": "https://www.yurysfreeshop.com/product-page/set-kenzo-flower-edt-50ml-bl-75ml-bag",
+    "imagen": "https://static.wixstatic.com/media/f92c30_f1f69145d5574ad789114d75caea21d2~mv2.png/v1/fit/w_600,h_600,q_85/f92c30_f1f69145d5574ad789114d75caea21d2~mv2.png",
+    "precio_fuente": "listado_visible",
+    "datos_anteriores": true
   },
   {
     "tienda": "Yury's Free Shop",
