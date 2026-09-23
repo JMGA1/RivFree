@@ -103,20 +103,6 @@ STORES = {
         "nota": "Especializada únicamente en perfumes y cosméticos.",
         "catalogo_online": True,
     },
-    "Zebra Free Shop": {
-        "nombre_completo": "Zebra Free Shop",
-        "direccion": "Sarandí 455, Rivera, Uruguay",
-        "telefono": "+598 4622 4103",
-        "email": "info@zebrafreeshop.com.uy",
-        "horario": "Lun a vie 8:30–18:30, sáb 8:00–18:30 (cerrado domingos)",
-        "sitio_web": "https://zebrafreeshop.com.uy/",
-        "redes": {
-            "instagram": "https://instagram.com/zebra_freeshop",
-            "facebook": "https://facebook.com/zebrafreeshop",
-        },
-        "nota": "No publica precios online: catálogo solo disponible en el local.",
-        "catalogo_online": False,
-    },
     "Mantra Free Shop": {
         "nombre_completo": "Mantra Free Shop",
         "direccion": "Av. Sarandí 402, Rivera, Uruguay",

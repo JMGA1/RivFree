@@ -3,13 +3,17 @@ try {const saved=JSON.parse(localStorage.getItem('rivfree-favorites')||'[]');if(
 let exchange={usd_brl:null,actualizado:null};
 let manualExchange=null;
 try {manualExchange=JSON.parse(localStorage.getItem('rivfree-exchange'));}catch{}
+if(!Number.isFinite(manualExchange?.usd_brl)||manualExchange.usd_brl<=0||manualExchange.usd_brl>=1000)manualExchange=null;
 function validExchange(){return Number.isFinite(exchange.usd_brl)&&exchange.usd_brl>0;}
 function updateExchangeNote(){
- if(manualExchange?.usd_brl>0)exchange=manualExchange;
+ exchange=manualExchange?.usd_brl>0?manualExchange:(automaticExchange||{usd_brl:null});
  document.getElementById('exchangeRate').value=validExchange()?exchange.usd_brl:'';
+ const manual=manualExchange?.usd_brl>0;
+ const stale=validExchange()&&Date.now()-Date.parse(exchange.actualizado)>4*86400000;
+ document.getElementById('exchangePreview').textContent=validExchange()?`US$ 1 ≈ R$ ${exchange.usd_brl.toLocaleString(LANG,{minimumFractionDigits:2,maximumFractionDigits:4})}`:words('Cotação indisponível','Cotización no disponible');
  document.getElementById('exchangeNote').textContent=validExchange()
- ?`Conversión aproximada / Conversão aproximada · 1 USD = R$ ${exchange.usd_brl} · ${exchange.actualizado || ''}. La tienda puede aplicar otra cotización / A loja pode aplicar outra cotação.`
- :'Ingresá una cotización para ver reales / Informe uma cotação para ver reais.';
+ ?`${manual?words('Taxa manual','Tasa manual'):'Frankfurter · '+words('Taxa de referência','Tasa de referencia')} · ${exchange.actualizado||''}${stale?' · '+words('Cotação antiga','Cotización antigua'):''}${exchangeFailed&&!manual?' · '+words('Sem atualização; usando taxa salva','Sin actualización; usando tasa guardada'):''}. `+words('Conversão aproximada. A loja pode aplicar outra cotação.','Conversión aproximada. La tienda puede aplicar otra cotización.')
+ :words('Não foi possível obter a cotação. Informe uma taxa ou tente novamente.','No se pudo obtener la cotización. Ingresá una tasa o reintentá.');
 }
 function mapUrl(name,address){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(name+' '+address);}
 // El motor de agrupación cambió las claves de grupo: convierte favoritos viejos a las claves nuevas.
@@ -19,19 +23,19 @@ function migrateFavorites(groups,legacyKeys){
  for(const key of [...favorites]){
   if(current.has(key))continue;
   const next=legacyKeys[key];
-  if(next&&current.has(next)){favorites.delete(key);favorites.add(next);changed=true;}
+  if(next&&current.has(next)){favorites.delete(key);favorites.add(next);quantityByKey.set(next,Math.max(quantityFor(next),quantityFor(key)));quantityByKey.delete(key);changed=true;}
  }
- if(changed)try{localStorage.setItem('rivfree-favorites',JSON.stringify([...favorites]));}catch{}
+ if(changed)persistShopping();
 }
 function toggleFavorite(key){
- if(favorites.has(key))favorites.delete(key);else favorites.add(key);
- try{localStorage.setItem('rivfree-favorites',JSON.stringify([...favorites]));}catch{announce('No se pudo guardar la lista / Não foi possível salvar a lista');}
+ if(favorites.has(key)){favorites.delete(key);quantityByKey.delete(key);}else favorites.add(key);
+ persistShopping();
  render();
 }
 function syncFiltersURL(){
  const url=new URL(location.href),p=url.searchParams;
  const fields={q:ACTIVE_SEARCH,category:document.getElementById('categoria').value,min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,sort:document.getElementById('orden').value};
- for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='precio_asc'))p.set(key,value);else p.delete(key);}
+ for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='ofertas'))p.set(key,value);else p.delete(key);}
  for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
  const stores=[...document.querySelectorAll('.storeChk')];p.delete('store');p.delete('stores');
  if(stores.some(el=>!el.checked)){p.set('stores','selected');stores.filter(el=>el.checked).forEach(el=>p.append('store',el.value));}
@@ -40,7 +44,7 @@ function syncFiltersURL(){
 function restoreFilters(){
  const p=new URL(location.href).searchParams;
  ACTIVE_SEARCH=p.get('q')||'';document.getElementById('search').value=ACTIVE_SEARCH;
- for(const [key,id,fallback] of [['category','categoria',''],['sort','orden','precio_asc'],['min','minPrice',''],['max','maxPrice','']]){
+ for(const [key,id,fallback] of [['category','categoria',''],['sort','orden','ofertas'],['min','minPrice',''],['max','maxPrice','']]){
   const el=document.getElementById(id),value=p.get(key)||fallback;
   if(el.tagName==='SELECT')el.value=[...el.options].some(o=>o.value===value)?value:fallback;
   else el.value=value!==''&&Number.isFinite(Number(value))&&Number(value)>=0?value:'';
@@ -51,26 +55,13 @@ function restoreFilters(){
 window.addEventListener('popstate',()=>{restoreFilters();render(true);syncCategoryInput();});
 document.getElementById('favoritesOnly').addEventListener('change',()=>render(true));
 document.getElementById('exchangeRate').addEventListener('change',event=>{
- const rate=Number(event.target.value);manualExchange=rate>0&&Number.isFinite(rate)?{usd_brl:rate,actualizado:new Date().toISOString().slice(0,10)}:null;
+ const rate=Number(event.target.value);manualExchange=rate>0&&rate<1000&&Number.isFinite(rate)?{usd_brl:rate,actualizado:new Date().toISOString().slice(0,10)}:null;
  exchange=manualExchange||{usd_brl:null};try{localStorage.setItem('rivfree-exchange',JSON.stringify(manualExchange));}catch{}
- updateExchangeNote();render();
+ updateExchangeNote();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();
 });
 document.getElementById('closeShoppingList').addEventListener('click',()=>document.getElementById('shoppingDialog').close());
 document.getElementById('openShoppingList').addEventListener('click',()=>{
- const container=document.getElementById('shoppingList');container.replaceChildren();
- const byStore=new Map();let total=0;
- for(const key of favorites){
-  const group=PRODUCT_GROUPS.find(g=>g.key===key);const offer=group?.offers.find(hasPrice);
-  const store=offer?.tienda||'Sin precio disponible / Sem preço disponível';
-  if(!byStore.has(store))byStore.set(store,[]);byStore.get(store).push({key,group,offer});if(offer)total+=offer.precio_usd;
- }
- if(!favorites.size)container.textContent='Guardá productos con ♡ / Salve produtos com ♡.';
- for(const [store,items] of byStore){
-  const h=document.createElement('h3');h.textContent=store;container.append(h);
-  if(STORE_INFO[store]?.direccion){const a=document.createElement('a');a.href=mapUrl(store,STORE_INFO[store].direccion);a.target='_blank';a.rel='noopener noreferrer';a.textContent=tr('Ver en el mapa');container.append(a);}
-  const list=document.createElement('ul');for(const {key,group,offer} of items){const li=document.createElement('li');li.textContent=(group?.name||key.split('|')[1]||key)+' — '+(offer?priceLabel(offer.precio_usd):'No disponible / Indisponível');const remove=document.createElement('button');remove.textContent='✕';remove.setAttribute('aria-label','Quitar / Remover');remove.onclick=()=>{toggleFavorite(key);document.getElementById('openShoppingList').click();};li.append(' ',remove);list.append(li);}container.append(list);
- }
- if(favorites.size){const totalNode=document.createElement('p');totalNode.textContent='Subtotal orientativo (1 unidad por producto con precio) / Subtotal estimado: '+priceLabel(total);container.append(totalNode);}
+ renderShoppingList();
  const dialog=document.getElementById('shoppingDialog');if(!dialog.open)dialog.showModal();
 });
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(console.warn));

@@ -4,6 +4,53 @@ try {
  LANG = savedLanguage === 'es' || savedLanguage === 'pt-BR' ? savedLanguage : 'pt-BR';
 } catch {}
 const translations = {
+ 'Por descubrir':'Por descobrir','Una selección aleatoria para inspirar tu próxima compra.':'Uma seleção aleatória para inspirar sua próxima compra.',
+ 'Otra selección':'Outra seleção','Pausar carrusel':'Pausar carrossel',
+ 'Explorá y compará los free shops de Rivera y Santana do Livramento':'Explore e compare os free shops de Rivera e Santana do Livramento',
+
+"Ofertas primero":"Ofertas primeiro",
+"Ofertas":"Ofertas",
+"Más consultados":"Mais consultados",
+"Compará entre free shops":"Compare entre free shops",
+"Guardá productos y cantidades":"Salve produtos e quantidades",
+"Llevá tu lista en el celular":"Leve sua lista no celular",
+"INSPIRACIÓN PARA TU RECORRIDO":"INSPIRAÇÃO PARA SEU PASSEIO",
+"EXPLORÁ. COMPARÁ. ELEGÍ.":"EXPLORE. COMPARE. ESCOLHA.",
+"Todo el catálogo":"Todo o catálogo",
+"Las ofertas primero. Tu próxima compra empieza acá.":"As ofertas primeiro. Sua próxima compra começa aqui.",
+"Ofertas destacadas":"Ofertas em destaque",
+"Productos anteriores":"Produtos anteriores",
+"Más productos":"Mais produtos",
+"Campañas destacadas":"Campanhas em destaque",
+"Más campañas":"Mais campanhas",
+
+ 'Guía de free shops':'Guia de free shops',
+ 'Consultá las tiendas registradas en RivFree. Confirmá horarios y datos de contacto en los canales oficiales antes de tu visita.':'Consulte as lojas cadastradas no RivFree. Confirme horários e dados de contato nos canais oficiais antes da visita.',
+ 'Horario no informado':'Horário não informado',
+ 'Dirección no informada':'Endereço não informado',
+
+ 'Electrónica':'Eletrônicos',
+"Tu próxima compra.":"Sua próxima compra.",
+"Mejor elegida.":"Uma escolha melhor.",
+"Compará los free shops, armá tu lista y salí con tu presupuesto en la mano.":"Compare os free shops, monte sua lista e saia com o orçamento na mão.",
+"Explorar productos":"Explorar produtos",
+"TU RECORRIDO, MÁS SIMPLE":"SEU PASSEIO, MAIS SIMPLES",
+"Compará. Guardá.":"Compare. Salve.",
+"Disfrutá Rivera.":"Aproveite Rivera.",
+"Tu lista va con vos.":"Sua lista vai com você.",
+"Del computador al celular, con un enlace.":"Do computador ao celular, com um link.",
+"SIN REGISTRO · SIN COMPLICACIONES":"SEM CADASTRO · SEM COMPLICAÇÕES",
+"Todas las categorías":"Todas as categorias",
+"Chocolates y alimentos":"Chocolates e alimentos",
+"Cuidado personal":"Cuidados pessoais",
+"· Cotización":"· Cotação",
+"Usar cotización automática":"Usar cotação automática",
+"Compartir lista":"Compartilhar lista",
+"Abrí tu lista en el celular con un enlace. No necesitás una cuenta.":"Abra sua lista no celular com um link. Você não precisa de uma conta.",
+"RIVFREE · TU RECORRIDO":"RIVFREE · SEU PASSEIO",
+"Enlace de la lista":"Link da lista",
+"Categorías":"Categorias",
+
  'Detalles del catálogo':'Detalhes do catálogo','Precio, ofertas y tiendas':'Preço, ofertas e lojas','USD → BRL · Cotización':'USD → BRL · Cotação',
  'Ver en el mapa':'Ver no mapa','★ Guardado':'★ Salvo','☆ Guardar':'☆ Salvar','Mi lista':'Minha lista','Solo favoritos':'Só favoritos',
  'Explorá y compará los free shops de Rivera':'Explore e compare os free shops de Rivera',
@@ -38,6 +85,10 @@ const translations = {
  'Modo claro':'Modo claro','Modo oscuro':'Modo escuro',
  'Cerrar':'Fechar','Cerrar aviso':'Fechar aviso','Volver al inicio y recargar':'Voltar ao início e recarregar',
  'Aviso sobre disponibilidad':'Aviso sobre disponibilidade',
+ 'PRIVACIDAD · RIVFREE':'PRIVACIDADE · RIVFREE',
+ 'Ayudanos a mejorar RivFree':'Ajude a melhorar o RivFree',
+ 'Con tu permiso usamos estadísticas de uso para saber qué se busca, qué filtros se usan y dónde mejorar la experiencia. Si activás Clarity, también podremos analizar mapas de calor y grabaciones de sesión con contenido sensible enmascarado.':'Com sua permissão, usamos estatísticas para entender o que é buscado, quais filtros são usados e onde melhorar a experiência. Se você ativar o Clarity, também poderemos analisar mapas de calor e gravações de sessão com conteúdo sensível mascarado.',
+ 'Solo esenciales':'Somente essenciais','Permitir estadísticas':'Permitir estatísticas','Privacidad y estadísticas':'Privacidade e estatísticas',
  'Disponibilidad orientativa.':'Disponibilidade indicativa.',
  'La web refleja catálogos online, no el stock físico completo de cada tienda.':'A web reflete catálogos online, não o estoque físico completo de cada loja.',
  'Filtros avanzados':'Filtros avançados','Precio, orden, ofertas y tiendas':'Preço, ordem, ofertas e lojas',
@@ -97,7 +148,7 @@ function announce(message) {
 
 
 const CARD_DATA=new WeakMap();
-document.getElementById('grid').addEventListener('click',event=>{
+function handleProductClick(event){
  const target=event.target.closest('[data-action]');
  if(!target||!event.currentTarget.contains(target))return;
  if(target.dataset.action==='store'){
@@ -112,9 +163,11 @@ document.getElementById('grid').addEventListener('click',event=>{
  const data=CARD_DATA.get(target.closest('.card'));
  if(target.dataset.action==='history'&&data){openPriceHistory(data.offers);return;}
  if(target.dataset.action==='favorite'&&data){toggleFavorite(data.key);return;}
+ if(data&&['compare','external'].includes(target.dataset.action))recordProductConsult(data.key);
  if(target.dataset.action==='compare'&&data)openComparison(data.name,data.offers);
  if(target.dataset.action==='external')announce(tr('Abriendo la publicación original en otra pestaña'));
-});
+}
+for(const id of ['grid','popularGrid','discoverGrid'])document.getElementById(id).addEventListener('click',handleProductClick);
 document.getElementById('retryLoad').addEventListener('click',loadData);
 let SEARCH_WORDS=[];
 const SEARCH_CACHE=new Map();
@@ -195,17 +248,18 @@ async function loadData() {
   document.getElementById('loadError').hidden=true;
   try {
     const [loaded, storesRes, ratesRes] = await Promise.all([
-      loadCatalog(), fetch('data/stores.json').catch(()=>null), fetch('data/exchange.json',{cache:'no-cache'}).catch(()=>null)
+      loadCatalog(), fetch('data/stores.json',{cache:'no-cache'}).catch(()=>null), fetch('data/exchange.json',{cache:'no-cache'}).catch(()=>null)
     ]);
     const {data,prepared,offline}=loaded;
     if(storesRes?.ok) STORE_INFO=await storesRes.json();
-    if(ratesRes?.ok) {try {exchange=await ratesRes.json();} catch {}}
+    if(ratesRes?.ok) {try {const bundled=await ratesRes.json();if(isRate(bundled)&&(!automaticExchange||bundled.actualizado>automaticExchange.actualizado))automaticExchange=bundled;} catch {}}
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
     migrateFavorites(PRODUCT_GROUPS,prepared.legacyKeys);
     SEARCH_WORDS=prepared.words;
     document.getElementById('connectionNote').hidden=!offline;
     updateExchangeNote();
+    refreshAutomaticExchange();
     SEARCH_CACHE.clear();
 
     const updated = data.actualizado ? new Date(data.actualizado) : null;
@@ -227,6 +281,8 @@ async function loadData() {
     }
 
     populateFilters();
+    renderCampaigns();
+    document.querySelectorAll('[data-category-shortcut],#navOffers').forEach(b=>b.disabled=false);
     restoreFilters();
     translateUI();
     render();
@@ -312,7 +368,8 @@ function getFiltered() {
     const priced = group.visibleOffers.find(hasPrice);
     return priced ? priced.precio_usd : Number.POSITIVE_INFINITY;
   };
-  if (orden === 'precio_asc') groups.sort((a,b) => lowestPrice(a) - lowestPrice(b));
+  if (orden === 'ofertas') groups.sort((a,b)=>Number(b.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))-Number(a.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))||lowestPrice(a)-lowestPrice(b));
+  else if (orden === 'precio_asc') groups.sort((a,b) => lowestPrice(a) - lowestPrice(b));
   else if (orden === 'precio_desc') groups.sort((a,b) => {
     const aPrice = lowestPrice(a), bPrice = lowestPrice(b);
     if (!Number.isFinite(aPrice)) return 1;
@@ -328,6 +385,7 @@ function render(resetLimit = false) {
   if (resetLimit === true) visibleLimit = PAGE_SIZE;
   if(!validatePrices())return;
   syncFiltersURL();
+  renderPopularProducts();
   const items = getFiltered();
   const grid = document.getElementById('grid');
   const empty = document.getElementById('emptyState');
@@ -476,6 +534,7 @@ function createProductCard(group) {
   favorite.title=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
   const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';
   utilityRow.append(favorite,historyButton);
+  if(favorites.has(group.key))utilityRow.append(quantityControl(group.key,()=>{}));
 
   const badges = document.createElement('div');
   badges.className = 'badge-row';
@@ -614,16 +673,13 @@ function appendStoreDetail(container, label, value) {
   container.appendChild(item);
 }
 
-function openStoreInfo(storeName) {
-  const dialog = document.getElementById('storeDialog');
-  const container = document.getElementById('storeInfo');
+function fillStoreInfo(container,storeName) {
   const info = STORE_INFO[storeName] || {};
-  document.getElementById('storeDialogTitle').textContent = info.nombre_completo || storeName;
   container.replaceChildren();
-  appendStoreDetail(container, 'Dirección', info.direccion);
+  appendStoreDetail(container, 'Dirección', info.direccion || tr('Dirección no informada'));
   appendStoreDetail(container, 'Teléfono', info.telefono);
   appendStoreDetail(container, 'Correo', info.email);
-  appendStoreDetail(container, 'Horario', info.horario);
+  appendStoreDetail(container, 'Horario', info.horario || tr('Horario no informado'));
   appendStoreDetail(container, 'Información', info.nota);
 
   const links = document.createElement('div');
@@ -642,9 +698,39 @@ function openStoreInfo(storeName) {
   });
   if (links.childElementCount) container.appendChild(links);
   if (!container.childElementCount) appendStoreDetail(container, 'Información', 'No hay información adicional disponible.');
-  translateUI();
-  if (!dialog.open) dialog.showModal();
 }
+function openStoreInfo(storeName) {
+ const dialog=document.getElementById('storeDialog');
+ document.getElementById('storeDialogTitle').textContent=STORE_INFO[storeName]?.nombre_completo||storeName;
+ fillStoreInfo(document.getElementById('storeInfo'),storeName);
+ translateUI();if(!dialog.open)dialog.showModal();
+}
+let directoryLoading=false;
+async function openStoreDirectory(){
+ const dialog=document.getElementById('storeDirectoryDialog'),list=document.getElementById('storeDirectoryList'),status=document.getElementById('storeDirectoryStatus'),retry=document.getElementById('retryStoreDirectory');
+ if(!dialog.open)dialog.showModal();
+ if(directoryLoading)return;
+ directoryLoading=true;retry.hidden=true;status.textContent=words('Carregando lojas…','Cargando tiendas…');
+ try{
+  if(!Object.keys(STORE_INFO).length){
+   const response=await fetch('data/stores.json',{cache:'no-cache'});if(!response.ok)throw new Error();
+   const data=await response.json();if(!data||Array.isArray(data)||typeof data!=='object'||!Object.keys(data).length)throw new Error();STORE_INFO=data;
+  }
+  const names=[...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p=>p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b,LANG));
+  list.replaceChildren();
+  for(const name of names){
+   const card=document.createElement('article');card.className='directory-store';
+   const title=document.createElement('h3');title.textContent=STORE_INFO[name]?.nombre_completo||name;
+   const details=document.createElement('div');details.className='store-info';fillStoreInfo(details,name);card.append(title,details);list.append(card);
+  }
+  status.textContent=words(`${names.length} free shops cadastrados`,`${names.length} free shops registrados`);translateUI();
+ }catch{status.textContent=words('Não foi possível carregar as lojas. Tente novamente.','No se pudieron cargar las tiendas. Reintentá.');retry.hidden=false;}
+ finally{directoryLoading=false;}
+}
+document.getElementById('openStoreDirectory').addEventListener('click',openStoreDirectory);
+document.getElementById('retryStoreDirectory').addEventListener('click',openStoreDirectory);
+document.getElementById('closeStoreDirectory').addEventListener('click',()=>document.getElementById('storeDirectoryDialog').close());
+document.getElementById('storeDirectoryDialog').addEventListener('click',event=>{if(event.target===event.currentTarget)event.currentTarget.close();});
 
 document.getElementById('dialogClose').addEventListener('click', () => {
   document.getElementById('comparisonDialog').close();
@@ -708,7 +794,7 @@ document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('categoria').value = '';
   document.getElementById('minPrice').value = '';
   document.getElementById('maxPrice').value = '';
-  document.getElementById('orden').value = 'precio_asc';
+  document.getElementById('orden').value = 'ofertas';
   document.getElementById('soloOfertas').checked = false;
   document.getElementById('favoritesOnly').checked = false;
   document.querySelectorAll('.storeChk').forEach(el => { el.checked = true; });
@@ -778,7 +864,7 @@ document.getElementById('languageToggle').addEventListener('change', event => {
  LANG=event.target.value;
  try {localStorage.setItem('rivfree-language',LANG);} catch {}
  document.querySelectorAll('dialog[open]').forEach(d=>d.close());
- render(); translateUI();
+ render(); translateUI(); renderCampaigns(); updateExchangeNote(); if(document.getElementById('shoppingDialog').open)renderShoppingList();
 });
 const backToTop=document.getElementById('backToTop');
 window.addEventListener('scroll',()=>{backToTop.hidden=window.scrollY<600;},{passive:true});
@@ -788,4 +874,5 @@ backToTop.addEventListener('click',()=>{
 });
 document.getElementById('closeHistory').addEventListener('click',()=>document.getElementById('historyDialog').close());
 translateUI();
+initStorefront();
 loadData();
