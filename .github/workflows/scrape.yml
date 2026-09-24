@@ -167,10 +167,10 @@ jobs:
       - name: Preparar archivos públicos
         run: |
           mkdir -p _site
-          cp index.html styles.css *.js manifest.webmanifest social-card.png _site/
+          cp *.html *.css *.js manifest.webmanifest social-card.png _site/
           cp -r icons _site/icons
           mkdir -p _site/data
-          cp data/products.json data/meta.json data/stores.json data/exchange.json data/price-history.json _site/data/
+          cp data/products.json data/meta.json data/stores.json data/exchange.json data/price-history.json data/highlights.json data/popular.json _site/data/
 
       - name: Subir archivos de la página
         uses: actions/upload-pages-artifact@v4
