@@ -27,7 +27,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260923-searchfix">
+<link rel="stylesheet" href="styles.css?v=20260924-1">
 <meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
 <meta property="og:type" content="website">
@@ -64,7 +64,7 @@
       <div class="search-row">
         <input type="search" id="search" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
         <button class="search-button" id="searchButton" type="submit">
-          <span class="search-button-icon" aria-hidden="true"></span><span>Buscar</span>
+          <svg class="search-button-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Buscar</span>
         </button>
       </div>
       <p class="search-help">Escribí tu búsqueda completa y presioná Enter.</p>
@@ -98,7 +98,7 @@
  <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div><div class="rail-controls"><button id="popularPrevious" type="button" aria-label="Productos anteriores">←</button><button id="popularNext" type="button" aria-label="Más productos">→</button><button id="popularPause" class="autoplay-toggle" type="button" aria-label="Pausar carrusel" aria-pressed="false">Ⅱ</button></div></div>
  <div id="popularGrid" class="popular-rail"></div>
 </section>
-<div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Las ofertas primero. Tu próxima compra empieza acá.</p></div><div class="catalog-status"><span class="catalog-offer-tag">Ofertas destacadas</span><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
+<div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Explorá todas las tiendas y encontrá tu próximo favorito.</p></div><div class="catalog-status"><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
 <div class="controls">
   <div class="controls-card search-hero">
 
@@ -147,10 +147,10 @@
 <div class="catalog-toolbar"><div><div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div><details class="catalog-details"><summary>Detalles del catálogo</summary><p id="resultsDetails"></p></details></div>          <div class="field sort-field">
             <label for="orden">Ordenar por</label>
             <select id="orden">
-              <option value="ofertas" selected>Ofertas primero</option>
+              <option value="ofertas">Ofertas primero</option>
               <option value="precio_asc">Precio: menor a mayor</option>
               <option value="precio_desc">Precio: mayor a menor</option>
-              <option value="nombre_asc">Nombre: A-Z</option>
+              <option value="nombre_asc" selected>Nombre: A-Z</option>
             </select>
           </div>
 
@@ -160,7 +160,7 @@
   <div class="stock-notice-inner">
     <span class="stock-notice-icon" aria-hidden="true">i</span>
     <div class="stock-notice-text">
-      <strong>Disponibilidad orientativa.</strong> La web refleja catálogos online, no el stock físico completo de cada tienda.
+      <strong>Antes de tu visita.</strong> La web refleja catálogos online, no el stock físico completo de cada tienda.
     </div>
     <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
   </div>
@@ -184,6 +184,7 @@
   No se encontraron productos con esos filtros.<br>Probá ampliar la búsqueda.
 </div>
 
+<dialog id="productDialog" aria-labelledby="productPreviewTitle"><div class="dialog-header"><h2 id="productPreviewTitle"></h2><button class="dialog-close" id="productPreviewClose" type="button" aria-label="Cerrar / Fechar">×</button></div><div id="productPreviewContent"></div></dialog>
 <dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
   <div class="dialog-header">
     <div>
@@ -237,9 +238,10 @@
 <script src="analytics.js?v=20260923-ga-detect" defer></script>
 <script src="matching.js?v=20260919a" defer></script>
 <script src="catalog.js?v=20260919a" defer></script>
-<script src="catalog-cache.js?v=20260919a" defer></script>
-<script src="features.js?v=20260923-polish" defer></script>
-<script src="shopping.js?v=20260923-polish" defer></script>
-<script src="storefront.js?v=20260923-carouselfix2" defer></script>
-<script src="app.js?v=20260923-searchfix" defer></script>
+<script src="catalog-cache.js?v=20260924-1" defer></script>
+<script src="features.js?v=20260924-1" defer></script>
+<script src="shopping.js?v=20260924-1" defer></script>
+<script src="storefront.js?v=20260924-1" defer></script>
+<script src="product-details.js?v=20260924-1" defer></script>
+<script src="app.js?v=20260924-1" defer></script>
 </body></html>

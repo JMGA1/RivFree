@@ -45,11 +45,12 @@ function renderShoppingList(){
  const groups=new Map(PRODUCT_GROUPS.map(g=>[g.key,g]));
  const byStore=new Map();let totalCents=0,missing=0,units=0;
  for(const key of favorites){
-  const group=groups.get(key);
-  const offer=group?.offers.filter(hasPrice).reduce((best,o)=>!best||o.precio_usd<best.precio_usd?o:best,null);
+  const selected=offerByFavoriteKey.get(key);
+  const group=groups.get(key)||(selected?{name:selected.nombre}:null);
+  const offer=selected||group?.offers.filter(hasPrice).reduce((best,o)=>!best||o.precio_usd<best.precio_usd?o:best,null);
   const store=offer?.tienda||words('Sem preço disponível','Sin precio disponible');
-  const qty=quantityFor(key),cents=offer?Math.round(offer.precio_usd*100)*qty:0;
-  if(!offer)missing+=qty;units+=qty;totalCents+=cents;
+  const qty=quantityFor(key),cents=hasPrice(offer||{})?Math.round(offer.precio_usd*100)*qty:0;
+  if(!hasPrice(offer||{}))missing+=qty;units+=qty;totalCents+=cents;
   if(!byStore.has(store))byStore.set(store,[]);byStore.get(store).push({key,group,offer,qty,cents});
  }
  if(!favorites.size){const empty=document.createElement('p');empty.className='list-empty';empty.textContent=words('Sua próxima viagem começa aqui. Toque no ♡ de um produto para montar sua lista.','Tu próximo paseo empieza aquí. Tocá ♡ en un producto para armar tu lista.');container.append(empty);}
@@ -60,8 +61,8 @@ function renderShoppingList(){
   for(const {key,group,offer,qty,cents} of items){
    const row=document.createElement('div');row.className='shopping-row';
    const description=document.createElement('div'),name=document.createElement('strong'),unit=document.createElement('small');
-   name.textContent=group?.name||key;unit.textContent=offer?`${priceLabel(offer.precio_usd)} / ${words('unidade','unidad')}`:words('Fora do catálogo atual; não incluído no total.','Fuera del catálogo actual; no incluido en el total.');description.append(name,unit);
-   const amount=document.createElement('strong');amount.className='line-total';amount.textContent=offer?priceLabel(cents/100):'—';
+   name.textContent=group?.name||key;unit.textContent=hasPrice(offer||{})?`${priceLabel(offer.precio_usd)} / ${words('unidade','unidad')}`:words('Fora do catálogo atual; não incluído no total.','Fuera del catálogo actual; no incluido en el total.');description.append(name,unit);
+   const amount=document.createElement('strong');amount.className='line-total';amount.textContent=hasPrice(offer||{})?priceLabel(cents/100):'—';
    const remove=document.createElement('button');remove.type='button';remove.className='remove-item';remove.textContent=words('Remover','Quitar');remove.setAttribute('aria-label',`${remove.textContent}: ${name.textContent}`);
    remove.onclick=()=>{toggleFavorite(key);renderShoppingList();};
    row.append(description,quantityControl(key,()=>{renderShoppingList();render();}),amount,remove);section.append(row);
@@ -71,7 +72,7 @@ function renderShoppingList(){
  if(favorites.size){
   const total=document.createElement('div');total.className='shopping-total';
   const label=document.createElement('span'),amount=document.createElement('strong');label.textContent=words(`Subtotal estimado · ${units} unidades`,`Subtotal estimado · ${units} unidades`);amount.textContent=priceLabel(totalCents/100);total.append(label,amount);container.append(total);
-  const note=document.createElement('p');note.className='shopping-note';note.textContent=words('Estimativa pelos menores preços do catálogo, distribuídos entre as lojas. Quantidade se refere à unidade anunciada; uma caixa deve ser selecionada como caixa.','Estimación con los menores precios del catálogo, repartidos entre tiendas. La cantidad corresponde a la unidad publicada; una caja debe seleccionarse como caja.');if(missing)note.textContent+=words(` ${missing} unidades sem preço ficam fora do total.`,` ${missing} unidades sin precio no están incluidas.`);container.append(note);
+  const note=document.createElement('p');note.className='shopping-note';note.textContent=words('Estimativa com as lojas escolhidas; favoritos gerais usam o menor preço. Quantidade se refere à unidade anunciada; uma caixa deve ser selecionada como caixa.','Estimación con las tiendas elegidas; los favoritos generales usan el menor precio. La cantidad corresponde a la unidad publicada; una caja debe seleccionarse como caja.');if(missing)note.textContent+=words(` ${missing} unidades sem preço ficam fora do total.`,` ${missing} unidades sin precio no están incluidas.`);container.append(note);
  }
  if(focusKey)for(const control of container.querySelectorAll('.quantity-control'))if(control.dataset.quantityKey===focusKey){const next=control.children[focusIndex];(next?.disabled?control.querySelector('input'):next)?.focus({preventScroll:true});}
  document.getElementById('shareShoppingList').disabled=!favorites.size;
@@ -130,7 +131,7 @@ async function refreshAutomaticExchange(){
  exchangeRequest=(async()=>{
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),6000);
   try{
-   const response=await fetch('https://api.frankfurter.dev/v2/rate/USD/BRL',{signal:controller.signal,cache:'no-cache'});
+   const response=await fetch('https://api.frankfurter.dev/v2/rate/USD/BRL',{signal:controller.signal,cache:'default'});
    if(!response.ok)throw new Error();const data=await response.json();
    const next={usd_brl:data.rate,actualizado:data.date,source:'Frankfurter'};
    if(!isRate(next)||data.base!=='USD'||data.quote!=='BRL')throw new Error();

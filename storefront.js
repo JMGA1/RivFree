@@ -64,7 +64,7 @@ function campaignURL(raw){
 }
 async function storefrontJSON(path){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),5000);
- try{const response=await fetch(path,{cache:'no-cache',signal:controller.signal});if(!response.ok)throw new Error();return await response.json();}finally{clearTimeout(timer);}
+ try{const response=await fetch(path,{cache:'default',signal:controller.signal});if(!response.ok)throw new Error();return await response.json();}finally{clearTimeout(timer);}
 }
 async function initStorefront(){
  const [banners,ranking]=await Promise.allSettled([storefrontJSON('data/highlights.json'),storefrontJSON('data/popular.json')]);
@@ -136,7 +136,7 @@ function selectCampaignCategory(category){
  document.getElementById('soloOfertas').checked=false;
  document.getElementById('minPrice').value='';document.getElementById('maxPrice').value='';
  document.querySelectorAll('.storeChk').forEach(c=>c.checked=true);
- document.getElementById('orden').value='ofertas';
+ document.getElementById('orden').value='nombre_asc';
  syncCategoryInput();render(true);document.getElementById('catalogStart').scrollIntoView?.({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 }
 function renderCampaigns(){

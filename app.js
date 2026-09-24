@@ -17,6 +17,8 @@ const translations = {
 "INSPIRACIÓN PARA TU RECORRIDO":"INSPIRAÇÃO PARA SEU PASSEIO",
 "EXPLORÁ. COMPARÁ. ELEGÍ.":"EXPLORE. COMPARE. ESCOLHA.",
 "Todo el catálogo":"Todo o catálogo",
+"Explorá todas las tiendas y encontrá tu próximo favorito.":"Explore todas as lojas e encontre seu próximo favorito.",
+"Antes de tu visita.":"Antes da sua visita.",
 "Las ofertas primero. Tu próxima compra empieza acá.":"As ofertas primeiro. Sua próxima compra começa aqui.",
 "Ofertas destacadas":"Ofertas em destaque",
 "Productos anteriores":"Produtos anteriores",
@@ -163,6 +165,7 @@ function handleProductClick(event){
  const data=CARD_DATA.get(target.closest('.card'));
  if(target.dataset.action==='history'&&data){openPriceHistory(data.offers);return;}
  if(target.dataset.action==='favorite'&&data){toggleFavorite(data.key);return;}
+ if(target.dataset.action==='preview'&&data){recordProductConsult(data.key);openProductPreview(data);return;}
  if(data&&['compare','external'].includes(target.dataset.action))recordProductConsult(data.key);
  if(target.dataset.action==='compare'&&data)openComparison(data.name,data.offers);
  if(target.dataset.action==='external')announce(tr('Abriendo la publicación original en otra pestaña'));
@@ -248,13 +251,14 @@ async function loadData() {
   document.getElementById('loadError').hidden=true;
   try {
     const [loaded, storesRes, ratesRes] = await Promise.all([
-      loadCatalog(), fetch('data/stores.json',{cache:'no-cache'}).catch(()=>null), fetch('data/exchange.json',{cache:'no-cache'}).catch(()=>null)
+      loadCatalog(), fetch('data/stores.json',{cache:'default'}).catch(()=>null), fetch('data/exchange.json',{cache:'default'}).catch(()=>null)
     ]);
     const {data,prepared,offline}=loaded;
     if(storesRes?.ok) STORE_INFO=await storesRes.json();
     if(ratesRes?.ok) {try {const bundled=await ratesRes.json();if(isRate(bundled)&&(!automaticExchange||bundled.actualizado>automaticExchange.actualizado))automaticExchange=bundled;} catch {}}
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
+    indexFavoriteOffers();
     migrateFavorites(PRODUCT_GROUPS,prepared.legacyKeys);
     SEARCH_WORDS=prepared.words;
     document.getElementById('connectionNote').hidden=!offline;
@@ -339,7 +343,7 @@ function getFiltered() {
   const activeStores = [...document.querySelectorAll('.storeChk:checked')].map(el => el.value);
   const orden = document.getElementById('orden').value;
 
-  let groups = PRODUCT_GROUPS.filter(g=>!document.getElementById('favoritesOnly').checked || favorites.has(g.key)).map(group => {
+  let groups = PRODUCT_GROUPS.filter(g=>!document.getElementById('favoritesOnly').checked || (favorites.has(g.key)||g.offers.some(o=>favorites.has(offerFavoriteKey(o))))).map(group => {
     const visibleOffers = group.offers.filter(product => {
       if (!activeStores.includes(product.tienda)) return false;
       if (cat && product.categoryId !== cat) return false;
@@ -385,7 +389,8 @@ function render(resetLimit = false) {
   if (resetLimit === true) visibleLimit = PAGE_SIZE;
   if(!validatePrices())return;
   syncFiltersURL();
-  renderPopularProducts();
+  document.body.classList.toggle('search-results-mode',Boolean(ACTIVE_SEARCH.trim()));
+  if(!ACTIVE_SEARCH.trim())renderPopularProducts();
   const items = getFiltered();
   const grid = document.getElementById('grid');
   const empty = document.getElementById('emptyState');
@@ -515,7 +520,7 @@ function createProductCard(group) {
 
   const targetUrl = safeHttpUrl(product.url);
   const interactive = storeCount > 1 || targetUrl;
-  const imageBox = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
+  const imageBox = document.createElement('button');
   imageBox.className = 'card-img';
   const imageStage=document.createElement('span');imageStage.className='card-image-stage';
   const imageUrl = safeHttpUrl(offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || group.image);
@@ -550,7 +555,7 @@ function createProductCard(group) {
   favorite.setAttribute('aria-label',tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar')+': '+displayName);
   favorite.title=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
   const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';
-  utilityRow.append(favorite,historyButton);
+  utilityRow.append(historyButton);
   if(favorites.has(group.key))utilityRow.append(quantityControl(group.key,()=>{}));
 
   const badges = document.createElement('div');
@@ -569,7 +574,7 @@ function createProductCard(group) {
   }
   if(badges.childElementCount)body.appendChild(badges);
 
-  const name = document.createElement(storeCount > 1 ? 'button' : targetUrl ? 'a' : 'div');
+  const name = document.createElement(targetUrl ? 'a' : 'div');
   name.className = 'card-name';
   name.textContent = readableProductName(displayName);
   body.appendChild(name);
@@ -586,23 +591,12 @@ function createProductCard(group) {
     priceRow.appendChild(oldPrice);
   }
   body.appendChild(priceRow);
-  [imageBox, name].forEach(el => {
-    if (!interactive) return;
-    el.classList.add('product-target');
-    const action = storeCount > 1 ? tr('Comparar precios') : tr('Ver en tienda ↗');
-    el.title = action;
-    el.setAttribute('aria-label', `${action}: ${displayName}`);
-    if (storeCount > 1) {
-      el.type = 'button';
-      el.setAttribute('aria-haspopup', 'dialog');
-      el.dataset.action='compare';
-    } else {
-      el.href = targetUrl; el.target = '_blank'; el.rel = 'noopener noreferrer';
-      el.dataset.action='external';
-    }
-  });
+  imageBox.type='button';imageBox.dataset.action='preview';imageBox.classList.add('product-target');
+  imageBox.setAttribute('aria-haspopup','dialog');
+  imageBox.setAttribute('aria-label',words('Ampliar produto','Ampliar producto')+': '+displayName);
+  if(targetUrl){name.href=targetUrl;name.target='_blank';name.rel='noopener noreferrer';name.dataset.action='external';name.classList.add('product-target');}
   body.appendChild(utilityRow);
-  card.append(imageBox, overlay, body);
+  card.append(imageBox, favorite, overlay, body);
 
   if (storeCount > 1) {
     const button = document.createElement('button');
@@ -670,7 +664,7 @@ function openComparison(name, offers) {
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
     }
-    row.append(info, price, link);
+    row.append(info, price, link, offerFavoriteControls(offer));
     return row;
   });
   list.replaceChildren(...rows);
@@ -730,7 +724,7 @@ async function openStoreDirectory(){
  directoryLoading=true;retry.hidden=true;status.textContent=words('Carregando lojas…','Cargando tiendas…');
  try{
   if(!Object.keys(STORE_INFO).length){
-   const response=await fetch('data/stores.json',{cache:'no-cache'});if(!response.ok)throw new Error();
+   const response=await fetch('data/stores.json',{cache:'default'});if(!response.ok)throw new Error();
    const data=await response.json();if(!data||Array.isArray(data)||typeof data!=='object'||!Object.keys(data).length)throw new Error();STORE_INFO=data;
   }
   const names=[...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p=>p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b,LANG));
@@ -811,7 +805,7 @@ document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('categoria').value = '';
   document.getElementById('minPrice').value = '';
   document.getElementById('maxPrice').value = '';
-  document.getElementById('orden').value = 'ofertas';
+  document.getElementById('orden').value = 'nombre_asc';
   document.getElementById('soloOfertas').checked = false;
   document.getElementById('favoritesOnly').checked = false;
   document.querySelectorAll('.storeChk').forEach(el => { el.checked = true; });

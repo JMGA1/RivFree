@@ -19,28 +19,37 @@ async function fetchWithTimeout(url,options={}) {
  try {const response=await fetch(url,{...options,signal:controller.signal});if(!response.ok)throw new Error(`HTTP ${response.status}`);return await response.json();}
  finally {clearTimeout(timer);}
 }
+// Bump when matching, normalization, or the prepared catalog shape changes.
+const PREPARED_CATALOG_VERSION='20260924-1';
+function validPrepared(value){
+ return value && Array.isArray(value.products) && Array.isArray(value.groups) &&
+  Array.isArray(value.words) && value.legacyKeys && typeof value.legacyKeys==='object';
+}
 async function loadCatalogLocally() {
  let cached;try {cached=await cachedCatalog();}catch{}
- let data,offline=false;
+ let data,version,offline=false;
  try {
-  const meta=await fetchWithTimeout('data/meta.json',{cache:'no-cache'});
-  if(cached && cached.version===meta.version && Array.isArray(cached.data?.productos))data=cached.data;
+  const meta=await fetchWithTimeout('data/meta.json');
+  if(typeof meta.version!=='string'||!meta.version)throw new Error('Invalid version');
+  version=meta.version;
+  if(cached && cached.version===version && Array.isArray(cached.data?.productos))data=cached.data;
   else {
-   data=await fetchWithTimeout('data/products.json?v='+encodeURIComponent(meta.version),{cache:'no-cache'});
+   data=await fetchWithTimeout('data/products.json?v='+encodeURIComponent(version));
    if(!Array.isArray(data.productos))throw new Error('Invalid catalog');
-   try {await cachedCatalog({version:meta.version,data});}catch{}
   }
  }catch(error){
-  if(cached && Array.isArray(cached.data?.productos)){data=cached.data;offline=true;}
-  else {data=await fetchWithTimeout('data/products.json',{cache:'no-cache'});if(!Array.isArray(data.productos))throw error;try{await cachedCatalog({version:null,data});}catch{}}
+  if(cached && Array.isArray(cached.data?.productos)){data=cached.data;version=cached.version;offline=true;}
+  else {data=await fetchWithTimeout('data/products.json');if(!Array.isArray(data.productos))throw error;version=null;}
  }
- const prepared=prepareCatalog(data);
+ const reuse=data===cached?.data && cached.preparedVersion===PREPARED_CATALOG_VERSION && validPrepared(cached.prepared);
+ const prepared=reuse?cached.prepared:prepareCatalog(data);
+ if(!reuse){try {await cachedCatalog({version,data,preparedVersion:PREPARED_CATALOG_VERSION,prepared});}catch{}}
  return {data:{actualizado:data.actualizado,resumen:data.resumen},prepared,offline};
 }
 async function loadCatalog() {
  if(typeof Worker==='undefined')return loadCatalogLocally();
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js');
+  const worker=new Worker('catalog-worker.js?v=20260924-1');
   const timer=setTimeout(()=>{worker.terminate();reject(new Error('Worker timeout'));},70000);
   worker.onmessage=({data})=>{clearTimeout(timer);worker.terminate();data.error?reject(new Error(data.error)):resolve(data);};
   worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');

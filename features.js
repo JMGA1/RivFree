@@ -35,7 +35,7 @@ function toggleFavorite(key){
 function syncFiltersURL(){
  const url=new URL(location.href),p=url.searchParams;
  const fields={q:ACTIVE_SEARCH,category:document.getElementById('categoria').value,min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,sort:document.getElementById('orden').value};
- for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='ofertas'))p.set(key,value);else p.delete(key);}
+ for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='nombre_asc'))p.set(key,value);else p.delete(key);}
  for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
  const stores=[...document.querySelectorAll('.storeChk')];p.delete('store');p.delete('stores');
  if(stores.some(el=>!el.checked)){p.set('stores','selected');stores.filter(el=>el.checked).forEach(el=>p.append('store',el.value));}
@@ -44,7 +44,7 @@ function syncFiltersURL(){
 function restoreFilters(){
  const p=new URL(location.href).searchParams;
  ACTIVE_SEARCH=p.get('q')||'';document.getElementById('search').value=ACTIVE_SEARCH;
- for(const [key,id,fallback] of [['category','categoria',''],['sort','orden','ofertas'],['min','minPrice',''],['max','maxPrice','']]){
+ for(const [key,id,fallback] of [['category','categoria',''],['sort','orden','nombre_asc'],['min','minPrice',''],['max','maxPrice','']]){
   const el=document.getElementById(id),value=p.get(key)||fallback;
   if(el.tagName==='SELECT')el.value=[...el.options].some(o=>o.value===value)?value:fallback;
   else el.value=value!==''&&Number.isFinite(Number(value))&&Number(value)>=0?value:'';
@@ -70,7 +70,7 @@ async function openPriceHistory(offers){
  const dialog=document.getElementById('historyDialog'),container=document.getElementById('historyContent');
  container.textContent='Cargando / Carregando…';if(!dialog.open)dialog.showModal();
  try {
-  if(!priceHistoryPromise)priceHistoryPromise=fetch('data/price-history.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(e=>{priceHistoryPromise=null;throw e;});
+  if(!priceHistoryPromise)priceHistoryPromise=fetch('data/price-history.json',{cache:'default'}).then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(e=>{priceHistoryPromise=null;throw e;});
   const history=await priceHistoryPromise;container.replaceChildren();
   let count=0;
   for(const offer of offers){
