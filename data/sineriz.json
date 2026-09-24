@@ -2165,7 +2165,7 @@
     "precio_usd": 27.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-grao-juan-valdez-premium-selection-500g/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5853/26/019300105591_q90.jpg"
   },
@@ -2175,7 +2175,7 @@
     "precio_usd": 16.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-gourmet-selection-moido-organico-283g/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7598/26/019300405591_q90.jpg"
   },
@@ -2185,7 +2185,7 @@
     "precio_usd": 13.0,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-granulado-100g/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5053/26/019300805591_q90.jpg"
   },
@@ -2195,7 +2195,7 @@
     "precio_usd": 14.5,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cafe-juan-valdez-premium-selection-moido-250g/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/7593/26/019300505591_q90.jpg"
   },
@@ -2215,7 +2215,7 @@
     "precio_usd": 4.1,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-mix-de-frutas/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8055/26/019070400321_q90.jpg"
   },
@@ -2225,7 +2225,7 @@
     "precio_usd": 4.6,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-laranja/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8056/26/019070800321_q90.jpg"
   },
@@ -2235,7 +2235,7 @@
     "precio_usd": 4.1,
     "precio_original_usd": null,
     "en_oferta": false,
-    "categoria": "comestiveis-1",
+    "categoria": "cha-cafe",
     "url": "https://www.sineriz.com.uy/produtos/cha-cafe/cha-instantaneo-granulado-kruger-limao/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8054/26/019070100321_q90.jpg"
   },
@@ -2771,6 +2771,26 @@
   },
   {
     "tienda": "Sineriz",
+    "nombre": "VIDRO CAFE JUAN VALDEZ GRANULADO",
+    "precio_usd": 13.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/vidro-cafe-juan-valdez-granulado/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1784/26/019300605591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
+    "nombre": "VIDRO CAFE JUAN VALDEZ VANICANELA 95g",
+    "precio_usd": 14.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "cha-cafe",
+    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/vidro-cafe-juan-valdez-vanicanela-95g/",
+    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5097/26/019300205591_q90.jpg"
+  },
+  {
+    "tienda": "Sineriz",
     "nombre": "Vinagre Edmond Fallot de vinho tinto e chalota",
     "precio_usd": 2.98,
     "precio_original_usd": null,
@@ -2808,27 +2828,5 @@
     "categoria": "massas",
     "url": "https://www.sineriz.com.uy/produtos/massas/rummo-taglatelle-all-uovo-n0132/",
     "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/8077/26/019180412071_q90.jpg"
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "VIDRO CAFE JUAN VALDEZ GRANULADO",
-    "precio_usd": 13.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "cha-cafe",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/vidro-cafe-juan-valdez-granulado/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/1784/26/019300605591_q90.jpg",
-    "datos_anteriores": true
-  },
-  {
-    "tienda": "Sineriz",
-    "nombre": "VIDRO CAFE JUAN VALDEZ VANICANELA 95g",
-    "precio_usd": 14.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "cha-cafe",
-    "url": "https://www.sineriz.com.uy/produtos/cha-cafe/vidro-cafe-juan-valdez-vanicanela-95g/",
-    "imagen": "https://d1fzvgv9kesp5m.cloudfront.net/images/5097/26/019300205591_q90.jpg",
-    "datos_anteriores": true
   }
 ]
