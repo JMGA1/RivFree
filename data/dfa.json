@@ -4821,36 +4821,6 @@
   },
   {
     "tienda": "DFA",
-    "nombre": "VEGA SICILIA ALION 2021 0.75 LT",
-    "precio_usd": 145.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas",
-    "url": "https://www.dfauy.com/product/vega-sicilia-alion-2021-0-75-lt/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/05/40-11817-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "THE MACALLAN COLOUR 12 YO GTR 0.70LT GB 40%",
-    "precio_usd": 85.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas",
-    "url": "https://www.dfauy.com/product/the-macallan-colour-12-yo-gtr-0-70lt-gb-40/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/12/40-11571-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "RED BULL LATA TROPICAL EDITION 0.25 LT.",
-    "precio_usd": 1.21,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "bebidas",
-    "url": "https://www.dfauy.com/product/red-bull-lata-tropical-edition-0-25-lt/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07882-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
     "nombre": "RED BULL LATA 0.25 LT.",
     "precio_usd": 1.35,
     "precio_original_usd": null,
@@ -11511,6 +11481,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "VEGA SICILIA ALION 2021 0.75 LT",
+    "precio_usd": 145.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas",
+    "url": "https://www.dfauy.com/product/vega-sicilia-alion-2021-0-75-lt-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/05/40-11817-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "HEINEKEN LATA 0,50 LT. X24",
     "precio_usd": 33.5,
     "precio_original_usd": null,
@@ -12498,6 +12478,16 @@
     "categoria": "bebidas",
     "url": "https://www.dfauy.com/product/the-macallan-colour-15-yo-gtr-0-70lt-gb-43-2/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/12/40-11572-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "THE MACALLAN COLOUR 12 YO GTR 0.70LT GB 40%",
+    "precio_usd": 85.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "bebidas",
+    "url": "https://www.dfauy.com/product/the-macallan-colour-12-yo-gtr-0-70lt-gb-40/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/12/40-11571-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -32571,56 +32561,6 @@
   },
   {
     "tienda": "DFA",
-    "nombre": "IMPERIAL FRUIT & NUT BLEND 2 OZ",
-    "precio_usd": 1.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestibles",
-    "url": "https://www.dfauy.com/product/imperial-fruit-nut-blend-2-oz/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12020-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "IMPERIAL CRANBERRY BLEND  2 OZ",
-    "precio_usd": 1.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestibles",
-    "url": "https://www.dfauy.com/product/imperial-cranberry-blend-2-oz/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12019-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "IMPERIAL SUNSHINE BLEND 2 OZ",
-    "precio_usd": 1.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestibles",
-    "url": "https://www.dfauy.com/product/imperial-sunshine-blend-2-oz/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12018-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "IMPERIAL ENERGY BLEND 2 OZ",
-    "precio_usd": 1.9,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestibles",
-    "url": "https://www.dfauy.com/product/imperial-energy-blend-2-oz/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12017-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "EMIGRANTE CIRUELAS CON CAROZO DP 70 GRS",
-    "precio_usd": 1.7,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "comestibles",
-    "url": "https://www.dfauy.com/product/emigrante-ciruelas-con-carozo-dp-70-grs/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07628-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
     "nombre": "NESTLE AFTER EIGHT MIX MINI SNACKBAG 150 GRS.",
     "precio_usd": 7.1,
     "precio_original_usd": null,
@@ -36038,6 +35978,46 @@
     "categoria": "comestibles",
     "url": "https://www.dfauy.com/product/imperial-nut-candy-blend-2-25-o-2/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12021-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "IMPERIAL FRUIT & NUT BLEND 2.25 OZ",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestibles",
+    "url": "https://www.dfauy.com/product/imperial-fruit-nut-blend-2-25-oz-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12020-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "IMPERIAL CRANBERRY BLEND  2.25 OZ",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestibles",
+    "url": "https://www.dfauy.com/product/imperial-cranberry-blend-2-25-oz-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12019-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "IMPERIAL SUNSHINE BLEND 2.25 OZ",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestibles",
+    "url": "https://www.dfauy.com/product/imperial-sunshine-blend-2-25-oz-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12018-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "IMPERIAL ENERGY BLEND 2.25 OZ",
+    "precio_usd": 1.9,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestibles",
+    "url": "https://www.dfauy.com/product/imperial-energy-blend-2-25-oz-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/40-12017-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -44608,6 +44588,16 @@
     "categoria": "comestibles",
     "url": "https://www.dfauy.com/product/emigrante-higos-turcos-dp-90-grs-2/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07630-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "EMIGRANTE CIRUELAS CON CAROZO DP 100 GRS",
+    "precio_usd": 1.7,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "comestibles",
+    "url": "https://www.dfauy.com/product/emigrante-ciruelas-con-carozo-dp-100-grs-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/40-07628-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -54321,96 +54311,6 @@
   },
   {
     "tienda": "DFA",
-    "nombre": "CUORI TOSTADORA SAPORO 1300W CUO3520",
-    "precio_usd": 24.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-tostadora-saporo-1300w-cuo3520/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/07/73-39092-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI FREIDORA SIN ACEITE BIANCA 11L CUO-D11L",
-    "precio_usd": 94.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-freidora-sin-aceite-bianca-11l-cuo-d11l/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2026/08/50-46848-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI MICROONDAS DIGITAL 20LTS 50HZ CUO2085",
-    "precio_usd": 84.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-microondas-digital-20lts-50hz-cuo2085/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/10/50-43567-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI LICUADORA FRULATTI CUO3186",
-    "precio_usd": 33.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-licuadora-frulatti-cuo3186/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-37637-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "ORAIMO AURICULAR IN-EAR BLK OTW-330S",
-    "precio_usd": 27.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/oraimo-auricular-in-ear-blk-otw-330s/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2026/09/50-37389-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI LICUADORA TULLIA PLUS CUO3184",
-    "precio_usd": 28.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-licuadora-tullia-plus-cuo3184/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-37300-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI PICADORA PROCESI CUO3115",
-    "precio_usd": 23.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-picadora-procesi-cuo3115/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-31565-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI JARRA ELECTRICA 2 LT CUO3489",
-    "precio_usd": 13.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-jarra-electrica-2-lt-cuo3489/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-27771-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CUORI LICUADORA TULLIA CUO3188",
-    "precio_usd": 28.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "electronica",
-    "url": "https://www.dfauy.com/product/cuori-licuadora-tullia-cuo3188/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-07128-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
     "nombre": "BEURER BAÑO PARA PIES FB20",
     "precio_usd": 55.0,
     "precio_original_usd": null,
@@ -54558,6 +54458,16 @@
     "categoria": "electronica",
     "url": "https://www.dfauy.com/product/xion-calienta-camas-1-pza-xi-gl21/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-39415-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CUORI TOSTADORA SAPORO 1300W CUO3520",
+    "precio_usd": 23.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-tostadora-saporo-1300w-cuo3520/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/07/73-39092-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -57938,6 +57848,16 @@
     "categoria": "electronica",
     "url": "https://www.dfauy.com/product/xion-frigobar-50-lts-xi-h50inox/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2026/08/50-46849-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CUORI FREIDORA SIN ACEITE BIANCA 11L CUO-D11L",
+    "precio_usd": 83.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-freidora-sin-aceite-bianca-11l-cuo-d11l/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2026/08/50-46848-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -66468,6 +66388,16 @@
     "categoria": "electronica",
     "url": "https://www.dfauy.com/product/blackview-celular-color-8-16gb-256gb-lte-dual-blu/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2025/10/50-43568-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CUORI MICROONDAS DIGITAL 20LTS 50HZ CUO2085",
+    "precio_usd": 86.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-microondas-digital-20lts-50hz-cuo2085/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/10/50-43567-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -86921,6 +86851,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "CUORI LICUADORA FRULATTI CUO3186",
+    "precio_usd": 31.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-licuadora-frulatti-cuo3186/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-37637-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "POWERA CONTROL P/XBOX ADV SPARKLE PWA-A-06441",
     "precio_usd": 43.0,
     "precio_original_usd": null,
@@ -87371,6 +87311,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "ORAIMO AURICULAR IN-EAR BLK OTW-330",
+    "precio_usd": 27.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/oraimo-auricular-in-ear-blk-otw-330/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2026/09/50-37389-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "ORAIMO AURICULAR IN-EAR ICE BLUE OTW-330",
     "precio_usd": 26.0,
     "precio_original_usd": null,
@@ -87578,6 +87528,16 @@
     "categoria": "electronica",
     "url": "https://www.dfauy.com/product/midea-aire-ac-inver-12000btu-220v-50hz-mdinv-12mi/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-37301-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CUORI LICUADORA TULLIA PLUS CUO3184",
+    "precio_usd": 27.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-licuadora-tullia-plus-cuo3184/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-37300-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -96011,6 +95971,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "CUORI PICADORA PROCESI CUO3115",
+    "precio_usd": 25.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-picadora-procesi-cuo3115/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-31565-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "CUORI BALANZA DE COCINA CUO851",
     "precio_usd": 11.5,
     "precio_original_usd": null,
@@ -98468,6 +98438,16 @@
     "categoria": "electronica",
     "url": "https://www.dfauy.com/product/nintendo-amiibo-peach-wedding-nvl-c-abau/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-27777-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CUORI JARRA ELECTRICA 2 LT CUO3489",
+    "precio_usd": 11.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-jarra-electrica-2-lt-cuo3489/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-27771-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -100958,6 +100938,16 @@
     "categoria": "electronica",
     "url": "https://www.dfauy.com/product/pioneer-parlante-p-auto-16cm-2v-200w-ts-f1634r-2/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-07146-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CUORI LICUADORA TULLIA CUO3188",
+    "precio_usd": 26.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "electronica",
+    "url": "https://www.dfauy.com/product/cuori-licuadora-tullia-cuo3188-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-07128-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -105361,46 +105351,6 @@
   },
   {
     "tienda": "DFA",
-    "nombre": "CHILLI BEANS ANTEOJOS OCCL36422031",
-    "precio_usd": 75.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "optica",
-    "url": "https://www.dfauy.com/product/chilli-beans-anteojos-occl36422031/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-43355-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CHILLI BEANS ANTEOJOS OCCL36420202",
-    "precio_usd": 75.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "optica",
-    "url": "https://www.dfauy.com/product/chilli-beans-anteojos-occl36420202/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-43354-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "CHILLI BEANS ANTEOJOS OCMT39685701",
-    "precio_usd": 75.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "optica",
-    "url": "https://www.dfauy.com/product/chilli-beans-anteojos-ocmt39685701/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-39668-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
-    "nombre": "OAHU ANTEOJOS MUSTERY C3",
-    "precio_usd": 69.0,
-    "precio_original_usd": null,
-    "en_oferta": false,
-    "categoria": "optica",
-    "url": "https://www.dfauy.com/product/oahu-anteojos-mustery-c3/",
-    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-29328-300x300.jpg"
-  },
-  {
-    "tienda": "DFA",
     "nombre": "RAY BAN ANTEOJOS RB3449 001/13 59",
     "precio_usd": 158.0,
     "precio_original_usd": null,
@@ -107058,6 +107008,26 @@
     "categoria": "optica",
     "url": "https://www.dfauy.com/product/chilli-beans-anteojos-occl39830130/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-43357-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CHILLI BEANS ANTEOJOS OCCL36422031",
+    "precio_usd": 55.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "optica",
+    "url": "https://www.dfauy.com/product/chilli-beans-anteojos-occl36422031/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-43355-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CHILLI BEANS ANTEOJOS OCCL36420202",
+    "precio_usd": 55.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "optica",
+    "url": "https://www.dfauy.com/product/chilli-beans-anteojos-occl36420202/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-43354-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -113348,6 +113318,16 @@
     "categoria": "optica",
     "url": "https://www.dfauy.com/product/bd-anteojos-cube-reader-1-00-2225-57-10/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/11/50-39796-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CHILLI BEANS ANTEOJOS OCMT39685701",
+    "precio_usd": 55.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "optica",
+    "url": "https://www.dfauy.com/product/chilli-beans-anteojos-ocmt39685701/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2025/09/50-39668-300x300.jpg"
   },
   {
     "tienda": "DFA",
@@ -135431,6 +135411,16 @@
   },
   {
     "tienda": "DFA",
+    "nombre": "OAHU ANTEOJOS MUSTERY C3",
+    "precio_usd": 69.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "optica",
+    "url": "https://www.dfauy.com/product/oahu-anteojos-mustery-c3-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/50-29328-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
     "nombre": "OAHU ANTEOJOS MUSTERY C10",
     "precio_usd": 69.0,
     "precio_original_usd": null,
@@ -152148,6 +152138,16 @@
     "categoria": "relojeria",
     "url": "https://www.dfauy.com/product/casio-reloj-w2101avdf/",
     "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-10627-300x300.jpg"
+  },
+  {
+    "tienda": "DFA",
+    "nombre": "CASIO RELOJ MTP1215A7ADF",
+    "precio_usd": 52.0,
+    "precio_original_usd": null,
+    "en_oferta": false,
+    "categoria": "relojeria",
+    "url": "https://www.dfauy.com/product/casio-reloj-mtp1215a7adf-2/",
+    "imagen": "https://www.dfauy.com/wp-content/uploads/2024/05/73-10612-300x300.jpg"
   },
   {
     "tienda": "DFA",

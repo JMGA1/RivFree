@@ -89,7 +89,6 @@ const translations = {
  'Aviso sobre disponibilidad':'Aviso sobre disponibilidade',
  'PRIVACIDAD · RIVFREE':'PRIVACIDADE · RIVFREE',
  'Ayudanos a mejorar RivFree':'Ajude a melhorar o RivFree',
- 'Con tu permiso usamos estadísticas de uso para saber qué se busca, qué filtros se usan y dónde mejorar la experiencia. Si activás Clarity, también podremos analizar mapas de calor y grabaciones de sesión con contenido sensible enmascarado.':'Com sua permissão, usamos estatísticas para entender o que é buscado, quais filtros são usados e onde melhorar a experiência. Se você ativar o Clarity, também poderemos analisar mapas de calor e gravações de sessão com conteúdo sensível mascarado.',
  'Solo esenciales':'Somente essenciais','Permitir estadísticas':'Permitir estatísticas','Privacidad y estadísticas':'Privacidade e estatísticas',
  'Disponibilidad orientativa.':'Disponibilidade indicativa.',
  'La web refleja catálogos online, no el stock físico completo de cada tienda.':'A web reflete catálogos online, não o estoque físico completo de cada loja.',
@@ -99,6 +98,10 @@ const translations = {
  'Los datos tienen más de 48 horas':'Os dados têm mais de 48 horas',
  'No se pudo cargar data/products.json. ¿Ya corriste el scraper?':'Não foi possível carregar o catálogo. Tente recarregar a página.',
  'Abriendo la publicación original en otra pestaña':'Abrindo a publicação original em outra aba',
+ 'Limpiar':'Limpar','Limpiar categoría':'Limpar categoria',
+ 'Leer Política de Privacidad y Cookies':'Ler Política de Privacidade e Cookies',
+ 'Política de Privacidad y Cookies':'Política de Privacidade e Cookies',
+ 'Gestionar preferencias de cookies':'Gerenciar preferências de cookies',
  'Volver arriba':'Voltar ao topo','Cambiar idioma':'Alterar idioma',
 };
 function tr(value) {
@@ -138,6 +141,7 @@ function translateUI() {
  document.querySelectorAll('#categoria option').forEach(o=>{o.textContent=o.value?Catalog.categories[o.value][LANG==='pt-BR'?1:0]:tr('Todas');});
  document.getElementById('languageToggle').value=LANG;
  syncCategoryInput();
+ document.querySelectorAll('.privacy-policy-link').forEach(a=>a.href='privacy.html?lang='+LANG);
 }
 function storeKey(name) {
  const s=Catalog.norm(name);
@@ -818,6 +822,7 @@ function syncCategoryInput() {
  const input=document.getElementById('categorySearch');
  const select=document.getElementById('categoria');
  input.value=select.value ? Catalog.categories[select.value][LANG==='pt-BR'?1:0] : '';
+ document.getElementById('clearCategory').hidden=!input.value;
  closeCategoryOptions();
 }
 function closeCategoryOptions() {
@@ -853,10 +858,17 @@ const categorySearch=document.getElementById('categorySearch');
 categorySearch.addEventListener('focus',showCategoryOptions);
 categorySearch.addEventListener('click',showCategoryOptions);
 categorySearch.addEventListener('input',()=>{
+ document.getElementById('clearCategory').hidden=!categorySearch.value&&!document.getElementById('categoria').value;
  if(!categorySearch.value){document.getElementById('categoria').value='';render(true);}
  showCategoryOptions();
 });
-categorySearch.addEventListener('blur',syncCategoryInput);
+categorySearch.addEventListener('blur',event=>{if(event.relatedTarget?.id!=='clearCategory')syncCategoryInput();});
+const clearCategory=document.getElementById('clearCategory');
+clearCategory.addEventListener('pointerdown',event=>event.preventDefault());
+clearCategory.addEventListener('click',()=>{
+ document.getElementById('categoria').value='';categorySearch.value='';render(true);
+ categorySearch.focus({preventScroll:true});showCategoryOptions();clearCategory.hidden=true;
+});
 categorySearch.addEventListener('keydown',event=>{
  if(event.key==='Escape'){event.preventDefault();syncCategoryInput();return;}
  if(!['ArrowDown','ArrowUp','Enter'].includes(event.key))return;

@@ -1,33 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- Google tag (gtag.js) · RivFree GA4 -->
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  window.gtag = window.gtag || gtag;
-  gtag('consent', 'default', {
-    ad_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied',
-    analytics_storage: 'denied'
-  });
-  gtag('js', new Date());
-  // Register the Google tag so Tag Assistant can detect it, but do not send a page view yet.
-  gtag('config', 'G-DQ9ZN0E47C', {
-    send_page_view: false,
-    allow_google_signals: false,
-    allow_ad_personalization_signals: false
-  });
-</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DQ9ZN0E47C"></script>
+<!-- Cookieless traffic metrics; no Google Analytics tag. -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RivFree — Comparador de preços de free shops</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260924-1">
+<link rel="stylesheet" href="styles.css?v=20260924-cf1">
 <meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
 <meta property="og:type" content="website">
@@ -76,7 +57,7 @@
     <div class="header-actions">
       <button id="openStoreDirectory" class="theme-toggle" type="button">Free shops</button>
       <select id="languageToggle" class="theme-toggle" aria-label="Cambiar idioma">
-        <option value="es">Español</option><option value="pt-BR" selected>Português (BR)</option>
+        <option value="es">ES</option><option value="pt-BR" selected>PT</option>
       </select>
       <button class="theme-toggle theme-mode" id="themeToggle" type="button" aria-pressed="false"><span class="theme-mode-icon" aria-hidden="true"></span><span class="theme-mode-label">Modo oscuro</span></button>
       <button id="headerShoppingList" class="header-list" type="button"><span aria-hidden="true">♡</span> <span>Mi lista</span></button>
@@ -108,6 +89,7 @@
         <label for="categorySearch">Categoría</label>
         <div class="category-picker">
           <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Escribí o seleccioná una categoría">
+          <button id="clearCategory" class="category-clear" type="button" aria-label="Limpiar categoría" hidden>Limpiar</button>
           <div id="categoryOptions" role="listbox" hidden></div>
         </div>
         <select id="categoria" hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
@@ -216,26 +198,17 @@
 </main>
 <button id="backToTop" type="button" hidden aria-label="Volver arriba" title="Volver arriba">↑</button>
 <div id="actionStatus" role="status" aria-live="polite" hidden></div>
-<aside id="analyticsConsent" class="analytics-consent" aria-labelledby="analyticsConsentTitle" hidden>
-  <div class="analytics-consent-copy">
-    <span class="eyebrow">PRIVACIDAD · RIVFREE</span>
-    <strong id="analyticsConsentTitle">Ayudanos a mejorar RivFree</strong>
-    <p>Con tu permiso usamos estadísticas de uso para saber qué se busca, qué filtros se usan y dónde mejorar la experiencia. Si activás Clarity, también podremos analizar mapas de calor y grabaciones de sesión con contenido sensible enmascarado.</p>
-  </div>
-  <div class="analytics-consent-actions">
-    <button id="analyticsReject" class="privacy-secondary" type="button">Solo esenciales</button>
-    <button id="analyticsAccept" class="privacy-primary" type="button">Permitir estadísticas</button>
-  </div>
-</aside>
+
 <footer>
   <strong>RivFree · Comparador independiente</strong><br>
   No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar.
   Consultá la información actualizada en la publicación oficial de cada tienda.
-  <div class="footer-actions"><button id="privacySettings" type="button">Privacidad y estadísticas</button></div>
+  <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html">Política de Privacidad y Cookies</a></div>
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="analytics.js?v=20260923-ga-detect" defer></script>
+<script src="privacy-config.js?v=20260924-cf1" defer></script>
+<script src="analytics.js?v=20260924-cf1" defer></script>
 <script src="matching.js?v=20260919a" defer></script>
 <script src="catalog.js?v=20260919a" defer></script>
 <script src="catalog-cache.js?v=20260924-1" defer></script>
@@ -243,5 +216,8 @@
 <script src="shopping.js?v=20260924-1" defer></script>
 <script src="storefront.js?v=20260924-1" defer></script>
 <script src="product-details.js?v=20260924-1" defer></script>
-<script src="app.js?v=20260924-1" defer></script>
+<script src="app.js?v=20260924-cf1" defer></script>
+<!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c7ffd1476a25414983f7c03faf7e0ace"}'></script>
+<!-- End Cloudflare Web Analytics -->
 </body></html>
