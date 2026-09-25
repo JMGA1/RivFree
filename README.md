@@ -3,8 +3,7 @@
 Compará precios de los freeshops de Rivera en un solo lugar, con filtros por
 tienda, categoría, precio y ofertas.
 
-El proyecto incluye datos guardados en `data/products.json` y scrapers para
-**Barão, DFA, Mantra, Neutral, Oprha, Sineriz y Yury's**. 
+El proyecto mantiene un catálogo compatible en `data/products.json` y publica además fragmentos por tienda en `data/products/` para evitar volver a descargar todo cuando cambia una sola tienda. Incluye scrapers para **Barão, DFA, Mantra, Neutral, Oprha, Sineriz y Yury's**. 
 
 Cuando el mismo producto y su variante aparecen en varias tiendas, el sitio
 los reúne en una tarjeta. El botón **Comparar precios** abre el detalle ordenado
@@ -38,3 +37,19 @@ Además de los scrapers, RivFree incluye un editor local para cargar free shops 
 - `Abrir-colaborador.bat`: abre un cargador aislado para otra persona. Sus datos quedan en `.contributor-work/` y se exportan como `rivfree-aporte-*.zip`.
 - La pestaña **Colaboraciones** del editor principal permite revisar tiendas/productos, detectar posibles duplicados y seleccionar qué importar.
 - Ver `COLABORACIONES.md` para el flujo completo.
+
+
+## Mantenimiento del repositorio
+
+Los archivos `data/barao.json`, `data/dfa.json`, `data/mantra.json`, `data/neutral.json`, `data/oprha.json`, `data/sineriz.json`, `data/yurys.json` y `debug_barao_output.txt` son cachés intermedios y ahora están en `.gitignore`. Si tu repositorio ya los tenía versionados, ejecutá **una sola vez**:
+
+```bash
+git rm --cached data/barao.json data/dfa.json data/mantra.json data/neutral.json data/oprha.json data/sineriz.json data/yurys.json debug_barao_output.txt
+git commit -m "No versionar caches intermedios de scraping"
+```
+
+No se borran de tu disco: solamente dejan de formar parte de futuros commits.
+
+## Cambios del proyecto
+
+Los cambios notables se documentan en [`CHANGELOG.md`](CHANGELOG.md). No crear un `.md` nuevo por cada corrección puntual.

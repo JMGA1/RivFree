@@ -82,7 +82,7 @@ const translations = {
  'No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar.\n  Consultá la información actualizada en la publicación oficial de cada tienda.':'Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.',
  'Imagen no disponible':'Imagem indisponível','Precio no disponible':'Preço indisponível',
  'Seleccioná para comparar las tiendas':'Selecione para comparar as lojas','Oferta':'Oferta',
- 'No disponible':'Indisponível','Precio más bajo':'Menor preço','Ver en tienda ↗':'Ver na loja ↗','Sin enlace':'Sem link',
+ 'No disponible':'Indisponível','Desde':'A partir de','Precio más bajo':'Menor preço','Ver en tienda ↗':'Ver na loja ↗','Sin enlace':'Sem link',
  'Dirección':'Endereço','Teléfono':'Telefone','Correo':'E-mail','Horario':'Horário','Información':'Informações',
  'Sitio oficial':'Site oficial','No hay información adicional disponible.':'Não há informações adicionais disponíveis.',
  'Modo claro':'Modo claro','Modo oscuro':'Modo escuro',
@@ -296,7 +296,6 @@ async function loadData() {
     SEARCH_WORDS=prepared.words;
     document.getElementById('connectionNote').hidden=!offline;
     updateExchangeNote();
-    refreshAutomaticExchange();
     SEARCH_CACHE.clear();
 
     const updated = data.actualizado ? new Date(data.actualizado) : null;

@@ -47,3 +47,32 @@ class PublishPartialTests(unittest.TestCase):
             state = json.loads((directory / 'health.json').read_text())['DFA']
             self.assertEqual(state['fallos_consecutivos'], 0)
             self.assertEqual(state['estado'], 'parcial')
+
+class PublishPartitionTests(unittest.TestCase):
+    def test_publish_writes_store_partitions_and_hashes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory=Path(tmp)
+            output={
+                'actualizado':'2026-09-25T00:00:00+00:00',
+                'resumen':[{'tienda':'DFA'},{'tienda':'Barão Free Shop'}],
+                'productos':[
+                    {'tienda':'DFA','nombre':'A','url':'https://dfa.example/a','precio_usd':10},
+                    {'tienda':'Barão Free Shop','nombre':'B','url':'https://barao.example/b','precio_usd':20},
+                ],
+            }
+            publish(directory,output)
+            self.assertEqual(len(json.loads((directory/'products'/'dfa.json').read_text())),1)
+            self.assertEqual(len(json.loads((directory/'products'/'barao.json').read_text())),1)
+            meta=json.loads((directory/'meta.json').read_text())
+            self.assertEqual(set(meta['stores']),{'dfa','barao'})
+            self.assertEqual(meta['resumen'],output['resumen'])
+
+    def test_history_is_physically_pruned_to_90_snapshots(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory=Path(tmp);history=directory/'history';history.mkdir()
+            for i in range(95):
+                (history/f'{i:03}.json').write_text(json.dumps({'actualizado':str(i),'observaciones':[]}),encoding='utf-8')
+            publish(directory,{'actualizado':'now','resumen':[],'productos':[]})
+            names=sorted(p.name for p in history.glob('*.json'))
+            self.assertEqual(len(names),90)
+            self.assertEqual(names[0],'005.json')

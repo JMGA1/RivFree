@@ -131,10 +131,10 @@ async function refreshAutomaticExchange(){
  exchangeRequest=(async()=>{
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),6000);
   try{
-   const response=await fetch('https://api.frankfurter.dev/v2/rate/USD/BRL',{signal:controller.signal,cache:'default'});
+   const response=await fetch('data/exchange.json?refresh='+Date.now(),{signal:controller.signal,cache:'no-store'});
    if(!response.ok)throw new Error();const data=await response.json();
-   const next={usd_brl:data.rate,actualizado:data.date,source:'Frankfurter'};
-   if(!isRate(next)||data.base!=='USD'||data.quote!=='BRL')throw new Error();
+   const next={usd_brl:data.usd_brl,actualizado:data.actualizado,source:data.fuente||'Frankfurter'};
+   if(!isRate(next))throw new Error();
    automaticExchange=next;exchangeFailed=false;
    try{localStorage.setItem('rivfree-auto-exchange',JSON.stringify(next));}catch{}
   }catch{exchangeFailed=true;}finally{clearTimeout(timer);updateExchangeNote();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();}

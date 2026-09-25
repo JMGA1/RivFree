@@ -10,3 +10,14 @@ _site/
 manual-export*.zip
 .contributor-work/
 rivfree-aporte-*.zip
+
+# Cachés intermedios de scraping: products.json es la fuente pública/versionada.
+data/barao.json
+data/dfa.json
+data/mantra.json
+data/neutral.json
+data/oprha.json
+data/sineriz.json
+data/yurys.json
+debug_barao_output.txt
+scrape.log

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jmga1.github.io/RivFree/sitemap.xml
