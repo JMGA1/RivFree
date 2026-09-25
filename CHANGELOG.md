@@ -1,5 +1,11 @@
 # Changelog
 
+### Lista compartida compacta
+- Los enlaces de favoritos ahora usan identificadores compactos en el fragmento (`#l=`), en lugar de incluir las claves completas de cada producto.
+- Se mantiene compatibilidad de importación con los enlaces antiguos `#list=`.
+- Al abrir un enlace compartido aparece inmediatamente un diálogo para importar la lista, sin tener que bajar hasta el catálogo.
+- La importación compacta espera al catálogo si todavía está cargando y conserva los favoritos existentes.
+
 Todos los cambios notables de RivFree se documentan aquí para evitar archivos de notas dispersos en la raíz.
 
 ## [2026-09-25]

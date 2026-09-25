@@ -78,14 +78,27 @@ function renderShoppingList(){
  document.getElementById('shareShoppingList').disabled=!favorites.size;
  updateShoppingBadge();
 }
+// Shared lists use short deterministic fingerprints instead of embedding full product keys.
+// The codec is isolated so the format can be regression-tested without a browser.
+function sharedLocatorForFavorite(key){
+ if(key.startsWith('offer:'))return 'o:'+key;
+ const group=PRODUCT_GROUPS.find(item=>item.key===key);
+ if(group?.offers?.length){
+  // Catalog.identity is intentionally the same compatibility identity used to migrate favorites.
+  const identities=group.offers.map(offer=>Catalog.identity(offer)).filter(Boolean).sort((a,b)=>a.length-b.length||a.localeCompare(b));
+  if(identities.length)return 'g:'+identities[0];
+ }
+ return 'k:'+key;
+}
 function shoppingURL(){
  const url=new URL(location.href);url.search='';
- url.hash='list='+encodeURIComponent(JSON.stringify({v:1,items:[...favorites].map(key=>[key,quantityFor(key)])}));
+ const items=[...favorites].map(key=>[sharedLocatorForFavorite(key),quantityFor(key)]);
+ url.hash=SharedListCodec.encodeCompact(items);
  return url.href;
 }
 document.getElementById('shareShoppingList').onclick=async()=>{
  const url=shoppingURL();const field=document.getElementById('sharedListLink');field.value=url;field.hidden=false;
- document.getElementById('shareHint').textContent=words('Este link leva uma cópia da lista. Abra no celular e importe. Mudanças posteriores precisam de um novo link.','Este enlace lleva una copia de la lista. Abrilo en el celular e importá. Los cambios posteriores necesitan un enlace nuevo.');
+ document.getElementById('shareHint').textContent=words('Link compacto pronto. Ele leva uma cópia da lista e pode ser aberto em outro celular.','Enlace compacto listo. Lleva una copia de la lista y puede abrirse en otro celular.');
  try {
   if(navigator.share)await navigator.share({title:'RivFree',url});
   else if(navigator.clipboard){await navigator.clipboard.writeText(url);document.getElementById('shareHint').textContent+=' '+words('Link copiado!','¡Enlace copiado!');}
@@ -93,31 +106,90 @@ document.getElementById('shareShoppingList').onclick=async()=>{
  }catch(error){if(error.name!=='AbortError'){field.focus();field.select();}}
 };
 let pendingShopping=null;
-function inspectSharedList(){
- pendingShopping=null;document.getElementById('importBanner').hidden=true;
- if(!location.hash.startsWith('#list='))return;
- try{
-  if(location.hash.length>250000)throw new Error();
-  const payload=JSON.parse(decodeURIComponent(location.hash.slice(6)));
-  if(payload.v!==1||!Array.isArray(payload.items)||!payload.items.length||payload.items.length>1000)throw new Error();
-  const incoming=new Map();
-  for(const entry of payload.items){
-   if(!Array.isArray(entry)||entry.length!==2)throw new Error();
-   const [key,qty]=entry;
-   if(typeof key!=='string'||!key||key.length>2000||!Number.isInteger(qty)||qty<1||qty>999||incoming.has(key))throw new Error();incoming.set(key,qty);
-  }
-  pendingShopping=incoming;document.getElementById('importBanner').hidden=false;
-  document.getElementById('importMessage').textContent=words(`Lista recebida: ${incoming.size} produtos. Importar preserva seus outros produtos e usa as quantidades recebidas nos repetidos.`,`Lista recibida: ${incoming.size} productos. Importar conserva tus otros productos y usa las cantidades recibidas en los repetidos.`);
- }catch{announce(words('O link da lista é inválido. Sua lista foi preservada.','El enlace no es válido. Tu lista se conservó.'));}
+let pendingImportRequested=false;
+function importDialog(){return document.getElementById('importListDialog');}
+function showImportDialog(){
+ const dialog=importDialog();
+ if(dialog&&!dialog.open){try{dialog.showModal();}catch{dialog.setAttribute('open','');}}
 }
-document.getElementById('importShoppingList').onclick=()=>{
+function hideImportDialog(){
+ const dialog=importDialog();
+ if(dialog?.open){try{dialog.close();}catch{dialog.removeAttribute('open');}}
+}
+function buildSharedFavoriteIndex(){
+ const index=new Map();
+ const register=(locator,key)=>{
+  const id=SharedListCodec.fingerprint(locator);
+  if(!index.has(id))index.set(id,key);
+  else if(index.get(id)!==key)index.set(id,null); // fail closed on the extraordinarily unlikely hash collision
+ };
+ for(const group of PRODUCT_GROUPS){
+  register('k:'+group.key,group.key);
+  for(const offer of group.offers){
+   register('g:'+Catalog.identity(offer),group.key);
+   const offerKey=offerFavoriteKey(offer);register('o:'+offerKey,offerKey);
+  }
+ }
+ return index;
+}
+function resolveCompactSharedList(){
+ if(!pendingShopping||pendingShopping.version!==2||!PRODUCT_GROUPS.length)return false;
+ const index=buildSharedFavoriteIndex(),resolved=new Map();let missing=0;
+ for(const [id,qty] of pendingShopping.items){const key=index.get(id);if(key)resolved.set(key,qty);else missing++;}
+ pendingShopping.resolved=resolved;pendingShopping.missing=missing;
+ const status=document.getElementById('importResolveStatus');
+ if(missing){status.hidden=false;status.textContent=words(`${resolved.size} itens encontrados; ${missing} não estão mais no catálogo atual.`,`${resolved.size} productos encontrados; ${missing} ya no están en el catálogo actual.`);}
+ else status.hidden=true;
+ const button=document.getElementById('importShoppingList');button.disabled=!resolved.size;button.textContent=words('Importar lista','Importar lista');
+ if(pendingImportRequested){pendingImportRequested=false;importPendingShopping();}
+ return true;
+}
+function decodeLegacySharedList(){
+ const incoming=SharedListCodec.decodeLegacy(location.hash);
+ return incoming?{version:1,resolved:incoming,count:incoming.size,missing:0}:null;
+}
+function decodeCompactSharedList(){
+ const incoming=SharedListCodec.decodeCompact(location.hash);
+ return incoming?{version:2,items:incoming,resolved:null,count:incoming.size,missing:0}:null;
+}
+function inspectSharedList(){
+ pendingShopping=null;pendingImportRequested=false;hideImportDialog();
+ if(!location.hash.startsWith('#l=')&&!location.hash.startsWith('#list='))return;
+ try{
+  pendingShopping=decodeCompactSharedList()||decodeLegacySharedList();
+  const count=pendingShopping.count;
+  document.getElementById('importMessage').textContent=words(`Você recebeu uma lista RivFree com ${count} produtos. Quer adicioná-la à sua lista neste dispositivo? Seus favoritos atuais serão preservados.`,`Recibiste una lista de RivFree con ${count} productos. ¿Querés agregarla a tu lista en este dispositivo? Tus favoritos actuales se conservarán.`);
+  document.getElementById('importResolveStatus').hidden=true;
+  const button=document.getElementById('importShoppingList');button.disabled=false;button.textContent=words('Importar lista','Importar lista');
+  showImportDialog();
+  resolveCompactSharedList();
+ }catch{pendingShopping=null;announce(words('O link da lista é inválido. Sua lista foi preservada.','El enlace no es válido. Tu lista se conservó.'));}
+}
+function importPendingShopping(){
  if(!pendingShopping)return;
- for(const [key,qty] of pendingShopping){favorites.add(key);quantityByKey.set(key,qty);}
+ if(pendingShopping.version===2&&!pendingShopping.resolved){
+  if(!resolveCompactSharedList()){
+   pendingImportRequested=true;
+   const button=document.getElementById('importShoppingList');button.disabled=true;button.textContent=words('Preparando catálogo…','Preparando catálogo…');
+   document.getElementById('importResolveStatus').hidden=false;
+   document.getElementById('importResolveStatus').textContent=words('A lista será importada assim que o catálogo terminar de carregar.','La lista se importará apenas termine de cargar el catálogo.');
+  }
+  return;
+ }
+ const incoming=pendingShopping.resolved;
+ if(!incoming?.size)return;
+ for(const [key,qty] of incoming){favorites.add(key);quantityByKey.set(key,qty);}
  persistShopping();dismissImport();render();document.getElementById('openShoppingList').click();
-};
-function dismissImport(){pendingShopping=null;document.getElementById('importBanner').hidden=true;history.replaceState(null,'',location.pathname+location.search);}
+}
+document.getElementById('importShoppingList').onclick=importPendingShopping;
+function dismissImport(){
+ pendingShopping=null;pendingImportRequested=false;hideImportDialog();
+ history.replaceState(null,'',location.pathname+location.search);
+}
 document.getElementById('dismissImport').onclick=dismissImport;
+importDialog()?.addEventListener('cancel',event=>{event.preventDefault();dismissImport();});
 window.addEventListener('hashchange',inspectSharedList);
+window.addEventListener('rivfree:catalog-ready',()=>resolveCompactSharedList());
 window.addEventListener('DOMContentLoaded',()=>{inspectSharedList();updateShoppingBadge();});
 window.addEventListener('storage',event=>{
  if(!['rivfree-favorites','rivfree-quantities'].includes(event.key))return;

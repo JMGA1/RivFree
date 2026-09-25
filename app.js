@@ -322,6 +322,7 @@ async function loadData() {
     restoreFilters();
     translateUI();
     render();
+    window.dispatchEvent(new CustomEvent('rivfree:catalog-ready'));
   } catch (e) {
     document.getElementById('loadError').hidden=false;
     document.getElementById('loadErrorText').textContent=tr('No se pudo cargar el catálogo. Revisá tu conexión y reintentá.');

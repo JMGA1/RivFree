@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RivFree — Comparador de preços de free shops</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="styles.css?v=20260925-core1">
+<link rel="stylesheet" href="styles.css?v=20260925-share2">
 <meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
 <meta property="og:type" content="website">
@@ -21,6 +21,18 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 <body>
+<dialog id="importListDialog" class="import-list-dialog" aria-labelledby="importListTitle">
+  <div class="import-list-icon" aria-hidden="true">♡</div>
+  <span class="eyebrow">RIVFREE · LISTA COMPARTIDA</span>
+  <h2 id="importListTitle">¿Importar esta lista?</h2>
+  <p id="importMessage"></p>
+  <p id="importResolveStatus" class="import-resolve-status" hidden></p>
+  <div class="import-list-actions">
+    <button id="importShoppingList" type="button">Importar lista</button>
+    <button id="dismissImport" type="button">Ahora no</button>
+  </div>
+</dialog>
+
 
 <div class="topbar">
   <div class="topbar-inner">
@@ -155,7 +167,6 @@
 <details class="exchange-details"><summary><strong id="exchangePreview">USD → BRL</strong> <span>· Cotización</span></summary><label>USD → BRL <input id="exchangeRate" type="number" min="0.01" step="0.01" placeholder="Cotización" aria-label="Reales por dólar"></label>
 <p id="exchangeNote"></p><button id="automaticExchange" type="button">Usar cotización automática</button></details><p id="connectionNote" hidden>Sin conexión: catálogo guardado / Sem conexão: catálogo salvo.</p>
 </section>
-<aside id="importBanner" class="import-banner" hidden><p id="importMessage"></p><button id="importShoppingList" type="button">Importar lista</button><button id="dismissImport" type="button">Descartar</button></aside>
 <dialog id="shoppingDialog" aria-labelledby="shoppingTitle"><div class="shopping-header"><div><span class="eyebrow">RIVFREE · TU RECORRIDO</span><h2 id="shoppingTitle">Mi lista</h2></div><button type="button" id="closeShoppingList" aria-label="Cerrar">✕</button></div><div id="shoppingList"></div><div class="share-list"><button id="shareShoppingList" type="button">Compartir lista</button><p id="shareHint">Abrí tu lista en el celular con un enlace. No necesitás una cuenta.</p><input id="sharedListLink" readonly hidden aria-label="Enlace de la lista"></div></dialog>
 <div class="grid" id="grid"></div>
 <div class="load-more-wrap" id="loadMoreWrap" hidden>
@@ -212,10 +223,11 @@
 <script src="catalog.js?v=20260925-partitions1" defer></script>
 <script src="catalog-cache.js?v=20260925-partitions1" defer></script>
 <script src="features.js?v=20260925-ux1" defer></script>
-<script src="shopping.js?v=20260925-core1" defer></script>
+<script src="shared-list-codec.js?v=20260925-share2" defer></script>
+<script src="shopping.js?v=20260925-share2" defer></script>
 <script src="storefront.js?v=20260925-ux1" defer></script>
 <script src="product-details.js?v=20260925-core1" defer></script>
-<script src="app.js?v=20260925-core1" defer></script>
+<script src="app.js?v=20260925-share2" defer></script>
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c7ffd1476a25414983f7c03faf7e0ace"}'></script>
 <!-- End Cloudflare Web Analytics -->
