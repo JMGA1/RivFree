@@ -67,14 +67,18 @@ async function storefrontJSON(path){
  try{const response=await fetch(path,{cache:'default',signal:controller.signal});if(!response.ok)throw new Error();return await response.json();}finally{clearTimeout(timer);}
 }
 async function initStorefront(){
- const [banners,ranking]=await Promise.allSettled([storefrontJSON('data/highlights.json'),storefrontJSON('data/popular.json')]);
+ const rankingPromise=storefrontJSON('data/popular.json').then(value=>({status:'fulfilled',value}),()=>({status:'rejected'}));
+ const banners=await storefrontJSON('data/highlights.json').then(value=>({status:'fulfilled',value}),()=>({status:'rejected'}));
  const remoteEntries=banners.status==='fulfilled'&&Array.isArray(banners.value?.hero)?banners.value.hero:[];
  campaigns.hero=chooseBalancedCampaigns(remoteEntries.length?remoteEntries:FALLBACK_HIGHLIGHTS,CAMPAIGN_COUNT);
+ if(campaigns.hero[0]?.smartType){const editorial=campaigns.hero.findIndex(c=>!c.smartType);if(editorial>0)[campaigns.hero[0],campaigns.hero[editorial]]=[campaigns.hero[editorial],campaigns.hero[0]];}
  campaignPositions.hero=0;smartCampaignCache.clear();campaignImageCache.clear();
+ renderCampaigns();
+ const ranking=await rankingPromise;
  if(ranking.status==='fulfilled'&&Array.isArray(ranking.value?.items)&&Number.isFinite(Date.parse(ranking.value.updatedAt))){
   popularFeed={updatedAt:ranking.value.updatedAt,items:ranking.value.items.filter(i=>typeof i.url==='string'&&Number.isInteger(i.views)&&i.views>0).slice(0,1000)};
  }
- renderCampaigns();renderPopularProducts();
+ renderPopularProducts();
 }
 function campaignCategoryLabel(category,lang=LANG){
  const pair=typeof Catalog!=='undefined'?Catalog.categories?.[category]:null;
@@ -113,6 +117,7 @@ function resolveSmartCampaign(base){
  smartCampaignCache.set(base.id,resolved);return resolved;
 }
 function campaignVisualItems(c){
+ if(!c.smartResolved&&Array.isArray(c.images)&&c.images.length)return c.images;
  if(campaignImageCache.has(c.id))return campaignImageCache.get(c.id);
  let dynamic=[];
  if(typeof PRODUCT_GROUPS!=='undefined'&&PRODUCT_GROUPS.length){
@@ -124,7 +129,8 @@ function campaignVisualItems(c){
  if(dynamic.length){campaignImageCache.set(c.id,dynamic);return dynamic;}
  return Array.isArray(c.images)?c.images:[];
 }
-function activateCampaign(c){
+async function activateCampaign(c){
+ await waitForPaint();
  if(c.action==='compare'&&c.groupKey){const group=PRODUCT_GROUPS.find(g=>g.key===c.groupKey);if(group){openComparison(group.name,group.offers);return;}}
  selectCampaignCategory(c.category||'');
  if(c.action==='offers'){document.getElementById('soloOfertas').checked=true;render(true);}
@@ -167,7 +173,7 @@ function renderCampaign(slot,automatic=false){
  }else{
   for(const item of campaignVisualItems(c).slice(0,3)){
    const src=campaignURL(item.src);if(!src)continue;
-   const pedestal=document.createElement('div');pedestal.className='product-pedestal';const image=document.createElement('img');image.src=src;image.alt=localized(item.alt)||'';image.decoding='async';image.onerror=()=>{image.remove();pedestal.textContent='RivFree';};pedestal.append(image);visual.append(pedestal);
+   const pedestal=document.createElement('div');pedestal.className='product-pedestal';const image=document.createElement('img');image.src=src;image.alt=localized(item.alt)||'';image.decoding='async';image.width=256;image.height=256;image.fetchPriority='high';image.onerror=()=>{image.remove();pedestal.textContent='RivFree';};pedestal.append(image);visual.append(pedestal);
   }
  }
  const label=document.createElement('span');label.className='campaign-label';label.textContent=c.sponsored?words('Publicidade','Publicidad'):c.smartResolved?words('Destaque do catálogo','Destacado del catálogo'):words('Seleção RivFree','Selección RivFree');
@@ -197,20 +203,27 @@ function recordProductConsult(key){
  try{localStorage.setItem('rivfree-consultations',JSON.stringify(newest));}catch{}
  setTimeout(renderPopularProducts,0);
 }
+let railCatalog=null,railSignature='',railGroups=[];
 function renderPopularProducts(){
+ if(typeof PRODUCT_GROUPS==='undefined'||!PRODUCT_GROUPS.length)return;
+ const signature=JSON.stringify([LANG,exchange.usd_brl,[...favorites], [...consultations],popularFeed]);
+ if(railCatalog===PRODUCT_GROUPS&&railSignature===signature)return;
+ if(railCatalog!==PRODUCT_GROUPS)railGroups=PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice));
+ railCatalog=PRODUCT_GROUPS;railSignature=signature;
  renderDiscoverProducts();
  const grid=document.getElementById('popularGrid');if(!grid||typeof PRODUCT_GROUPS==='undefined')return;
- const groups=PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice));
+ const groups=railGroups;
  let ranked=[],source='editorial';
  if(popularFeed?.items.length){
   const totals=new Map(popularFeed.items.map(i=>[i.url,i.views]));
   ranked=groups.map(g=>({g,count:g.offers.reduce((sum,o)=>sum+(totals.get(o.url)||0),0)})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count).map(x=>x.g);if(ranked.length)source='global';
  }
  if(!ranked.length){ranked=groups.filter(g=>consultations.has(g.key)).sort((a,b)=>consultations.get(b.key).count-consultations.get(a.key).count||consultations.get(b.key).last-consultations.get(a.key).last);if(ranked.length)source='local';}
- document.getElementById('popularProducts').hidden=!ranked.length;
- document.querySelector('a[href="#popularProducts"]').hidden=!ranked.length;
- if(!ranked.length)source='none';
- document.getElementById('popularTitle').textContent=source==='global'?words('Mais consultados','Más consultados'):source==='local'?words('Mais consultados por você','Más consultados por vos'):words('Para descobrir','Para descubrir');
+ if(!ranked.length){ranked=groups.slice(0,5);source='editorial';}
+ document.getElementById('popularProducts').hidden=false;
+ document.querySelector('a[href="#popularProducts"]').hidden=false;
+ grid.classList.toggle('few-products',ranked.length<4);
+ document.getElementById('popularTitle').textContent=source==='global'?words('Mais consultados','Más consultados'):source==='local'?words('Mais consultados por você','Más consultados por vos'):words('Complete sua lista','Completá tu lista');
  document.getElementById('popularNote').textContent=source==='global'?words('Consultas do site · atualização: ','Consultas del sitio · actualización: ')+new Date(popularFeed.updatedAt).toLocaleDateString(LANG):source==='local'?words('Baseado nas suas consultas neste navegador.','Basado en tus consultas en este navegador.'):words('Uma seleção para começar. Seu ranking aparece conforme você consulta produtos.','Una selección para empezar. Tu ranking aparece a medida que consultás productos.');
  grid.dataset.source=source;
  const savedScroll=grid.scrollLeft;
@@ -231,7 +244,8 @@ function renderDiscoverProducts(shuffle=false){
   for(let i=0;i<Math.min(5,eligible.length);i++){const j=i+Math.floor(Math.random()*(eligible.length-i));[eligible[i],eligible[j]]=[eligible[j],eligible[i]];}
   discoveryKeys=eligible.slice(0,5).map(g=>g.key);discoveryCatalog=PRODUCT_GROUPS;
  }
- const byKey=new Map(PRODUCT_GROUPS.map(g=>[g.key,g]));
+ if(renderDiscoverProducts.catalog!==PRODUCT_GROUPS){renderDiscoverProducts.catalog=PRODUCT_GROUPS;renderDiscoverProducts.byKey=new Map(PRODUCT_GROUPS.map(g=>[g.key,g]));}
+ const byKey=renderDiscoverProducts.byKey;
  const chosen=discoveryKeys.map(key=>byKey.get(key)).filter(Boolean),left=shuffle?0:grid.scrollLeft;
  grid.replaceChildren(...chosen.map(g=>createProductCard({...g,visibleOffers:g.offers})));grid.scrollLeft=left;
  document.getElementById('discoverPrevious').disabled=chosen.length<2;document.getElementById('discoverNext').disabled=chosen.length<2;

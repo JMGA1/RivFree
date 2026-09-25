@@ -36,7 +36,7 @@ function syncFiltersURL(){
  const url=new URL(location.href),p=url.searchParams;
  const fields={q:ACTIVE_SEARCH,category:document.getElementById('categoria').value,min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,sort:document.getElementById('orden').value};
  for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='nombre_asc'))p.set(key,value);else p.delete(key);}
- for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
+ for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly'],['priced','hideUnavailable']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
  const stores=[...document.querySelectorAll('.storeChk')];p.delete('store');p.delete('stores');
  if(stores.some(el=>!el.checked)){p.set('stores','selected');stores.filter(el=>el.checked).forEach(el=>p.append('store',el.value));}
  if(url.href!==location.href)history.replaceState(null,'',url);
@@ -49,7 +49,7 @@ function restoreFilters(){
   if(el.tagName==='SELECT')el.value=[...el.options].some(o=>o.value===value)?value:fallback;
   else el.value=value!==''&&Number.isFinite(Number(value))&&Number(value)>=0?value:'';
  }
- for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly']])document.getElementById(id).checked=p.get(key)==='1';
+ for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly'],['priced','hideUnavailable']])document.getElementById(id).checked=p.get(key)==='1';
  document.querySelectorAll('.storeChk').forEach(el=>{el.checked=!p.has('stores')||p.getAll('store').includes(el.value);});
 }
 window.addEventListener('popstate',()=>{restoreFilters();render(true);syncCategoryInput();});

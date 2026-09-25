@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=20260924-cf1">
+<link rel="stylesheet" href="styles.css?v=20260925-ux1">
 <meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
 <meta property="og:type" content="website">
@@ -69,8 +69,8 @@
 
 <nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><button id="navOffers" type="button">Ofertas</button><a href="#discoverProducts">Por descubrir</a><a href="#popularProducts">Más consultados</a></nav>
 <main>
-<section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel" hidden></section>
-<div class="shopping-benefits"><span><b>01</b> Compará entre free shops</span><span><b>02</b> Guardá productos y cantidades</span><span><b>03</b> Llevá tu lista en el celular</span></div>
+<section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel"></section>
+<div class="shopping-benefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
 <section class="popular-section" id="discoverProducts" aria-labelledby="discoverTitle">
  <div class="section-heading"><div><span class="eyebrow">RIVERA · SANTANA DO LIVRAMENTO</span><h2 id="discoverTitle">Por descubrir</h2><p>Una selección aleatoria para inspirar tu próxima compra.</p></div><div class="rail-controls"><button id="shuffleDiscover" type="button" aria-label="Otra selección">↻</button><button id="discoverPrevious" type="button" aria-label="Productos anteriores">←</button><button id="discoverNext" type="button" aria-label="Más productos">→</button><button id="discoverPause" class="autoplay-toggle" type="button" aria-label="Pausar carrusel" aria-pressed="false">Ⅱ</button></div></div>
  <div id="discoverGrid" class="popular-rail"></div>
@@ -95,6 +95,7 @@
         <select id="categoria" hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
       </div>
 
+      <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Ocultar productos sin precio</label>
       <details class="advanced-filters" id="advancedFilters">
         <summary>
           <span class="filter-summary-icon" aria-hidden="true"></span>
@@ -207,16 +208,16 @@
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="privacy-config.js?v=20260924-cf1" defer></script>
-<script src="analytics.js?v=20260924-cf1" defer></script>
+<script src="privacy-config.js?v=20260925-ux1" defer></script>
+<script src="analytics.js?v=20260925-ux1" defer></script>
 <script src="matching.js?v=20260919a" defer></script>
 <script src="catalog.js?v=20260919a" defer></script>
 <script src="catalog-cache.js?v=20260924-1" defer></script>
-<script src="features.js?v=20260924-1" defer></script>
+<script src="features.js?v=20260925-ux1" defer></script>
 <script src="shopping.js?v=20260924-1" defer></script>
-<script src="storefront.js?v=20260924-1" defer></script>
+<script src="storefront.js?v=20260925-ux1" defer></script>
 <script src="product-details.js?v=20260924-1" defer></script>
-<script src="app.js?v=20260924-cf1" defer></script>
+<script src="app.js?v=20260925-ux1" defer></script>
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c7ffd1476a25414983f7c03faf7e0ace"}'></script>
 <!-- End Cloudflare Web Analytics -->

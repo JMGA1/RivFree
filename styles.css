@@ -1311,3 +1311,41 @@ dialog{overscroll-behavior:contain;}body:has(dialog[open]){overflow:hidden;}
 .analytics-consent-actions .privacy-secondary,.analytics-consent-actions .privacy-primary{border:1px solid var(--teal);background:var(--surface);color:var(--ink);}
 .footer-actions{display:flex;justify-content:center;align-items:center;gap:16px;flex-wrap:wrap;}
 @media(max-width:650px){.category-clear{min-height:40px;top:2px;}#categorySearch{min-height:44px;}#languageToggle{font-size:16px!important;}}
+
+/* Predictable space while the catalogue and product images load. */
+#heroCampaign{min-height:390px;}
+#heroCampaign .campaign-slide{min-height:390px;animation:none;}
+#heroCampaign .campaign-copy h2{min-height:2.4em;}
+.popular-rail{min-height:382px;}
+.popular-section .section-heading{min-height:112px;}
+.popular-rail.few-products{justify-content:center;}
+.popular-rail .card{min-height:370px;}
+.card-image-stage img{object-fit:contain;}
+.step-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;flex-shrink:0;}
+.price-availability{display:flex;align-items:center;gap:9px;padding:12px 14px;margin:12px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface);width:fit-content;cursor:pointer;}
+.price-availability input{width:19px;height:19px;accent-color:var(--teal);}
+#stockNotice{background:#fff5db!important;border:1px solid #dca742!important;border-left:4px solid #c28b22!important;color:#674714!important;}
+#stockNotice strong,#stockNotice p,#stockNotice .stock-notice-icon,#stockNotice button{color:inherit!important;}
+[data-theme="dark"] #stockNotice{background:#382d19!important;border-color:#ac8134!important;color:#ffe1a3!important;}
+.card-stores .card-store{border:1px solid var(--store-border)!important;background:var(--store-bg)!important;color:var(--store-fg)!important;box-shadow:0 1px 3px #0002;}
+@media(max-width:650px){.popular-rail.few-products{justify-content:flex-start;}}
+@media(max-width:650px){
+ #heroCampaign,#heroCampaign .campaign-slide{min-height:370px;}
+ .popular-rail{min-height:350px;}
+ .popular-rail .card{min-height:340px;}
+ .popular-section .section-heading{min-height:135px;}
+ .popular-rail.few-products:has(.card:only-child){justify-content:center;}
+ .shopping-benefits .step-icon{width:18px;height:18px;}
+}
+.price-availability{grid-column:1/-1;grid-row:2;margin:0;}
+#stockNotice .stock-notice-inner{background:transparent!important;border:0!important;color:inherit!important;}
+#stockNotice{border-radius:12px;}
+.card-store[data-store="other"]{--store-bg:var(--surface);--store-fg:var(--ink);--store-border:var(--line);}
+@media(max-width:760px){.price-availability{grid-row:auto;}}
+/* Keep every slide within the same frame, including before its JSON arrives. */
+#heroCampaign{height:440px;min-height:0;}
+#heroCampaign .campaign-slide{height:100%;min-height:0;box-sizing:border-box;}
+#heroCampaign .campaign-copy{min-height:0;max-height:100%;overflow:auto;}
+.topbar #searchButton{min-width:0;}
+@media(max-width:650px){#heroCampaign{height:480px;}.campaign-copy h2{font-size:32px;}}
+@media(max-width:360px){#heroCampaign{height:500px;}.campaign-copy h2{font-size:28px;}}

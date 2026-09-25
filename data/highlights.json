@@ -24,7 +24,7 @@
       "category": "perfumes",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg",
+          "src": "icons/campaigns/beauty-perfumes-0.webp",
           "alt": ""
         }
       ]
@@ -53,7 +53,7 @@
       "category": "cosmetica",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg",
+          "src": "icons/campaigns/beauty-skincare-0.webp",
           "alt": ""
         }
       ]
@@ -82,7 +82,7 @@
       "category": "perfumes",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg",
+          "src": "icons/campaigns/beauty-compare-0.webp",
           "alt": ""
         }
       ]
@@ -111,7 +111,7 @@
       "category": "cosmetica",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_13d0ea2415a24a20be15dae18b68ef24~mv2.jpg",
+          "src": "icons/campaigns/beauty-selfcare-0.webp",
           "alt": ""
         }
       ]
@@ -140,7 +140,7 @@
       "category": "bebidas",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "src": "icons/campaigns/drinks-whisky-0.webp",
           "alt": ""
         }
       ]
@@ -169,7 +169,7 @@
       "category": "bebidas",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "src": "icons/campaigns/drinks-wine-0.webp",
           "alt": ""
         }
       ]
@@ -198,7 +198,7 @@
       "category": "bebidas",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "src": "icons/campaigns/drinks-discover-0.webp",
           "alt": ""
         }
       ]
@@ -227,7 +227,7 @@
       "category": "bebidas",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "src": "icons/campaigns/drinks-compare-0.webp",
           "alt": ""
         }
       ]
@@ -256,7 +256,7 @@
       "category": "electronica",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg",
+          "src": "icons/campaigns/tech-electronics-0.webp",
           "alt": ""
         }
       ]
@@ -285,7 +285,7 @@
       "category": "informatica",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_19abcb964c0d4175aca390d469f4b508~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_19abcb964c0d4175aca390d469f4b508~mv2.jpg",
+          "src": "icons/campaigns/tech-computing-0.webp",
           "alt": ""
         }
       ]
@@ -314,7 +314,7 @@
       "category": "electrodomesticos",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_0bd8547ba57d466aa40aab6af5d5034a~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0bd8547ba57d466aa40aab6af5d5034a~mv2.jpg",
+          "src": "icons/campaigns/tech-home-0.webp",
           "alt": ""
         }
       ]
@@ -343,7 +343,7 @@
       "category": "electronica",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg",
+          "src": "icons/campaigns/tech-audio-0.webp",
           "alt": ""
         }
       ]
@@ -372,7 +372,7 @@
       "category": "alimentos",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "src": "icons/campaigns/food-chocolate-0.webp",
           "alt": ""
         }
       ]
@@ -401,7 +401,7 @@
       "category": "alimentos",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "src": "icons/campaigns/food-gifts-0.webp",
           "alt": ""
         }
       ]
@@ -430,7 +430,7 @@
       "category": "alimentos",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "src": "icons/campaigns/food-discover-0.webp",
           "alt": ""
         }
       ]
@@ -459,7 +459,7 @@
       "category": "alimentos",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "src": "icons/campaigns/food-pantry-0.webp",
           "alt": ""
         }
       ]
@@ -489,7 +489,7 @@
       "smartType": "compare",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_daaf9eb32683472db29b4c6db4ca00e5~mv2.jpg",
+          "src": "icons/campaigns/smart-compare-0.webp",
           "alt": ""
         }
       ]
@@ -519,7 +519,7 @@
       "smartType": "multistore",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_11c2da605e3745d28a3b0de6fe400a39~mv2.jpg",
+          "src": "icons/campaigns/smart-multistore-0.webp",
           "alt": ""
         }
       ]
@@ -549,7 +549,7 @@
       "smartType": "offer",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg/v1/fill/w_236,h_236,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/6a24b0_da3a662001894cedb1fe872374103f23~mv2.jpg",
+          "src": "icons/campaigns/smart-offer-0.webp",
           "alt": ""
         }
       ]
@@ -579,7 +579,7 @@
       "smartType": "category",
       "images": [
         {
-          "src": "https://static.wixstatic.com/media/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg/v1/fill/w_188,h_188,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/81a4e0_0c80b0d0954a4f6eb2f0c7a905f94978~mv2.jpg",
+          "src": "icons/campaigns/smart-category-0.webp",
           "alt": ""
         }
       ]

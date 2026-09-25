@@ -15,4 +15,7 @@ run("ACTIVE_SEARCH='dior';render(true)");assert(doc.body.classList.contains('sea
 run("chooseCategory('perfumes')");assert.equal(doc.getElementById('clearCategory').hidden,false);doc.getElementById('clearCategory').click();assert.equal(doc.getElementById('categoria').value,'');assert.equal(doc.getElementById('categorySearch').value,'');
 const searchCategory=doc.getElementById('categorySearch');searchCategory.value='per';searchCategory.dispatchEvent(new w.Event('input'));assert.equal(doc.getElementById('clearCategory').hidden,false);doc.getElementById('clearCategory').click();assert.equal(searchCategory.value,'');
 assert.deepEqual([...doc.querySelectorAll('#languageToggle option')].map(o=>o.textContent),['ES','PT']);assert(doc.querySelector('#searchButton svg circle'));
+run('renderPopularProducts()');
+const retainedCard=doc.querySelector('#discoverGrid .card');run('render(true)');assert.equal(doc.querySelector('#discoverGrid .card'),retainedCard);
+const priced=doc.getElementById('hideUnavailable');priced.checked=true;priced.dispatchEvent(new w.Event('change'));assert.equal(new URL(w.location.href).searchParams.get('priced'),'1');priced.checked=false;run('restoreFilters()');assert.equal(priced.checked,true);doc.getElementById('clearFilters').click();assert.equal(priced.checked,false);
 console.log('PASS: complete catalog, image dialog, title links, store favorites, quantities, totals, comparison, search mode');dom.window.close();

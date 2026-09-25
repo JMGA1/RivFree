@@ -4,6 +4,7 @@ try {
  LANG = savedLanguage === 'es' || savedLanguage === 'pt-BR' ? savedLanguage : 'pt-BR';
 } catch {}
 const translations = {
+ 'Ocultar productos sin precio':'Ocultar produtos sem preço',
  'Por descubrir':'Por descobrir','Una selección aleatoria para inspirar tu próxima compra.':'Uma seleção aleatória para inspirar sua próxima compra.',
  'Otra selección':'Outra seleção','Pausar carrusel':'Pausar carrossel',
  'Explorá y compará los free shops de Rivera y Santana do Livramento':'Explore e compare os free shops de Rivera e Santana do Livramento',
@@ -216,7 +217,7 @@ let ALL_PRODUCTS = [];
 let PRODUCT_GROUPS = [];
 let STORE_INFO = {};
 let ACTIVE_SEARCH = '';
-const PAGE_SIZE = 96;
+const PAGE_SIZE = window.matchMedia('(max-width: 650px)').matches ? 24 : 48;
 let visibleLimit = PAGE_SIZE;
 
 function applyTheme(theme) {
@@ -346,17 +347,35 @@ function getFiltered() {
   const soloOfertas = document.getElementById('soloOfertas').checked;
   const activeStores = [...document.querySelectorAll('.storeChk:checked')].map(el => el.value);
   const orden = document.getElementById('orden').value;
+  const pricedOnly = document.getElementById('hideUnavailable')?.checked;
+  const favoritesOnly = document.getElementById('favoritesOnly').checked;
+  const collator = getFiltered.collator ||= new Intl.Collator('es');
 
-  let groups = PRODUCT_GROUPS.filter(g=>!document.getElementById('favoritesOnly').checked || (favorites.has(g.key)||g.offers.some(o=>favorites.has(offerFavoriteKey(o))))).map(group => {
+  const cacheKey=JSON.stringify([ACTIVE_SEARCH,cat,String(min),String(max),soloOfertas,pricedOnly,favoritesOnly,favoritesOnly?[...favorites]:[],activeStores,orden]);
+  if(getFiltered.catalog!==PRODUCT_GROUPS){getFiltered.catalog=PRODUCT_GROUPS;getFiltered.cache=new Map();}
+  if(getFiltered.cache.has(cacheKey))return getFiltered.cache.get(cacheKey);
+  let candidates=PRODUCT_GROUPS;
+  if(cat){
+    if(getFiltered.categoryCatalog!==PRODUCT_GROUPS){
+      getFiltered.categoryCatalog=PRODUCT_GROUPS;getFiltered.categories=new Map();
+      for(const group of PRODUCT_GROUPS)for(const category of new Set(group.offers.map(o=>o.categoryId))){
+        if(!getFiltered.categories.has(category))getFiltered.categories.set(category,[]);
+        getFiltered.categories.get(category).push(group);
+      }
+    }
+    candidates=getFiltered.categories.get(cat)||[];
+  }
+  let groups = candidates.filter(g=>!favoritesOnly || (favorites.has(g.key)||g.offers.some(o=>favorites.has(offerFavoriteKey(o))))).map(group => {
     const visibleOffers = group.offers.filter(product => {
       if (!activeStores.includes(product.tienda)) return false;
+      if (pricedOnly && !hasPrice(product)) return false;
       if (cat && product.categoryId !== cat) return false;
       if (!isNaN(min) && (!hasPrice(product) || product.precio_usd < min)) return false;
       if (!isNaN(max) && (!hasPrice(product) || product.precio_usd > max)) return false;
       if (soloOfertas && !product.en_oferta) return false;
       return true;
     });
-    return {...group, visibleOffers};
+    return {...group, visibleOffers, lowestVisiblePrice:visibleOffers.find(hasPrice)?.precio_usd ?? Infinity};
   }).filter(group => {
     if (!group.visibleOffers.length) return false;
     if (!searchTokens.length) return true;
@@ -372,10 +391,7 @@ function getFiltered() {
     }
   }
 
-  const lowestPrice = group => {
-    const priced = group.visibleOffers.find(hasPrice);
-    return priced ? priced.precio_usd : Number.POSITIVE_INFINITY;
-  };
+  const lowestPrice = group => group.lowestVisiblePrice;
   if (orden === 'ofertas') groups.sort((a,b)=>Number(b.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))-Number(a.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))||lowestPrice(a)-lowestPrice(b));
   else if (orden === 'precio_asc') groups.sort((a,b) => lowestPrice(a) - lowestPrice(b));
   else if (orden === 'precio_desc') groups.sort((a,b) => {
@@ -384,8 +400,15 @@ function getFiltered() {
     if (!Number.isFinite(bPrice)) return -1;
     return bPrice - aPrice;
   });
-  else if (orden === 'nombre_asc') groups.sort((a,b) => a.name.localeCompare(b.name, 'es'));
+  else if (orden === 'nombre_asc') {
+    groups.sort((a,b)=>collator.compare(a.name,b.name));
+    const priced=[],unavailable=[];
+    for(const group of groups)(Number.isFinite(lowestPrice(group))?priced:unavailable).push(group);
+    groups=priced.concat(unavailable);
+  }
 
+  if(getFiltered.cache.size>=8)getFiltered.cache.delete(getFiltered.cache.keys().next().value);
+  getFiltered.cache.set(cacheKey,groups);
   return groups;
 }
 
@@ -532,6 +555,7 @@ function createProductCard(group) {
     const img = document.createElement('img');
     img.src = imageUrl;
     img.loading = 'lazy';
+    img.width = 240; img.height = 240;
     img.decoding = 'async';
     img.alt = displayName;
     img.addEventListener('error', () => addImagePlaceholder(imageStage), {once:true});
@@ -775,7 +799,7 @@ document.getElementById('searchForm').addEventListener('submit', event => {
   runSearch();
 });
 
-['categoria','orden','soloOfertas'].forEach(id => {
+['categoria','orden','soloOfertas','hideUnavailable'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => render(true));
 });
 
@@ -804,6 +828,7 @@ document.getElementById('stockNoticeClose').addEventListener('click', () => {
 });
 
 document.getElementById('clearFilters').addEventListener('click', () => {
+  document.getElementById('hideUnavailable').checked=false;
   document.getElementById('search').value = '';
   ACTIVE_SEARCH = '';
   document.getElementById('categoria').value = '';
@@ -850,23 +875,28 @@ function showCategoryOptions() {
  if(!options.length){const empty=document.createElement('div');empty.className='category-empty';empty.textContent=tr('Sin categorías coincidentes');list.appendChild(empty);}
  list.hidden=false;input.setAttribute('aria-expanded','true');
 }
+let categoryRenderTicket=0;
+function scheduleCategoryRender(){
+ const ticket=++categoryRenderTicket;
+ requestAnimationFrame(()=>setTimeout(()=>{if(ticket===categoryRenderTicket)render(true);},0));
+}
 function chooseCategory(value) {
  document.getElementById('categoria').value=value;
- render(true);syncCategoryInput();document.getElementById('categorySearch').focus();closeCategoryOptions();
+ syncCategoryInput();document.getElementById('categorySearch').focus({preventScroll:true});closeCategoryOptions();scheduleCategoryRender();
 }
 const categorySearch=document.getElementById('categorySearch');
 categorySearch.addEventListener('focus',showCategoryOptions);
 categorySearch.addEventListener('click',showCategoryOptions);
 categorySearch.addEventListener('input',()=>{
  document.getElementById('clearCategory').hidden=!categorySearch.value&&!document.getElementById('categoria').value;
- if(!categorySearch.value){document.getElementById('categoria').value='';render(true);}
+ if(!categorySearch.value&&document.getElementById('categoria').value){document.getElementById('categoria').value='';scheduleCategoryRender();}
  showCategoryOptions();
 });
 categorySearch.addEventListener('blur',event=>{if(event.relatedTarget?.id!=='clearCategory')syncCategoryInput();});
 const clearCategory=document.getElementById('clearCategory');
 clearCategory.addEventListener('pointerdown',event=>event.preventDefault());
 clearCategory.addEventListener('click',()=>{
- document.getElementById('categoria').value='';categorySearch.value='';render(true);
+ document.getElementById('categoria').value='';categorySearch.value='';scheduleCategoryRender();
  categorySearch.focus({preventScroll:true});showCategoryOptions();clearCategory.hidden=true;
 });
 categorySearch.addEventListener('keydown',event=>{

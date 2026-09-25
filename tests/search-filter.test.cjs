@@ -8,9 +8,11 @@ function app() {
  const prepared=prepareCatalog({productos:[
   {nombre:'Red Bull 250ml',tienda:'A',categoria:'bebidas',precio_usd:2,url:'https://a.example/1'},
   {nombre:'RedBull 250ml',tienda:'B',categoria:'bebidas',precio_usd:3,url:'https://b.example/1'},
+  {nombre:'Agua sin precio',tienda:'A',categoria:'bebidas',precio_usd:null,url:'https://a.example/3'},
+  {nombre:'Red Bull 250ml',tienda:'C',categoria:'bebidas',precio_usd:null,url:'https://c.example/1'},
   {nombre:'Chocolate Milka 100g',tienda:'A',categoria:'alimentos',precio_usd:4,url:'https://a.example/2'}
  ]});
- const fields={categoria:{value:''},soloOfertas:{checked:false},orden:{value:'precio_asc'},favoritesOnly:{checked:false}};
+ const fields={hideUnavailable:{checked:false},categoria:{value:''},soloOfertas:{checked:false},orden:{value:'precio_asc'},favoritesOnly:{checked:false}};
  const ctx=vm.createContext({Catalog,hasPrice,PRODUCT_GROUPS:prepared.groups,ACTIVE_SEARCH:'',favorites:new Set(),
   readPriceRange:()=>({min:NaN,max:NaN}),document:{getElementById:id=>fields[id],querySelectorAll:()=>[{value:'A'},{value:'B'}]}});
  vm.runInContext(source.slice(source.indexOf('let SEARCH_WORDS='),source.indexOf('function readPriceRange')),ctx);
@@ -40,4 +42,15 @@ test('application filter finds joined names, preserves filters, and keeps typo f
  assert.equal(ctx.getFiltered()[0].approximate,true);
  ctx.ACTIVE_SEARCH='redbull inexistente';
  assert.equal(ctx.getFiltered().length,0);
+});
+
+test('price availability respects the selected store and sorts unknown prices last',()=>{
+ const {ctx,fields}=app();fields.orden.value='nombre_asc';
+ const initial=ctx.getFiltered();assert.match(initial.at(-1).name,/Agua/);
+ fields.hideUnavailable.checked=true;
+ assert(ctx.getFiltered().every(g=>g.visibleOffers.every(hasPrice)));
+ ctx.document.querySelectorAll=()=>[{value:'C'}];
+ assert.equal(ctx.getFiltered().length,0);
+ fields.hideUnavailable.checked=false;
+ assert.equal(ctx.getFiltered().length,1);
 });
