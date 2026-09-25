@@ -139,7 +139,10 @@ function mergeDuplicateProduct(oldProduct, newProduct) {
   if (!oldProduct) return {...newProduct};
   const oldHasPrice = hasPrice(oldProduct);
   const newHasPrice = hasPrice(newProduct);
-  const preferred = newHasPrice && !oldHasPrice ? newProduct : oldProduct;
+  // Manual entries are deliberate observations made by the site owner. When a
+  // manual entry points to the same canonical URL as a scraped entry, prefer
+  // the manual values while still inheriting any missing scraper metadata.
+  const preferred = newProduct.manual === true ? newProduct : (newHasPrice && !oldHasPrice ? newProduct : oldProduct);
   const secondary = preferred === oldProduct ? newProduct : oldProduct;
   const merged = {...preferred};
   for (const [key, value] of Object.entries(secondary)) {
@@ -163,6 +166,26 @@ function dedupeProductsPreferComplete(products) {
   return order.map(key => byKey.get(key));
 }
 
+function mergeCatalogData(scraped, manual) {
+  const base = scraped && Array.isArray(scraped.productos) ? scraped : {productos:[]};
+  const manualProducts = manual && Array.isArray(manual.productos)
+    ? manual.productos.filter(product => product && product.activo !== false).map(product => ({...product, manual:true}))
+    : [];
+  return {
+    ...base,
+    productos:[...(base.productos||[]),...manualProducts],
+    manual_actualizado:manual?.actualizado||null
+  };
+}
+
+function safeImageUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const clean=value.trim().replace(/\\/g,'/');
+  // Local editor uploads are intentionally constrained to this public folder.
+  if (/^assets\/manual\/[A-Za-z0-9._/-]+$/.test(clean) && !clean.includes('..')) return clean;
+  return safeHttpUrl(clean);
+}
+
 function groupProducts(products) {
   // El emparejamiento por atributos (marca/medida/variante) vive en matching.js.
   // Regla que se mantiene: un grupo nunca tiene dos ofertas de la misma tienda.
@@ -173,7 +196,7 @@ function groupProducts(products) {
     );
     group.name = named[0].nombre;
     group.category = named[0].categoria;
-    group.image = group.offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || null;
+    group.image = group.offers.find(offer => safeImageUrl(offer.imagen))?.imagen || null;
     group.storeCount = new Set(group.offers.map(offer => offer.tienda)).size;
     return group;
   });
@@ -218,4 +241,4 @@ function prepareCatalog(data) {
  for(const g of groups)for(const o of g.offers){const old=Catalog.identity(o);if(!(old in legacyKeys))legacyKeys[old]=g.key;}
  return {products,groups,legacyKeys,words:[...new Set(products.flatMap(p=>p.searchIndex.split(' ')))]};
 }
-if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice,canonicalProductUrl,dedupeProductsPreferComplete};
+if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice,canonicalProductUrl,dedupeProductsPreferComplete,mergeCatalogData,safeImageUrl};

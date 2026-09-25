@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RivFree · Editor de catálogo</title>
+<link rel="stylesheet" href="editor.css">
+</head>
+<body>
+<header class="topbar">
+  <div><span class="brand-mark">RF</span><div><strong id="brandTitle">RivFree</strong><small id="brandSubtitle">Editor local de catálogo</small></div></div>
+  <div class="top-actions"><span id="saveState" class="save-state">Sin cambios pendientes</span><button id="reloadState" class="button ghost">Recargar</button><a id="openSite" class="button ghost" href="/" target="_blank" rel="noopener">Ver sitio</a></div>
+</header>
+<main class="shell">
+  <aside class="sidebar">
+    <div class="project-card"><span class="eyebrow" id="projectEyebrow">PROYECTO LOCAL</span><strong id="projectPath">Cargando…</strong><p id="projectDescription">Los cambios se guardan directamente en los archivos del repositorio.</p></div>
+    <nav class="tabs" aria-label="Secciones del editor">
+      <button class="tab active" data-tab="products">Productos <span id="productCount">0</span></button>
+      <button class="tab" data-tab="stores">Tiendas <span id="storeCount">0</span></button>
+      <button class="tab owner-only" data-tab="collaborations">Colaboraciones <span id="collaborationCount">ZIP</span></button>
+      <button class="tab" data-tab="transfer" id="transferTab"><span id="transferTabLabel">Importar / exportar</span></button>
+    </nav>
+    <div class="help-card" id="helpCard"><strong id="helpTitle">Publicar en GitHub</strong><p id="helpText">Después de guardar, hacé <code>git add .</code>, commit y push. El scraper no borra estos datos manuales.</p></div>
+  </aside>
+
+  <section class="workspace">
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <section class="panel active" data-panel="products">
+      <div class="panel-heading"><div><span class="eyebrow">CATÁLOGO MANUAL</span><h1>Productos y publicaciones</h1><p>Agregá precios vistos en Instagram, tiendas sin scraper o productos puntuales.</p></div><button id="newProduct" class="button primary">+ Nuevo producto</button></div>
+      <div class="two-column">
+        <div class="list-pane">
+          <div class="list-tools"><input id="productSearch" type="search" placeholder="Buscar publicación…"><select id="productStoreFilter"><option value="">Todas las tiendas</option></select></div>
+          <div id="productList" class="item-list"></div>
+        </div>
+        <form id="productForm" class="editor-card" autocomplete="off">
+          <input id="productId" type="hidden">
+          <div class="form-heading"><div><span class="eyebrow" id="productFormEyebrow">NUEVA PUBLICACIÓN</span><h2 id="productFormTitle">Agregar producto</h2></div><span id="productActiveBadge" class="badge good">Visible</span></div>
+          <div class="grid2">
+            <label class="wide"><span>Producto *</span><input id="productName" required maxlength="300" placeholder="Ej.: JBL Flip 6"></label>
+            <label><span>Tienda *</span><select id="productStore" required></select></label>
+            <label><span>Categoría</span><select id="productCategory"><option value="perfumes">Perfumes</option><option value="bebidas">Bebidas</option><option value="alimentos">Alimentos y chocolates</option><option value="electronica">Electrónica</option><option value="informatica">Informática</option><option value="cosmetica">Cuidado personal / cosmética</option><option value="hogar">Hogar</option><option value="ropa">Ropa y calzado</option><option value="accesorios">Accesorios</option><option value="juguetes">Juguetes</option><option value="relojes">Relojes</option><option value="optica">Óptica</option><option value="deportes">Deportes</option><option value="herramientas">Herramientas</option><option value="otros">Otros</option></select></label>
+            <label><span>Precio USD</span><input id="productPrice" type="number" min="0" step="0.01" placeholder="29.90"></label>
+            <label><span>Precio anterior USD</span><input id="productOldPrice" type="number" min="0" step="0.01" placeholder="39.90"></label>
+            <label class="check"><input id="productOffer" type="checkbox"><span>Marcar como oferta</span></label>
+            <label class="check"><input id="productActive" type="checkbox" checked><span>Visible en RivFree</span></label>
+          </div>
+          <div class="subsection"><h3>Origen de la publicación</h3><div class="grid2">
+            <label><span>Origen</span><select id="productSource"><option value="manual">Agregado manualmente</option><option value="instagram">Visto en Instagram</option><option value="facebook">Visto en Facebook</option><option value="whatsapp">Visto en WhatsApp</option><option value="web">Visto en sitio web</option></select></label>
+            <label><span>Enlace de la fuente</span><input id="productSourceUrl" type="url" placeholder="https://instagram.com/p/…"></label>
+            <label class="wide"><span>Enlace del producto/publicación</span><input id="productUrl" type="url" placeholder="https://…"></label>
+          </div></div>
+          <div class="subsection"><h3>Imagen</h3><div class="image-grid">
+            <div id="imagePreview" class="image-preview"><span>Sin imagen</span></div>
+            <div><label><span>URL de imagen</span><input id="productImage" type="text" placeholder="https://… o assets/manual/…"></label><label class="file-label"><span>Subir desde la computadora</span><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>Máximo 6 MB. Se guarda en <code>assets/manual/</code>.</small></label><button id="clearImage" class="link-button" type="button">Quitar imagen</button></div>
+          </div></div>
+          <label><span>Nota interna</span><textarea id="productNote" rows="3" maxlength="1000" placeholder="Solo para tu referencia. No aparece en la tarjeta."></textarea></label>
+          <div class="form-actions"><button class="button primary" type="submit">Guardar publicación</button><button id="duplicateProduct" class="button" type="button" disabled>Duplicar</button><button id="deleteProduct" class="button danger" type="button" disabled>Eliminar</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="stores">
+      <div class="panel-heading"><div><span class="eyebrow">TIENDAS</span><h1>Free shops y fuentes</h1><p>Las tiendas que agregues aparecen automáticamente en los filtros avanzados.</p></div><button id="newStore" class="button primary">+ Nueva tienda</button></div>
+      <div class="two-column">
+        <div class="list-pane"><div class="list-tools"><input id="storeSearch" type="search" placeholder="Buscar tienda…"></div><div id="storeList" class="item-list"></div></div>
+        <form id="storeForm" class="editor-card" autocomplete="off">
+          <input id="storeOriginalName" type="hidden">
+          <div class="form-heading"><div><span class="eyebrow" id="storeFormEyebrow">NUEVA TIENDA</span><h2 id="storeFormTitle">Agregar free shop</h2></div><span id="storeKindBadge" class="badge">Manual</span></div>
+          <div class="grid2">
+            <label class="wide"><span>Nombre *</span><input id="storeName" required maxlength="120" placeholder="Nombre que verá el usuario"></label>
+            <label class="wide"><span>Nombre completo</span><input id="storeFullName" maxlength="180"></label>
+            <label><span>Color de etiqueta</span><input id="storeColor" type="color" value="#B42335"></label>
+            <label><span>Color del texto</span><input id="storeTextColor" type="color" value="#FFFFFF"></label>
+            <label class="wide"><span>Dirección</span><input id="storeAddress"></label>
+            <label><span>Teléfono</span><input id="storePhone"></label>
+            <label><span>Email</span><input id="storeEmail" type="email"></label>
+            <label class="wide"><span>Horario</span><input id="storeHours"></label>
+            <label class="wide"><span>Sitio web</span><input id="storeWebsite" type="url" placeholder="https://…"></label>
+            <label><span>Instagram</span><input id="storeInstagram" type="url" placeholder="https://instagram.com/…"></label>
+            <label><span>Facebook</span><input id="storeFacebook" type="url"></label>
+            <label><span>WhatsApp</span><input id="storeWhatsapp" type="url"></label>
+            <label class="check"><input id="storeCatalogOnline" type="checkbox"><span>Tiene catálogo online</span></label>
+          </div>
+          <label><span>Información / nota pública</span><textarea id="storeNote" rows="4" maxlength="1000"></textarea></label>
+          <div class="form-actions"><button class="button primary" type="submit">Guardar tienda</button><button id="deleteStore" class="button danger" type="button" disabled>Eliminar configuración manual</button></div>
+          <p class="form-help">Podés seleccionar una tienda existente para sobrescribir datos o color sin modificar <code>data/stores.json</code>.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel owner-only" data-panel="collaborations">
+      <div class="panel-heading"><div><span class="eyebrow">APORTES EXTERNOS</span><h1>Recibir colaboraciones</h1><p>Revisá lo que te envían antes de incorporarlo. Nada se importa automáticamente.</p></div></div>
+      <div class="collab-layout">
+        <article class="transfer-card contribution-drop">
+          <span class="eyebrow">1 · ABRIR APORTE</span><h2>Seleccionar ZIP de colaborador</h2>
+          <p>Pedile a tu colaborador el archivo <code>rivfree-aporte-....zip</code> generado por <strong>Abrir-colaborador.bat</strong>.</p>
+          <input id="contributionFile" type="file" accept=".zip,application/zip">
+          <button id="previewContribution" class="button primary" type="button">Revisar paquete</button>
+          <p class="form-help">El ZIP se analiza localmente. Podrás decidir producto por producto qué incorporar.</p>
+        </article>
+        <article id="contributionPreview" class="contribution-preview" hidden>
+          <div class="contribution-head"><div><span class="eyebrow">2 · REVISAR</span><h2 id="contributionTitle">Aporte</h2><p id="contributionMeta"></p></div><span id="contributionAssetCount" class="badge"></span></div>
+          <div id="contributionNote" class="contribution-note" hidden></div>
+          <div class="review-toolbar"><button id="selectRecommended" class="button" type="button">Seleccionar recomendados</button><button id="clearContributionSelection" class="button" type="button">Quitar selección</button></div>
+          <div class="review-grid">
+            <section><h3>Tiendas <span id="previewStoreCount" class="muted-count"></span></h3><div id="previewStores" class="review-list"></div></section>
+            <section><h3>Productos <span id="previewProductCount" class="muted-count"></span></h3><div id="previewProducts" class="review-list"></div></section>
+          </div>
+          <div class="import-summary"><span id="selectionSummary">0 elementos seleccionados</span><button id="applyContribution" class="button primary" type="button">Importar seleccionados</button></div>
+          <p class="form-help">Los posibles duplicados quedan desmarcados por defecto. Si los importás igualmente, se crean como publicaciones nuevas para no sobrescribir datos existentes.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="transfer">
+      <div class="panel-heading"><div><span class="eyebrow">DATOS MANUALES</span><h1>Importar, respaldar y publicar</h1><p>Los archivos manuales están separados de los scrapers, por lo que una actualización automática no los reemplaza.</p></div></div>
+      <div class="transfer-grid">
+        <article class="transfer-card owner-only"><h2>Exportar respaldo</h2><p>Descarga todas las tiendas y publicaciones manuales en un único JSON que después podés volver a importar.</p><a id="downloadJson" class="button" href="#">Descargar JSON</a></article>
+        <article class="transfer-card featured owner-only"><h2>Paquete listo para GitHub</h2><p>Incluye <code>data/manual-products.json</code>, <code>data/manual-stores.json</code> y las imágenes locales usadas.</p><a id="downloadZip" class="button primary" href="#">Descargar ZIP para GitHub</a></article>
+        <article class="transfer-card owner-only"><h2>Importar JSON o CSV</h2><p>JSON acepta respaldos del editor. CSV importa productos con encabezados como <code>tienda,nombre,precio_usd,categoria,fuente_tipo,fuente_url</code>.</p><input id="importFile" type="file" accept=".json,.csv,application/json,text/csv"><div class="inline"><select id="importMode"><option value="merge">Combinar con lo existente</option><option value="replace">Reemplazar datos manuales</option></select><button id="importButton" class="button" type="button">Importar</button></div></article>
+        <article class="transfer-card owner-only"><h2>Después de editar</h2><pre>git status
+git add .
+git commit -m "Actualizar catalogo manual"
+git pull --rebase origin main
+git push origin main</pre><p>Al subir los archivos a GitHub Pages, RivFree los mezcla automáticamente con el catálogo obtenido por los scrapers.</p></article>
+        <article class="transfer-card contributor-only featured" hidden><span class="eyebrow">APORTE</span><h2>Exportar para enviar</h2><p>Genera un ZIP que contiene únicamente lo que cargaste en este modo. No incluye ni modifica el catálogo oficial.</p><label><span>Tu nombre o identificador *</span><input id="contributorName" maxlength="120" placeholder="Ej.: Pedro"></label><label><span>Mensaje para quien revisa</span><textarea id="contributorNote" rows="3" maxlength="1000" placeholder="Ej.: precios vistos hoy en Instagram"></textarea></label><a id="downloadContribution" class="button primary disabled-link" href="#" aria-disabled="true">Exportar aporte ZIP</a></article>
+        <article class="transfer-card contributor-only" hidden><h2>Qué tenés que enviar</h2><p>Mandale a la persona que administra RivFree solamente el ZIP generado arriba. No necesitás GitHub ni pasarle toda la carpeta del proyecto.</p><pre>1. Cargar tiendas/productos
+2. Revisar el listado
+3. Exportar aporte ZIP
+4. Enviar ese ZIP</pre></article>
+        <article class="transfer-card contributor-only" hidden><h2>Empezar otro aporte</h2><p>Después de confirmar que te recibieron el ZIP, podés vaciar tu bandeja local para comenzar desde cero.</p><button id="resetContribution" class="button danger" type="button">Vaciar mi aporte local</button><p class="form-help">Esta acción no toca el catálogo oficial. Solo borra los elementos guardados por este cargador colaborador.</p></article>
+      </div>
+    </section>
+  </section>
+</main>
+<template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
+<script src="editor.js"></script>
+</body>
+</html>

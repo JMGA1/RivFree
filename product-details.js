@@ -12,13 +12,13 @@ function offerFavoriteControls(offer){
 function openProductPreview(data){
  const dialog=document.getElementById('productDialog'),content=document.getElementById('productPreviewContent');
  document.getElementById('productPreviewTitle').textContent=readableProductName(data.name);content.replaceChildren();
- const imageUrl=safeHttpUrl(data.offers.find(o=>safeHttpUrl(o.imagen))?.imagen);
+ const imageUrl=safeImageUrl(data.offers.find(o=>safeImageUrl(o.imagen))?.imagen);
  if(imageUrl){const img=document.createElement('img');img.className='product-preview-image';img.src=imageUrl;img.alt=data.name;img.onerror=()=>addImagePlaceholder(img.parentElement);content.append(img);}
  for(const offer of [...data.offers].sort(compareOfferPrices)){
   const row=document.createElement('div');row.className='preview-offer';
   const title=document.createElement('strong');title.textContent=offer.tienda;
   const price=document.createElement('p');price.textContent=hasPrice(offer)?priceLabel(offer.precio_usd):tr('No disponible');
-  row.append(title,price,offerFavoriteControls(offer));
+  row.append(title,price);appendSourceNotes(row,[offer],false);row.append(offerFavoriteControls(offer));
   const url=safeHttpUrl(offer.url);if(url){const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=tr(`Ver en ${offer.tienda} ↗`);row.append(link);}
   content.append(row);
  }

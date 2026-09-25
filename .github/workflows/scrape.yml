@@ -170,7 +170,11 @@ jobs:
           cp *.html *.css *.js manifest.webmanifest social-card.png _site/
           cp -r icons _site/icons
           mkdir -p _site/data
-          cp data/products.json data/meta.json data/stores.json data/exchange.json data/price-history.json data/highlights.json data/popular.json _site/data/
+          cp data/products.json data/meta.json data/stores.json data/manual-products.json data/manual-stores.json data/exchange.json data/price-history.json data/highlights.json data/popular.json _site/data/
+          if [ -d assets/manual ]; then
+            mkdir -p _site/assets
+            cp -r assets/manual _site/assets/manual
+          fi
 
       - name: Subir archivos de la página
         uses: actions/upload-pages-artifact@v4

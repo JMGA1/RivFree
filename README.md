@@ -26,3 +26,15 @@ inicio y el modo oscuro queda guardado para la próxima visita.
 
 
 
+
+
+## Catálogo manual
+
+Además de los scrapers, RivFree incluye un editor local para cargar free shops y publicaciones manuales sin que las actualizaciones automáticas las borren. En Windows se abre con `Abrir-editor-manual.bat`. Los datos viven en `data/manual-products.json` y `data/manual-stores.json` y se mezclan en el navegador con el catálogo automático. Ver `EDITOR-MANUAL.md`.
+
+## Editor manual y colaboraciones
+
+- `Abrir-editor-manual.bat`: administra el catálogo manual oficial y permite revisar/importar aportes externos.
+- `Abrir-colaborador.bat`: abre un cargador aislado para otra persona. Sus datos quedan en `.contributor-work/` y se exportan como `rivfree-aporte-*.zip`.
+- La pestaña **Colaboraciones** del editor principal permite revisar tiendas/productos, detectar posibles duplicados y seleccionar qué importar.
+- Ver `COLABORACIONES.md` para el flujo completo.

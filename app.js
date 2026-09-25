@@ -104,6 +104,9 @@ const translations = {
  'Política de Privacidad y Cookies':'Política de Privacidade e Cookies',
  'Gestionar preferencias de cookies':'Gerenciar preferências de cookies',
  'Volver arriba':'Voltar ao topo','Cambiar idioma':'Alterar idioma',
+ 'Visto en Instagram':'Visto no Instagram','Visto en Facebook':'Visto no Facebook',
+ 'Visto en WhatsApp':'Visto no WhatsApp','Visto en sitio web':'Visto no site',
+ 'Agregado manualmente':'Adicionado manualmente','Ver publicación ↗':'Ver publicação ↗',
 };
 function tr(value) {
  if(LANG==='es') return value;
@@ -147,6 +150,31 @@ function translateUI() {
 function storeKey(name) {
  const s=Catalog.norm(name);
  return s.includes('neutral')?'neutral':s.includes('barao')?'barao':s.includes('yury')?'yury':s.includes('dfa')?'dfa':s.includes('mantra')?'mantra':s.includes('sineriz')?'sineriz':s.includes('oprha')||s.includes('orpha')?'oprha':'other';
+}
+function validHexColor(value){return typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value.trim());}
+function contrastingText(hex){
+ if(!validHexColor(hex))return '#ffffff';
+ const [r,g,b]=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+ const luminance=(.299*r+.587*g+.114*b)/255;
+ return luminance>.64?'#171419':'#ffffff';
+}
+function applyStoreVisual(element,storeName){
+ const info=STORE_INFO[storeName]||{};
+ const color=validHexColor(info.color)?info.color:null;
+ if(!color)return;
+ element.style.setProperty('--store-bg',color);
+ element.style.setProperty('--store-border',color);
+ element.style.setProperty('--store-fg',validHexColor(info.color_texto)?info.color_texto:contrastingText(color));
+}
+async function loadStoreInfoFiles(){
+ const [baseRes,manualRes]=await Promise.all([
+  fetch('data/stores.json',{cache:'default'}).catch(()=>null),
+  fetch('data/manual-stores.json',{cache:'no-store'}).catch(()=>null)
+ ]);
+ let base={},manual={};
+ if(baseRes?.ok){try{const value=await baseRes.json();if(value&&!Array.isArray(value)&&typeof value==='object')base=value;}catch{}}
+ if(manualRes?.ok){try{const value=await manualRes.json();if(value?.tiendas&&!Array.isArray(value.tiendas)&&typeof value.tiendas==='object')manual=value.tiendas;}catch{}}
+ return {...base,...manual};
 }
 function announce(message) {
  const el=document.getElementById('actionStatus');el.textContent=message;el.hidden=false;
@@ -255,11 +283,11 @@ async function loadData() {
   document.getElementById('retryLoad').disabled=true;
   document.getElementById('loadError').hidden=true;
   try {
-    const [loaded, storesRes, ratesRes] = await Promise.all([
-      loadCatalog(), fetch('data/stores.json',{cache:'default'}).catch(()=>null), fetch('data/exchange.json',{cache:'default'}).catch(()=>null)
+    const [loaded, storeInfo, ratesRes] = await Promise.all([
+      loadCatalog(), loadStoreInfoFiles(), fetch('data/exchange.json',{cache:'default'}).catch(()=>null)
     ]);
     const {data,prepared,offline}=loaded;
-    if(storesRes?.ok) STORE_INFO=await storesRes.json();
+    STORE_INFO=storeInfo;
     if(ratesRes?.ok) {try {const bundled=await ratesRes.json();if(isRate(bundled)&&(!automaticExchange||bundled.actualizado>automaticExchange.actualizado))automaticExchange=bundled;} catch {}}
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
@@ -306,13 +334,14 @@ async function loadData() {
 }
 
 function populateFilters() {
-  const stores = [...new Set(ALL_PRODUCTS.map(p => p.tienda))].sort();
+  const stores = [...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p => p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b,LANG));
   const storesField = document.getElementById('storesField');
   storesField.replaceChildren();
   stores.forEach(store => {
     const label = document.createElement('label');
     label.className = 'chk store-filter-chip';
     label.dataset.store = storeKey(store);
+    applyStoreVisual(label,store);
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = store;
@@ -500,6 +529,7 @@ function createStoreTag(storeName) {
   const button = document.createElement('button');
   button.className = 'card-store';
   button.dataset.store = storeKey(storeName);
+  applyStoreVisual(button,storeName);
   button.type = 'button';
   const label=document.createElement('span');label.className='card-store-label';label.textContent=storeName;
   button.appendChild(label);
@@ -535,6 +565,32 @@ function readableProductName(value) {
     ? word : word[0]+word.slice(1).toLocaleLowerCase());
 }
 
+function sourcePresentation(offer){
+ const type=String(offer?.fuente_tipo||'').trim().toLowerCase();
+ if(!type||type==='manual')return null;
+ const labels={instagram:'Visto en Instagram',facebook:'Visto en Facebook',whatsapp:'Visto en WhatsApp',web:'Visto en sitio web',website:'Visto en sitio web',manual:'Agregado manualmente'};
+ const label=labels[type]||'Agregado manualmente';
+ const url=safeHttpUrl(offer.fuente_url)||(type!=='manual'?safeHttpUrl(offer.url):null);
+ return {type,label:tr(label),url};
+}
+function appendSourceNotes(container,offers,multiStore=false){
+ const seen=new Set(),notes=[];
+ for(const offer of offers){
+  const source=sourcePresentation(offer);if(!source)continue;
+  const key=`${source.type}|${offer.tienda}|${source.url||''}`;if(seen.has(key))continue;seen.add(key);notes.push({offer,source});
+ }
+ if(!notes.length)return;
+ const row=document.createElement('div');row.className='card-source-row';
+ for(const {offer,source} of notes.slice(0,3)){
+  const item=document.createElement(source.url?'a':'span');item.className=`source-chip source-${source.type}`;
+  item.textContent=source.label+(multiStore?` · ${offer.tienda}`:'');
+  if(source.url){item.href=source.url;item.target='_blank';item.rel='noopener noreferrer';item.dataset.action='source';}
+  row.appendChild(item);
+ }
+ if(notes.length>3){const more=document.createElement('span');more.className='source-chip source-more';more.textContent=`+${notes.length-3}`;row.appendChild(more);}
+ container.appendChild(row);
+}
+
 function createProductCard(group) {
   const offers = group.visibleOffers;
   const product = offers[0];
@@ -550,7 +606,7 @@ function createProductCard(group) {
   const imageBox = document.createElement('button');
   imageBox.className = 'card-img';
   const imageStage=document.createElement('span');imageStage.className='card-image-stage';
-  const imageUrl = safeHttpUrl(offers.find(offer => safeHttpUrl(offer.imagen))?.imagen || group.image);
+  const imageUrl = safeImageUrl(offers.find(offer => safeImageUrl(offer.imagen))?.imagen || group.image);
   if (imageUrl) {
     const img = document.createElement('img');
     img.src = imageUrl;
@@ -606,6 +662,7 @@ function createProductCard(group) {
   name.className = 'card-name';
   name.textContent = readableProductName(displayName);
   body.appendChild(name);
+  appendSourceNotes(body,offers,storeCount>1);
 
   const priceRow = document.createElement('div');
   priceRow.className = 'card-price-row';
@@ -642,7 +699,8 @@ function createProductCard(group) {
     link.href = productUrl;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
-    link.textContent = tr(`Ver en ${product.tienda} ↗`);
+    link.textContent = product.fuente_tipo==='instagram' && safeHttpUrl(product.fuente_url)===productUrl
+      ? tr('Ver publicación ↗') : tr(`Ver en ${product.tienda} ↗`);
     link.setAttribute('aria-label', `Ver ${product.nombre} en ${product.tienda}`);
     card.appendChild(link);
   }
@@ -665,6 +723,7 @@ function openComparison(name, offers) {
     const store = document.createElement('button');
     store.className = 'offer-store store-link-plain card-store';
     store.dataset.store = storeKey(offer.tienda);
+    applyStoreVisual(store,offer.tienda);
     store.type = 'button';
     store.textContent = offer.tienda;
     store.addEventListener('click', () => openStoreInfo(offer.tienda));
@@ -672,6 +731,7 @@ function openComparison(name, offers) {
     offerName.className = 'offer-name';
     offerName.textContent = offer.nombre;
     info.append(store, offerName);
+    appendSourceNotes(info,[offer],false);
 
     const price = document.createElement('div');
     price.className = 'offer-price';
@@ -752,8 +812,7 @@ async function openStoreDirectory(){
  directoryLoading=true;retry.hidden=true;status.textContent=words('Carregando lojas…','Cargando tiendas…');
  try{
   if(!Object.keys(STORE_INFO).length){
-   const response=await fetch('data/stores.json',{cache:'default'});if(!response.ok)throw new Error();
-   const data=await response.json();if(!data||Array.isArray(data)||typeof data!=='object'||!Object.keys(data).length)throw new Error();STORE_INFO=data;
+   STORE_INFO=await loadStoreInfoFiles();if(!Object.keys(STORE_INFO).length)throw new Error();
   }
   const names=[...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p=>p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b,LANG));
   list.replaceChildren();

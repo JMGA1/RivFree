@@ -1349,3 +1349,14 @@ dialog{overscroll-behavior:contain;}body:has(dialog[open]){overflow:hidden;}
 .topbar #searchButton{min-width:0;}
 @media(max-width:650px){#heroCampaign{height:480px;}.campaign-copy h2{font-size:32px;}}
 @media(max-width:360px){#heroCampaign{height:500px;}.campaign-copy h2{font-size:28px;}}
+
+/* Manual observations and publication sources */
+.card-source-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:-2px;}
+.source-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--paper-dim);color:var(--muted);font:700 10.5px/1.2 'Manrope',sans-serif;text-decoration:none;}
+a.source-chip:hover{color:var(--ink);border-color:color-mix(in srgb,var(--rf-red) 45%,var(--line));background:var(--accent-soft);}
+.source-instagram{border-color:rgba(193,53,132,.28);background:color-mix(in srgb,#c13584 8%,var(--surface));color:color-mix(in srgb,#c13584 78%,var(--ink));}
+.source-facebook{border-color:rgba(24,119,242,.25);background:color-mix(in srgb,#1877f2 7%,var(--surface));}
+.source-whatsapp{border-color:rgba(37,211,102,.25);background:color-mix(in srgb,#25d366 7%,var(--surface));}
+.source-more{min-width:30px;justify-content:center;}
+.preview-offer .card-source-row,.offer-row .card-source-row{margin-top:6px;}
+:root[data-theme="dark"] .source-instagram{background:rgba(193,53,132,.12);color:#f3a8d0;border-color:rgba(243,168,208,.25);}

@@ -19,39 +19,62 @@ async function fetchWithTimeout(url,options={}) {
  try {const response=await fetch(url,{...options,signal:controller.signal});if(!response.ok)throw new Error(`HTTP ${response.status}`);return await response.json();}
  finally {clearTimeout(timer);}
 }
-// Bump when matching, normalization, or the prepared catalog shape changes.
-const PREPARED_CATALOG_VERSION='20260924-1';
+async function fetchOptionalJson(url,fallback) {
+ try {return await fetchWithTimeout(url,{cache:'no-store'});} catch {return fallback;}
+}
+function validManualCatalog(value){return value&&Array.isArray(value.productos);}
+function manualVersion(value){return String(value?.version||value?.actualizado||'empty');}
+function combineCatalogData(scraped,manual){
+ if(typeof mergeCatalogData==='function')return mergeCatalogData(scraped,manual);
+ const base=scraped&&Array.isArray(scraped.productos)?scraped:{productos:[]};
+ const manualProducts=validManualCatalog(manual)?manual.productos.filter(p=>p&&p.activo!==false).map(p=>({...p,manual:true})):[];
+ return {...base,productos:[...(base.productos||[]),...manualProducts],manual_actualizado:manual?.actualizado||null};
+}
+// Bump when matching, normalization, manual-catalog merging, or the prepared shape changes.
+const PREPARED_CATALOG_VERSION='20260924-manual1';
 function validPrepared(value){
  return value && Array.isArray(value.products) && Array.isArray(value.groups) &&
   Array.isArray(value.words) && value.legacyKeys && typeof value.legacyKeys==='object';
 }
 async function loadCatalogLocally() {
  let cached;try {cached=await cachedCatalog();}catch{}
- let data,version,offline=false;
+ let scrapedData,scrapedVersion,offline=false;
+ const emptyManual={version:'empty',actualizado:null,productos:[]};
+ let manualData=await fetchOptionalJson('data/manual-products.json',null);
+ if(!validManualCatalog(manualData))manualData=validManualCatalog(cached?.manualData)?cached.manualData:emptyManual;
  try {
   const meta=await fetchWithTimeout('data/meta.json');
   if(typeof meta.version!=='string'||!meta.version)throw new Error('Invalid version');
-  version=meta.version;
-  if(cached && cached.version===version && Array.isArray(cached.data?.productos))data=cached.data;
+  scrapedVersion=meta.version;
+  if(cached && cached.scrapedVersion===scrapedVersion && Array.isArray(cached.scrapedData?.productos))scrapedData=cached.scrapedData;
+  else if(cached && !cached.scrapedVersion && cached.version===scrapedVersion && Array.isArray(cached.data?.productos))scrapedData=cached.data;
   else {
-   data=await fetchWithTimeout('data/products.json?v='+encodeURIComponent(version));
-   if(!Array.isArray(data.productos))throw new Error('Invalid catalog');
+   scrapedData=await fetchWithTimeout('data/products.json?v='+encodeURIComponent(scrapedVersion));
+   if(!Array.isArray(scrapedData.productos))throw new Error('Invalid catalog');
   }
  }catch(error){
-  if(cached && Array.isArray(cached.data?.productos)){data=cached.data;version=cached.version;offline=true;}
-  else {data=await fetchWithTimeout('data/products.json');if(!Array.isArray(data.productos))throw error;version=null;}
+  if(cached && Array.isArray(cached.scrapedData?.productos)){
+   scrapedData=cached.scrapedData;scrapedVersion=cached.scrapedVersion||cached.version||null;offline=true;
+  } else if(cached && Array.isArray(cached.data?.productos)){
+   scrapedData=cached.data;scrapedVersion=cached.version||null;offline=true;
+  } else {
+   scrapedData=await fetchWithTimeout('data/products.json');if(!Array.isArray(scrapedData.productos))throw error;scrapedVersion=null;
+  }
  }
- const reuse=data===cached?.data && cached.preparedVersion===PREPARED_CATALOG_VERSION && validPrepared(cached.prepared);
+ const data=combineCatalogData(scrapedData,manualData);
+ const version=`${scrapedVersion||'unversioned'}|manual:${manualVersion(manualData)}`;
+ const reuse=cached?.version===version && cached.preparedVersion===PREPARED_CATALOG_VERSION && validPrepared(cached.prepared);
  const prepared=reuse?cached.prepared:prepareCatalog(data);
- if(!reuse){try {await cachedCatalog({version,data,preparedVersion:PREPARED_CATALOG_VERSION,prepared});}catch{}}
- return {data:{actualizado:data.actualizado,resumen:data.resumen},prepared,offline};
+ if(!reuse){try {await cachedCatalog({version,scrapedVersion,scrapedData,manualData,data,preparedVersion:PREPARED_CATALOG_VERSION,prepared});}catch{}}
+ return {data:{actualizado:data.actualizado,resumen:data.resumen,manualActualizado:manualData.actualizado||null},prepared,offline};
 }
 async function loadCatalog() {
  if(typeof Worker==='undefined')return loadCatalogLocally();
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js?v=20260924-1');
+  const worker=new Worker('catalog-worker.js?v=20260924-manual1');
   const timer=setTimeout(()=>{worker.terminate();reject(new Error('Worker timeout'));},70000);
   worker.onmessage=({data})=>{clearTimeout(timer);worker.terminate();data.error?reject(new Error(data.error)):resolve(data);};
   worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');
  });}catch{return loadCatalogLocally();}
 }
+if(typeof module!=='undefined') module.exports={fetchWithTimeout,fetchOptionalJson,manualVersion,validManualCatalog};
