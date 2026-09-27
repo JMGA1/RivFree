@@ -21,3 +21,5 @@ data/sineriz.json
 data/yurys.json
 debug_barao_output.txt
 scrape.log
+
+_publish_source/

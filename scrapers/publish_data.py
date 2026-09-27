@@ -75,12 +75,15 @@ def publish(data_dir, output, attempted_stores=None):
             state['ultimo_intento'] = attempted_at
             state['error'] = row.get('error')
             if row.get('parcial'):
+                state['parciales_consecutivos'] = state.get('parciales_consecutivos', 0) + 1
                 state['ultimo_parcial'] = attempted_at
                 state['estado'] = 'parcial'
             elif row.get('error'):
+                state['parciales_consecutivos'] = 0
                 state['fallos_consecutivos'] = state['fallos_consecutivos'] + 1
                 state['estado'] = 'error'
             else:
+                state['parciales_consecutivos'] = 0
                 state['fallos_consecutivos'] = 0
                 state['ultimo_exito'] = attempted_at
                 state['estado'] = 'ok'

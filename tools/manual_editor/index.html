@@ -30,9 +30,10 @@ if ('caches' in window) caches.keys().then(keys=>Promise.all(keys.filter(k=>k.st
       <button class="tab" data-tab="products">Productos <span id="productCount">0</span></button>
       <button class="tab" data-tab="stores">Tiendas <span id="storeCount">0</span></button>
       <button class="tab owner-only" data-tab="collaborations">Colaboraciones <span id="collaborationCount">ZIP</span></button>
+      <button class="tab owner-only" data-tab="maintenance">Publicar / copias</button>
       <button class="tab" data-tab="transfer" id="transferTab"><span id="transferTabLabel">Importar / exportar</span></button>
     </nav>
-    <div class="help-card" id="helpCard"><strong id="helpTitle">Publicar en GitHub</strong><p id="helpText">Después de guardar, hacé <code>git add .</code>, commit y push. El scraper no borra estos datos manuales.</p></div>
+    <div class="help-card" id="helpCard"><strong id="helpTitle">Publicar en GitHub</strong><p id="helpText">Guardá y abrí Publicar / copias para revisar y publicar desde el Studio.</p></div>
   </aside>
 
   <section class="workspace">
@@ -124,7 +125,7 @@ if ('caches' in window) caches.keys().then(keys=>Promise.all(keys.filter(k=>k.st
           <div id="productList" class="item-list"></div>
         </div>
         <form id="productForm" class="editor-card" autocomplete="off">
-          <input id="productId" type="hidden">
+          <input id="productId" type="hidden"><p id="duplicateWarning" role="status" aria-live="polite"></p><details><summary>Historial de precios guardados</summary><div id="manualPriceHistory"></div></details>
           <div class="form-heading"><div><span class="eyebrow" id="productFormEyebrow">NUEVA PUBLICACIÓN</span><h2 id="productFormTitle">Agregar producto</h2></div><span id="productActiveBadge" class="badge good">Visible</span></div>
           <div class="grid2">
             <label class="wide"><span>Producto *</span><input id="productName" required maxlength="300" placeholder="Ej.: JBL Flip 6"></label>
@@ -203,17 +204,20 @@ if ('caches' in window) caches.keys().then(keys=>Promise.all(keys.filter(k=>k.st
       </div>
     </section>
 
+    <section class="panel" data-panel="maintenance">
+      <div class="panel-heading"><h1>Publicar y recuperar</h1></div>
+      <div class="transfer-grid">
+        <article class="transfer-card"><h2>Publicar cambios guardados</h2><p>Guardar modifica tu computadora. Publicar envía los cambios a GitHub; la web se actualiza cuando termina Actions. Revisá ambos idiomas del subtítulo.</p><label><input id="publishIncludeUpdate" type="checkbox"> Incluir esta actualización del Studio y del workflow (primera instalación)</label><button id="reviewPublish" class="button">Revisar publicación</button><pre id="publishReview" tabindex="0" aria-label="Resumen de publicación"></pre><label><span>Mensaje del commit</span><input id="publishMessage" value="Actualizar RivFree desde Studio" maxlength="200"></label><button id="confirmPublish" class="button primary" hidden>Confirmar y publicar</button><pre id="publishOutput" role="status" aria-live="polite"></pre></article>
+        <article class="transfer-card"><h2>Copias de los últimos guardados</h2><p>Restaura datos locales. Antes de restaurar se guarda otra copia. Publicá después para actualizar la web.</p><button id="listBackups" class="button">Ver copias</button><div id="backupList"></div></article>
+      </div>
+    </section>
     <section class="panel" data-panel="transfer">
       <div class="panel-heading"><div><span class="eyebrow">DATOS MANUALES</span><h1>Importar, respaldar y publicar</h1><p>Los archivos manuales están separados de los scrapers, por lo que una actualización automática no los reemplaza.</p></div></div>
       <div class="transfer-grid">
         <article class="transfer-card owner-only"><h2>Exportar respaldo</h2><p>Descarga todas las tiendas y publicaciones manuales en un único JSON que después podés volver a importar.</p><a id="downloadJson" class="button" href="#">Descargar JSON</a></article>
         <article class="transfer-card featured owner-only"><h2>Paquete listo para GitHub</h2><p>Incluye catálogo manual, configuración de RivFree Studio, carrusel e imágenes de <code>assets/manual/</code>.</p><a id="downloadZip" class="button primary" href="#">Descargar ZIP para GitHub</a></article>
         <article class="transfer-card owner-only"><h2>Importar JSON o CSV</h2><p>JSON acepta respaldos del editor. CSV importa productos con encabezados como <code>tienda,nombre,precio_usd,categoria,fuente_tipo,fuente_url</code>.</p><input id="importFile" type="file" accept=".json,.csv,application/json,text/csv"><div class="inline"><select id="importMode"><option value="merge">Combinar con lo existente</option><option value="replace">Reemplazar datos manuales</option></select><button id="importButton" class="button" type="button">Importar</button></div></article>
-        <article class="transfer-card owner-only"><h2>Después de editar</h2><pre>git status
-git add .
-git commit -m "Actualizar catalogo manual"
-git pull --rebase origin main
-git push origin main</pre><p>Al subir los archivos a GitHub Pages, RivFree los mezcla automáticamente con el catálogo obtenido por los scrapers.</p></article>
+        <article class="transfer-card owner-only"><h2>Imágenes sin usar</h2><p>Protege imágenes de productos, diseño, carrusel y copias de seguridad.</p><button id="scanOrphans" class="button">Buscar imágenes sin usar</button><div id="orphanList"></div><button id="deleteOrphans" class="button danger" hidden>Eliminar imágenes listadas</button></article>
         <article class="transfer-card contributor-only featured" hidden><span class="eyebrow">APORTE</span><h2>Exportar para enviar</h2><p>Genera un ZIP que contiene únicamente lo que cargaste en este modo. No incluye ni modifica el catálogo oficial.</p><label><span>Tu nombre o identificador *</span><input id="contributorName" maxlength="120" placeholder="Ej.: Pedro"></label><label><span>Mensaje para quien revisa</span><textarea id="contributorNote" rows="3" maxlength="1000" placeholder="Ej.: precios vistos hoy en Instagram"></textarea></label><a id="downloadContribution" class="button primary disabled-link" href="#" aria-disabled="true">Exportar aporte ZIP</a></article>
         <article class="transfer-card contributor-only" hidden><h2>Qué tenés que enviar</h2><p>Mandale a la persona que administra RivFree solamente el ZIP generado arriba. No necesitás GitHub ni pasarle toda la carpeta del proyecto.</p><pre>1. Cargar tiendas/productos
 2. Revisar el listado
@@ -227,5 +231,7 @@ git push origin main</pre><p>Al subir los archivos a GitHub Pages, RivFree los m
 <template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
 <script src="editor.js?v=20260927-studio-custom3"></script>
 <script src="studio-editor.js?v=20260927-studio-custom3"></script>
+<script src="../../matching.js"></script>
+<script src="maintenance.js?v=20260927-maintenance1"></script>
 </body>
 </html>

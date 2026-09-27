@@ -55,6 +55,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
 
       - name: Preparar Python
         uses: actions/setup-python@v5
@@ -84,6 +85,7 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Ejecutar scrapers
+        id: scrape
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true)
         timeout-minutes: 150
         shell: bash
@@ -96,6 +98,23 @@ jobs:
             echo "Actualizando todas las tiendas"
             python scrapers/run_all.py 2>&1 | tee scrape.log
           fi
+
+      - name: Notificar salud por webhook o email
+        if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.actualizar_precios == true))
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          ALERT_EMAIL_FROM: ${{ secrets.ALERT_EMAIL_FROM }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          HEALTH_FAILURE_THRESHOLD: ${{ vars.HEALTH_FAILURE_THRESHOLD }}
+          HEALTH_PARTIAL_THRESHOLD: ${{ vars.HEALTH_PARTIAL_THRESHOLD }}
+          SCRAPE_OUTCOME: ${{ steps.scrape.outcome }}
+        run: python tools/scraper_health_alerts.py
 
       # Se ejecuta incluso si el paso de scraping falla o alcanza su timeout.
       # Los JSON individuales que ya terminaron y el log quedan descargables.
@@ -174,15 +193,24 @@ jobs:
 
       - name: Preparar archivos públicos
         run: |
-          mkdir -p _site
-          cp *.html *.css *.js manifest.webmanifest social-card.png robots.txt sitemap.xml _site/
-          cp -r icons _site/icons
-          mkdir -p _site/data
-          cp data/products.json data/meta.json data/stores.json data/manual-products.json data/manual-stores.json data/exchange.json data/price-history.json data/highlights.json data/popular.json data/site-config.json _site/data/
-          if [ -d data/products ]; then cp -r data/products _site/data/products; fi
+          # Un job en cola o un scrape largo puede haber comenzado antes de
+          # la última edición del Studio. Empaquetar siempre main actual.
+          git fetch origin main
+          mkdir -p _publish_source
+          git archive origin/main | tar -x -C _publish_source
+          cd _publish_source
+          python scrapers/publish_data.py
+          python scrapers/update_exchange.py
+          mkdir -p ../_site
+          # Rutas relativas al checkout fresco, destino fuera del árbol fuente.
+          cp *.html *.css *.js manifest.webmanifest social-card.png robots.txt sitemap.xml ../_site/
+          cp -r icons ../_site/icons
+          mkdir -p ../_site/data
+          cp data/products.json data/meta.json data/stores.json data/manual-products.json data/manual-stores.json data/exchange.json data/price-history.json data/highlights.json data/popular.json data/site-config.json ../_site/data/
+          if [ -d data/products ]; then cp -r data/products ../_site/data/products; fi
           if [ -d assets/manual ]; then
-            mkdir -p _site/assets
-            cp -r assets/manual _site/assets/manual
+            mkdir -p ../_site/assets
+            cp -r assets/manual ../_site/assets/manual
           fi
 
       - name: Subir archivos de la página

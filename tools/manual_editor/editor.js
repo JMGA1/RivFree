@@ -126,7 +126,7 @@
       $('projectDescription').textContent = 'Los cambios se guardan directamente en los archivos del repositorio.';
       $('transferTabLabel').textContent = 'Importar / exportar';
       $('helpTitle').textContent = 'Publicar en GitHub';
-      $('helpText').innerHTML = 'Después de guardar, hacé <code>git add .</code>, commit y push. El scraper no borra estos datos manuales.';
+      $('helpText').innerHTML = 'Guardá tus cambios y abrí Publicar / copias para revisar y publicar desde el Studio.';
       $('openSite').hidden = false;
     }
   }
@@ -178,7 +178,7 @@
     products:['Productos','Usá filtros y selección múltiple para administrar el catálogo manual.'],
     stores:['Tiendas','Las tiendas manuales se mezclan con las automáticas sin modificar data/stores.json.'],
     collaborations:['Colaboraciones','Revisá, buscá y seleccioná aportes antes de incorporarlos. Nada entra automáticamente.'],
-    transfer:['Publicar / respaldar','Exportá respaldos o, después de guardar, publicá con git add, commit y push.']
+    transfer:['Publicar / respaldar','Exportá respaldos o usá Publicar / copias para publicar los cambios guardados.']
   };
   function updateContextHelp(name) {
     if(state.mode==='contributor') return; const help=HELP_BY_TAB[name]||HELP_BY_TAB.transfer;
@@ -193,7 +193,7 @@
 
   window.RivFreeEditor = {
     api, load, applyState, notify, switchTab, setDirty, setExternalDirty, confirmDialog, setFieldError, clearFieldErrors,
-    getState:()=>state, getToken:()=>token, ready, build:BUILD
+    hasUnsaved:()=>dirty || externalDirty, getState:()=>state, getToken:()=>token, ready, build:BUILD
   };
 
   document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.tab)));

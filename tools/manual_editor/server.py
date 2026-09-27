@@ -2,11 +2,17 @@
 """Local-only editor for RivFree manual stores and products.
 
 The server binds to 127.0.0.1 and requires a per-run token for every write/API
-request. It never needs third-party Python packages.
+request. Pillow optimizes uploaded images.
 """
 from __future__ import annotations
 
 import argparse
+import sys
+import math
+try:
+    from . import maintenance
+except ImportError:
+    import maintenance
 import base64
 import hashlib
 import io
@@ -82,6 +88,23 @@ def read_json(path: Path, default):
 
 
 def atomic_write_json(path: Path, value) -> None:
+    if path == active_products_path() and isinstance(value, dict):
+        previous = {p.get('id'): p for p in read_json(path, {}).get('productos', [])}
+        for product in value.get('productos', []):
+            old = previous.get(product.get('id'), {})
+            history = list(old.get('historial_precios', []))
+            if not old:
+                for entry in product.get('historial_precios', []):
+                    if isinstance(entry, dict) and isinstance(entry.get('fecha'), str):
+                        try: price_entry = number_or_none(entry.get('precio_usd'), 'Precio histórico')
+                        except ValueError: continue
+                        history.append({'fecha': entry['fecha'], 'precio_usd': price_entry})
+            if not history and old:
+                history.append({'fecha': old.get('actualizado_manual') or now_iso(), 'precio_usd': old.get('precio_usd')})
+            price = product.get('precio_usd')
+            if not history or history[-1].get('precio_usd') != price:
+                history.append({'fecha': now_iso(), 'precio_usd': price})
+            product['historial_precios'] = history
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -184,7 +207,7 @@ def number_or_none(value, field_name: str):
         number = float(value)
     except (TypeError, ValueError):
         raise ValueError(f"{field_name} debe ser un número")
-    if number < 0 or number > 1_000_000:
+    if not math.isfinite(number) or number < 0 or number > 1_000_000:
         raise ValueError(f"{field_name} fuera de rango")
     return round(number, 2)
 
@@ -439,6 +462,7 @@ def normalize_product(payload: dict, existing: dict | None = None, known_stores:
         "activo": bool(payload.get("activo", True)),
         "manual": True,
         "precio_fuente": "manual",
+        "historial_precios": current.get("historial_precios", payload.get("historial_precios", [])) if isinstance(current.get("historial_precios", payload.get("historial_precios", [])), list) else [],
         "creado": created,
         "actualizado_manual": now_iso(),
     }
@@ -620,14 +644,36 @@ def upload_image(payload: dict) -> dict:
         raise ValueError("La imagen no se pudo decodificar") from exc
     if not content or len(content) > MAX_IMAGE_BYTES:
         raise ValueError("La imagen debe pesar menos de 6 MB")
-    digest = hashlib.sha256(content).hexdigest()[:16]
-    safe_name = re.sub(r"[^A-Za-z0-9._-]+", "-", Path(filename).stem).strip("-._")[:50] or "imagen"
-    asset_dir = active_asset_dir()
-    target = asset_dir / f"{safe_name}-{digest}{suffix}"
-    asset_dir.mkdir(parents=True, exist_ok=True)
-    if not target.exists():
-        target.write_bytes(content)
-    return {"path": target.relative_to(PROJECT_ROOT).as_posix()}
+    try:
+        from PIL import Image, ImageOps, UnidentifiedImageError
+    except ImportError:
+        raise ValueError('Falta Pillow. Ejecutá: python -m pip install -r tools/manual_editor/requirements.txt')
+    try:
+        with Image.open(io.BytesIO(content)) as source:
+            if source.width * source.height > 25_000_000:
+                raise ValueError('La imagen supera 25 megapíxeles')
+            if getattr(source, 'is_animated', False):
+                raise ValueError('Usá una imagen estática; no se convierten animaciones')
+            source.load()
+            image = ImageOps.exif_transpose(source).convert('RGBA' if 'A' in source.getbands() or 'transparency' in source.info else 'RGB')
+            image.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+            full = io.BytesIO(); image.save(full, format='WEBP', quality=82, method=6)
+            image.thumbnail((360, 360), Image.Resampling.LANCZOS)
+            thumb = io.BytesIO(); image.save(thumb, format='WEBP', quality=78, method=6)
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise ValueError('El archivo no es una imagen válida o es demasiado grande') from exc
+    optimized = full.getvalue()
+    digest = hashlib.sha256(optimized).hexdigest()[:16]
+    safe_name = re.sub(r'[^A-Za-z0-9._-]+', '-', Path(filename).stem).strip('-._')[:50] or 'imagen'
+    with LOCK:
+        asset_dir = active_asset_dir(); asset_dir.mkdir(parents=True, exist_ok=True)
+        target = asset_dir / f'{safe_name}-{digest}.webp'
+        thumbnail = asset_dir / f'{safe_name}-{digest}-thumb.webp'
+        for path, raw in [(target, optimized), (thumbnail, thumb.getvalue())]:
+            temporary = path.with_suffix('.tmp'); temporary.write_bytes(raw); temporary.replace(path)
+    return {'path': target.relative_to(PROJECT_ROOT).as_posix(),
+            'thumbnail': thumbnail.relative_to(PROJECT_ROOT).as_posix(),
+            'original_bytes': len(content), 'bytes': len(optimized)}
 
 
 def normalize_import_store(name: str, info: dict) -> tuple[str, dict]:
@@ -643,6 +689,7 @@ def import_data(payload: dict) -> dict:
     with LOCK:
         check_revision(payload)
         mode = text(payload.get("mode") or "merge", 20)
+        if mode not in {"merge", "replace"}: raise ValueError("Modo de importación inválido")
         incoming = payload.get("data") or {}
         if isinstance(incoming, list):
             incoming = {"products": incoming}
@@ -1123,6 +1170,9 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             payload = self._body()
             actions = {
+                "/api/manual/publish": lambda p: maintenance.publish(sys.modules[__name__], p),
+                "/api/manual/backups": lambda p: maintenance.backups(sys.modules[__name__], p),
+                "/api/manual/orphans": lambda p: maintenance.orphans(sys.modules[__name__], p),
                 "/api/manual/save-store": save_store,
                 "/api/manual/delete-store": delete_store,
                 "/api/manual/save-product": save_product,

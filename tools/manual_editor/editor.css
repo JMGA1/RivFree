@@ -164,3 +164,10 @@ button:focus-visible{outline:3px solid #227bba;outline-offset:3px}
 .campaign-settings-mini{grid-template-columns:repeat(2,minmax(0,1fr))}.campaign-settings-mini label:last-child{grid-column:auto}.campaign-list-item{transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}.campaign-list-item.selected{box-shadow:inset 4px 0 var(--red),0 5px 18px rgba(18,36,59,.07)}
 #campaignEditStatus{margin:5px 0 0;max-width:520px}.panel-heading-actions .button{white-space:nowrap}
 @media(max-width:760px){.editing-context-bar{align-items:stretch;flex-direction:column}.editing-context-controls{width:100%;min-width:0}.editing-context-controls label{min-width:0;flex:1}.campaign-color-panel{grid-template-columns:1fr}}
+/* Maintenance review stays readable on narrow screens. */
+#publishReview,#publishOutput{white-space:pre-wrap;overflow-wrap:anywhere;max-height:26rem;overflow:auto}
+#backupList{max-height:30rem;overflow:auto}
+#orphanList{max-height:18rem;overflow:auto;overflow-wrap:anywhere}
+#duplicateWarning:not(:empty){padding:12px;border:2px solid #bd8118;border-radius:8px}
+[data-preset].selected::after{content:' ✓ Activa';font-weight:700}
+:focus-visible{outline:3px solid #268bd2;outline-offset:3px}

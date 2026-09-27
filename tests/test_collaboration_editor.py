@@ -47,7 +47,9 @@ class CollaborationEditorTests(unittest.TestCase):
         server.EDITOR_MODE = 'contributor'
         server.ensure_files()
         state = server.save_store({'store': {'nombre':'Loja Colab','color':'#112233'}})
-        image = base64.b64encode(b'fake-image-content').decode('ascii')
+        from PIL import Image
+        buffer = BytesIO(); Image.new('RGB', (8, 8), 'red').save(buffer, 'PNG')
+        image = base64.b64encode(buffer.getvalue()).decode('ascii')
         uploaded = server.upload_image({'filename':'producto.png','data':image})
         state = server.save_product({'revision':state['revision'],'product':{
             'tienda':'Loja Colab','nombre':'Producto Instagram','precio_usd':19.9,
