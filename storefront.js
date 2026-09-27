@@ -98,28 +98,63 @@ function shortCampaignName(name,max=48){
 }
 function pricedOffers(group){return (group?.offers||[]).filter(hasPrice);}
 function uniqueStores(group){return new Set((group?.offers||[]).map(o=>o.tienda).filter(Boolean)).size;}
+// Build once per catalog, yielding between small batches on mobile.
+let campaignCatalog=null,campaignIndex=null,campaignBuild=0;
+function getCampaignIndex(){
+ if(campaignCatalog===PRODUCT_GROUPS)return campaignIndex;
+ campaignCatalog=PRODUCT_GROUPS;campaignIndex=null;smartCampaignCache.clear();campaignImageCache.clear();
+ const ticket=++campaignBuild,groups=PRODUCT_GROUPS;
+ const index={priced:[],compare:[],multistore:[],offers:[],counts:new Map(),images:new Map(),byKey:new Map()};
+ let cursor=0;
+ function batch(){
+  if(ticket!==campaignBuild)return;
+  const end=Math.min(cursor+300,groups.length);
+  for(;cursor<end;cursor++){
+   const g=groups[cursor],offers=pricedOffers(g);index.byKey.set(g.key,g);
+   for(const o of g.offers||[]){if(o.imagen&&campaignURL(o.imagen)){
+    const images=index.images.get(o.categoryId)||[];
+    if(images.length<24)images.push({src:o.imagen,alt:o.nombre||g.name});
+    index.images.set(o.categoryId,images);
+   }}
+   if(!offers.length)continue;
+   index.priced.push(g);const category=g.offers[0]?.categoryId;
+   if(category)index.counts.set(category,(index.counts.get(category)||0)+1);
+   if(offers.some(o=>o.en_oferta))index.offers.push(g);
+   const stores=new Set(offers.map(o=>o.tienda)).size;
+   if(stores>=2){const prices=offers.map(o=>o.precio_usd);index.compare.push({g,stores,spread:Math.max(...prices)-Math.min(...prices)});}
+   const allStores=uniqueStores(g);if(allStores>=2)index.multistore.push({g,stores:allStores});
+  }
+  if(cursor<groups.length){setTimeout(batch,0);return;}
+  index.compare.sort((a,b)=>b.spread-a.spread);index.compare.length=Math.min(30,index.compare.length);
+  index.multistore.sort((a,b)=>b.stores-a.stores);index.multistore.length=Math.min(40,index.multistore.length);
+  campaignIndex=index;
+  if(groups.length>300&&!document.hidden)renderCampaigns();
+ }
+ batch();return campaignIndex;
+}
 function resolveSmartCampaign(base){
  if(!base?.smartType||typeof PRODUCT_GROUPS==='undefined'||!PRODUCT_GROUPS.length)return base;
+ const index=getCampaignIndex();if(!index)return base;
  if(smartCampaignCache.has(base.id))return smartCampaignCache.get(base.id);
- const pricedGroups=PRODUCT_GROUPS.filter(g=>pricedOffers(g).length);
+ const pricedGroups=index.priced;
  let resolved={...base,smartResolved:true};
  if(base.smartType==='compare'){
-  const candidates=pricedGroups.map(g=>{const offers=pricedOffers(g),stores=new Set(offers.map(o=>o.tienda)).size;if(stores<2)return null;const prices=offers.map(o=>o.precio_usd);return {g,stores,spread:Math.max(...prices)-Math.min(...prices)};}).filter(Boolean).sort((a,b)=>b.spread-a.spread).slice(0,30);
-  const picked=shuffled(candidates)[0];
+  const candidates=index.compare;
+  const picked=candidates[Math.floor(Math.random()*candidates.length)];
   if(picked){const name=shortCampaignName(picked.g.name);resolved={...resolved,title:{es:`Compará ${name}`, 'pt-BR':`Compare ${name}`},description:{es:`Encontramos precios distintos en ${picked.stores} tiendas. Miralos lado a lado antes de elegir.`, 'pt-BR':`Encontramos preços diferentes em ${picked.stores} lojas. Compare lado a lado antes de escolher.`},cta:{es:'Comparar precios','pt-BR':'Comparar preços'},category:picked.g.offers[0]?.categoryId||base.category,action:'compare',groupKey:picked.g.key};}
  }
  if(base.smartType==='multistore'){
-  const candidates=pricedGroups.map(g=>({g,stores:uniqueStores(g)})).filter(x=>x.stores>=2).sort((a,b)=>b.stores-a.stores).slice(0,40);
-  const picked=shuffled(candidates)[0];
+  const candidates=index.multistore;
+  const picked=candidates[Math.floor(Math.random()*candidates.length)];
   if(picked){const name=shortCampaignName(picked.g.name);resolved={...resolved,title:{es:`${name}, en ${picked.stores} tiendas`,'pt-BR':`${name}, em ${picked.stores} lojas`},description:{es:'Varias publicaciones del mismo producto para comparar sin abrir tienda por tienda.','pt-BR':'Vários anúncios do mesmo produto para comparar sem abrir loja por loja.'},cta:{es:'Ver comparación','pt-BR':'Ver comparação'},category:picked.g.offers[0]?.categoryId||base.category,action:'compare',groupKey:picked.g.key};}
  }
  if(base.smartType==='offer'){
-  const candidates=pricedGroups.filter(g=>g.offers.some(o=>o.en_oferta&&hasPrice(o)));
-  const picked=shuffled(candidates)[0];
+  const candidates=index.offers;
+  const picked=candidates[Math.floor(Math.random()*candidates.length)];
   if(picked){const category=picked.offers.find(o=>o.en_oferta)?.categoryId||picked.offers[0]?.categoryId||base.category;resolved={...resolved,title:{es:`Ofertas para mirar en ${campaignCategoryLabel(category,'es')}`,'pt-BR':`Ofertas para conferir em ${campaignCategoryLabel(category,'pt-BR')}`},description:{es:'Hay publicaciones marcadas como oferta en el catálogo actual. Compará precio y disponibilidad antes de comprar.','pt-BR':'Há anúncios marcados como oferta no catálogo atual. Compare preço e disponibilidade antes de comprar.'},cta:{es:'Ver ofertas','pt-BR':'Ver ofertas'},category,action:'offers',groupKey:picked.key};}
  }
  if(base.smartType==='category'){
-  const counts=new Map();for(const g of pricedGroups){const category=g.offers[0]?.categoryId;if(category)counts.set(category,(counts.get(category)||0)+1);}
+  const counts=index.counts;
   const top=[...counts].sort((a,b)=>b[1]-a[1]).slice(0,5);const picked=shuffled(top)[0];
   if(picked){const [category,count]=picked;resolved={...resolved,title:{es:`Mucho para descubrir en ${campaignCategoryLabel(category,'es')}`,'pt-BR':`Muito para descobrir em ${campaignCategoryLabel(category,'pt-BR')}`},description:{es:`Esta categoría reúne ${count.toLocaleString('es-UY')} productos agrupados para explorar y comparar.`, 'pt-BR':`Esta categoria reúne ${count.toLocaleString('pt-BR')} produtos agrupados para explorar e comparar.`},cta:{es:'Explorar categoría','pt-BR':'Explorar categoria'},category,action:'category'};}
  }
@@ -130,10 +165,10 @@ function campaignVisualItems(c){
  if(campaignImageCache.has(c.id))return campaignImageCache.get(c.id);
  let dynamic=[];
  if(typeof PRODUCT_GROUPS!=='undefined'&&PRODUCT_GROUPS.length){
-  const groups=c.groupKey?PRODUCT_GROUPS.filter(g=>g.key===c.groupKey):PRODUCT_GROUPS.filter(g=>g.offers?.some(o=>o.categoryId===c.category));
-  const candidates=[];
-  for(const g of shuffled(groups).slice(0,80))for(const o of shuffled(g.offers||[])){if(o.imagen&&campaignURL(o.imagen)){candidates.push({src:o.imagen,alt:o.nombre||g.name});break;}}
-  if(candidates.length)dynamic=[shuffled(candidates)[0]];
+  const index=getCampaignIndex();
+  const group=index?.byKey.get(c.groupKey);
+  const candidates=group?(group.offers||[]).filter(o=>o.imagen&&campaignURL(o.imagen)).map(o=>({src:o.imagen,alt:o.nombre||group.name})):(index?.images.get(c.category)||[]);
+  if(candidates.length)dynamic=[candidates[Math.floor(Math.random()*candidates.length)]];
  }
  if(dynamic.length){campaignImageCache.set(c.id,dynamic);return dynamic;}
  return Array.isArray(c.images)?c.images:[];
@@ -181,13 +216,13 @@ function renderCampaign(slot,automatic=false){
  copy.append(cta);
  const visual=document.createElement('div');visual.className='campaign-visual';
  if(c.image){
-  const src=campaignURL(c.image);if(src){const image=document.createElement('img');image.src=src;image.alt=localized(c.imageAlt)||'';image.className='campaign-custom-image';image.onerror=()=>image.remove();
+  const src=campaignURL(c.image);if(src){const image=document.createElement('img');image.src=src;image.alt=localized(c.imageAlt)||'';image.className='campaign-custom-image';image.decoding='async';image.fetchPriority=automatic?'low':'auto';image.onerror=()=>image.remove();
    const mobile=campaignURL(c.mobileImage);
    if(mobile){const picture=document.createElement('picture'),source=document.createElement('source');source.media='(max-width: 650px)';source.srcset=mobile;picture.append(source,image);visual.append(picture);}else visual.append(image);}
  }else{
   for(const item of campaignVisualItems(c).slice(0,3)){
    const src=campaignURL(item.src);if(!src)continue;
-   const pedestal=document.createElement('div');pedestal.className='product-pedestal';const image=document.createElement('img');image.src=src;image.alt=localized(item.alt)||'';image.decoding='async';image.width=256;image.height=256;image.fetchPriority='high';image.onerror=()=>{image.remove();pedestal.textContent='RivFree';};pedestal.append(image);visual.append(pedestal);
+   const pedestal=document.createElement('div');pedestal.className='product-pedestal';const image=document.createElement('img');image.src=src;image.alt=localized(item.alt)||'';image.decoding='async';image.width=256;image.height=256;image.fetchPriority=automatic?'low':'auto';image.onerror=()=>{image.remove();pedestal.textContent='RivFree';};pedestal.append(image);visual.append(pedestal);
   }
  }
  const label=document.createElement('span');label.className='campaign-label';label.textContent=c.sponsored?words('Publicidade','Publicidad'):c.smartResolved?words('Destaque do catálogo','Destacado del catálogo'):words('Seleção RivFree','Selección RivFree');
@@ -204,7 +239,7 @@ function renderCampaign(slot,automatic=false){
  if(items.length>1){const pause=document.createElement('button');pause.type='button';pause.className='campaign-pause autoplay-toggle';pause.dataset.control='pause';updateAutoplayButton(pause,root.id);pause.onclick=()=>{toggleAutoplay(root.id);updateAutoplayButton(pause,root.id);};root.append(pause);}
  const status=document.createElement('span');status.className='visually-hidden';status.setAttribute('aria-live',automatic?'off':'polite');status.textContent=`${index+1} / ${items.length} · ${localized(c.title)}`;root.append(status);
  root.onkeydown=event=>{if(!['ArrowLeft','ArrowRight'].includes(event.key)||items.length<2)return;event.preventDefault();campaignPositions[slot]=(index+(event.key==='ArrowLeft'?-1:1)+items.length)%items.length;renderCampaign(slot);};
- let touchStart=null;root.ontouchstart=event=>{touchStart=event.changedTouches[0]?.clientX;};root.ontouchend=event=>{const end=event.changedTouches[0]?.clientX;if(touchStart===null||!Number.isFinite(end)||Math.abs(end-touchStart)<55)return;campaignPositions[slot]=(index+(end<touchStart?1:-1)+items.length)%items.length;renderCampaign(slot);};
+ let touchStart=null;root.ontouchstart=event=>{const t=event.changedTouches[0];touchStart=t?{x:t.clientX,y:t.clientY}:null;};root.ontouchend=event=>{const t=event.changedTouches[0],start=touchStart;touchStart=null;if(!start||!t||Math.abs(t.clientX-start.x)<55||Math.abs(t.clientY-start.y)>=Math.abs(t.clientX-start.x))return;campaignPositions[slot]=(index+(t.clientX<start.x?1:-1)+items.length)%items.length;renderCampaign(slot);};
  if(activeControl)[...root.querySelectorAll('[data-control]')].find(el=>el.dataset.control===activeControl)?.focus({preventScroll:true});
 }
 function recordProductConsult(key){
@@ -250,21 +285,81 @@ document.querySelectorAll('[data-category-shortcut],#navOffers').forEach(b=>b.di
 document.getElementById('headerShoppingList').onclick=()=>document.getElementById('openShoppingList').click();
 document.getElementById('navOffers').onclick=()=>{selectCampaignCategory('');document.getElementById('soloOfertas').checked=true;render(true);};
 
-let discoveryCatalog=null,discoveryKeys=[];
-function renderDiscoverProducts(shuffle=false){
- const grid=document.getElementById('discoverGrid');if(!grid||typeof PRODUCT_GROUPS==='undefined')return;
- if(shuffle||discoveryCatalog!==PRODUCT_GROUPS){
-  const eligible=PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice));
-  // Partial Fisher–Yates: five distinct products, stable until refresh or shuffle.
-  for(let i=0;i<Math.min(5,eligible.length);i++){const j=i+Math.floor(Math.random()*(eligible.length-i));[eligible[i],eligible[j]]=[eligible[j],eligible[i]];}
-  discoveryKeys=eligible.slice(0,5).map(g=>g.key);discoveryCatalog=PRODUCT_GROUPS;
+let discoveryCatalog=null,discoveryKeys=[],discoveryPool=[],discoveryStart=0,discoveryEnd=0;
+const DISCOVERY_BATCH=5,DISCOVERY_WINDOW=30;
+function generateDiscovery(){
+ const end=Math.min(discoveryKeys.length+DISCOVERY_BATCH,discoveryPool.length);
+ for(let i=discoveryKeys.length;i<end;i++){
+  const j=i+Math.floor(Math.random()*(discoveryPool.length-i));
+  [discoveryPool[i],discoveryPool[j]]=[discoveryPool[j],discoveryPool[i]];
+  discoveryKeys.push(discoveryPool[i].key);
  }
- if(renderDiscoverProducts.catalog!==PRODUCT_GROUPS){renderDiscoverProducts.catalog=PRODUCT_GROUPS;renderDiscoverProducts.byKey=new Map(PRODUCT_GROUPS.map(g=>[g.key,g]));}
- const byKey=renderDiscoverProducts.byKey;
- const chosen=discoveryKeys.map(key=>byKey.get(key)).filter(Boolean),left=shuffle?0:grid.scrollLeft;
- grid.replaceChildren(...chosen.map(g=>createProductCard({...g,visibleOffers:g.offers})));grid.scrollLeft=left;
- document.getElementById('discoverPrevious').disabled=chosen.length<2;document.getElementById('discoverNext').disabled=chosen.length<2;
 }
+function updateDiscoveryArrows(){
+ const grid=document.getElementById('discoverGrid');
+ document.getElementById('discoverPrevious').disabled=discoveryStart===0&&grid.scrollLeft<=2;
+ document.getElementById('discoverNext').disabled=discoveryEnd>=discoveryPool.length&&grid.scrollLeft>=grid.scrollWidth-grid.clientWidth-2;
+}
+function discoveryCards(from,to){return discoveryKeys.slice(from,to).map(key=>{
+ const g=renderDiscoverProducts.byKey.get(key);return createProductCard({...g,visibleOffers:g.offers});
+});}
+function renderDiscoverProducts(){
+ const grid=document.getElementById('discoverGrid');if(!grid||typeof PRODUCT_GROUPS==='undefined')return;
+ if(discoveryCatalog!==PRODUCT_GROUPS){
+  discoveryPool=PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice));discoveryKeys=[];discoveryStart=0;
+  renderDiscoverProducts.byKey=new Map(discoveryPool.map(g=>[g.key,g]));
+  generateDiscovery();discoveryEnd=discoveryKeys.length;discoveryCatalog=PRODUCT_GROUPS;
+ }
+ const left=grid.scrollLeft;
+ grid.replaceChildren(...discoveryCards(discoveryStart,discoveryEnd));grid.scrollLeft=left;
+ updateDiscoveryArrows();
+}
+function extendDiscovery(direction){
+ const grid=document.getElementById('discoverGrid'),left=grid.scrollLeft;
+ if(direction>0){
+  if(discoveryEnd>=discoveryPool.length)return;
+  if(discoveryEnd>=discoveryKeys.length)generateDiscovery();
+  const end=Math.min(discoveryEnd+DISCOVERY_BATCH,discoveryKeys.length);
+  grid.append(...discoveryCards(discoveryEnd,end));discoveryEnd=end;
+  if(discoveryEnd-discoveryStart>DISCOVERY_WINDOW){
+   const count=discoveryEnd-discoveryStart-DISCOVERY_WINDOW;
+   const anchor=grid.children[count],before=anchor.offsetLeft;
+   for(let i=0;i<count;i++)grid.firstElementChild.remove();
+   discoveryStart+=count;grid.scrollLeft=left-(before-anchor.offsetLeft);
+  }
+ }else if(discoveryStart>0){
+  const start=Math.max(0,discoveryStart-DISCOVERY_BATCH),anchor=grid.firstElementChild,before=anchor.offsetLeft;
+  grid.prepend(...discoveryCards(start,discoveryStart));discoveryStart=start;
+  grid.scrollLeft=left+anchor.offsetLeft-before;
+  while(discoveryEnd-discoveryStart>DISCOVERY_WINDOW){grid.lastElementChild.remove();discoveryEnd--;}
+ }
+ updateDiscoveryArrows();
+}
+function moveDiscovery(direction){
+ const grid=document.getElementById('discoverGrid');
+ if(direction>0&&grid.scrollLeft>=grid.scrollWidth-grid.clientWidth-2)extendDiscovery(1);
+ if(direction<0&&grid.scrollLeft<=2)extendDiscovery(-1);
+ const card=grid.querySelector('.card');if(!card)return;
+ const step=card.getBoundingClientRect().width+(parseFloat(getComputedStyle(grid).gap)||0);
+ grid.scrollTo?.({left:Math.max(0,Math.min(grid.scrollWidth-grid.clientWidth,grid.scrollLeft+direction*step)),behavior:reduceMotion()?'instant':'smooth'});
+ updateDiscoveryArrows();
+}
+document.getElementById('discoverPrevious').onclick=()=>moveDiscovery(-1);
+document.getElementById('discoverNext').onclick=()=>moveDiscovery(1);
+let discoveryScrollFrame=0;
+document.getElementById('discoverGrid').addEventListener('scroll',()=>{
+ if(discoveryScrollFrame)return;
+ discoveryScrollFrame=requestAnimationFrame(()=>{
+  discoveryScrollFrame=0;const grid=document.getElementById('discoverGrid');
+  if(grid.scrollWidth>grid.clientWidth&&grid.scrollLeft>=grid.scrollWidth-grid.clientWidth-100)extendDiscovery(1);
+  else if(grid.scrollLeft<=2&&discoveryStart>0)extendDiscovery(-1);
+  updateDiscoveryArrows();
+ });
+},{passive:true});
+document.getElementById('discoverGrid').addEventListener('keydown',event=>{
+ if(event.target!==event.currentTarget||!['ArrowLeft','ArrowRight'].includes(event.key))return;
+ event.preventDefault();moveDiscovery(event.key==='ArrowLeft'?-1:1);
+});
 const autoplayPaused=new Map(),nextAdvance=new Map();
 function reduceMotion(){return window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
 function updateAutoplayButton(button,id){
@@ -278,14 +373,18 @@ function scrollProductRail(id,direction=1){
  const target=direction>0?(rail.scrollLeft>=max-2?0:Math.min(max,rail.scrollLeft+step)):(rail.scrollLeft<=2?max:Math.max(0,rail.scrollLeft-step));
  rail.scrollTo?.({left:target,behavior:reduceMotion()?'instant':'smooth'});nextAdvance.set(id,Date.now()+carouselDelay());
 }
+let carouselInteractionUntil=0;
+window.addEventListener('scroll',()=>{carouselInteractionUntil=Date.now()+1200;},{passive:true});
+window.addEventListener('pointerdown',()=>{carouselInteractionUntil=Date.now()+carouselDelay();},{passive:true});
 function canAutoplay(root){
+ if(Date.now()<carouselInteractionUntil)return false;
  if(isStudioPreview)return false;
  if(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay===false)return false;
  if(!root||root.hidden||root.closest('[hidden]')||document.hidden||reduceMotion()||autoplayPaused.get(root.id)||root.matches(':hover')||root.contains(document.activeElement))return false;
  const rect=root.getBoundingClientRect();return rect.bottom>0&&rect.top<window.innerHeight;
 }
 function advanceCarousels(now=Date.now()){
- for(const [id,slot] of [['heroCampaign','hero'],['discoverGrid',null],['popularGrid',null]]){
+ for(const [id,slot] of [['heroCampaign','hero'],['popularGrid',null]]){
   const root=document.getElementById(id);
   // Pauses also reset the countdown, so leaving a control never causes a jump.
   if(!canAutoplay(root)){nextAdvance.set(id,now+carouselDelay());continue;}
@@ -299,13 +398,12 @@ function advanceCarousels(now=Date.now()){
   nextAdvance.set(id,now+carouselDelay());
  }
 }
-for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']]){
+for(const [prefix,id] of [['popular','popularGrid']]){
  for(const [suffix,direction] of [['Previous',-1],['Next',1]])document.getElementById(prefix+suffix).onclick=()=>scrollProductRail(id,direction);
  const pause=document.getElementById(prefix+'Pause');pause.onclick=()=>{toggleAutoplay(id);updateAutoplayButton(pause,id);};
  const rail=document.getElementById(id);rail.addEventListener('pointerdown',()=>nextAdvance.set(id,Date.now()+6000));rail.addEventListener('keydown',()=>nextAdvance.set(id,Date.now()+6000));
 }
-document.getElementById('shuffleDiscover').onclick=()=>{renderDiscoverProducts(true);nextAdvance.set('discoverGrid',Date.now()+6000);};
-window.addEventListener('DOMContentLoaded',()=>{for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']])updateAutoplayButton(document.getElementById(prefix+'Pause'),id);});
+window.addEventListener('DOMContentLoaded',()=>{for(const [prefix,id] of [['popular','popularGrid']])updateAutoplayButton(document.getElementById(prefix+'Pause'),id);});
 function applyStudioCampaigns(data){
  const previous=studioCampaignState;
  studioCampaignState=data;

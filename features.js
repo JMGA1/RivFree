@@ -78,13 +78,34 @@ document.getElementById('openShoppingList').addEventListener('click',()=>{
 const _rfLocalHost=['127.0.0.1','localhost'].includes(location.hostname);
 const _rfStudioPreview=new URLSearchParams(location.search).has('studio-preview');
 if('serviceWorker' in navigator&&!_rfLocalHost&&!_rfStudioPreview)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(console.warn));
-let priceHistoryPromise;
+let priceHistoryPromise,historyTicket=0;
+const historyChunks=new Map();
+async function historyForOffers(offers){
+ if(!priceHistoryPromise)priceHistoryPromise=fetchWithTimeout('data/price-history/index.json').catch(error=>{priceHistoryPromise=null;throw error;});
+ const index=await priceHistoryPromise;
+ if(index.algorithm!=='sha256-2'||!index.shards)throw new Error('Invalid history index');
+ const keys=await Promise.all(offers.map(async offer=>{
+  const bytes=new TextEncoder().encode(offer.url);
+  const digest=new Uint8Array(await crypto.subtle.digest('SHA-256',bytes));
+  return digest[0].toString(16).padStart(2,'0');
+ }));
+ const chunks=await Promise.all([...new Set(keys)].map(key=>{
+  const version=index.shards[key];if(!version)return {};
+  if(!historyChunks.has(key)){
+   const request=fetchWithTimeout(`data/price-history/${key}.json?v=${encodeURIComponent(version)}`).catch(error=>{historyChunks.delete(key);throw error;});
+   historyChunks.set(key,request);
+   if(historyChunks.size>16)historyChunks.delete(historyChunks.keys().next().value);
+  }
+  return historyChunks.get(key);
+ }));
+ return Object.assign({},...chunks);
+}
 async function openPriceHistory(offers){
+ const ticket=++historyTicket;
  const dialog=document.getElementById('historyDialog'),container=document.getElementById('historyContent');
  container.textContent='Cargando / Carregando…';if(!dialog.open)dialog.showModal();
  try {
-  if(!priceHistoryPromise)priceHistoryPromise=fetch('data/price-history.json',{cache:'default'}).then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(e=>{priceHistoryPromise=null;throw e;});
-  const history=await priceHistoryPromise;container.replaceChildren();
+  const history=await historyForOffers(offers);if(ticket!==historyTicket)return;container.replaceChildren();
   let count=0;
   for(const offer of offers){
    const points=history[offer.url];if(!Array.isArray(points)||!points.length)continue;count++;
@@ -100,5 +121,5 @@ async function openPriceHistory(offers){
    for(const [date,price] of valid.slice(-10)){const row=document.createElement('tr');for(const text of [new Date(date).toLocaleDateString(LANG),price.toFixed(2)]){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}table.append(row);}container.append(table);
   }
   if(!count)container.textContent='El historial empieza con las próximas actualizaciones; no hay precios anteriores registrados. / O histórico começa nas próximas atualizações.';
- }catch{container.textContent='No se pudo cargar el historial / Não foi possível carregar o histórico.';}
+ }catch{if(ticket!==historyTicket)return;container.textContent='No se pudo cargar el historial / Não foi possível carregar o histórico.';}
 }

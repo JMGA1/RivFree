@@ -76,3 +76,23 @@ test('failed changed partition reuses that store cache and retries next load',as
  assert.equal(result.offline,true);assert.equal(result.prepared.count,2);
  assert.equal(e.getStored().storeVersions.b,'1');
 });
+
+test('cold partitions start concurrently and retain deterministic order',async()=>{
+ const e=env();const pending=new Map();
+ e.ctx.fetchWithTimeout=url=>new Promise(resolve=>pending.set(url,resolve));
+ const loading=e.ctx.loadStorePartitions({stores:{z:'1',a:'1',b:'1'}},null);
+ assert.equal(pending.size,3,'all requests must start before any response');
+ for(const [url,resolve] of [...pending].reverse())resolve([{url}]);
+ const result=await loading;assert.deepEqual(Object.keys(result.storeData),['a','b','z']);
+});
+test('new cache does not duplicate combined raw products and reloads offline',async()=>{
+ const e=env({meta:{version:'v',stores:{a:'1'}},partitions:{a:[{nombre:'one'}]}});
+ await e.ctx.loadCatalogLocally();const saved=e.getStored();assert.equal('data' in saved,false);
+ const offline=env({cached:saved,failMeta:true,failManual:true});
+ assert.equal((await offline.ctx.loadCatalogLocally()).prepared.count,1);
+});
+test('worker catalog errors do not repeat downloads on the main thread',async()=>{
+ const e=env();let terminated=false;
+ e.ctx.Worker=class {postMessage(){queueMicrotask(()=>this.onmessage({data:{error:'network failed'}}));}terminate(){terminated=true;}};
+ await assert.rejects(e.ctx.loadCatalog(),/network failed/);assert.equal(e.calls.length,0);assert.equal(terminated,true);
+});

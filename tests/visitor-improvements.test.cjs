@@ -46,3 +46,51 @@ test('iOS guide is dismissible and absent in standalone mode',async t=>{
  const {w,d,run}=await page(t);Object.defineProperty(w.navigator,'userAgent',{value:'Mozilla/5.0 (iPhone) AppleWebKit Safari/604.1'});run('renderIOSInstallHint()');assert.ok(d.getElementById('iosInstallHint'));d.querySelector('#iosInstallHint button').click();run('renderIOSInstallHint()');assert.equal(d.getElementById('iosInstallHint'),null);
  w.localStorage.removeItem('rivfree-ios-install-dismissed');Object.defineProperty(w.navigator,'standalone',{value:true});run('renderIOSInstallHint()');assert.equal(d.getElementById('iosInstallHint'),null);
 });
+
+test('load more keeps existing cards and normal renders refresh them',async t=>{
+ const {d,run}=await page(t);run('visibleLimit=1;render()');const first=d.querySelector('#grid .card');
+ d.getElementById('loadMore').click();assert.equal(d.querySelectorAll('#grid .card').length,3);assert.equal(d.querySelector('#grid .card'),first);
+ run('render()');assert.notEqual(d.querySelector('#grid .card'),first);
+});
+test('history fetches only unique URL buckets and retries failed requests',async t=>{
+ const {w,run}=await page(t);Object.defineProperty(w.crypto,'subtle',{value:require('node:crypto').webcrypto.subtle});w.TextEncoder=TextEncoder;
+ const url='https://shop.test/café',key=require('node:crypto').createHash('sha256').update(url).digest('hex').slice(0,2),calls=[];
+ let fail=true;w.fetchWithTimeout=async path=>{calls.push(path);if(path.endsWith('index.json'))return {algorithm:'sha256-2',shards:{[key]:'v1'}};if(fail)throw Error('offline');return {[url]:[['2026-09-01',100]]};};
+ w.historyOffers=[{url},{url}];await assert.rejects(run('historyForOffers(historyOffers)'));fail=false;
+ const history=await run('historyForOffers(historyOffers)');assert.equal(history[url][0][1],100);await run('historyForOffers(historyOffers)');
+ assert.equal(calls.length,3);assert.ok(calls.every(p=>!p.includes('price-history.json')));
+});
+test('vertical touch scroll never changes carousel campaign',async t=>{
+ const {w,d,run}=await page(t);run('campaigns.hero=FALLBACK_HIGHLIGHTS.slice(0,2);renderCampaigns()');const root=d.getElementById('heroCampaign'),id=root.dataset.campaignId;
+ root.ontouchstart({changedTouches:[{clientX:100,clientY:100}]});root.ontouchend({changedTouches:[{clientX:170,clientY:240}]});assert.equal(root.dataset.campaignId,id);
+ root.ontouchstart({changedTouches:[{clientX:100,clientY:100}]});root.ontouchend({changedTouches:[{clientX:170,clientY:110}]});assert.notEqual(root.dataset.campaignId,id);
+});
+test('large carousel index yields and is reused across advances',async t=>{
+ const {d,run}=await page(t);
+ run('PRODUCT_GROUPS=Array.from({length:650},(_,i)=>({...PRODUCT_GROUPS[0],key:"large"+i}));campaigns.hero=[FALLBACK_HIGHLIGHTS[8],FALLBACK_HIGHLIGHTS[9]];renderCampaigns()');
+ assert.equal(run('campaignIndex'),null,'large index must not block initial render');
+ await pause(100);assert.equal(run('campaignIndex.byKey.size'),650);
+ const index=run('campaignIndex');run('campaignPositions.hero=1;renderCampaigns()');assert.equal(run('campaignIndex'),index);
+});
+
+test('discovery arrows generate more, bound DOM, and restore earlier products',async t=>{
+ const {w,d,run}=await page(t);
+ run('PRODUCT_GROUPS=Array.from({length:45},(_,i)=>({...PRODUCT_GROUPS[0],key:"discovery"+i,name:"Product "+i}));renderDiscoverProducts()');
+ const grid=d.getElementById('discoverGrid');
+ Object.defineProperty(grid,'clientWidth',{get:()=>1000});Object.defineProperty(grid,'scrollWidth',{get:()=>grid.children.length*200});
+ Object.defineProperty(w.HTMLElement.prototype,'offsetLeft',{configurable:true,get(){return this.parentElement===grid?[...grid.children].indexOf(this)*200:0;}});
+ grid.style.gap='14px';grid.scrollTo=({left})=>{grid.scrollLeft=left;};w.HTMLElement.prototype.getBoundingClientRect=()=>({width:186});
+ const initial=run('discoveryKeys.slice()');assert.equal(d.getElementById('shuffleDiscover'),null);assert.equal(d.getElementById('discoverPause'),null);
+ d.getElementById('discoverNext').click();assert.equal(grid.children.length,10);assert.equal(grid.scrollLeft,200);
+ for(let i=0;i<9;i++){grid.scrollLeft=grid.scrollWidth-grid.clientWidth;d.getElementById('discoverNext').click();}
+ assert.ok(grid.children.length<=30);assert.equal(run('new Set(discoveryKeys).size'),45);assert.equal(d.getElementById('discoverNext').disabled,true);
+ for(let i=0;i<4;i++){grid.scrollLeft=0;d.getElementById('discoverPrevious').click();}
+ assert.equal(run('discoveryStart'),0);assert.deepEqual(run('discoveryKeys.slice(0,5)'),initial);
+ grid.scrollLeft=0;run('updateDiscoveryArrows()');assert.equal(d.getElementById('discoverPrevious').disabled,true);
+});
+test('native discovery scroll extends the selection without refresh',async t=>{
+ const {w,d,run}=await page(t);run('PRODUCT_GROUPS=Array.from({length:20},(_,i)=>({...PRODUCT_GROUPS[0],key:"swipe"+i}));renderDiscoverProducts()');
+ const grid=d.getElementById('discoverGrid');Object.defineProperty(grid,'clientWidth',{get:()=>400});Object.defineProperty(grid,'scrollWidth',{get:()=>grid.children.length*200});
+ const first=grid.firstElementChild;grid.scrollLeft=550;grid.dispatchEvent(new w.Event('scroll'));await pause(50);
+ assert.equal(grid.children.length,10);assert.equal(grid.firstElementChild,first);
+});

@@ -14,8 +14,8 @@ async function cachedCatalog(value) {
   tx.oncomplete=()=>resolve(req.result);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
  });} finally {db.close();}
 }
-async function fetchWithTimeout(url,options={}) {
- const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),30000);
+async function fetchWithTimeout(url,options={},timeout=30000) {
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);
  try {const response=await fetch(url,{...options,signal:controller.signal});if(!response.ok)throw new Error(`HTTP ${response.status}`);return await response.json();}
  finally {clearTimeout(timer);}
 }
@@ -50,20 +50,19 @@ async function loadStorePartitions(meta,cached){
  const oldData=cached?.partitioned&&cached.storeData&&typeof cached.storeData==='object'?cached.storeData:{};
  const oldVersions=cached?.partitioned&&cached.storeVersions&&typeof cached.storeVersions==='object'?cached.storeVersions:{};
  const storeData={},effectiveVersions={};let offline=false;
- for(const [slug,version] of Object.entries(currentVersions).sort(([a],[b])=>a.localeCompare(b))){
-  if(oldVersions[slug]===version&&Array.isArray(oldData[slug])){
-   storeData[slug]=oldData[slug];effectiveVersions[slug]=version;continue;
-  }
-  try{
-   const part=await fetchWithTimeout(`data/products/${encodeURIComponent(slug)}.json?v=${encodeURIComponent(version)}`);
-   if(!Array.isArray(part))throw new Error('Invalid store catalog');
-   storeData[slug]=part;effectiveVersions[slug]=version;
-  }catch(error){
-   if(Array.isArray(oldData[slug])){
-    storeData[slug]=oldData[slug];effectiveVersions[slug]=oldVersions[slug]||`cached-${slug}`;offline=true;
-   }else throw error;
-  }
- }
+ const entries=Object.entries(currentVersions).sort(([a],[b])=>a.localeCompare(b));
+ const results=await Promise.allSettled(entries.map(async ([slug,version])=>{
+  if(oldVersions[slug]===version&&Array.isArray(oldData[slug]))return oldData[slug];
+  const part=await fetchWithTimeout(`data/products/${encodeURIComponent(slug)}.json?v=${encodeURIComponent(version)}`);
+  if(!Array.isArray(part))throw new Error('Invalid store catalog');
+  return part;
+ }));
+ results.forEach((result,i)=>{
+  const [slug,version]=entries[i];
+  if(result.status==='fulfilled'){storeData[slug]=result.value;effectiveVersions[slug]=version;}
+  else if(Array.isArray(oldData[slug])){storeData[slug]=oldData[slug];effectiveVersions[slug]=oldVersions[slug]||`cached-${slug}`;offline=true;}
+  else throw result.reason;
+ });
  return {storeData,storeVersions:effectiveVersions,offline};
 }
 async function loadLegacyFullCatalog(meta,cached){
@@ -75,14 +74,16 @@ async function loadLegacyFullCatalog(meta,cached){
  return {scrapedData,scrapedVersion:version,offline:false};
 }
 async function loadCatalogLocally() {
+ const manualRequest=fetchOptionalJson('data/manual-products.json',null);
+ const metaRequest=fetchWithTimeout('data/meta.json',{cache:'no-store'}).then(value=>({value}),error=>({error}));
  let cached;try {cached=await cachedCatalog();}catch{}
  const emptyManual={version:'empty',actualizado:null,productos:[]};
- let manualData=await fetchOptionalJson('data/manual-products.json',null);
+ let manualData=await manualRequest;
  if(!validManualCatalog(manualData))manualData=validManualCatalog(cached?.manualData)?cached.manualData:emptyManual;
 
  let scrapedData,scrapedVersion,offline=false,partitioned=false,storeData=null,storeVersions=null,scrapedMeta=null;
  try {
-  const meta=await fetchWithTimeout('data/meta.json',{cache:'no-store'});
+  const result=await metaRequest;if(result.error)throw result.error;const meta=result.value;
   if(typeof meta.version!=='string'||!meta.version)throw new Error('Invalid version');
   if(validStoreVersions(meta.stores)){
    try{
@@ -117,8 +118,8 @@ async function loadCatalogLocally() {
  const version=`${scrapedVersion||'unversioned'}|manual:${manualVersion(manualData)}`;
  const reuse=cached?.version===version&&cached.preparedVersion===PREPARED_CATALOG_VERSION&&validPrepared(cached.prepared);
  const prepared=reuse?cached.prepared:prepareCatalog(data);
- if(!reuse){
-  const entry={version,scrapedVersion,manualData,data,preparedVersion:PREPARED_CATALOG_VERSION,prepared,partitioned};
+ if(!reuse||cached?.data){
+  const entry={version,scrapedVersion,manualData,preparedVersion:PREPARED_CATALOG_VERSION,prepared,partitioned};
   if(partitioned){entry.storeData=storeData;entry.storeVersions=storeVersions;entry.scrapedMeta=scrapedMeta;}
   else entry.scrapedData=scrapedData;
   try {await cachedCatalog(entry);}catch{}
@@ -128,10 +129,10 @@ async function loadCatalogLocally() {
 async function loadCatalog() {
  if(typeof Worker==='undefined')return loadCatalogLocally();
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js?v=20260925-partitions1');
-  const timer=setTimeout(()=>{worker.terminate();reject(new Error('Worker timeout'));},70000);
-  worker.onmessage=({data})=>{clearTimeout(timer);worker.terminate();data.error?reject(new Error(data.error)):resolve(data);};
+  const worker=new Worker('catalog-worker.js?v=20260927-mobile-perf');
+  const timer=setTimeout(()=>{worker.terminate();reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
+  worker.onmessage=({data})=>{clearTimeout(timer);worker.terminate();data.error?reject(Object.assign(new Error(data.error),{catalogFailure:true})):resolve(data);};
   worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');
- });}catch{return loadCatalogLocally();}
+ });}catch(error){if(error.catalogFailure)throw error;return loadCatalogLocally();}
 }
 if(typeof module!=='undefined') module.exports={fetchWithTimeout,fetchOptionalJson,manualVersion,validManualCatalog,validStoreVersions,storeSignature,catalogFromPartitions};

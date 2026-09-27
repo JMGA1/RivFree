@@ -68,6 +68,24 @@ def write_store_partitions(data_dir, output):
     return versions
 
 
+def write_history_partitions(data_dir, series):
+    """Bound each history request to one of 256 stable URL buckets."""
+    directory = Path(data_dir) / 'price-history'
+    buckets = {}
+    for url, points in sorted(series.items()):
+        key = hashlib.sha256(url.encode('utf-8')).hexdigest()[:2]
+        buckets.setdefault(key, {})[url] = points
+    versions = {}
+    for key, values in buckets.items():
+        path = directory / f'{key}.json'
+        write_json(path, values)
+        versions[key] = hashlib.sha256(path.read_bytes()).hexdigest()[:20]
+    write_json(directory / 'index.json', {'algorithm': 'sha256-2', 'shards': versions})
+    for path in directory.glob('*.json'):
+        if path.stem != 'index' and path.stem not in versions:
+            path.unlink()
+
+
 def publish(data_dir, output, attempted_stores=None):
     data_dir = Path(data_dir)
     previous = read_json(data_dir / 'products.json', {})
@@ -138,6 +156,7 @@ def publish(data_dir, output, attempted_stores=None):
                 series.setdefault(url, []).append([content['actualizado'], price])
                 observations.setdefault(str(store)+'|'+str(url), []).append([content['actualizado'], price])
     write_json(data_dir / 'price-history.json', series)
+    write_history_partitions(data_dir, series)
     enrich(output, previous, first_seen, observations)
     write_json(data_dir / 'catalog-first-seen.json', first_seen)
 

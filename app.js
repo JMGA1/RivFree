@@ -168,13 +168,12 @@ function applyStoreVisual(element,storeName){
  element.style.setProperty('--store-fg',validHexColor(info.color_texto)?info.color_texto:contrastingText(color));
 }
 async function loadStoreInfoFiles(){
- const [baseRes,manualRes]=await Promise.all([
-  fetch('data/stores.json',{cache:'default'}).catch(()=>null),
-  fetch('data/manual-stores.json',{cache:'no-store'}).catch(()=>null)
+ const [baseValue,manualValue]=await Promise.all([
+  fetchWithTimeout('data/stores.json',{cache:'default'},8000).catch(()=>null),
+  fetchWithTimeout('data/manual-stores.json',{cache:'no-store'},8000).catch(()=>null)
  ]);
- let base={},manual={};
- if(baseRes?.ok){try{const value=await baseRes.json();if(value&&!Array.isArray(value)&&typeof value==='object')base=value;}catch{}}
- if(manualRes?.ok){try{const value=await manualRes.json();if(value?.tiendas&&!Array.isArray(value.tiendas)&&typeof value.tiendas==='object')manual=value.tiendas;}catch{}}
+ const base=baseValue&&!Array.isArray(baseValue)&&typeof baseValue==='object'?baseValue:{};
+ const manual=manualValue?.tiendas&&!Array.isArray(manualValue.tiendas)&&typeof manualValue.tiendas==='object'?manualValue.tiendas:{};
  return {...base,...manual};
 }
 function announce(message) {
@@ -289,11 +288,11 @@ async function loadData() {
   document.getElementById('loadError').hidden=true;
   try {
     const [loaded, storeInfo, ratesRes] = await Promise.all([
-      loadCatalog(), loadStoreInfoFiles(), fetch('data/exchange.json',{cache:'default'}).catch(()=>null)
+      loadCatalog(), loadStoreInfoFiles(), fetchWithTimeout('data/exchange.json',{cache:'default'},8000).catch(()=>null)
     ]);
     const {data,prepared,offline}=loaded;
     STORE_INFO=storeInfo;
-    if(ratesRes?.ok) {try {const bundled=await ratesRes.json();if(isRate(bundled))automaticExchange=mergeExchange(automaticExchange,bundled);} catch {}}
+    if(isRate(ratesRes))automaticExchange=mergeExchange(automaticExchange,ratesRes);
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
     indexFavoriteOffers();
@@ -448,7 +447,7 @@ function getFiltered() {
   return groups;
 }
 
-function render(resetLimit = false) {
+function render(resetLimit = false, appendOnly = false) {
   if (resetLimit === true) visibleLimit = PAGE_SIZE;
   if(!validatePrices())return;
   syncFiltersURL();
@@ -479,8 +478,10 @@ function render(resetLimit = false) {
   loadMoreWrap.hidden = visibleItems.length >= items.length;
 
   if(items.some(g=>g.approximate))meta.textContent+=' · '+tr('Resultados aproximados');
-  const cards = visibleItems.map(createProductCard);
-  grid.replaceChildren(...cards);
+  const append=appendOnly&&render.lastItems===items;
+  const cards = visibleItems.slice(append?grid.children.length:0).map(createProductCard);
+  if(append)grid.append(...cards);else grid.replaceChildren(...cards);
+  render.lastItems=items;
 }
 
 function waitForPaint() {
@@ -883,7 +884,7 @@ document.getElementById('searchForm').addEventListener('submit', event => {
 
 document.getElementById('loadMore').addEventListener('click', () => {
   visibleLimit += PAGE_SIZE;
-  render(false);
+  render(false,true);
 });
 
 const stockNotice = document.getElementById('stockNotice');
@@ -989,10 +990,10 @@ function suggestProducts(){
  const query=Catalog.search(input.value).split(/\s+/).filter(Boolean);if(input.value.trim().length<2||!query.length)return;
  const ticket=suggestionTicket;
  suggestionTimer=setTimeout(()=>{
-  if(suggestionCatalog!==PRODUCT_GROUPS){suggestionCatalog=PRODUCT_GROUPS;suggestionEntries=PRODUCT_GROUPS.map(g=>({name:g.name,text:Catalog.search(g.name)}));}
+  if(suggestionCatalog!==PRODUCT_GROUPS){suggestionCatalog=PRODUCT_GROUPS;suggestionEntries=new Array(PRODUCT_GROUPS.length);}
   let cursor=0;const found=[],seen=new Set();
   function chunk(){if(ticket!==suggestionTicket)return;const until=Math.min(cursor+600,suggestionEntries.length);
-   while(cursor<until&&found.length<5){const entry=suggestionEntries[cursor++];if(query.every(t=>entry.text.includes(t))&&!seen.has(entry.text)){seen.add(entry.text);found.push(entry.name);}}
+   while(cursor<until&&found.length<5){const i=cursor++;const entry=suggestionEntries[i]||(suggestionEntries[i]={name:PRODUCT_GROUPS[i].name,text:Catalog.search(PRODUCT_GROUPS[i].name)});if(query.every(t=>entry.text.includes(t))&&!seen.has(entry.text)){seen.add(entry.text);found.push(entry.name);}}
    if(found.length<5&&cursor<suggestionEntries.length){setTimeout(chunk,0);return;}
    list.replaceChildren();found.forEach((name,i)=>{const item=document.createElement('div');item.role='option';item.id='product-suggestion-'+i;item.textContent=name;item.setAttribute('aria-selected','false');item.addEventListener('mousedown',e=>e.preventDefault());item.onclick=()=>chooseSearchSuggestion(name);list.append(item);});list.hidden=!found.length;input.setAttribute('aria-expanded',String(!!found.length));
   }chunk();
