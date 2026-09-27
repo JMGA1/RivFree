@@ -5,6 +5,8 @@ const isStudioPreview=new URLSearchParams(location.search).has('studio-preview')
 let studioCampaignState=null;
 function campaignCount(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.visible_count);return Number.isInteger(n)?Math.max(1,Math.min(10,n)):5;}
 function carouselDelay(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay_seconds);return Math.max(3,Math.min(30,Number.isFinite(n)?n:6))*1000;}
+function carouselTransition(){const c=window.RIVFREE_SITE_CONFIG?.carousel||{};return {mode:c.transition==='static'?'static':'smooth',ms:Math.max(200,Math.min(1200,Number(c.transition_ms)||500))};}
+function campaignColors(c){const mode=document.documentElement.dataset.theme==='dark'?'dark':'light';const colors=c?.colors?.[mode];return colors&&typeof colors==='object'?colors:null;}
 function campaignIsActive(c){const now=Date.now(),start=c?.starts_at?Date.parse(c.starts_at):NaN,end=c?.ends_at?Date.parse(c.ends_at):NaN;return c?.enabled!==false&&(!Number.isFinite(start)||now>=start)&&(!Number.isFinite(end)||now<=end);}
 const LAST_CAMPAIGNS_KEY='rivfree-last-campaign-selection';
 const smartCampaignCache=new Map(),campaignImageCache=new Map();
@@ -160,7 +162,12 @@ function renderCampaign(slot,automatic=false){
  root.hidden=!items.length || (window.RIVFREE_SITE_CONFIG?.homepage?.visible?.hero===false && !(isStudioPreview&&studioCampaignState?.selectedId));if(!items.length)return;
  const index=campaignPositions[slot]%items.length,c=resolveSmartCampaign(items[index]);
  const activeControl=root.contains(document.activeElement)?document.activeElement.dataset.control:null;
- root.replaceChildren();root.dataset.layout=c.layout==='banner'&&c.image?'banner':'split';root.dataset.theme=['rose','blue','sand','mint'].includes(c.theme)?c.theme:'rose';root.dataset.campaignId=c.id||'';root.dataset.campaignGroup=c.poolGroup||'';root.dataset.campaignType=c.smartType||'editorial';
+ root.replaceChildren();root.dataset.layout=c.layout==='banner'&&c.image?'banner':'split';root.dataset.theme=['rose','blue','sand','mint','plum','graphite','amber','ocean','forest'].includes(c.theme)?c.theme:'rose';root.dataset.campaignId=c.id||'';root.dataset.campaignGroup=c.poolGroup||'';root.dataset.campaignType=c.smartType||'editorial';
+ const transition=carouselTransition();root.dataset.transition=transition.mode;root.style.setProperty('--campaign-transition-ms',`${transition.ms}ms`);
+ const customColors=campaignColors(c);
+ for(const prop of ['--campaign-bg','--campaign-accent','--campaign-text','--campaign-button-bg','--campaign-button-text'])root.style.removeProperty(prop);
+ if(customColors){root.style.setProperty('--campaign-bg',customColors.background||'');root.style.setProperty('--campaign-accent',customColors.accent||'');root.style.setProperty('--campaign-text',customColors.text||'');root.style.setProperty('--campaign-button-bg',customColors.button||customColors.accent||'');root.style.setProperty('--campaign-button-text',customColors.button_text||'#fff');}
+ root.style.color=customColors?.text||'';
  const slide=document.createElement('div');slide.className='campaign-slide';slide.setAttribute('role','group');slide.setAttribute('aria-roledescription','slide');slide.setAttribute('aria-label',`${index+1} / ${items.length}`);
  const copy=document.createElement('div');copy.className='campaign-copy';
  const eyebrow=document.createElement('span');eyebrow.className='eyebrow';eyebrow.textContent=localized(c.eyebrow);

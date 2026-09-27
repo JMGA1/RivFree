@@ -1,5 +1,18 @@
 ## 2026-09-26 — RivFree Studio · Panel de control
 
+## 2026-09-27 · Studio: personalización contextual
+
+- La vista previa mantiene el modo claro/oscuro y el idioma elegidos aunque se editen campos.
+- Diseño y Carrusel muestran un solo modo/idioma a la vez para reducir confusión.
+- Se añadieron más familias tipográficas seguras del sistema.
+- Diseño, Página y Carrusel incorporan acciones para descartar cambios pendientes.
+- El editor resalta el campo activo y muestra el contexto que se está modificando.
+- La lista de campañas conserva su posición de scroll al seleccionar o editar banners.
+- Los banners admiten nuevas paletas sugeridas y colores manuales independientes para claro/oscuro.
+- Cada banner permite personalizar fondo, texto, acento, botón y texto del botón, con aviso de contraste y ajuste automático.
+- El carrusel permite elegir transición suave o estática y velocidad de animación.
+- Los cambios suaves respetan `prefers-reduced-motion`.
+
 - La pantalla inicial ahora es **Resumen / Salud**, leyendo `data/health.json` y `data/meta.json` para mostrar estado de scrapers, fallos consecutivos, último éxito y fecha del catálogo.
 - El resumen también alerta por publicaciones manuales sin imagen/inactivas y campañas vencidas o programadas.
 - La vista previa pasó a ser persistente para Diseño, Carrusel y Página.

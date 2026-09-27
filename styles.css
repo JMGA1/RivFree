@@ -1391,3 +1391,22 @@ a.source-chip:hover{color:var(--ink);border-color:color-mix(in srgb,var(--rf-red
 body[data-density="compact"] .card-body{padding:8px!important} body[data-density="compact"] .popular-section{padding-top:12px!important;padding-bottom:12px!important}
 body[data-density="airy"] .card-body{padding:18px!important} body[data-density="airy"] .popular-section{padding-top:28px!important;padding-bottom:28px!important}
 .catalog-section[hidden]{display:none!important}.studio-footer-text{display:inline}.shopping-benefits[hidden],.popular-section[hidden],#heroCampaign[hidden]{display:none!important}
+
+/* Studio-configurable campaign palettes and transition behavior */
+.campaign-carousel[data-theme="plum"]{--campaign-bg:#eadcf0;--campaign-accent:#74438a;color:#392844;}
+.campaign-carousel[data-theme="graphite"]{--campaign-bg:#dfe3e8;--campaign-accent:#3f4a58;color:#232a32;}
+.campaign-carousel[data-theme="amber"]{--campaign-bg:#f2dfb7;--campaign-accent:#8a5b12;color:#4b381d;}
+.campaign-carousel[data-theme="ocean"]{--campaign-bg:#d7e9ed;--campaign-accent:#247287;color:#173d49;}
+.campaign-carousel[data-theme="forest"]{--campaign-bg:#d8e7d7;--campaign-accent:#376b3d;color:#243d27;}
+:root[data-theme="dark"] .campaign-carousel[data-theme="plum"]{--campaign-bg:#30223a;--campaign-accent:#d3a0eb;color:#f5ecf8;}
+:root[data-theme="dark"] .campaign-carousel[data-theme="graphite"]{--campaign-bg:#22272e;--campaign-accent:#aeb9c8;color:#f1f4f7;}
+:root[data-theme="dark"] .campaign-carousel[data-theme="amber"]{--campaign-bg:#342918;--campaign-accent:#f0c36d;color:#fff4dc;}
+:root[data-theme="dark"] .campaign-carousel[data-theme="ocean"]{--campaign-bg:#17313a;--campaign-accent:#78c8db;color:#edfafd;}
+:root[data-theme="dark"] .campaign-carousel[data-theme="forest"]{--campaign-bg:#1c3120;--campaign-accent:#8bd095;color:#eff9f0;}
+.campaign-cta{background:var(--campaign-button-bg,var(--campaign-accent));color:var(--campaign-button-text,#fff);}
+#heroCampaign[data-transition="smooth"] .campaign-slide{animation:campaign-studio-arrive var(--campaign-transition-ms,500ms) cubic-bezier(.22,.7,.2,1) both!important;}
+#heroCampaign[data-transition="static"] .campaign-slide{animation:none!important;}
+#heroCampaign[data-transition="smooth"]{transition:background-color var(--campaign-transition-ms,500ms) ease,color var(--campaign-transition-ms,500ms) ease;}
+#heroCampaign[data-transition="static"]{transition:none;}
+@keyframes campaign-studio-arrive{from{opacity:.15;transform:translateX(18px) scale(.995);}to{opacity:1;transform:none;}}
+@media(prefers-reduced-motion:reduce){#heroCampaign[data-transition="smooth"] .campaign-slide{animation:none!important;}#heroCampaign[data-transition="smooth"]{transition:none;}}

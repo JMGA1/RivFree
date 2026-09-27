@@ -44,7 +44,7 @@ MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = uuid.uuid4().hex
-STUDIO_BUILD = '20260927-studio-sync4'
+STUDIO_BUILD = '20260927-studio-custom1'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -228,7 +228,7 @@ def default_site_config() -> dict:
         },
         "notice": {"enabled": True, "dismissible": True, "title_es": "Antes de tu visita.", "title_pt": "Antes da sua visita.", "text_es": "La web refleja catálogos online, no el stock físico completo de cada tienda.", "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."},
         "homepage": {"order": ["hero", "benefits", "discover", "popular", "catalog"], "visible": {"hero": True, "benefits": True, "discover": True, "popular": True, "catalog": True}},
-        "carousel": {"visible_count": 5, "autoplay": True, "autoplay_seconds": 6},
+        "carousel": {"visible_count": 5, "autoplay": True, "autoplay_seconds": 6, "transition": "smooth", "transition_ms": 500},
         "seo": {"title_es": "RivFree — Comparador de precios de free shops", "title_pt": "RivFree — Comparador de preços de free shops", "description_es": "Compará precios de free shops de Rivera y Santana do Livramento.", "description_pt": "Compare preços de free shops de Rivera e Santana do Livramento.", "social_image": "social-card.png"},
         "footer": {"title_es": "RivFree · Comparador independiente", "title_pt": "RivFree · Comparador independente", "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.", "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.", "show_privacy": True},
     }
@@ -278,10 +278,10 @@ def normalize_site_config(raw: dict) -> dict:
     return {
         "version": new_version("studio"), "actualizado": now_iso(),
         "branding": {"site_name": text(branding.get("site_name") or "RivFree", 60), "tagline_es": text(branding.get("tagline_es"), 180), "tagline_pt": text(branding.get("tagline_pt"), 180)},
-        "appearance": {"font": font if font in {"system-modern","rounded","editorial","mono"} else "system-modern", "density": density if density in {"compact","comfortable","airy"} else "comfortable", "radius": safe_int(appearance.get("radius"), 12, 0, 32), "shadow": shadow if shadow in {"none","soft","strong"} else "soft", "colors_customized": bool(appearance.get("colors_customized", False)), "light": palette("light"), "dark": palette("dark")},
+        "appearance": {"font": font if font in {"system-modern","inter-ui","geometric","humanist","rounded","compact","classic-ui","editorial","slab","mono"} else "system-modern", "density": density if density in {"compact","comfortable","airy"} else "comfortable", "radius": safe_int(appearance.get("radius"), 12, 0, 32), "shadow": shadow if shadow in {"none","soft","strong"} else "soft", "colors_customized": bool(appearance.get("colors_customized", False)), "light": palette("light"), "dark": palette("dark")},
         "notice": {"enabled": bool(notice.get("enabled", True)), "dismissible": bool(notice.get("dismissible", True)), "title_es": text(notice.get("title_es"), 120), "title_pt": text(notice.get("title_pt"), 120), "text_es": text(notice.get("text_es"), 500), "text_pt": text(notice.get("text_pt"), 500)},
         "homepage": {"order": order, "visible": {k: bool(visible.get(k, True)) for k in allowed_sections}},
-        "carousel": {"visible_count": safe_int(carousel.get("visible_count"), 5, 1, 10), "autoplay": bool(carousel.get("autoplay", True)), "autoplay_seconds": safe_int(carousel.get("autoplay_seconds"), 6, 3, 30)},
+        "carousel": {"visible_count": safe_int(carousel.get("visible_count"), 5, 1, 10), "autoplay": bool(carousel.get("autoplay", True)), "autoplay_seconds": safe_int(carousel.get("autoplay_seconds"), 6, 3, 30), "transition": text(carousel.get("transition"), 20) if text(carousel.get("transition"), 20) in {"smooth","static"} else "smooth", "transition_ms": safe_int(carousel.get("transition_ms"), 500, 200, 1200)},
         "seo": {"title_es": text(seo.get("title_es"), 160), "title_pt": text(seo.get("title_pt"), 160), "description_es": text(seo.get("description_es"), 320), "description_pt": text(seo.get("description_pt"), 320), "social_image": safe_asset_or_url(seo.get("social_image")) or "social-card.png"},
         "footer": {"title_es": text(footer.get("title_es"), 160), "title_pt": text(footer.get("title_pt"), 160), "text_es": text(footer.get("text_es"), 1000), "text_pt": text(footer.get("text_pt"), 1000), "show_privacy": bool(footer.get("show_privacy", True))},
     }
@@ -298,9 +298,29 @@ def normalize_campaign(raw: dict, index=0) -> dict:
     cid = re.sub(r"[^a-z0-9_-]+", "-", text(raw.get("id"), 100).lower()).strip("-") or f"banner-{uuid.uuid4().hex[:10]}"
     theme=text(raw.get("theme"),20); layout=text(raw.get("layout"),20); smart=text(raw.get("smartType"),30); group=text(raw.get("poolGroup") or "general",40)
     category=text(raw.get("category"),120); action=text(raw.get("action"),30)
-    result={"id":cid,"poolGroup":group,"theme":theme if theme in {"rose","blue","sand","mint"} else "rose","layout":layout if layout in {"split","banner"} else "split","sponsored":bool(raw.get("sponsored")),"enabled":bool(raw.get("enabled",True)),"eyebrow":bilingual("eyebrow",120),"title":bilingual("title",220),"description":bilingual("description",500),"cta":bilingual("cta",100),"category":category}
+    result={"id":cid,"poolGroup":group,"theme":theme if theme in {"rose","blue","sand","mint","plum","graphite","amber","ocean","forest"} else "rose","layout":layout if layout in {"split","banner"} else "split","sponsored":bool(raw.get("sponsored")),"enabled":bool(raw.get("enabled",True)),"eyebrow":bilingual("eyebrow",120),"title":bilingual("title",220),"description":bilingual("description",500),"cta":bilingual("cta",100),"category":category}
     if smart in {"compare","multistore","offer","category"}: result["smartType"]=smart
     if action in {"offers","category","compare"}: result["action"]=action
+
+    colors_raw = raw.get("colors") if isinstance(raw.get("colors"), dict) else {}
+    colors = {}
+    campaign_palettes = {
+        "rose": {"light": {"background":"#EFD4DA","text":"#30212A","accent":"#9F2942","button":"#9F2942","button_text":"#FFFFFF"}, "dark": {"background":"#38232E","text":"#F8EDF0","accent":"#FF91A6","button":"#FF91A6","button_text":"#151515"}},
+        "blue": {"light": {"background":"#D8E5F3","text":"#192D45","accent":"#245F93","button":"#245F93","button_text":"#FFFFFF"}, "dark": {"background":"#192C45","text":"#ECF4FF","accent":"#85BAFF","button":"#85BAFF","button_text":"#152234"}},
+        "sand": {"light": {"background":"#EADCC3","text":"#463725","accent":"#76511B","button":"#76511B","button_text":"#FFFFFF"}, "dark": {"background":"#322B21","text":"#F8F0DE","accent":"#E8C578","button":"#E8C578","button_text":"#2A2218"}},
+        "mint": {"light": {"background":"#D7E7DD","text":"#203C30","accent":"#2E6B51","button":"#2E6B51","button_text":"#FFFFFF"}, "dark": {"background":"#1C332C","text":"#ECFAF3","accent":"#85D4AD","button":"#85D4AD","button_text":"#183026"}},
+        "plum": {"light": {"background":"#EADCF0","text":"#392844","accent":"#74438A","button":"#74438A","button_text":"#FFFFFF"}, "dark": {"background":"#30223A","text":"#F5ECF8","accent":"#D3A0EB","button":"#D3A0EB","button_text":"#261B2E"}},
+        "graphite": {"light": {"background":"#DFE3E8","text":"#232A32","accent":"#3F4A58","button":"#3F4A58","button_text":"#FFFFFF"}, "dark": {"background":"#22272E","text":"#F1F4F7","accent":"#AEB9C8","button":"#AEB9C8","button_text":"#1D2329"}},
+        "amber": {"light": {"background":"#F2DFB7","text":"#4B381D","accent":"#8A5B12","button":"#8A5B12","button_text":"#FFFFFF"}, "dark": {"background":"#342918","text":"#FFF4DC","accent":"#F0C36D","button":"#F0C36D","button_text":"#2A2115"}},
+        "ocean": {"light": {"background":"#D7E9ED","text":"#173D49","accent":"#247287","button":"#247287","button_text":"#FFFFFF"}, "dark": {"background":"#17313A","text":"#EDFAFD","accent":"#78C8DB","button":"#78C8DB","button_text":"#142A32"}},
+        "forest": {"light": {"background":"#D8E7D7","text":"#243D27","accent":"#376B3D","button":"#376B3D","button_text":"#FFFFFF"}, "dark": {"background":"#1C3120","text":"#EFF9F0","accent":"#8BD095","button":"#8BD095","button_text":"#18301C"}},
+    }
+    color_defaults = campaign_palettes.get(theme, campaign_palettes["rose"])
+    for mode in ("light", "dark"):
+        src = colors_raw.get(mode) if isinstance(colors_raw.get(mode), dict) else {}
+        defaults = color_defaults[mode]
+        colors[mode] = {k: safe_color(src.get(k), defaults[k]) for k in ("background","text","accent","button","button_text")}
+    result["colors"] = colors
     href=safe_url(raw.get("href")); image=safe_asset_or_url(raw.get("image")); mobile=safe_asset_or_url(raw.get("mobileImage"))
     if href: result["href"]=href
     if image: result["image"]=image

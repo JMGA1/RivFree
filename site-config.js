@@ -5,7 +5,7 @@ const DEFAULT={
  appearance:{font:'system-modern',density:'comfortable',radius:12,shadow:'soft',colors_customized:false,light:{background:'#F5F6F8',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9',background_image:'',background_overlay:0},dark:{background:'#101B2B',surface:'#19283C',text:'#F1F5FB',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9',background_image:'',background_overlay:0}},
  notice:{enabled:true,dismissible:true,title_es:'Antes de tu visita.',title_pt:'Antes da sua visita.',text_es:'La web refleja catálogos online, no el stock físico completo de cada tienda.',text_pt:'A web reflete catálogos online, não o estoque físico completo de cada loja.'},
  homepage:{order:['hero','benefits','discover','popular','catalog'],visible:{hero:true,benefits:true,discover:true,popular:true,catalog:true}},
- carousel:{visible_count:5,autoplay:true,autoplay_seconds:6},
+ carousel:{visible_count:5,autoplay:true,autoplay_seconds:6,transition:'smooth',transition_ms:500},
  seo:{title_es:'RivFree — Comparador de precios de free shops',title_pt:'RivFree — Comparador de preços de free shops',description_es:'Compará precios de free shops de Rivera y Santana do Livramento.',description_pt:'Compare preços de free shops de Rivera e Santana do Livramento.',social_image:'social-card.png'},
  footer:{title_es:'RivFree · Comparador independiente',title_pt:'RivFree · Comparador independente',text_es:'No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.',text_pt:'Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.',show_privacy:true}
 };
@@ -26,8 +26,14 @@ function apply(config){
  const a=config.appearance||DEFAULT.appearance, l=a.light||{}, d=a.dark||{};
  const fonts={
   'system-modern':'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
-  'rounded':'"Trebuchet MS","Segoe UI",Arial,sans-serif',
+  'inter-ui':'Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif',
+  'geometric':'Avenir Next,Avenir,Montserrat,"Segoe UI",Arial,sans-serif',
+  'humanist':'"Segoe UI",Candara,Calibri,Optima,Arial,sans-serif',
+  'rounded':'"Trebuchet MS","Arial Rounded MT Bold","Segoe UI",Arial,sans-serif',
+  'compact':'Arial Narrow,"Roboto Condensed","Segoe UI",Arial,sans-serif',
+  'classic-ui':'Tahoma,Verdana,"Segoe UI",Arial,sans-serif',
   'editorial':'Georgia,"Times New Roman",serif',
+  'slab':'Rockwell,"Roboto Slab",Georgia,serif',
   'mono':'ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace'
  };
  let style=document.getElementById('rivfreeStudioTheme');if(!style){style=document.createElement('style');style.id='rivfreeStudioTheme';document.head.append(style);}

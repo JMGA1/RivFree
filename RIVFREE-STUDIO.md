@@ -91,3 +91,11 @@ Productos permite filtrar por **sin imagen**, **inactivos** y **en oferta**, ord
 
 Las acciones destructivas muestran un modal con los nombres afectados antes de confirmar. Los errores de formulario quedan junto al campo hasta corregirse.
 
+
+## Contexto de edición
+
+En **Diseño** y **Carrusel** elegís explícitamente el modo (Claro/Oscuro) y el idioma (Español/Português). Esa selección también controla la vista previa y no cambia por sí sola cuando editás un color o un texto. Solo se muestran los controles del contexto seleccionado.
+
+El carrusel permite elegir paletas sugeridas o colores HEX manuales para fondo, texto, acento y botón, incluyendo el color del texto del botón. También puede configurarse el cambio entre banners como **Animado suave** o **Estático**.
+
+Los botones **Descartar cambios** restauran la última versión guardada de la sección correspondiente. **Descartar cambios del banner** restaura solamente el banner seleccionado.

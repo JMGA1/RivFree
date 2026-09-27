@@ -30,8 +30,10 @@ test('preset selection, custom palette, preview mode and zero radius stay synchr
  d.querySelector('[data-preset="clean"]').click();
  assert.equal(d.querySelector('[data-preset="clean"]').getAttribute('aria-pressed'),'true');
  input('darkBackground','#223344');input('siteRadius','0');await settle();
- const message=messages.filter(x=>x.type==='rivfree-studio-preview').at(-1);
- assert.equal(message.theme,'dark');assert.equal(message.config.appearance.dark.background,'#223344');assert.equal(message.config.appearance.radius,0);
+ let message=messages.filter(x=>x.type==='rivfree-studio-preview').at(-1);
+ assert.equal(message.theme,'light');assert.equal(message.config.appearance.dark.background,'#223344');assert.equal(message.config.appearance.radius,0);
+ const mode=d.getElementById('appearanceEditTheme');mode.value='dark';mode.dispatchEvent(new d.defaultView.Event('change',{bubbles:true}));await settle();
+ message=messages.filter(x=>x.type==='rivfree-studio-preview').at(-1);assert.equal(message.theme,'dark');
  assert.equal(d.querySelector('[data-preset="clean"]').getAttribute('aria-pressed'),'false');
  assert.match(d.getElementById('appearanceFeedback').textContent,/falta guardar/);
 });
@@ -124,6 +126,19 @@ test('preview acknowledgment is accepted only from the preview frame',async t=>{
  assert.match(d.getElementById('previewStatus').textContent,/Actualizando/);
  w.dispatchEvent(new w.MessageEvent('message',{origin:w.location.origin,source:d.getElementById('studioPreview').contentWindow,data:ack}));
  assert.match(d.getElementById('previewStatus').textContent,/Vista actualizada/);
+});
+
+test('carousel keeps selected list scroll, custom colors and discard restores saved banner',async t=>{
+ const {d,input,tab}=await editor(t);tab('carousel');const list=d.getElementById('campaignList');list.scrollTop=260;
+ const buttons=d.querySelectorAll('.campaign-list-main');buttons[Math.min(5,buttons.length-1)].click();assert.equal(list.scrollTop,260);
+ input('campaignLightButton','#123456');input('campaignLightButtonText','#ffffff');assert.equal(d.getElementById('campaignLightButton').value.toLowerCase(),'#123456');
+ const original=JSON.parse(read('data/highlights.json')).hero.find(x=>x.id===d.getElementById('campaignId').value);input('campaignTitleEs','Temporal');d.getElementById('discardCampaign').click();await settle();
+ if(original)assert.equal(d.getElementById('campaignTitleEs').value,original.title.es);
+});
+
+test('carousel transition setting is included in preview config',async t=>{
+ const {d,input,messages,tab}=await editor(t);tab('carousel');input('campaignTransition','static');await settle();
+ const preview=messages.filter(x=>x.type==='rivfree-studio-preview').at(-1);assert.equal(preview.config.carousel.transition,'static');
 });
 
 test('storefront preview pins inactive campaigns, respects page visibility and rejects other senders',async t=>{

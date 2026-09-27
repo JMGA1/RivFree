@@ -43,6 +43,16 @@ class StudioEditorTests(unittest.TestCase):
         self.assertEqual(state['health']['DFA']['estado'],'ok')
         self.assertEqual(state['meta']['actualizado'],'2026-09-26T10:00:00+00:00')
 
+    def test_carousel_transition_and_fonts_are_sanitized(self):
+        config=server.default_site_config(); config['carousel'].update({'transition':'static','transition_ms':750}); config['appearance']['font']='slab'
+        normalized=server.normalize_site_config(config)
+        self.assertEqual(normalized['carousel']['transition'],'static'); self.assertEqual(normalized['carousel']['transition_ms'],750); self.assertEqual(normalized['appearance']['font'],'slab')
+
+    def test_campaign_custom_colors_and_extended_palette_are_preserved(self):
+        hero=[{'id':'color-test','theme':'ocean','title':{'es':'Color','pt-BR':'Cor'},'eyebrow':{},'description':{},'cta':{},'colors':{'light':{'background':'#112233','text':'#FFFFFF','accent':'#445566','button':'#778899','button_text':'#000000'},'dark':{'background':'#101010','text':'#FAFAFA','accent':'#ABCDEF','button':'#123456','button_text':'#FFFFFF'}}}]
+        item=server.save_highlights({'hero':hero})['highlights']['hero'][0]
+        self.assertEqual(item['theme'],'ocean'); self.assertEqual(item['colors']['light']['button'],'#778899'); self.assertEqual(item['colors']['dark']['button_text'],'#FFFFFF')
+
     def test_owner_export_contains_studio_configuration(self):
         raw=server.export_zip()
         import io, zipfile
@@ -61,9 +71,12 @@ class StudioEditorTests(unittest.TestCase):
 
     def test_studio_html_uses_versioned_assets_and_new_controls(self):
         html=(Path(server.__file__).with_name('index.html')).read_text(encoding='utf-8')
-        self.assertIn('editor.css?v=20260927-studio-sync4',html)
-        self.assertIn('studio-editor.js?v=20260927-studio-sync4',html)
+        self.assertIn('editor.css?v=20260927-studio-custom1',html)
+        self.assertIn('studio-editor.js?v=20260927-studio-custom1',html)
         self.assertIn('id="healthKpis"',html)
         self.assertIn('id="restoreNativeTheme"',html)
+        self.assertIn('id="appearanceEditTheme"',html)
+        self.assertIn('id="campaignLightButton"',html)
+        self.assertIn('id="discardCampaign"',html)
 
 if __name__=='__main__': unittest.main()

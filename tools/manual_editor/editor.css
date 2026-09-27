@@ -155,3 +155,12 @@ button:focus-visible{outline:3px solid #227bba;outline-offset:3px}
     min-height:104px;
   }
 }
+
+/* Studio personalization UX: one context at a time, clearer focus and safer edits. */
+.editing-context-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 18px;padding:14px 16px;border:1px solid #cfd8e4;border-left:4px solid var(--red);border-radius:13px;background:linear-gradient(135deg,#f7f9fc,#fff)}
+.editing-context-bar>div:first-child{display:grid;gap:4px}.editing-context-bar strong{font-size:14px;color:var(--ink)}.editing-context-bar small{color:var(--muted);font-size:10.5px;line-height:1.45}.editing-context-controls{display:flex;gap:9px;min-width:min(360px,100%)}.editing-context-controls label{min-width:145px}.editing-context-bar.compact{margin-top:4px;margin-bottom:20px}
+.active-edit-hint{margin:0 0 8px;padding:9px 12px;border-radius:9px;background:#eef3f9;color:#344860;font-size:11px;font-weight:800}.editing-now{position:relative}.editing-now>span:first-child{color:var(--red)}.editing-now input,.editing-now select,.editing-now textarea{border-color:#c85467!important;box-shadow:0 0 0 3px #ad233c12!important}.editing-now::after{content:'Editando';position:absolute;right:5px;top:-3px;padding:2px 5px;border-radius:999px;background:#ad233c;color:#fff;font-size:7px;font-weight:900;letter-spacing:.04em}
+[data-studio-lang][hidden],[data-studio-theme][hidden]{display:none!important}.single-language{grid-template-columns:minmax(0,1fr)}.single-language>div{min-height:0}.campaign-color-panel{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:8px}.campaign-color-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}.campaign-color-actions .selection-feedback{flex:1;min-width:220px}.contrast-warning{color:#a33a27!important;font-weight:800}
+.campaign-settings-mini{grid-template-columns:repeat(2,minmax(0,1fr))}.campaign-settings-mini label:last-child{grid-column:auto}.campaign-list-item{transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}.campaign-list-item.selected{box-shadow:inset 4px 0 var(--red),0 5px 18px rgba(18,36,59,.07)}
+#campaignEditStatus{margin:5px 0 0;max-width:520px}.panel-heading-actions .button{white-space:nowrap}
+@media(max-width:760px){.editing-context-bar{align-items:stretch;flex-direction:column}.editing-context-controls{width:100%;min-width:0}.editing-context-controls label{min-width:0;flex:1}.campaign-color-panel{grid-template-columns:1fr}}
