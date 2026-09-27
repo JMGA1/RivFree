@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260927-studio-custom1';
+  const BUILD = '20260927-studio-custom2';
   window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const token = params.get('token') || '';

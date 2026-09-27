@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260927-studio-custom1';
+  const BUILD = '20260927-studio-custom2';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -312,6 +312,10 @@
   }
   function deliverPreview() {
     const frame=$('studioPreview'); if (!frame) return;
+    // Always read the visible carousel controls at preview time. Select elements
+    // may emit input/change in a different order across browsers and JSDOM;
+    // the preview must reflect exactly what the user currently sees.
+    if (activeTab()==='carousel' && $('campaignTransition')) readCarouselSettings();
     const revision=++previewRevision;
     val('previewTheme',previewTheme);val('previewLanguage',previewLanguage);
     let heroForPreview=workingHero;
@@ -612,7 +616,10 @@
   $('campaignEditTheme')?.addEventListener('change',()=>setEditingTheme($('campaignEditTheme').value));
   $('campaignEditLanguage')?.addEventListener('change',()=>setEditingLanguage($('campaignEditLanguage').value));
   $('campaignTheme')?.addEventListener('change',()=>{applyCampaignPalette($('campaignTheme').value);syncCampaignDraft();});
-  $('campaignTransition')?.addEventListener('change',()=>{if($('campaignTransitionSpeed'))$('campaignTransitionSpeed').disabled=$('campaignTransition').value==='static';});
+  $('campaignTransition')?.addEventListener('change',()=>{
+    if($('campaignTransitionSpeed'))$('campaignTransitionSpeed').disabled=$('campaignTransition').value==='static';
+    readCarouselSettings(); markDirty('carousel'); sendPreview();
+  });
   $('campaignAutoContrast')?.addEventListener('click',()=>{const mode=previewTheme==='dark'?'dark':'light',prefix='campaign'+(mode==='light'?'Light':'Dark');const button=$(prefix+'Button'),text=$(prefix+'ButtonText');if(!button||!text)return;text.value=autoTextColor(button.value);text.dispatchEvent(new Event('input',{bubbles:true}));syncAllHexInputs();updateCampaignContrast();});
   $('discardAppearance')?.addEventListener('click',()=>discardConfigSection('appearance'));
   $('discardPage')?.addEventListener('click',()=>discardConfigSection('page'));

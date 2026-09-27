@@ -109,3 +109,8 @@ Todos los cambios notables de RivFree se documentan aquí para evitar archivos d
 - La preview de Diseño conserva de forma determinística el modo claro/oscuro del último color editado.
 - La preview del Carrusel toma directamente el formulario visible al enviar el borrador, evitando carreras de eventos.
 - Guardar Carrusel sincroniza el banner actual antes de validar y escribir, incluyendo el último carácter tipeado.
+
+### 2026-09-27 · Sincronización de transición del carrusel
+- La vista previa lee el selector de transición en el momento de renderizar, evitando que `Estático` vuelva a `Animado suave`.
+- El evento `change` del selector actualiza configuración, estado pendiente y preview de forma explícita.
+- Se incrementó la versión de recursos del Studio para evitar caché cruzada.
