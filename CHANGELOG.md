@@ -91,3 +91,8 @@ Todos los cambios notables de RivFree se documentan aquí para evitar archivos d
 - El subtítulo de marca vuelve a mostrarse en escritorio y se actualiza en vivo desde RivFree Studio.
 - La vista previa fija explícitamente ES/PT antes de aplicar `site-config`, evitando diferencias por orden de carga.
 - En tablet/móvil el subtítulo se oculta para mantener compacto el encabezado.
+
+### Corrección Studio · sincronización de preview y guardado
+- La preview de Diseño conserva de forma determinística el modo claro/oscuro del último color editado.
+- La preview del Carrusel toma directamente el formulario visible al enviar el borrador, evitando carreras de eventos.
+- Guardar Carrusel sincroniza el banner actual antes de validar y escribir, incluyendo el último carácter tipeado.

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260927-studio-sync3';
+  const BUILD = '20260927-studio-sync4';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -260,12 +260,25 @@
     const frame=$('studioPreview'); if (!frame) return;
     const revision=++previewRevision;
     val('previewTheme',previewTheme);val('previewLanguage',previewLanguage);
-    const selected=activeTab()==='carousel'?campaignById(selectedCampaignId):null;
+    let heroForPreview=workingHero;
+    let previewSelectedId=activeTab()==='carousel'?selectedCampaignId:'';
+    // Read the visible campaign form at send time too. This removes timing races
+    // between a user's keystroke, the draft synchronizer and the preview debounce.
+    if(activeTab()==='carousel' && $('campaignForm') && selectedCampaignId) {
+      try {
+        const current=campaignFromForm();
+        heroForPreview=clone(workingHero);
+        const index=heroForPreview.findIndex(x=>x.id===current.id);
+        if(index<0) heroForPreview.push(current); else heroForPreview[index]=current;
+        previewSelectedId=current.id;
+      } catch {}
+    }
+    const selected=previewSelectedId?(heroForPreview.find(x=>x.id===previewSelectedId)||null):null;
     if($('previewContext'))$('previewContext').textContent=selected?`Editando: ${selected.title?.[previewLanguage]||selected.title?.es||'Sin título'} · ${campaignScheduleState(selected).label}. ${selected.smartType?'El contenido inteligente se genera desde el catálogo.':'Este banner permanece fijo mientras editás.'}`:'Página completa · la vista previa no publica cambios.';
     if ($('previewStatus')) $('previewStatus').textContent='Actualizando vista previa…';
     try {
       frame.contentWindow?.postMessage({type:'rivfree-studio-preview',config:workingConfig,theme:previewTheme,language:previewLanguage},location.origin);
-      frame.contentWindow?.postMessage({type:'rivfree-studio-campaigns-preview',hero:workingHero,selectedId:activeTab()==='carousel'?selectedCampaignId:'',revision},location.origin);
+      frame.contentWindow?.postMessage({type:'rivfree-studio-campaigns-preview',hero:heroForPreview,selectedId:previewSelectedId,revision},location.origin);
       clearTimeout(previewAckTimer);
       previewAckTimer=setTimeout(()=>{if($('previewStatus'))$('previewStatus').textContent='La vista previa no respondió. Usá Recargar vista.';},5000);
     } catch {}
@@ -329,6 +342,9 @@
   async function saveCarousel() {
     if(saving)return;
     readCarouselSettings();
+    // Capture the form synchronously before validating/saving so Ctrl+S or a
+    // fast click on Guardar cannot miss the last typed character.
+    if(selectedCampaignId && $('campaignForm')) syncCampaignDraft();
     if (!validateCampaigns()) return;
     saving=true; $('saveCampaigns').disabled=true;
     try {
@@ -428,7 +444,7 @@
       if (color.dataset.hexReady) continue; color.dataset.hexReady='1';
       const hex=document.createElement('input'); hex.type='text'; hex.className='hex-input'; hex.maxLength=7; hex.setAttribute('aria-label',`Código hexadecimal para ${color.previousElementSibling?.textContent||'color'}`); color.insertAdjacentElement('afterend',hex);
       const error=document.createElement('small');error.className='field-error';error.id=`${color.id}Error`;error.hidden=true;error.textContent='Usá 6 dígitos: #12AB34. Se conserva el último color válido.';hex.after(error);hex.setAttribute('aria-describedby',error.id);
-      color.addEventListener('input',()=>{hex.value=color.value.toUpperCase();hex.classList.remove('invalid');hex.setAttribute('aria-invalid','false');error.hidden=true;});
+      color.addEventListener('input',()=>{hex.value=color.value.toUpperCase();hex.classList.remove('invalid');hex.setAttribute('aria-invalid','false');error.hidden=true;previewTheme=color.id.startsWith('dark')?'dark':'light';});
       hex.addEventListener('input',event=>{event.stopPropagation();let v=hex.value.trim();if(v&&!v.startsWith('#'))v='#'+v;const valid=/^#[0-9a-f]{6}$/i.test(v);hex.classList.toggle('invalid',!valid);hex.setAttribute('aria-invalid',String(!valid));error.hidden=valid;if(valid){color.value=v;previewTheme=color.id.startsWith('dark')?'dark':'light';workingConfig.appearance.colors_customized=true;readAppearance();markDirty('appearance');sendPreview();}});
     }
     syncAllHexInputs();
