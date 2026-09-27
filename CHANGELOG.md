@@ -86,3 +86,8 @@ Todos los cambios notables de RivFree se documentan aquí para evitar archivos d
 ### Estadísticas y privacidad
 - La integración anterior de GA4 fue reemplazada por Cloudflare Web Analytics sin eventos personalizados de búsqueda/favoritos.
 - Se mantuvieron favoritos, preferencias y consultas recientes como datos funcionales locales.
+
+### Studio · vista previa de marca
+- El subtítulo de marca vuelve a mostrarse en escritorio y se actualiza en vivo desde RivFree Studio.
+- La vista previa fija explícitamente ES/PT antes de aplicar `site-config`, evitando diferencias por orden de carga.
+- En tablet/móvil el subtítulo se oculta para mantener compacto el encabezado.

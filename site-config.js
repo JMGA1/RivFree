@@ -72,7 +72,7 @@ window.addEventListener('message',event=>{
  if(event.data?.type==='rivfree-studio-preview'&&event.data.config){
   previewConfigReceived=true;
   if(['light','dark'].includes(event.data.theme))document.documentElement.dataset.theme=event.data.theme;
-  if(['es','pt-BR'].includes(event.data.language))window.setRivFreePreviewLanguage?.(event.data.language);
+  if(['es','pt-BR'].includes(event.data.language)){document.documentElement.lang=event.data.language;window.setRivFreePreviewLanguage?.(event.data.language);}
   apply(event.data.config);
  }
  if(event.data?.type==='rivfree-studio-navigate'){

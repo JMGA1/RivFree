@@ -148,10 +148,12 @@ test('site config preserves zero radius and late network responses cannot overwr
  const dom=new JSDOM(read('index.html'),{url:'http://localhost/?studio-preview=1',runScripts:'outside-only'});const w=dom.window;
  t.after(()=>w.close());const parent={postMessage(){}};Object.defineProperty(w,'parent',{value:parent});
  let finish;w.fetch=()=>new Promise(resolve=>finish=resolve);w.eval(read('site-config.js'));
- const config=JSON.parse(read('data/site-config.json'));config.appearance.radius=0;config.appearance.dark.background='#223344';
- w.dispatchEvent(new w.MessageEvent('message',{origin:w.location.origin,source:parent,data:{type:'rivfree-studio-preview',config,theme:'dark'}}));
+ const config=JSON.parse(read('data/site-config.json'));config.appearance.radius=0;config.appearance.dark.background='#223344';config.branding.tagline_es='Subtítulo en vivo';
+ w.dispatchEvent(new w.MessageEvent('message',{origin:w.location.origin,source:parent,data:{type:'rivfree-studio-preview',config,theme:'dark',language:'es'}}));
  finish({ok:true,json:async()=>({})});await w.RIVFREE_SITE_READY;
  assert.equal(w.RIVFREE_SITE_CONFIG.appearance.radius,0);assert.equal(w.RIVFREE_SITE_CONFIG.appearance.dark.background,'#223344');
  assert.match(w.document.getElementById('rivfreeStudioTheme').textContent,/--studio-radius:0px/);
  assert.equal(w.document.documentElement.dataset.theme,'dark');
+ assert.equal(w.document.documentElement.lang,'es');
+ assert.equal(w.document.querySelector('.brand p').textContent,'Subtítulo en vivo');
 });

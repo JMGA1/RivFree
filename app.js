@@ -974,6 +974,7 @@ categorySearch.addEventListener('keydown',event=>{
 
 window.setRivFreePreviewLanguage = language => {
  if(!new URLSearchParams(location.search).has('studio-preview') || window.parent===window)return;
+ document.documentElement.lang=language;
  if(LANG!==language){LANG=language;render();translateUI();}
 };
 document.getElementById('languageToggle').addEventListener('change', event => {
