@@ -1,3 +1,5 @@
+
+- Studio: corregida una condición de carrera al iniciar. El fallback de estado a los 250 ms ya no vuelve a cargar la configuración guardada si el Studio ya inicializó, evitando que cambios tempranos (por ejemplo Carrusel → transición Estático) regresen solos a sus valores anteriores.
 ## 2026-09-26 — RivFree Studio · Panel de control
 
 ## 2026-09-27 · Studio: personalización contextual

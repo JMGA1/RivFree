@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260927-studio-custom2';
+  const BUILD = '20260927-studio-custom3';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -666,5 +666,13 @@
 
   try { localStorage.removeItem('rivfree-studio-draft-v2'); } catch {}
   E.ready?.then(state=>stateEvent({detail:state})).catch?.(()=>{});
-  setTimeout(()=>{const state=E.getState();if(state?.site_config)stateEvent({detail:state});},250);
+  // Fallback initialization only. Do not replay the initial server state after
+  // Studio has already initialized: that late replay could overwrite controls
+  // the user changed during the first quarter-second (for example changing the
+  // carousel transition to Static and seeing it jump back to Smooth).
+  setTimeout(()=>{
+    if (initialized) return;
+    const state=E.getState();
+    if(state?.site_config) stateEvent({detail:state});
+  },250);
 })();

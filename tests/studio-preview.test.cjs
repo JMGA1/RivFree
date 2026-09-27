@@ -141,6 +141,13 @@ test('carousel transition setting is included in preview config',async t=>{
  const preview=messages.filter(x=>x.type==='rivfree-studio-preview').at(-1);assert.equal(preview.config.carousel.transition,'static');
 });
 
+test('late fallback initialization does not overwrite an early carousel edit',async t=>{
+ const {d,input,messages,tab}=await editor(t);tab('carousel');input('campaignTransition','static');
+ await new Promise(resolve=>setTimeout(resolve,320));
+ assert.equal(d.getElementById('campaignTransition').value,'static');
+ const preview=messages.filter(x=>x.type==='rivfree-studio-preview').at(-1);assert.equal(preview.config.carousel.transition,'static');
+});
+
 test('storefront preview pins inactive campaigns, respects page visibility and rejects other senders',async t=>{
  const dom=new JSDOM(read('index.html'),{url:'http://localhost/?studio-preview=1',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window;const parent={postMessage(){}};Object.defineProperty(w,'parent',{value:parent});t.after(()=>w.close());
