@@ -1,9 +1,9 @@
 {
-  "version": "studio-1",
-  "actualizado": null,
+  "version": "studio-1790524788825-94538876",
+  "actualizado": "2026-09-27T15:59:48.825353+00:00",
   "branding": {
     "site_name": "RivFree",
-    "tagline_es": "Explorá y compará los free shops de Rivera y Santana do Livramento",
+    "tagline_es": "Explorá y compará los free shops de nuestra frontera",
     "tagline_pt": "Explore e compare os free shops de Rivera e Santana do Livramento"
   },
   "appearance": {
@@ -11,6 +11,7 @@
     "density": "comfortable",
     "radius": 12,
     "shadow": "soft",
+    "colors_customized": false,
     "light": {
       "background": "#F5F6F8",
       "surface": "#FFFFFF",
@@ -30,8 +31,7 @@
       "highlight": "#FFB5B9",
       "background_image": "",
       "background_overlay": 0
-    },
-    "colors_customized": false
+    }
   },
   "notice": {
     "enabled": true,

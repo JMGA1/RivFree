@@ -4,7 +4,9 @@
       "id": "beauty-perfumes",
       "poolGroup": "beauty",
       "theme": "rose",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "ENCONTRÁ TU NUEVO FAVORITO",
         "pt-BR": "ENCONTRE SEU NOVO FAVORITO"
@@ -22,6 +24,22 @@
         "pt-BR": "Explorar perfumes"
       },
       "category": "perfumes",
+      "colors": {
+        "light": {
+          "background": "#EFD4DA",
+          "text": "#30212A",
+          "accent": "#9F2942",
+          "button": "#9F2942",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#38232E",
+          "text": "#F8EDF0",
+          "accent": "#FF91A6",
+          "button": "#EE8B9D",
+          "button_text": "#151515"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/beauty-perfumes-0.webp",
@@ -33,7 +51,9 @@
       "id": "beauty-skincare",
       "poolGroup": "beauty",
       "theme": "mint",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "CUIDADO PERSONAL",
         "pt-BR": "CUIDADO PESSOAL"
@@ -51,6 +71,22 @@
         "pt-BR": "Ver cosméticos"
       },
       "category": "cosmetica",
+      "colors": {
+        "light": {
+          "background": "#D7E7DD",
+          "text": "#203C30",
+          "accent": "#2E6B51",
+          "button": "#2E6B51",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#1C332C",
+          "text": "#ECFAF3",
+          "accent": "#85D4AD",
+          "button": "#85D4AD",
+          "button_text": "#183026"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/beauty-skincare-0.webp",
@@ -62,7 +98,9 @@
       "id": "beauty-compare",
       "poolGroup": "beauty",
       "theme": "rose",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "ANTES DE ELEGIR",
         "pt-BR": "ANTES DE ESCOLHER"
@@ -80,6 +118,22 @@
         "pt-BR": "Comparar perfumes"
       },
       "category": "perfumes",
+      "colors": {
+        "light": {
+          "background": "#EFD4DA",
+          "text": "#30212A",
+          "accent": "#9F2942",
+          "button": "#9F2942",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#38232E",
+          "text": "#F8EDF0",
+          "accent": "#FF91A6",
+          "button": "#FF91A6",
+          "button_text": "#151515"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/beauty-compare-0.webp",
@@ -91,7 +145,9 @@
       "id": "beauty-selfcare",
       "poolGroup": "beauty",
       "theme": "mint",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "UN MOMENTO PARA VOS",
         "pt-BR": "UM MOMENTO PARA VOCÊ"
@@ -109,6 +165,22 @@
         "pt-BR": "Explorar beleza"
       },
       "category": "cosmetica",
+      "colors": {
+        "light": {
+          "background": "#D7E7DD",
+          "text": "#203C30",
+          "accent": "#2E6B51",
+          "button": "#2E6B51",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#1C332C",
+          "text": "#ECFAF3",
+          "accent": "#85D4AD",
+          "button": "#85D4AD",
+          "button_text": "#183026"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/beauty-selfcare-0.webp",
@@ -120,7 +192,9 @@
       "id": "drinks-whisky",
       "poolGroup": "drinks",
       "theme": "sand",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "PARA TU PRÓXIMO BRINDIS",
         "pt-BR": "PARA O PRÓXIMO BRINDE"
@@ -138,6 +212,22 @@
         "pt-BR": "Explorar bebidas"
       },
       "category": "bebidas",
+      "colors": {
+        "light": {
+          "background": "#EADCC3",
+          "text": "#463725",
+          "accent": "#76511B",
+          "button": "#76511B",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#322B21",
+          "text": "#F8F0DE",
+          "accent": "#E8C578",
+          "button": "#E8C578",
+          "button_text": "#2A2218"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/drinks-whisky-0.webp",
@@ -149,7 +239,9 @@
       "id": "drinks-wine",
       "poolGroup": "drinks",
       "theme": "rose",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "VINO Y ESPUMANTES",
         "pt-BR": "VINHOS E ESPUMANTES"
@@ -167,6 +259,22 @@
         "pt-BR": "Ver bebidas"
       },
       "category": "bebidas",
+      "colors": {
+        "light": {
+          "background": "#EFD4DA",
+          "text": "#30212A",
+          "accent": "#9F2942",
+          "button": "#9F2942",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#38232E",
+          "text": "#F8EDF0",
+          "accent": "#FF91A6",
+          "button": "#FF91A6",
+          "button_text": "#151515"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/drinks-wine-0.webp",
@@ -178,7 +286,9 @@
       "id": "drinks-discover",
       "poolGroup": "drinks",
       "theme": "sand",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "RIVERA · SANTANA DO LIVRAMENTO",
         "pt-BR": "RIVERA · SANTANA DO LIVRAMENTO"
@@ -196,6 +306,22 @@
         "pt-BR": "Explorar catálogo"
       },
       "category": "bebidas",
+      "colors": {
+        "light": {
+          "background": "#EADCC3",
+          "text": "#463725",
+          "accent": "#76511B",
+          "button": "#76511B",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#322B21",
+          "text": "#F8F0DE",
+          "accent": "#E8C578",
+          "button": "#E8C578",
+          "button_text": "#2A2218"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/drinks-discover-0.webp",
@@ -207,7 +333,9 @@
       "id": "drinks-compare",
       "poolGroup": "drinks",
       "theme": "blue",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "MÁS FÁCIL DE COMPARAR",
         "pt-BR": "MAIS FÁCIL DE COMPARAR"
@@ -225,6 +353,22 @@
         "pt-BR": "Comparar bebidas"
       },
       "category": "bebidas",
+      "colors": {
+        "light": {
+          "background": "#D8E5F3",
+          "text": "#192D45",
+          "accent": "#245F93",
+          "button": "#245F93",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#192C45",
+          "text": "#ECF4FF",
+          "accent": "#85BAFF",
+          "button": "#85BAFF",
+          "button_text": "#152234"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/drinks-compare-0.webp",
@@ -236,7 +380,9 @@
       "id": "tech-electronics",
       "poolGroup": "tech",
       "theme": "blue",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "TECNOLOGÍA PARA TU DÍA",
         "pt-BR": "TECNOLOGIA PARA SEU DIA"
@@ -254,6 +400,22 @@
         "pt-BR": "Explorar tecnologia"
       },
       "category": "electronica",
+      "colors": {
+        "light": {
+          "background": "#D8E5F3",
+          "text": "#192D45",
+          "accent": "#245F93",
+          "button": "#245F93",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#192C45",
+          "text": "#ECF4FF",
+          "accent": "#85BAFF",
+          "button": "#85BAFF",
+          "button_text": "#152234"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/tech-electronics-0.webp",
@@ -265,7 +427,9 @@
       "id": "tech-computing",
       "poolGroup": "tech",
       "theme": "mint",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "INFORMÁTICA",
         "pt-BR": "INFORMÁTICA"
@@ -283,6 +447,22 @@
         "pt-BR": "Ver informática"
       },
       "category": "informatica",
+      "colors": {
+        "light": {
+          "background": "#D7E7DD",
+          "text": "#203C30",
+          "accent": "#2E6B51",
+          "button": "#2E6B51",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#1C332C",
+          "text": "#ECFAF3",
+          "accent": "#85D4AD",
+          "button": "#85D4AD",
+          "button_text": "#183026"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/tech-computing-0.webp",
@@ -294,7 +474,9 @@
       "id": "tech-home",
       "poolGroup": "tech",
       "theme": "blue",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "TECNOLOGÍA PARA CASA",
         "pt-BR": "TECNOLOGIA PARA CASA"
@@ -312,6 +494,22 @@
         "pt-BR": "Ver eletrodomésticos"
       },
       "category": "electrodomesticos",
+      "colors": {
+        "light": {
+          "background": "#D8E5F3",
+          "text": "#192D45",
+          "accent": "#245F93",
+          "button": "#245F93",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#192C45",
+          "text": "#ECF4FF",
+          "accent": "#85BAFF",
+          "button": "#85BAFF",
+          "button_text": "#152234"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/tech-home-0.webp",
@@ -323,7 +521,9 @@
       "id": "tech-audio",
       "poolGroup": "tech",
       "theme": "sand",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "AUDIO Y ENTRETENIMIENTO",
         "pt-BR": "ÁUDIO E ENTRETENIMENTO"
@@ -341,6 +541,22 @@
         "pt-BR": "Explorar eletrônicos"
       },
       "category": "electronica",
+      "colors": {
+        "light": {
+          "background": "#EADCC3",
+          "text": "#463725",
+          "accent": "#76511B",
+          "button": "#76511B",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#322B21",
+          "text": "#F8F0DE",
+          "accent": "#E8C578",
+          "button": "#E8C578",
+          "button_text": "#2A2218"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/tech-audio-0.webp",
@@ -352,7 +568,9 @@
       "id": "food-chocolate",
       "poolGroup": "food",
       "theme": "mint",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "ALGO DULCE PARA EL VIAJE",
         "pt-BR": "ALGO DOCE PARA A VIAGEM"
@@ -370,6 +588,22 @@
         "pt-BR": "Explorar alimentos"
       },
       "category": "alimentos",
+      "colors": {
+        "light": {
+          "background": "#D7E7DD",
+          "text": "#203C30",
+          "accent": "#2E6B51",
+          "button": "#2E6B51",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#1C332C",
+          "text": "#ECFAF3",
+          "accent": "#85D4AD",
+          "button": "#85D4AD",
+          "button_text": "#183026"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/food-chocolate-0.webp",
@@ -381,7 +615,9 @@
       "id": "food-gifts",
       "poolGroup": "food",
       "theme": "rose",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "PARA COMPARTIR",
         "pt-BR": "PARA COMPARTILHAR"
@@ -399,6 +635,22 @@
         "pt-BR": "Ver chocolates"
       },
       "category": "alimentos",
+      "colors": {
+        "light": {
+          "background": "#EFD4DA",
+          "text": "#30212A",
+          "accent": "#9F2942",
+          "button": "#9F2942",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#38232E",
+          "text": "#F8EDF0",
+          "accent": "#FF91A6",
+          "button": "#FF91A6",
+          "button_text": "#151515"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/food-gifts-0.webp",
@@ -410,7 +662,9 @@
       "id": "food-discover",
       "poolGroup": "food",
       "theme": "sand",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "RIVERA · SANTANA DO LIVRAMENTO",
         "pt-BR": "RIVERA · SANTANA DO LIVRAMENTO"
@@ -428,6 +682,22 @@
         "pt-BR": "Explorar produtos"
       },
       "category": "alimentos",
+      "colors": {
+        "light": {
+          "background": "#EADCC3",
+          "text": "#463725",
+          "accent": "#76511B",
+          "button": "#76511B",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#322B21",
+          "text": "#F8F0DE",
+          "accent": "#E8C578",
+          "button": "#E8C578",
+          "button_text": "#2A2218"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/food-discover-0.webp",
@@ -439,7 +709,9 @@
       "id": "food-pantry",
       "poolGroup": "food",
       "theme": "mint",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "PARA LLEVAR",
         "pt-BR": "PARA LEVAR"
@@ -457,6 +729,22 @@
         "pt-BR": "Ver alimentos"
       },
       "category": "alimentos",
+      "colors": {
+        "light": {
+          "background": "#D7E7DD",
+          "text": "#203C30",
+          "accent": "#2E6B51",
+          "button": "#2E6B51",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#1C332C",
+          "text": "#ECFAF3",
+          "accent": "#85D4AD",
+          "button": "#85D4AD",
+          "button_text": "#183026"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/food-pantry-0.webp",
@@ -468,7 +756,9 @@
       "id": "smart-compare",
       "poolGroup": "smart",
       "theme": "rose",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "COMPARACIÓN DEL CATÁLOGO",
         "pt-BR": "COMPARAÇÃO DO CATÁLOGO"
@@ -487,6 +777,22 @@
       },
       "category": "perfumes",
       "smartType": "compare",
+      "colors": {
+        "light": {
+          "background": "#EFD4DA",
+          "text": "#30212A",
+          "accent": "#9F2942",
+          "button": "#9F2942",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#38232E",
+          "text": "#F8EDF0",
+          "accent": "#FF91A6",
+          "button": "#FF91A6",
+          "button_text": "#151515"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/smart-compare-0.webp",
@@ -498,7 +804,9 @@
       "id": "smart-multistore",
       "poolGroup": "smart",
       "theme": "blue",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "EN VARIAS TIENDAS",
         "pt-BR": "EM VÁRIAS LOJAS"
@@ -517,6 +825,22 @@
       },
       "category": "electronica",
       "smartType": "multistore",
+      "colors": {
+        "light": {
+          "background": "#D8E5F3",
+          "text": "#192D45",
+          "accent": "#245F93",
+          "button": "#245F93",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#192C45",
+          "text": "#ECF4FF",
+          "accent": "#85BAFF",
+          "button": "#85BAFF",
+          "button_text": "#152234"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/smart-multistore-0.webp",
@@ -528,7 +852,9 @@
       "id": "smart-offer",
       "poolGroup": "smart",
       "theme": "sand",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "OFERTAS DEL CATÁLOGO",
         "pt-BR": "OFERTAS DO CATÁLOGO"
@@ -547,6 +873,22 @@
       },
       "category": "bebidas",
       "smartType": "offer",
+      "colors": {
+        "light": {
+          "background": "#EADCC3",
+          "text": "#463725",
+          "accent": "#76511B",
+          "button": "#76511B",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#322B21",
+          "text": "#F8F0DE",
+          "accent": "#E8C578",
+          "button": "#E8C578",
+          "button_text": "#2A2218"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/smart-offer-0.webp",
@@ -558,7 +900,9 @@
       "id": "smart-category",
       "poolGroup": "smart",
       "theme": "mint",
+      "layout": "split",
       "sponsored": false,
+      "enabled": true,
       "eyebrow": {
         "es": "MUCHO PARA EXPLORAR",
         "pt-BR": "MUITO PARA EXPLORAR"
@@ -577,6 +921,22 @@
       },
       "category": "alimentos",
       "smartType": "category",
+      "colors": {
+        "light": {
+          "background": "#D7E7DD",
+          "text": "#203C30",
+          "accent": "#2E6B51",
+          "button": "#2E6B51",
+          "button_text": "#FFFFFF"
+        },
+        "dark": {
+          "background": "#1C332C",
+          "text": "#ECFAF3",
+          "accent": "#85D4AD",
+          "button": "#85D4AD",
+          "button_text": "#183026"
+        }
+      },
       "images": [
         {
           "src": "icons/campaigns/smart-category-0.webp",
