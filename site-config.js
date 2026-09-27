@@ -19,7 +19,7 @@ const studioPreview=new URLSearchParams(location.search).has('studio-preview')&&
 let previewConfigReceived=false;
 function lang(){if(studioPreview)return document.documentElement.lang==='es'?'es':'pt';try{return localStorage.getItem('rivfree-language')==='es'?'es':'pt';}catch{return document.documentElement.lang==='es'?'es':'pt';}}
 function escCssUrl(value){return String(value||'').replace(/["'\\\n\r()]/g,'');}
-function onColor(hex){const c=String(hex||'').replace('#','');if(!/^[0-9a-f]{6}$/i.test(c))return '#ffffff';const rgb=[0,2,4].map(i=>parseInt(c.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722>.179?'#151515':'#ffffff';}
+function onColor(hex){const c=String(hex||'').replace('#','');if(!/^[0-9a-f]{6}$/i.test(c))return '#ffffff';const rgb=[0,2,4].map(i=>parseInt(c.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722>.179?'#000000':'#ffffff';}
 function setMeta(selector,attr,value){const el=document.querySelector(selector);if(el&&value)el.setAttribute(attr,value);}
 function apply(config){
  config=merge(DEFAULT,config||{}); window.RIVFREE_SITE_CONFIG=config;

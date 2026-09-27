@@ -3,6 +3,10 @@ import hashlib
 import json
 import re
 import unicodedata
+try:
+    from .catalog_metrics import enrich
+except ImportError:
+    from catalog_metrics import enrich
 from pathlib import Path
 
 
@@ -66,6 +70,9 @@ def write_store_partitions(data_dir, output):
 
 def publish(data_dir, output, attempted_stores=None):
     data_dir = Path(data_dir)
+    previous = read_json(data_dir / 'products.json', {})
+    first_seen = read_json(data_dir / 'catalog-first-seen.json', {})
+    observations = {}
     health = read_json(data_dir / 'health.json', {})
     attempted_at = output.get('intento_actualizacion')
     for row in output.get('resumen', []):
@@ -99,7 +106,7 @@ def publish(data_dir, output, attempted_stores=None):
         and not row.get('datos_anteriores')
     }
     if attempted_stores and fresh and attempted_at:
-        observations = [
+        snapshot_observations = [
             [p['tienda'], p.get('url'), p.get('nombre'), p.get('precio_usd')]
             for p in output.get('productos', [])
             if p.get('tienda') in fresh
@@ -108,11 +115,11 @@ def publish(data_dir, output, attempted_stores=None):
             and p.get('precio_usd', 0) > 0
             and p.get('url')
         ]
-        if observations:
+        if snapshot_observations:
             stamp = attempted_at.replace(':', '-')
             write_json(
                 data_dir / 'history' / f'{stamp}.json',
-                {'actualizado': attempted_at, 'observaciones': observations},
+                {'actualizado': attempted_at, 'observaciones': snapshot_observations},
             )
 
     # Conservamos de verdad sólo los 90 snapshots más recientes.
@@ -129,7 +136,10 @@ def publish(data_dir, output, attempted_stores=None):
         for store, url, name, price in content.get('observaciones', []):
             if isinstance(price, (int, float)) and price > 0 and url:
                 series.setdefault(url, []).append([content['actualizado'], price])
+                observations.setdefault(str(store)+'|'+str(url), []).append([content['actualizado'], price])
     write_json(data_dir / 'price-history.json', series)
+    enrich(output, previous, first_seen, observations)
+    write_json(data_dir / 'catalog-first-seen.json', first_seen)
 
     # Se conserva el catálogo monolítico por compatibilidad con clientes antiguos,
     # pero los clientes nuevos descargan sólo los fragmentos de las tiendas que cambian.

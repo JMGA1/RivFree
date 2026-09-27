@@ -13,11 +13,13 @@ function app() {
   {nombre:'Chocolate Milka 100g',tienda:'A',categoria:'alimentos',precio_usd:4,url:'https://a.example/2'}
  ]});
  const fields={hideUnavailable:{checked:false},categoria:{value:''},soloOfertas:{checked:false},orden:{value:'precio_asc'},favoritesOnly:{checked:false}};
+ Object.defineProperty(fields.categoria,'selectedOptions',{get(){return (this.values||[this.value]).filter(Boolean).map(value=>({value}));}});
  const ctx=vm.createContext({Catalog,hasPrice,PRODUCT_GROUPS:prepared.groups,ACTIVE_SEARCH:'',favorites:new Set(),
   readPriceRange:()=>({min:NaN,max:NaN}),document:{getElementById:id=>fields[id],querySelectorAll:()=>[{value:'A'},{value:'B'}]}});
  vm.runInContext(source.slice(source.indexOf('let SEARCH_WORDS='),source.indexOf('function readPriceRange')),ctx);
  ctx.words=prepared.words;
  vm.runInContext('SEARCH_WORDS=words;',ctx);
+ vm.runInContext(source.slice(source.indexOf('function selectedCategories()'),source.indexOf('function syncCategoryInput()')),ctx);
  vm.runInContext(source.slice(source.indexOf('function getFiltered()'),source.indexOf('function render(')),ctx);
  return {ctx,fields};
 }

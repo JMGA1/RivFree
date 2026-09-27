@@ -8,7 +8,7 @@ import subprocess
 
 PUBLISH_PATHS = ['data/manual-products.json', 'data/manual-stores.json', 'data/site-config.json', 'data/highlights.json', 'assets/manual']
 
-UPDATE_PATHS = ['tools/manual_editor', 'tools/scraper_health_alerts.py',
+UPDATE_PATHS = ['site-config.js', 'app.js', 'features.js', 'shopping.js', 'storefront.js', 'index.html', 'styles.css', 'sw.js', 'catalog-cache.js', 'scrapers/catalog_metrics.py', 'scrapers/update_exchange.py', 'tests/test_catalog_metrics.py', 'tests/test_exchange.py', 'tests/visitor-improvements.test.cjs', 'tests/search-filter.test.cjs', 'tests/studio-preview.test.cjs', 'MEJORAS-VISITANTES-2026-09-27.md', 'tools/manual_editor', 'tools/scraper_health_alerts.py',
                 '.github/workflows/scrape.yml', 'scrapers/publish_data.py',
                 'requirements.txt', '.gitignore', 'tests/test_studio_writes.py',
                 'tests/studio-maintenance.test.cjs', 'tests/test_collaboration_editor.py',

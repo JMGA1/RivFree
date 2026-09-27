@@ -223,7 +223,7 @@ function renderPopularProducts(){
  document.getElementById('popularProducts').hidden=popularHidden;
  document.querySelector('a[href="#popularProducts"]').hidden=popularHidden;
  if(typeof PRODUCT_GROUPS==='undefined'||!PRODUCT_GROUPS.length)return;
- const signature=JSON.stringify([LANG,exchange.usd_brl,[...favorites], [...consultations],popularFeed]);
+ const signature=JSON.stringify([LANG,referenceCurrency,exchange.rate,[...favorites], [...consultations],popularFeed]);
  if(railCatalog===PRODUCT_GROUPS&&railSignature===signature)return;
  if(railCatalog!==PRODUCT_GROUPS)railGroups=PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice));
  railCatalog=PRODUCT_GROUPS;railSignature=signature;

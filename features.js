@@ -1,20 +1,27 @@
 let favorites=new Set();
 try {const saved=JSON.parse(localStorage.getItem('rivfree-favorites')||'[]');if(Array.isArray(saved))favorites=new Set(saved.filter(x=>typeof x==='string'));}catch{}
-let exchange={usd_brl:null,actualizado:null};
-let manualExchange=null;
-try {manualExchange=JSON.parse(localStorage.getItem('rivfree-exchange'));}catch{}
-if(!Number.isFinite(manualExchange?.usd_brl)||manualExchange.usd_brl<=0||manualExchange.usd_brl>=1000)manualExchange=null;
-function validExchange(){return Number.isFinite(exchange.usd_brl)&&exchange.usd_brl>0;}
+let referenceCurrency='BRL';
+try{const saved=localStorage.getItem('rivfree-currency');if(['USD','BRL','UYU','ARS'].includes(saved))referenceCurrency=saved;}catch{}
+let exchange={rate:null,actualizado:null},manualExchange=null,manualRates={};
+try{manualRates=JSON.parse(localStorage.getItem('rivfree-manual-rates')||'{}');if(!manualRates||typeof manualRates!=='object')manualRates={};const legacy=JSON.parse(localStorage.getItem('rivfree-exchange'));if(!manualRates.BRL&&legacy?.usd_brl>0)manualRates.BRL={rate:legacy.usd_brl,actualizado:legacy.actualizado};}catch{}
+function validExchange(){return referenceCurrency!=='USD'&&Number.isFinite(exchange.rate)&&exchange.rate>0&&exchange.rate<1000000;}
+function referencePrice(value){return new Intl.NumberFormat(LANG,{style:'currency',currency:referenceCurrency,currencyDisplay:'code'}).format(value*exchange.rate);}
 function updateExchangeNote(){
- exchange=manualExchange?.usd_brl>0?manualExchange:(automaticExchange||{usd_brl:null});
- document.getElementById('exchangeRate').value=validExchange()?exchange.usd_brl:'';
- const manual=manualExchange?.usd_brl>0;
- const stale=validExchange()&&Date.now()-Date.parse(exchange.actualizado)>4*86400000;
- document.getElementById('exchangePreview').textContent=validExchange()?`US$ 1 ≈ R$ ${exchange.usd_brl.toLocaleString(LANG,{minimumFractionDigits:2,maximumFractionDigits:4})}`:words('Cotação indisponível','Cotización no disponible');
- document.getElementById('exchangeNote').textContent=validExchange()
- ?`${manual?words('Taxa manual','Tasa manual'):'Frankfurter · '+words('Taxa de referência','Tasa de referencia')} · ${exchange.actualizado||''}${stale?' · '+words('Cotação antiga','Cotización antigua'):''}${exchangeFailed&&!manual?' · '+words('Sem atualização; usando taxa salva','Sin actualización; usando tasa guardada'):''}. `+words('Conversão aproximada. A loja pode aplicar outra cotação.','Conversión aproximada. La tienda puede aplicar otra cotización.')
- :words('Não foi possível obter a cotação. Informe uma taxa ou tente novamente.','No se pudo obtener la cotización. Ingresá una tasa o reintentá.');
+ const automatic=automaticExchange?.rates?.[referenceCurrency]||(referenceCurrency==='BRL'&&automaticExchange?.usd_brl?{rate:automaticExchange.usd_brl,date:automaticExchange.actualizado,source:automaticExchange.fuente}:null);
+ manualExchange=manualRates[referenceCurrency]||null;
+ exchange=manualExchange||{rate:automatic?.rate,actualizado:automatic?.date,source:automatic?.source};
+ document.getElementById('referenceCurrency').value=referenceCurrency;
+ const input=document.getElementById('exchangeRate');input.value=validExchange()?exchange.rate:'';input.disabled=referenceCurrency==='USD';input.setAttribute('aria-label',referenceCurrency+' / USD');
+ document.getElementById('exchangePair').textContent='USD → '+referenceCurrency;
+ document.getElementById('automaticExchange').disabled=referenceCurrency==='USD';
+ const stale=validExchange()&&(!Number.isFinite(Date.parse(exchange.actualizado))||Date.now()-Date.parse(exchange.actualizado)>4*86400000);
+ document.getElementById('exchangePreview').textContent=referenceCurrency==='USD'?'USD':validExchange()?`USD 1 ≈ ${referencePrice(1)}`:words('Cotação indisponível','Cotización no disponible');
+ document.getElementById('exchangeNote').textContent=referenceCurrency==='USD'?words('Preços originais em dólares.','Precios originales en dólares.'):validExchange()
+ ?`${manualExchange?words('Taxa manual','Tasa manual'):(exchange.source||'Frankfurter')+' · '+words('Taxa de referência','Tasa de referencia')} · ${exchange.actualizado||''}${stale?' · '+words('Cotação antiga','Cotización antigua'):''}${exchangeFailed&&!manualExchange?' · '+words('Sem atualização; usando taxa salva','Sin actualización; usando tasa guardada'):''}. `+words('Conversão aproximada. A loja pode aplicar outra cotação.','Conversión aproximada. La tienda puede aplicar otra cotización.')+(referenceCurrency==='ARS'?words(' Não representa dólar blue ou cartão.',' No representa dólar blue ni tarjeta.'):'')
+ :words('Cotação indisponível para esta moeda. Informe uma taxa ou tente atualizar.','Cotización no disponible para esta moneda. Ingresá una tasa o intentá actualizar.');
 }
+function refreshCurrencyUI(){updateExchangeNote();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();}
+document.getElementById('referenceCurrency').addEventListener('change',event=>{referenceCurrency=event.target.value;try{localStorage.setItem('rivfree-currency',referenceCurrency);}catch{}refreshCurrencyUI();});
 function mapUrl(name,address){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(name+' '+address);}
 // El motor de agrupación cambió las claves de grupo: convierte favoritos viejos a las claves nuevas.
 function migrateFavorites(groups,legacyKeys){
@@ -23,18 +30,19 @@ function migrateFavorites(groups,legacyKeys){
  for(const key of [...favorites]){
   if(current.has(key))continue;
   const next=legacyKeys[key];
-  if(next&&current.has(next)){favorites.delete(key);favorites.add(next);quantityByKey.set(next,Math.max(quantityFor(next),quantityFor(key)));quantityByKey.delete(key);changed=true;}
+  if(next&&current.has(next)){favorites.delete(key);favorites.add(next);quantityByKey.set(next,Math.max(quantityFor(next),quantityFor(key)));quantityByKey.delete(key);if(purchasedKeys.has(key)){purchasedKeys.delete(key);purchasedKeys.add(next);}changed=true;}
  }
  if(changed)persistShopping();
 }
 function toggleFavorite(key){
- if(favorites.has(key)){favorites.delete(key);quantityByKey.delete(key);}else favorites.add(key);
+ if(favorites.has(key)){favorites.delete(key);quantityByKey.delete(key);purchasedKeys.delete(key);}else favorites.add(key);
  persistShopping();
  render();
 }
 function syncFiltersURL(){
  const url=new URL(location.href),p=url.searchParams;
- const fields={q:ACTIVE_SEARCH,category:document.getElementById('categoria').value,min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,sort:document.getElementById('orden').value};
+ const fields={q:ACTIVE_SEARCH,min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,sort:document.getElementById('orden').value};
+ p.delete('category');for(const category of selectedCategories())p.append('category',category);
  for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='nombre_asc'))p.set(key,value);else p.delete(key);}
  for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly'],['priced','hideUnavailable']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
  const stores=[...document.querySelectorAll('.storeChk')];p.delete('store');p.delete('stores');
@@ -43,8 +51,9 @@ function syncFiltersURL(){
 }
 function restoreFilters(){
  const p=new URL(location.href).searchParams;
+ for(const option of document.getElementById('categoria').options)option.selected=!!option.value&&p.getAll('category').includes(option.value);
  ACTIVE_SEARCH=p.get('q')||'';document.getElementById('search').value=ACTIVE_SEARCH;
- for(const [key,id,fallback] of [['category','categoria',''],['sort','orden','nombre_asc'],['min','minPrice',''],['max','maxPrice','']]){
+ for(const [key,id,fallback] of [['sort','orden','nombre_asc'],['min','minPrice',''],['max','maxPrice','']]){
   const el=document.getElementById(id),value=p.get(key)||fallback;
   if(el.tagName==='SELECT')el.value=[...el.options].some(o=>o.value===value)?value:fallback;
   else el.value=value!==''&&Number.isFinite(Number(value))&&Number(value)>=0?value:'';
@@ -55,9 +64,11 @@ function restoreFilters(){
 window.addEventListener('popstate',()=>{restoreFilters();render(true);syncCategoryInput();});
 document.getElementById('favoritesOnly').addEventListener('change',()=>render(true));
 document.getElementById('exchangeRate').addEventListener('change',event=>{
- const rate=Number(event.target.value);manualExchange=rate>0&&rate<1000&&Number.isFinite(rate)?{usd_brl:rate,actualizado:new Date().toISOString().slice(0,10)}:null;
- exchange=manualExchange||{usd_brl:null};try{localStorage.setItem('rivfree-exchange',JSON.stringify(manualExchange));}catch{}
- updateExchangeNote();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();
+ const rate=Number(event.target.value);
+ if(Number.isFinite(rate)&&rate>0&&rate<1000000)manualRates[referenceCurrency]={rate,actualizado:new Date().toISOString().slice(0,10)};
+ else delete manualRates[referenceCurrency];
+ try{localStorage.setItem('rivfree-manual-rates',JSON.stringify(manualRates));localStorage.removeItem('rivfree-exchange');}catch{}
+ refreshCurrencyUI();
 });
 document.getElementById('closeShoppingList').addEventListener('click',()=>document.getElementById('shoppingDialog').close());
 document.getElementById('openShoppingList').addEventListener('click',()=>{

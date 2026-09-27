@@ -44,6 +44,7 @@ const translations = {
 "Del computador al celular, con un enlace.":"Do computador ao celular, com um link.",
 "SIN REGISTRO · SIN COMPLICACIONES":"SEM CADASTRO · SEM COMPLICAÇÕES",
 "Todas las categorías":"Todas as categorias",
+"Mayor caída de precio":"Maior queda de preço","Recién agregados":"Recém-adicionados","Compartir":"Compartilhar","Moneda de referencia":"Moeda de referência","Quitar categoría":"Remover categoria","Instalar RivFree":"Instalar RivFree","Sugerencias de productos":"Sugestões de produtos","Categorías seleccionadas":"Categorias selecionadas","UYU · Peso uruguayo":"UYU · Peso uruguaio",
 "Chocolates y alimentos":"Chocolates e alimentos",
 "Cuidado personal":"Cuidados pessoais",
 "· Cotización":"· Cotação",
@@ -182,6 +183,9 @@ function announce(message) {
 }
 
 
+function observedDrop(offer){const value=offer?.caida_precio;return hasPrice(offer)&&Number.isFinite(value?.porcentaje)&&value.porcentaje>0&&Date.now()-Date.parse(value.hasta)<=7*86400000?value.porcentaje:0;}
+function groupDrop(group){return Math.max(0,...group.visibleOffers.map(observedDrop));}
+function groupAdded(group){return Math.max(0,...group.visibleOffers.map(o=>Date.parse(o.creado||o.primera_deteccion)||0));}
 const CARD_DATA=new WeakMap();
 function handleProductClick(event){
  const target=event.target.closest('[data-action]');
@@ -196,6 +200,7 @@ function handleProductClick(event){
   return;
  }
  const data=CARD_DATA.get(target.closest('.card'));
+ if(target.dataset.action==='share'&&data){shareProduct(data);return;}
  if(target.dataset.action==='history'&&data){openPriceHistory(data.offers);return;}
  if(target.dataset.action==='favorite'&&data){toggleFavorite(data.key);return;}
  if(target.dataset.action==='preview'&&data){recordProductConsult(data.key);openProductPreview(data);return;}
@@ -273,7 +278,7 @@ function priceLabel(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value);
-  return usd+(validExchange()?' · ≈ '+new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(value*exchange.usd_brl):'');
+  return usd+(validExchange()?' · ≈ '+referencePrice(value):'');
 }
 
 let loadingCatalog=false;
@@ -288,7 +293,7 @@ async function loadData() {
     ]);
     const {data,prepared,offline}=loaded;
     STORE_INFO=storeInfo;
-    if(ratesRes?.ok) {try {const bundled=await ratesRes.json();if(isRate(bundled)&&(!automaticExchange||bundled.actualizado>automaticExchange.actualizado))automaticExchange=bundled;} catch {}}
+    if(ratesRes?.ok) {try {const bundled=await ratesRes.json();if(isRate(bundled))automaticExchange=mergeExchange(automaticExchange,bundled);} catch {}}
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
     indexFavoriteOffers();
@@ -371,7 +376,7 @@ function getFiltered() {
   const query = Catalog.searchQuery(ACTIVE_SEARCH);
   const searchTokens = query.tokens;
 
-  const cat = document.getElementById('categoria').value;
+  const cat = selectedCategories();
   const {min,max}=readPriceRange();
   const soloOfertas = document.getElementById('soloOfertas').checked;
   const activeStores = [...document.querySelectorAll('.storeChk:checked')].map(el => el.value);
@@ -384,7 +389,7 @@ function getFiltered() {
   if(getFiltered.catalog!==PRODUCT_GROUPS){getFiltered.catalog=PRODUCT_GROUPS;getFiltered.cache=new Map();}
   if(getFiltered.cache.has(cacheKey))return getFiltered.cache.get(cacheKey);
   let candidates=PRODUCT_GROUPS;
-  if(cat){
+  if(cat.length){
     if(getFiltered.categoryCatalog!==PRODUCT_GROUPS){
       getFiltered.categoryCatalog=PRODUCT_GROUPS;getFiltered.categories=new Map();
       for(const group of PRODUCT_GROUPS)for(const category of new Set(group.offers.map(o=>o.categoryId))){
@@ -392,13 +397,13 @@ function getFiltered() {
         getFiltered.categories.get(category).push(group);
       }
     }
-    candidates=getFiltered.categories.get(cat)||[];
+    candidates=[...new Set(cat.flatMap(c=>getFiltered.categories.get(c)||[]))];
   }
   let groups = candidates.filter(g=>!favoritesOnly || (favorites.has(g.key)||g.offers.some(o=>favorites.has(offerFavoriteKey(o))))).map(group => {
     const visibleOffers = group.offers.filter(product => {
       if (!activeStores.includes(product.tienda)) return false;
       if (pricedOnly && !hasPrice(product)) return false;
-      if (cat && product.categoryId !== cat) return false;
+      if (cat.length && !cat.includes(product.categoryId)) return false;
       if (!isNaN(min) && (!hasPrice(product) || product.precio_usd < min)) return false;
       if (!isNaN(max) && (!hasPrice(product) || product.precio_usd > max)) return false;
       if (soloOfertas && !product.en_oferta) return false;
@@ -422,6 +427,8 @@ function getFiltered() {
 
   const lowestPrice = group => group.lowestVisiblePrice;
   if (orden === 'ofertas') groups.sort((a,b)=>Number(b.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))-Number(a.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))||lowestPrice(a)-lowestPrice(b));
+  else if (orden === 'caida') groups.sort((a,b)=>groupDrop(b)-groupDrop(a)||lowestPrice(a)-lowestPrice(b));
+  else if (orden === 'nuevos') groups.sort((a,b)=>groupAdded(b)-groupAdded(a)||collator.compare(a.name,b.name));
   else if (orden === 'precio_asc') groups.sort((a,b) => lowestPrice(a) - lowestPrice(b));
   else if (orden === 'precio_desc') groups.sort((a,b) => {
     const aPrice = lowestPrice(a), bPrice = lowestPrice(b);
@@ -481,6 +488,7 @@ function waitForPaint() {
 }
 
 async function runSearch() {
+  closeSearchSuggestions();
   const status = document.getElementById('searchStatus');
   const button = document.getElementById('searchButton');
   const meta = document.getElementById('resultsMeta');
@@ -554,7 +562,7 @@ function appendCardPrice(container,value,multiple=false){
   const currency=document.createElement('span');currency.className='card-price-currency';currency.textContent='USD';
   const amount=document.createElement('strong');amount.className='card-price-amount';amount.textContent=new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value);
   main.append(currency,amount);container.appendChild(main);
-  if(validExchange()){const secondary=document.createElement('span');secondary.className='card-price-secondary';secondary.textContent='≈ '+new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(value*exchange.usd_brl);container.appendChild(secondary);}
+  if(validExchange()){const secondary=document.createElement('span');secondary.className='card-price-secondary';secondary.textContent='≈ '+referencePrice(value);container.appendChild(secondary);}
 }
 
 function readableProductName(value) {
@@ -639,11 +647,13 @@ function createProductCard(group) {
   favorite.setAttribute('aria-label',tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar')+': '+displayName);
   favorite.title=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
   const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';
-  utilityRow.append(historyButton);
+  const shareButton=document.createElement('button');shareButton.type='button';shareButton.className='favorite-button';shareButton.dataset.action='share';shareButton.textContent=tr('Compartir');utilityRow.append(historyButton,shareButton);
   if(favorites.has(group.key))utilityRow.append(quantityControl(group.key,()=>{}));
 
   const badges = document.createElement('div');
   badges.className = 'badge-row';
+  const falling=offers.filter(o=>observedDrop(o)>0).sort((a,b)=>observedDrop(b)-observedDrop(a))[0];
+  if(falling){const badge=document.createElement('span');badge.className='badge-price-drop';badge.textContent=`↓ ${observedDrop(falling).toLocaleString(LANG)}% · ${Math.max(1,Math.round((Date.parse(falling.caida_precio.hasta)-Date.parse(falling.caida_precio.desde))/86400000))} ${LANG==='es'?'días':'dias'} · ${falling.tienda}`;badge.title=`USD ${falling.caida_precio.precio_anterior} → USD ${falling.precio_usd} · ${falling.caida_precio.desde.slice(0,10)} / ${falling.caida_precio.hasta.slice(0,10)}`;badges.append(badge);}
   if (product.en_oferta) {
     const offer = document.createElement('span');
     offer.className = 'badge-oferta';
@@ -859,7 +869,7 @@ document.getElementById('searchForm').addEventListener('submit', event => {
 });
 
 ['categoria','orden','soloOfertas','hideUnavailable'].forEach(id => {
-  document.getElementById(id).addEventListener('change', () => render(true));
+  document.getElementById(id).addEventListener('change', () => {if(id==='categoria')syncCategoryInput();render(true);});
 });
 
 ['minPrice','maxPrice'].forEach(id => {
@@ -890,7 +900,7 @@ document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('hideUnavailable').checked=false;
   document.getElementById('search').value = '';
   ACTIVE_SEARCH = '';
-  document.getElementById('categoria').value = '';
+  document.getElementById('categoria').value = '';syncCategoryInput();
   document.getElementById('minPrice').value = '';
   document.getElementById('maxPrice').value = '';
   document.getElementById('orden').value = 'nombre_asc';
@@ -902,12 +912,12 @@ document.getElementById('clearFilters').addEventListener('click', () => {
 
 
 let categoryActive = -1;
+function selectedCategories(){return [...document.getElementById('categoria').selectedOptions].map(o=>o.value).filter(Boolean);}
 function syncCategoryInput() {
- const input=document.getElementById('categorySearch');
- const select=document.getElementById('categoria');
- input.value=select.value ? Catalog.categories[select.value][LANG==='pt-BR'?1:0] : '';
- document.getElementById('clearCategory').hidden=!input.value;
- closeCategoryOptions();
+ const input=document.getElementById('categorySearch');input.value='';
+ const chips=document.getElementById('categoryChips');chips.replaceChildren();
+ for(const id of selectedCategories()){const button=document.createElement('button');button.type='button';button.className='category-chip';button.textContent=(Catalog.categories[id]?.[LANG==='pt-BR'?1:0]||id)+' ×';button.setAttribute('aria-label',tr('Quitar categoría')+': '+button.textContent.slice(0,-2));button.onclick=()=>chooseCategory(id);chips.append(button);}
+ document.getElementById('clearCategory').hidden=!selectedCategories().length;closeCategoryOptions();
 }
 function closeCategoryOptions() {
  document.getElementById('categoryOptions').hidden=true;
@@ -927,7 +937,7 @@ function showCategoryOptions() {
  options.forEach((o,i)=>{
   const item=document.createElement('div');item.role='option';item.id='category-option-'+i;
   item.dataset.value=o.value;item.textContent=o.textContent;
-  item.setAttribute('aria-selected',String(o.value===document.getElementById('categoria').value));
+  item.setAttribute('aria-selected',String(selectedCategories().includes(o.value)||(!o.value&&!selectedCategories().length)));
   item.addEventListener('mousedown',e=>e.preventDefault());
   item.addEventListener('click',()=>chooseCategory(o.value));list.appendChild(item);
  });
@@ -940,22 +950,21 @@ function scheduleCategoryRender(){
  requestAnimationFrame(()=>setTimeout(()=>{if(ticket===categoryRenderTicket)render(true);},0));
 }
 function chooseCategory(value) {
- document.getElementById('categoria').value=value;
+ const select=document.getElementById('categoria');if(!value)select.value='';else{const option=[...select.options].find(o=>o.value===value);if(option)option.selected=!option.selected;select.options[0].selected=false;}
  syncCategoryInput();document.getElementById('categorySearch').focus({preventScroll:true});closeCategoryOptions();scheduleCategoryRender();
 }
 const categorySearch=document.getElementById('categorySearch');
 categorySearch.addEventListener('focus',showCategoryOptions);
 categorySearch.addEventListener('click',showCategoryOptions);
 categorySearch.addEventListener('input',()=>{
- document.getElementById('clearCategory').hidden=!categorySearch.value&&!document.getElementById('categoria').value;
- if(!categorySearch.value&&document.getElementById('categoria').value){document.getElementById('categoria').value='';scheduleCategoryRender();}
+ document.getElementById('clearCategory').hidden=!categorySearch.value&&!selectedCategories().length;
  showCategoryOptions();
 });
 categorySearch.addEventListener('blur',event=>{if(event.relatedTarget?.id!=='clearCategory')syncCategoryInput();});
 const clearCategory=document.getElementById('clearCategory');
 clearCategory.addEventListener('pointerdown',event=>event.preventDefault());
 clearCategory.addEventListener('click',()=>{
- document.getElementById('categoria').value='';categorySearch.value='';scheduleCategoryRender();
+ document.getElementById('categoria').value='';categorySearch.value='';syncCategoryInput();scheduleCategoryRender();
  categorySearch.focus({preventScroll:true});showCategoryOptions();clearCategory.hidden=true;
 });
 categorySearch.addEventListener('keydown',event=>{
@@ -971,6 +980,47 @@ categorySearch.addEventListener('keydown',event=>{
  categorySearch.setAttribute('aria-activedescendant',items[categoryActive].id);
  items[categoryActive].scrollIntoView?.({block:'nearest'});
 });
+
+let suggestionTicket=0,suggestionTimer,suggestionActive=-1,suggestionCatalog=null,suggestionEntries=[];
+function closeSearchSuggestions(){suggestionTicket++;clearTimeout(suggestionTimer);const list=document.getElementById('searchSuggestions');list.hidden=true;const input=document.getElementById('search');input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');suggestionActive=-1;}
+function chooseSearchSuggestion(name){document.getElementById('search').value=name;closeSearchSuggestions();runSearch();}
+function suggestProducts(){
+ const input=document.getElementById('search'),list=document.getElementById('searchSuggestions');closeSearchSuggestions();
+ const query=Catalog.search(input.value).split(/\s+/).filter(Boolean);if(input.value.trim().length<2||!query.length)return;
+ const ticket=suggestionTicket;
+ suggestionTimer=setTimeout(()=>{
+  if(suggestionCatalog!==PRODUCT_GROUPS){suggestionCatalog=PRODUCT_GROUPS;suggestionEntries=PRODUCT_GROUPS.map(g=>({name:g.name,text:Catalog.search(g.name)}));}
+  let cursor=0;const found=[],seen=new Set();
+  function chunk(){if(ticket!==suggestionTicket)return;const until=Math.min(cursor+600,suggestionEntries.length);
+   while(cursor<until&&found.length<5){const entry=suggestionEntries[cursor++];if(query.every(t=>entry.text.includes(t))&&!seen.has(entry.text)){seen.add(entry.text);found.push(entry.name);}}
+   if(found.length<5&&cursor<suggestionEntries.length){setTimeout(chunk,0);return;}
+   list.replaceChildren();found.forEach((name,i)=>{const item=document.createElement('div');item.role='option';item.id='product-suggestion-'+i;item.textContent=name;item.setAttribute('aria-selected','false');item.addEventListener('mousedown',e=>e.preventDefault());item.onclick=()=>chooseSearchSuggestion(name);list.append(item);});list.hidden=!found.length;input.setAttribute('aria-expanded',String(!!found.length));
+  }chunk();
+ },160);
+}
+const suggestionInput=document.getElementById('search');
+suggestionInput.addEventListener('input',suggestProducts);
+suggestionInput.addEventListener('keydown',event=>{
+ const list=document.getElementById('searchSuggestions');if(event.key==='Escape'){closeSearchSuggestions();return;}if(list.hidden||!['ArrowDown','ArrowUp','Enter'].includes(event.key))return;
+ const items=[...list.children];if(!items.length)return;
+ if(event.key==='Enter'){if(suggestionActive<0)return;event.preventDefault();chooseSearchSuggestion(items[suggestionActive].textContent);return;}
+ event.preventDefault();suggestionActive=(suggestionActive+(event.key==='ArrowDown'?1:-1)+items.length)%items.length;
+ items.forEach((item,i)=>item.setAttribute('aria-selected',String(i===suggestionActive)));suggestionInput.setAttribute('aria-activedescendant',items[suggestionActive].id);
+});
+suggestionInput.addEventListener('blur',()=>closeSearchSuggestions());
+
+function renderIOSInstallHint(){
+ document.getElementById('iosInstallHint')?.remove();
+ const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const safari=/Safari/.test(navigator.userAgent)&&!/(CriOS|FxiOS|EdgiOS|OPiOS)/.test(navigator.userAgent);
+ if(!ios||!safari||navigator.standalone||window.matchMedia?.('(display-mode: standalone)').matches||new URLSearchParams(location.search).has('studio-preview'))return;
+ try{if(localStorage.getItem('rivfree-ios-install-dismissed'))return;}catch{}
+ const banner=document.createElement('aside');banner.id='iosInstallHint';banner.className='ios-install-hint';banner.setAttribute('aria-label',tr('Instalar RivFree'));
+ const text=document.createElement('p');text.textContent=LANG==='es'?'Llevá RivFree en tu pantalla de inicio: Compartir → Agregar a inicio. Abrí antes el catálogo con conexión para poder consultarlo durante el viaje.':'Leve o RivFree na tela de início: Compartilhar → Adicionar à Tela de Início. Abra antes o catálogo com conexão para consultá-lo durante a viagem.';
+ const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label',tr('Cerrar aviso'));close.onclick=()=>{try{localStorage.setItem('rivfree-ios-install-dismissed','1');}catch{}banner.remove();};banner.append(text,close);document.body.append(banner);
+}
+window.addEventListener('DOMContentLoaded',renderIOSInstallHint);
+document.getElementById('languageToggle').addEventListener('change',()=>setTimeout(renderIOSInstallHint,0));
 
 window.setRivFreePreviewLanguage = language => {
  if(!new URLSearchParams(location.search).has('studio-preview') || window.parent===window)return;

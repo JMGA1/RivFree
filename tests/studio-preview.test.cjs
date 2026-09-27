@@ -179,3 +179,10 @@ test('site config preserves zero radius and late network responses cannot overwr
  assert.equal(w.document.documentElement.lang,'es');
  assert.equal(w.document.querySelector('.brand p').textContent,'Subtítulo en vivo');
 });
+
+test('general palette blocks unreadable text and automatic correction allows saving',async t=>{
+ const {w,d,input,calls,notifications}=await editor(t);
+ input('lightBackground','#FFFFFF');input('lightSurface','#FFFFFF');input('lightText','#FFFFFF');
+ await w.RivFreeStudio.saveActive('appearance');assert.equal(calls.length,0);assert.ok(notifications.some(args=>args[0].includes('contraste')));assert.match(d.getElementById('paletteContrast').textContent,/1.00:1/);
+ d.querySelector('.palette-contrast button').click();await w.RivFreeStudio.saveActive('appearance');assert.equal(calls.length,1);assert.equal(calls[0].payload.config.appearance.light.text,'#000000');
+});

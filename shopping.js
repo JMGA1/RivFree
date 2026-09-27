@@ -1,5 +1,7 @@
 // Portable shopping list: quantities are local; a shared URL is an explicit snapshot.
 const quantityByKey = new Map();
+const purchasedKeys=new Set();
+try{const saved=JSON.parse(localStorage.getItem('rivfree-purchased')||'[]');if(Array.isArray(saved))for(const key of saved)if(typeof key==='string')purchasedKeys.add(key);}catch{}
 try {
  const entries=JSON.parse(localStorage.getItem('rivfree-quantities')||'[]');
  if(Array.isArray(entries))for(const [key,qty] of entries)if(typeof key==='string'&&Number.isInteger(qty)&&qty>0&&qty<=999)quantityByKey.set(key,qty);
@@ -13,6 +15,7 @@ function persistShopping(){
  try {
   localStorage.setItem('rivfree-favorites',JSON.stringify([...favorites]));
   localStorage.setItem('rivfree-quantities',JSON.stringify([...quantityByKey]));
+  localStorage.setItem('rivfree-purchased',JSON.stringify([...purchasedKeys]));
  } catch {announce(words('Não foi possível salvar neste navegador. Compartilhe o link para guardar a lista.','No se pudo guardar. Compartí el enlace para conservar la lista.'));}
  updateShoppingBadge();
 }
@@ -43,35 +46,38 @@ function renderShoppingList(){
  const focusIndex=control?[...control.children].indexOf(focused):-1;
  container.replaceChildren();
  const groups=new Map(PRODUCT_GROUPS.map(g=>[g.key,g]));
- const byStore=new Map();let totalCents=0,missing=0,units=0;
+ const byStore=new Map();let totalCents=0,missing=0,units=0,pendingCents=0,pendingUnits=0;
  for(const key of favorites){
   const selected=offerByFavoriteKey.get(key);
   const group=groups.get(key)||(selected?{name:selected.nombre}:null);
-  const offer=selected||group?.offers.filter(hasPrice).reduce((best,o)=>!best||o.precio_usd<best.precio_usd?o:best,null);
+  const offer=selected||group?.offers?.filter(hasPrice).reduce((best,o)=>!best||o.precio_usd<best.precio_usd?o:best,null)||group?.offers?.[0];
   const store=offer?.tienda||words('Sem preço disponível','Sin precio disponible');
   const qty=quantityFor(key),cents=hasPrice(offer||{})?Math.round(offer.precio_usd*100)*qty:0;
-  if(!hasPrice(offer||{}))missing+=qty;units+=qty;totalCents+=cents;
+  if(!hasPrice(offer||{}))missing+=qty;units+=qty;totalCents+=cents;if(!purchasedKeys.has(key)){pendingCents+=cents;pendingUnits+=qty;}
   if(!byStore.has(store))byStore.set(store,[]);byStore.get(store).push({key,group,offer,qty,cents});
  }
  if(!favorites.size){const empty=document.createElement('p');empty.className='list-empty';empty.textContent=words('Sua próxima viagem começa aqui. Toque no ♡ de um produto para montar sua lista.','Tu próximo paseo empieza aquí. Tocá ♡ en un producto para armar tu lista.');container.append(empty);}
+ renderShoppingRoute([...byStore.keys()]);
  for(const [store,items] of byStore){
   const section=document.createElement('section');section.className='shopping-store';
   const h=document.createElement('h3');h.textContent=store;section.append(h);
   if(STORE_INFO[store]?.direccion){const a=document.createElement('a');a.href=mapUrl(store,STORE_INFO[store].direccion);a.target='_blank';a.rel='noopener noreferrer';a.textContent=tr('Ver en el mapa');section.append(a);}
   for(const {key,group,offer,qty,cents} of items){
-   const row=document.createElement('div');row.className='shopping-row';
+   const row=document.createElement('div');row.className='shopping-row'+(purchasedKeys.has(key)?' purchased':'');
    const description=document.createElement('div'),name=document.createElement('strong'),unit=document.createElement('small');
    name.textContent=group?.name||key;unit.textContent=hasPrice(offer||{})?`${priceLabel(offer.precio_usd)} / ${words('unidade','unidad')}`:words('Fora do catálogo atual; não incluído no total.','Fuera del catálogo actual; no incluido en el total.');description.append(name,unit);
    const amount=document.createElement('strong');amount.className='line-total';amount.textContent=hasPrice(offer||{})?priceLabel(cents/100):'—';
    const remove=document.createElement('button');remove.type='button';remove.className='remove-item';remove.textContent=words('Remover','Quitar');remove.setAttribute('aria-label',`${remove.textContent}: ${name.textContent}`);
    remove.onclick=()=>{toggleFavorite(key);renderShoppingList();};
-   row.append(description,quantityControl(key,()=>{renderShoppingList();render();}),amount,remove);section.append(row);
+   const checkLabel=document.createElement('label');checkLabel.className='purchased-control';const check=document.createElement('input');check.type='checkbox';check.checked=purchasedKeys.has(key);check.dataset.purchasedKey=key;check.setAttribute('aria-label',words('Comprado','Comprado')+': '+name.textContent);const checkText=document.createElement('span');checkText.textContent=words('Comprado','Comprado');checkLabel.append(check,checkText);
+   check.onchange=()=>{if(check.checked)purchasedKeys.add(key);else purchasedKeys.delete(key);persistShopping();renderShoppingList();for(const next of container.querySelectorAll('[data-purchased-key]'))if(next.dataset.purchasedKey===key)next.focus({preventScroll:true});};
+   row.append(description,quantityControl(key,()=>{renderShoppingList();render();}),amount,checkLabel,remove);section.append(row);
   }
   const subtotal=document.createElement('p');subtotal.className='store-subtotal';subtotal.textContent=`Subtotal · ${priceLabel(items.reduce((s,i)=>s+i.cents,0)/100)}`;section.append(subtotal);container.append(section);
  }
  if(favorites.size){
   const total=document.createElement('div');total.className='shopping-total';
-  const label=document.createElement('span'),amount=document.createElement('strong');label.textContent=words(`Subtotal estimado · ${units} unidades`,`Subtotal estimado · ${units} unidades`);amount.textContent=priceLabel(totalCents/100);total.append(label,amount);container.append(total);
+  const label=document.createElement('span'),amount=document.createElement('strong');label.textContent=words(`Subtotal estimado · ${units} unidades`,`Subtotal estimado · ${units} unidades`);amount.textContent=priceLabel(totalCents/100);total.append(label,amount);container.append(total);const pending=document.createElement('p');pending.className='shopping-pending';pending.textContent=words(`Falta comprar: ${pendingUnits} unidades · ${priceLabel(pendingCents/100)}`,`Pendiente: ${pendingUnits} unidades · ${priceLabel(pendingCents/100)}`);container.append(pending);
   const note=document.createElement('p');note.className='shopping-note';note.textContent=words('Estimativa com as lojas escolhidas; favoritos gerais usam o menor preço. Quantidade se refere à unidade anunciada; uma caixa deve ser selecionada como caixa.','Estimación con las tiendas elegidas; los favoritos generales usan el menor precio. La cantidad corresponde a la unidad publicada; una caja debe seleccionarse como caja.');if(missing)note.textContent+=words(` ${missing} unidades sem preço ficam fora do total.`,` ${missing} unidades sin precio no están incluidas.`);container.append(note);
  }
  if(focusKey)for(const control of container.querySelectorAll('.quantity-control'))if(control.dataset.quantityKey===focusKey){const next=control.children[focusIndex];(next?.disabled?control.querySelector('input'):next)?.focus({preventScroll:true});}
@@ -90,9 +96,9 @@ function sharedLocatorForFavorite(key){
  }
  return 'k:'+key;
 }
-function shoppingURL(){
+function shoppingURL(keys=[...favorites],single=false){
  const url=new URL(location.href);url.search='';
- const items=[...favorites].map(key=>[sharedLocatorForFavorite(key),quantityFor(key)]);
+ const items=keys.map(key=>[sharedLocatorForFavorite(key),single?1:quantityFor(key)]);
  url.hash=SharedListCodec.encodeCompact(items);
  return url.href;
 }
@@ -192,11 +198,13 @@ window.addEventListener('hashchange',inspectSharedList);
 window.addEventListener('rivfree:catalog-ready',()=>resolveCompactSharedList());
 window.addEventListener('DOMContentLoaded',()=>{inspectSharedList();updateShoppingBadge();});
 window.addEventListener('storage',event=>{
- if(!['rivfree-favorites','rivfree-quantities'].includes(event.key))return;
- try{favorites=new Set(JSON.parse(localStorage.getItem('rivfree-favorites')||'[]'));quantityByKey.clear();for(const [k,q] of JSON.parse(localStorage.getItem('rivfree-quantities')||'[]'))if(Number.isInteger(q)&&q>0&&q<=999)quantityByKey.set(k,q);updateShoppingBadge();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();}catch{}
+ if(!['rivfree-favorites','rivfree-quantities','rivfree-purchased'].includes(event.key))return;
+ try{purchasedKeys.clear();for(const key of JSON.parse(localStorage.getItem('rivfree-purchased')||'[]'))if(typeof key==='string')purchasedKeys.add(key);favorites=new Set(JSON.parse(localStorage.getItem('rivfree-favorites')||'[]'));quantityByKey.clear();for(const [k,q] of JSON.parse(localStorage.getItem('rivfree-quantities')||'[]'))if(Number.isInteger(q)&&q>0&&q<=999)quantityByKey.set(k,q);updateShoppingBadge();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();}catch{}
 });
 let automaticExchange=null,exchangeRequest=null,exchangeFailed=false;
-function isRate(value){return value&&Number.isFinite(value.usd_brl)&&value.usd_brl>0&&value.usd_brl<1000&&Number.isFinite(Date.parse(value.actualizado));}
+function validRateEntry(entry){return entry&&Number.isFinite(entry.rate)&&entry.rate>0&&entry.rate<1000000&&Number.isFinite(Date.parse(entry.date));}
+function isRate(value){return !!value&&((Number.isFinite(value.usd_brl)&&value.usd_brl>0&&value.usd_brl<1000000&&Number.isFinite(Date.parse(value.actualizado)))||['BRL','UYU','ARS'].some(c=>validRateEntry(value.rates?.[c])));}
+function mergeExchange(previous,next){const result={...(previous||{}),...next,rates:{...(previous?.rates||{})}};for(const c of ['BRL','UYU','ARS']){const entry=next.rates?.[c]||(c==='BRL'&&next.usd_brl?{rate:next.usd_brl,date:next.actualizado,source:next.fuente||'Frankfurter'}:null);if(validRateEntry(entry)&&(!validRateEntry(result.rates[c])||entry.date>=result.rates[c].date))result.rates[c]=entry;}return result;}
 try{const saved=JSON.parse(localStorage.getItem('rivfree-auto-exchange'));if(isRate(saved))automaticExchange=saved;}catch{}
 async function refreshAutomaticExchange(){
  if(exchangeRequest)return exchangeRequest;
@@ -205,15 +213,44 @@ async function refreshAutomaticExchange(){
   try{
    const response=await fetch('data/exchange.json?refresh='+Date.now(),{signal:controller.signal,cache:'no-store'});
    if(!response.ok)throw new Error();const data=await response.json();
-   const next={usd_brl:data.usd_brl,actualizado:data.actualizado,source:data.fuente||'Frankfurter'};
+   const next=data;
    if(!isRate(next))throw new Error();
-   automaticExchange=next;exchangeFailed=false;
-   try{localStorage.setItem('rivfree-auto-exchange',JSON.stringify(next));}catch{}
+   automaticExchange=mergeExchange(automaticExchange,next);exchangeFailed=false;
+   try{localStorage.setItem('rivfree-auto-exchange',JSON.stringify(automaticExchange));}catch{}
   }catch{exchangeFailed=true;}finally{clearTimeout(timer);updateExchangeNote();render();if(document.getElementById('shoppingDialog').open)renderShoppingList();}
  })();
  await exchangeRequest;exchangeRequest=null;
 }
-document.getElementById('automaticExchange').onclick=()=>{manualExchange=null;try{localStorage.removeItem('rivfree-exchange');}catch{}updateExchangeNote();render();refreshAutomaticExchange();};
+document.getElementById('automaticExchange').onclick=()=>{delete manualRates[referenceCurrency];manualExchange=null;try{localStorage.setItem('rivfree-manual-rates',JSON.stringify(manualRates));localStorage.removeItem('rivfree-exchange');}catch{}updateExchangeNote();render();refreshAutomaticExchange();};
 document.querySelectorAll('[data-category-shortcut]').forEach(button=>button.onclick=()=>{
  document.getElementById('categoria').value=button.dataset.categoryShortcut;syncCategoryInput();render(true);document.getElementById('grid').scrollIntoView({behavior:'smooth',block:'start'});
 });
+
+// Directions preserve the list order; Maps chooses the origin on the user's device.
+function shoppingRouteSegments(stops,limit=4){
+ const result=[];let current=[],origin=null;
+ function urlFor(items,start){const url=new URL('https://www.google.com/maps/dir/');url.searchParams.set('api','1');if(start)url.searchParams.set('origin',start);url.searchParams.set('destination',items.at(-1));if(items.length>1)url.searchParams.set('waypoints',items.slice(0,-1).join('|'));url.searchParams.set('travelmode','walking');return url.href;}
+ for(const stop of stops){
+  if(current.length&&(current.length>=limit||urlFor([...current,stop],origin).length>2048)){result.push({url:urlFor(current,origin),stops:current});origin=current.at(-1);current=[];}
+  if(urlFor([stop],origin).length>2048){origin=null;if(urlFor([stop],null).length>2048)throw new Error(words('Endereço muito longo para o Google Maps.','Dirección demasiado larga para Google Maps.'));}
+  current.push(stop);
+ }
+ if(current.length)result.push({url:urlFor(current,origin),stops:current});return result;
+}
+function renderShoppingRoute(stores){
+ const container=document.getElementById('shoppingRoute');container.replaceChildren();if(!stores.length)return;
+ const addressed=stores.filter(store=>STORE_INFO[store]?.direccion),missing=stores.filter(store=>!STORE_INFO[store]?.direccion);
+ const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ try{
+  const segments=shoppingRouteSegments(addressed.map(store=>store+' '+STORE_INFO[store].direccion),mobile?4:10);
+  for(const [index,segment] of segments.entries()){const a=document.createElement('a');a.className='shopping-route-link';a.target='_blank';a.rel='noopener noreferrer';a.href=segment.url;a.textContent=segments.length===1?words('Abrir rota com todas as paradas','Abrir ruta con todas las paradas'):words(`Abrir trecho ${index+1} de ${segments.length}`,`Abrir tramo ${index+1} de ${segments.length}`);container.append(a);}
+  if(segments.length){const p=document.createElement('p');p.textContent=words('Ordem da lista: ','Orden de la lista: ')+addressed.join(' → ')+(segments.length>1?words('. Dividida para respeitar os limites do Google Maps.','. Dividida para respetar los límites de Google Maps.'):'');container.append(p);}
+ }catch(error){const p=document.createElement('p');p.textContent=error.message;container.append(p);}
+ if(missing.length){const p=document.createElement('p');p.textContent=words('Sem endereço; fora da rota: ','Sin dirección; fuera de la ruta: ')+missing.join(', ');container.append(p);}
+}
+async function shareProduct(data){
+ const url=shoppingURL([data.key],true);
+ try{if(navigator.share){await navigator.share({title:data.name||'RivFree',url});return;}if(navigator.clipboard){await navigator.clipboard.writeText(url);announce(words('Link do produto copiado.','Enlace del producto copiado.'));return;}}
+ catch(error){if(error.name==='AbortError')return;}
+ const dialog=document.createElement('dialog');dialog.className='single-share-dialog';dialog.setAttribute('aria-label',words('Compartilhar produto','Compartir producto'));const label=document.createElement('label');label.textContent=words('Copie o link:','Copiá el enlace:');const field=document.createElement('input');field.readOnly=true;field.value=url;label.append(field);const close=document.createElement('button');close.type='button';close.textContent=words('Fechar','Cerrar');close.onclick=()=>dialog.close();dialog.append(label,close);document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();field.select();
+}
