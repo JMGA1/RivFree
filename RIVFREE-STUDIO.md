@@ -3,6 +3,22 @@
 RivFree Studio es el editor visual local del sitio. En Windows abrí `Abrir-RivFree-Studio.bat`.
 El acceso anterior `Abrir-editor-manual.bat` sigue funcionando y abre el mismo editor.
 
+## 2026-09-27 — Personalización con respuesta inmediata
+
+- Cada edición actualiza la vista previa mientras escribís. El estado **Vista actualizada** confirma que la página recibió el cambio; **falta guardar esta sección** indica que todavía no está escrito en los archivos.
+- Las plantillas muestran borde verde, marca de selección y estado accesible. Al modificar sus valores aparece **Diseño personalizado**.
+- Editar un color claro u oscuro cambia automáticamente el tema de la vista. Los textos ES/PT seleccionan el idioma correspondiente. También podés elegir tema e idioma manualmente.
+- La vista de escritorio usa un ancho real de 1280 px, escalado al espacio disponible; tablet usa 768 px y celular 390 px. **Ampliar vista** ocupa la ventana. **Volver al editor** o Escape cierra la ampliación.
+- **Ir a** permite revisar inicio, banner, catálogo o pie sin recorrer toda la página. En pantallas pequeñas, **Ver cambios en grande** abre directamente la vista ampliada.
+- El banner seleccionado permanece visible durante la edición, incluso si está inactivo, vencido o programado. Esto es solo una inspección: en el sitio público se siguen respetando fechas, activación y selección aleatoria. El autoplay se pausa en el editor.
+- Los banners se incorporan al borrador al editar. **Guardar Carrusel** incluye los últimos cambios aunque no pulses **Revisar banner**. El borrador recuperable también los conserva.
+- Las ayudas explican el alcance de cada opción: los colores del banner son independientes de la paleta general, las campañas inteligentes generan sus textos desde el catálogo y el SEO no modifica el texto visible del inicio.
+- Los colores hexadecimales inválidos y los intervalos con fin anterior al inicio bloquean el guardado con un mensaje. Las fechas editadas conservan el instante mediante formato ISO con zona horaria.
+- Los botones de producto y detalles de cabecera respetan la paleta; el texto de los botones adapta su contraste. El radio de 0 px ahora produce esquinas rectas.
+- Se corrigieron las rutas de imágenes locales en el editor, los mensajes de éxito tras un guardado fallido y la reaparición del carrusel o de Más consultados cuando se habían ocultado.
+
+Guardar modifica los archivos locales. Para que los visitantes vean los cambios todavía es necesario publicar el proyecto por el procedimiento habitual.
+
 ## Qué se puede editar sin código
 
 ### Diseño

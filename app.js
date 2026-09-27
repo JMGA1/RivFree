@@ -972,6 +972,10 @@ categorySearch.addEventListener('keydown',event=>{
  items[categoryActive].scrollIntoView?.({block:'nearest'});
 });
 
+window.setRivFreePreviewLanguage = language => {
+ if(!new URLSearchParams(location.search).has('studio-preview') || window.parent===window)return;
+ if(LANG!==language){LANG=language;render();translateUI();}
+};
 document.getElementById('languageToggle').addEventListener('change', event => {
  LANG=event.target.value;
  try {localStorage.setItem('rivfree-language',LANG);} catch {}

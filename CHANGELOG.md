@@ -24,6 +24,15 @@
 
 # Changelog
 
+## [2026-09-27] — Studio: personalización y vista previa
+
+- Edición en vivo de campañas, selección fija del banner y recuperación del formulario en el borrador automático.
+- Vista previa grande y ampliable con escritorio de 1280 px, tablet de 768 px, celular de 390 px, tema, idioma y accesos a secciones.
+- Confirmación de recepción de cambios, selección visible de plantillas y explicación de opciones.
+- Correcciones de paleta, radio de 0 px, imágenes locales, persistencia independiente por sección y errores de guardado del carrusel.
+- Visibilidad de secciones respetada al volver a renderizar el sitio; protección frente a respuestas iniciales tardías que podían reemplazar el borrador.
+- Pruebas automáticas específicas del Studio en `tests/studio-preview.test.cjs`.
+
 ### Lista compartida compacta
 - Los enlaces de favoritos ahora usan identificadores compactos en el fragmento (`#l=`), en lugar de incluir las claves completas de cada producto.
 - Se mantiene compatibilidad de importación con los enlaces antiguos `#list=`.

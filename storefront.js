@@ -1,6 +1,8 @@
 // Editable campaign inventory and honest popularity: aggregate feed or this browser only.
 let campaigns={hero:[]}, popularFeed=null;
 const campaignPositions={hero:0};
+const isStudioPreview=new URLSearchParams(location.search).has('studio-preview')&&window.parent!==window;
+let studioCampaignState=null;
 function campaignCount(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.visible_count);return Number.isInteger(n)?Math.max(1,Math.min(10,n)):5;}
 function carouselDelay(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay_seconds);return Math.max(3,Math.min(30,Number.isFinite(n)?n:6))*1000;}
 function campaignIsActive(c){const now=Date.now(),start=c?.starts_at?Date.parse(c.starts_at):NaN,end=c?.ends_at?Date.parse(c.ends_at):NaN;return c?.enabled!==false&&(!Number.isFinite(start)||now>=start)&&(!Number.isFinite(end)||now<=end);}
@@ -83,6 +85,7 @@ async function initStorefront(){
   popularFeed={updatedAt:ranking.value.updatedAt,items:ranking.value.items.filter(i=>typeof i.url==='string'&&Number.isInteger(i.views)&&i.views>0).slice(0,1000)};
  }
  renderPopularProducts();
+ if(isStudioPreview){if(studioCampaignState)applyStudioCampaigns(studioCampaignState);window.parent.postMessage({type:'rivfree-studio-ready'},location.origin);}
 }
 function campaignCategoryLabel(category,lang=LANG){
  const pair=typeof Catalog!=='undefined'?Catalog.categories?.[category]:null;
@@ -154,7 +157,7 @@ function renderCampaigns(){
 }
 function renderCampaign(slot,automatic=false){
  const root=document.getElementById('heroCampaign'),items=campaigns[slot];
- root.hidden=!items.length;if(!items.length)return;
+ root.hidden=!items.length || (window.RIVFREE_SITE_CONFIG?.homepage?.visible?.hero===false && !(isStudioPreview&&studioCampaignState?.selectedId));if(!items.length)return;
  const index=campaignPositions[slot]%items.length,c=resolveSmartCampaign(items[index]);
  const activeControl=root.contains(document.activeElement)?document.activeElement.dataset.control:null;
  root.replaceChildren();root.dataset.layout=c.layout==='banner'&&c.image?'banner':'split';root.dataset.theme=['rose','blue','sand','mint'].includes(c.theme)?c.theme:'rose';root.dataset.campaignId=c.id||'';root.dataset.campaignGroup=c.poolGroup||'';root.dataset.campaignType=c.smartType||'editorial';
@@ -209,6 +212,9 @@ function recordProductConsult(key){
 }
 let railCatalog=null,railSignature='',railGroups=[];
 function renderPopularProducts(){
+ const popularHidden=window.RIVFREE_SITE_CONFIG?.homepage?.visible?.popular===false;
+ document.getElementById('popularProducts').hidden=popularHidden;
+ document.querySelector('a[href="#popularProducts"]').hidden=popularHidden;
  if(typeof PRODUCT_GROUPS==='undefined'||!PRODUCT_GROUPS.length)return;
  const signature=JSON.stringify([LANG,exchange.usd_brl,[...favorites], [...consultations],popularFeed]);
  if(railCatalog===PRODUCT_GROUPS&&railSignature===signature)return;
@@ -224,8 +230,6 @@ function renderPopularProducts(){
  }
  if(!ranked.length){ranked=groups.filter(g=>consultations.has(g.key)).sort((a,b)=>consultations.get(b.key).count-consultations.get(a.key).count||consultations.get(b.key).last-consultations.get(a.key).last);if(ranked.length)source='local';}
  if(!ranked.length){ranked=groups.slice(0,5);source='editorial';}
- document.getElementById('popularProducts').hidden=false;
- document.querySelector('a[href="#popularProducts"]').hidden=false;
  grid.classList.toggle('few-products',ranked.length<4);
  document.getElementById('popularTitle').textContent=source==='global'?words('Mais consultados','Más consultados'):source==='local'?words('Mais consultados por você','Más consultados por vos'):words('Complete sua lista','Completá tu lista');
  document.getElementById('popularNote').textContent=source==='global'?words('Consultas do site · atualização: ','Consultas del sitio · actualización: ')+new Date(popularFeed.updatedAt).toLocaleDateString(LANG):source==='local'?words('Baseado nas suas consultas neste navegador.','Basado en tus consultas en este navegador.'):words('Uma seleção para começar. Seu ranking aparece conforme você consulta produtos.','Una selección para empezar. Tu ranking aparece a medida que consultás productos.');
@@ -268,6 +272,7 @@ function scrollProductRail(id,direction=1){
  rail.scrollTo?.({left:target,behavior:reduceMotion()?'instant':'smooth'});nextAdvance.set(id,Date.now()+carouselDelay());
 }
 function canAutoplay(root){
+ if(isStudioPreview)return false;
  if(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay===false)return false;
  if(!root||root.hidden||root.closest('[hidden]')||document.hidden||reduceMotion()||autoplayPaused.get(root.id)||root.matches(':hover')||root.contains(document.activeElement))return false;
  const rect=root.getBoundingClientRect();return rect.bottom>0&&rect.top<window.innerHeight;
@@ -294,5 +299,18 @@ for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']]
 }
 document.getElementById('shuffleDiscover').onclick=()=>{renderDiscoverProducts(true);nextAdvance.set('discoverGrid',Date.now()+6000);};
 window.addEventListener('DOMContentLoaded',()=>{for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']])updateAutoplayButton(document.getElementById(prefix+'Pause'),id);});
-window.addEventListener('message',event=>{if(event.origin!==location.origin||event.data?.type!=='rivfree-studio-campaigns-preview'||!Array.isArray(event.data.hero))return;campaigns.hero=chooseBalancedCampaigns(event.data.hero,campaignCount());campaignPositions.hero=0;smartCampaignCache.clear();campaignImageCache.clear();renderCampaigns();});
+function applyStudioCampaigns(data){
+ const previous=studioCampaignState;
+ studioCampaignState=data;
+ const selected=data.hero.find(c=>c.id===data.selectedId);
+ // Editing always shows the chosen campaign, including inactive/scheduled ones.
+ // The complete page uses a stable eligible selection; public randomization is unchanged.
+ campaigns.hero=selected?[selected]:data.hero.filter(c=>campaignIsActive(c)).slice(0,campaignCount());
+ campaignPositions.hero=0;
+ if(JSON.stringify(previous?.hero)!==JSON.stringify(data.hero)){smartCampaignCache.clear();campaignImageCache.clear();}
+ renderCampaigns();
+ if(selected&&previous?.selectedId!==data.selectedId)document.getElementById('heroCampaign')?.scrollIntoView?.({block:'start',behavior:'instant'});
+ window.parent.postMessage({type:'rivfree-studio-applied',revision:data.revision},location.origin);
+}
+window.addEventListener('message',event=>{if(!isStudioPreview||event.source!==window.parent||event.origin!==location.origin||event.data?.type!=='rivfree-studio-campaigns-preview'||!Array.isArray(event.data.hero))return;applyStudioCampaigns(event.data);});
 setInterval(advanceCarousels,1000);
