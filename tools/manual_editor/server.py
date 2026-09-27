@@ -33,6 +33,8 @@ BACKUP_DIR = PROJECT_ROOT / ".manual-backups"
 PRODUCTS_PATH = DATA_DIR / "manual-products.json"
 STORES_PATH = DATA_DIR / "manual-stores.json"
 BASE_STORES_PATH = DATA_DIR / "stores.json"
+SITE_CONFIG_PATH = DATA_DIR / "site-config.json"
+HIGHLIGHTS_PATH = DATA_DIR / "highlights.json"
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_IMAGE_BYTES = 6 * 1024 * 1024
 MAX_BODY_BYTES = 48 * 1024 * 1024
@@ -89,6 +91,11 @@ def ensure_files() -> None:
         atomic_write_json(PRODUCTS_PATH, {"version": "initial", "actualizado": None, "productos": []})
     if not STORES_PATH.exists():
         atomic_write_json(STORES_PATH, {"version": "initial", "actualizado": None, "tiendas": {}})
+    if EDITOR_MODE == "owner":
+        if not SITE_CONFIG_PATH.exists():
+            atomic_write_json(SITE_CONFIG_PATH, default_site_config())
+        if not HIGHLIGHTS_PATH.exists():
+            atomic_write_json(HIGHLIGHTS_PATH, {"hero": []})
     if EDITOR_MODE == "contributor":
         CONTRIB_ASSET_DIR.mkdir(parents=True, exist_ok=True)
         if not CONTRIB_PRODUCTS_PATH.exists():
@@ -99,7 +106,10 @@ def ensure_files() -> None:
 
 def revision() -> str:
     digest = hashlib.sha256()
-    for path in (active_products_path(), active_stores_path()):
+    paths = [active_products_path(), active_stores_path()]
+    if EDITOR_MODE == "owner":
+        paths += [SITE_CONFIG_PATH, HIGHLIGHTS_PATH]
+    for path in paths:
         try:
             digest.update(path.read_bytes())
         except OSError:
@@ -117,7 +127,10 @@ def backup_current() -> None:
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     target = backup_dir / stamp
     target.mkdir(parents=True, exist_ok=True)
-    for path in (active_products_path(), active_stores_path()):
+    paths = [active_products_path(), active_stores_path()]
+    if EDITOR_MODE == "owner":
+        paths += [SITE_CONFIG_PATH, HIGHLIGHTS_PATH]
+    for path in paths:
         if path.exists():
             shutil.copy2(path, target / path.name)
     backups = sorted([p for p in backup_dir.iterdir() if p.is_dir()])
@@ -199,6 +212,126 @@ def load_manual_products() -> dict:
         value["productos"] = []
     return value
 
+
+
+def default_site_config() -> dict:
+    return {
+        "version": "studio-1", "actualizado": None,
+        "branding": {"site_name": "RivFree", "tagline_es": "Explorá y compará los free shops de Rivera y Santana do Livramento", "tagline_pt": "Explore e compare os free shops de Rivera e Santana do Livramento"},
+        "appearance": {
+            "font": "system-modern", "density": "comfortable", "radius": 12, "shadow": "soft",
+            "light": {"background": "#F1ECDE", "surface": "#FFFFFF", "text": "#1B1B1B", "primary": "#123C39", "accent": "#F06449", "highlight": "#BEEB72", "background_image": "", "background_overlay": 0},
+            "dark": {"background": "#101716", "surface": "#17211F", "text": "#F2EFE7", "primary": "#194F4A", "accent": "#FF8068", "highlight": "#C8F47E", "background_image": "", "background_overlay": 0},
+        },
+        "notice": {"enabled": True, "dismissible": True, "title_es": "Antes de tu visita.", "title_pt": "Antes da sua visita.", "text_es": "La web refleja catálogos online, no el stock físico completo de cada tienda.", "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."},
+        "homepage": {"order": ["hero", "benefits", "discover", "popular", "catalog"], "visible": {"hero": True, "benefits": True, "discover": True, "popular": True, "catalog": True}},
+        "carousel": {"visible_count": 5, "autoplay": True, "autoplay_seconds": 6},
+        "seo": {"title_es": "RivFree — Comparador de precios de free shops", "title_pt": "RivFree — Comparador de preços de free shops", "description_es": "Compará precios de free shops de Rivera y Santana do Livramento.", "description_pt": "Compare preços de free shops de Rivera e Santana do Livramento.", "social_image": "social-card.png"},
+        "footer": {"title_es": "RivFree · Comparador independiente", "title_pt": "RivFree · Comparador independente", "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.", "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.", "show_privacy": True},
+    }
+
+def safe_int(value, fallback, minimum, maximum):
+    try: value = int(value)
+    except (TypeError, ValueError): return fallback
+    return max(minimum, min(maximum, value))
+
+def safe_float(value, fallback, minimum, maximum):
+    try: value = float(value)
+    except (TypeError, ValueError): return fallback
+    return max(minimum, min(maximum, value))
+
+def safe_asset_or_url(value):
+    value = text(value, 2000).replace("\\", "/")
+    if not value: return ""
+    if ".." not in value and (value.startswith("assets/manual/") or value == "social-card.png" or value.startswith("icons/")):
+        return value
+    return safe_url(value) or ""
+
+def normalize_site_config(raw: dict) -> dict:
+    base = default_site_config(); raw = raw if isinstance(raw, dict) else {}
+    branding = raw.get("branding") if isinstance(raw.get("branding"), dict) else {}
+    appearance = raw.get("appearance") if isinstance(raw.get("appearance"), dict) else {}
+    def palette(name):
+        src = appearance.get(name) if isinstance(appearance.get(name), dict) else {}; default = base["appearance"][name]
+        return {
+            "background": safe_color(src.get("background"), default["background"]),
+            "surface": safe_color(src.get("surface"), default["surface"]),
+            "text": safe_color(src.get("text"), default["text"]),
+            "primary": safe_color(src.get("primary"), default["primary"]),
+            "accent": safe_color(src.get("accent"), default["accent"]),
+            "highlight": safe_color(src.get("highlight"), default["highlight"]),
+            "background_image": safe_asset_or_url(src.get("background_image")),
+            "background_overlay": round(safe_float(src.get("background_overlay"), 0, 0, .9), 2),
+        }
+    font = text(appearance.get("font"), 30); density = text(appearance.get("density"), 30); shadow = text(appearance.get("shadow"), 30)
+    notice = raw.get("notice") if isinstance(raw.get("notice"), dict) else {}
+    homepage = raw.get("homepage") if isinstance(raw.get("homepage"), dict) else {}; visible = homepage.get("visible") if isinstance(homepage.get("visible"), dict) else {}
+    allowed_sections = ["hero", "benefits", "discover", "popular", "catalog"]
+    order = [x for x in (homepage.get("order") or []) if x in allowed_sections]
+    order += [x for x in allowed_sections if x not in order]
+    carousel = raw.get("carousel") if isinstance(raw.get("carousel"), dict) else {}
+    seo = raw.get("seo") if isinstance(raw.get("seo"), dict) else {}
+    footer = raw.get("footer") if isinstance(raw.get("footer"), dict) else {}
+    return {
+        "version": new_version("studio"), "actualizado": now_iso(),
+        "branding": {"site_name": text(branding.get("site_name") or "RivFree", 60), "tagline_es": text(branding.get("tagline_es"), 180), "tagline_pt": text(branding.get("tagline_pt"), 180)},
+        "appearance": {"font": font if font in {"system-modern","rounded","editorial","mono"} else "system-modern", "density": density if density in {"compact","comfortable","airy"} else "comfortable", "radius": safe_int(appearance.get("radius"), 12, 0, 32), "shadow": shadow if shadow in {"none","soft","strong"} else "soft", "light": palette("light"), "dark": palette("dark")},
+        "notice": {"enabled": bool(notice.get("enabled", True)), "dismissible": bool(notice.get("dismissible", True)), "title_es": text(notice.get("title_es"), 120), "title_pt": text(notice.get("title_pt"), 120), "text_es": text(notice.get("text_es"), 500), "text_pt": text(notice.get("text_pt"), 500)},
+        "homepage": {"order": order, "visible": {k: bool(visible.get(k, True)) for k in allowed_sections}},
+        "carousel": {"visible_count": safe_int(carousel.get("visible_count"), 5, 1, 10), "autoplay": bool(carousel.get("autoplay", True)), "autoplay_seconds": safe_int(carousel.get("autoplay_seconds"), 6, 3, 30)},
+        "seo": {"title_es": text(seo.get("title_es"), 160), "title_pt": text(seo.get("title_pt"), 160), "description_es": text(seo.get("description_es"), 320), "description_pt": text(seo.get("description_pt"), 320), "social_image": safe_asset_or_url(seo.get("social_image")) or "social-card.png"},
+        "footer": {"title_es": text(footer.get("title_es"), 160), "title_pt": text(footer.get("title_pt"), 160), "text_es": text(footer.get("text_es"), 1000), "text_pt": text(footer.get("text_pt"), 1000), "show_privacy": bool(footer.get("show_privacy", True))},
+    }
+
+def load_site_config() -> dict:
+    value = read_json(SITE_CONFIG_PATH, default_site_config())
+    return value if isinstance(value, dict) else default_site_config()
+
+def normalize_campaign(raw: dict, index=0) -> dict:
+    if not isinstance(raw, dict): raise ValueError("Banner inválido")
+    def bilingual(key, limit):
+        value=raw.get(key); value=value if isinstance(value, dict) else {}
+        return {"es": text(value.get("es"), limit), "pt-BR": text(value.get("pt-BR"), limit)}
+    cid = re.sub(r"[^a-z0-9_-]+", "-", text(raw.get("id"), 100).lower()).strip("-") or f"banner-{uuid.uuid4().hex[:10]}"
+    theme=text(raw.get("theme"),20); layout=text(raw.get("layout"),20); smart=text(raw.get("smartType"),30); group=text(raw.get("poolGroup") or "general",40)
+    category=text(raw.get("category"),120); action=text(raw.get("action"),30)
+    result={"id":cid,"poolGroup":group,"theme":theme if theme in {"rose","blue","sand","mint"} else "rose","layout":layout if layout in {"split","banner"} else "split","sponsored":bool(raw.get("sponsored")),"enabled":bool(raw.get("enabled",True)),"eyebrow":bilingual("eyebrow",120),"title":bilingual("title",220),"description":bilingual("description",500),"cta":bilingual("cta",100),"category":category}
+    if smart in {"compare","multistore","offer","category"}: result["smartType"]=smart
+    if action in {"offers","category","compare"}: result["action"]=action
+    href=safe_url(raw.get("href")); image=safe_asset_or_url(raw.get("image")); mobile=safe_asset_or_url(raw.get("mobileImage"))
+    if href: result["href"]=href
+    if image: result["image"]=image
+    if mobile: result["mobileImage"]=mobile
+    images=[]
+    for item in (raw.get("images") or [])[:3]:
+        if not isinstance(item,dict): continue
+        src=safe_asset_or_url(item.get("src"));
+        if src: images.append({"src":src,"alt":text(item.get("alt"),160)})
+    if images: result["images"]=images
+    for key in ("starts_at","ends_at"):
+        value=text(raw.get(key),40)
+        if value: result[key]=value
+    return result
+
+def load_highlights() -> dict:
+    value=read_json(HIGHLIGHTS_PATH,{"hero":[]}); hero=value.get("hero") if isinstance(value,dict) else []
+    return {"hero": hero if isinstance(hero,list) else []}
+
+def save_site_config(payload: dict) -> dict:
+    if EDITOR_MODE != "owner": raise ValueError("Solo el editor principal puede cambiar el sitio")
+    with LOCK:
+        check_revision(payload); backup_current(); config=normalize_site_config(payload.get("config") or {}); atomic_write_json(SITE_CONFIG_PATH,config); return state_payload()
+
+def save_highlights(payload: dict) -> dict:
+    if EDITOR_MODE != "owner": raise ValueError("Solo el editor principal puede cambiar el carrusel")
+    with LOCK:
+        check_revision(payload); hero=payload.get("hero") or []
+        if not isinstance(hero,list): raise ValueError("Carrusel inválido")
+        if len(hero)>60: raise ValueError("El carrusel admite hasta 60 campañas en la pool")
+        normalized=[normalize_campaign(item,i) for i,item in enumerate(hero)]
+        ids=[x["id"] for x in normalized]
+        if len(ids)!=len(set(ids)): raise ValueError("Hay banners con el mismo identificador")
+        backup_current(); atomic_write_json(HIGHLIGHTS_PATH,{"hero":normalized}); return state_payload()
 
 
 def load_reference_stores() -> dict:
@@ -305,6 +438,8 @@ def state_payload() -> dict:
             "stores": manual_stores_doc.get("actualizado"),
             "products": products_doc.get("actualizado"),
         },
+        "site_config": load_site_config() if EDITOR_MODE == "owner" else None,
+        "highlights": load_highlights() if EDITOR_MODE == "owner" else None,
     }
 
 
@@ -497,7 +632,9 @@ def export_payload() -> dict:
 def export_zip() -> bytes:
     out = io.BytesIO()
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in (active_products_path(), active_stores_path()):
+        paths = [active_products_path(), active_stores_path()]
+        if EDITOR_MODE == "owner": paths += [SITE_CONFIG_PATH, HIGHLIGHTS_PATH]
+        for path in paths:
             if path.exists():
                 archive.write(path, path.relative_to(PROJECT_ROOT).as_posix())
         products = load_manual_products().get("productos", [])
@@ -511,6 +648,14 @@ def export_zip() -> bytes:
                 continue
             if resolved.is_file():
                 archive.write(resolved, resolved.relative_to(PROJECT_ROOT).as_posix())
+        if EDITOR_MODE == "owner" and ASSET_DIR.exists():
+            already = set(archive.namelist())
+            for resolved in ASSET_DIR.rglob("*"):
+                if resolved.is_file():
+                    relative = resolved.relative_to(PROJECT_ROOT).as_posix()
+                    if relative not in already:
+                        archive.write(resolved, relative)
+                        already.add(relative)
         archive.writestr("MANUAL-DATOS-README.txt", "Extraé este ZIP sobre la raíz del repositorio RivFree y luego ejecutá git add/commit/push.\n")
     return out.getvalue()
 
@@ -915,6 +1060,8 @@ class Handler(SimpleHTTPRequestHandler):
                 "/api/manual/preview-contribution": preview_contribution,
                 "/api/manual/apply-contribution": apply_contribution,
                 "/api/manual/reset-contribution": reset_contribution,
+                "/api/manual/save-site-config": save_site_config,
+                "/api/manual/save-highlights": save_highlights,
             }
             action = actions.get(parsed.path)
             if not action:
@@ -929,7 +1076,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Editor local de tiendas y productos manuales de RivFree")
+    parser = argparse.ArgumentParser(description="RivFree Studio · editor visual y de catálogo")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--open", action="store_true", dest="open_browser")
     parser.add_argument("--mode", choices=("owner", "contributor"), default="owner")
@@ -939,7 +1086,7 @@ def main():
     ensure_files()
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     url = f"http://127.0.0.1:{args.port}/tools/manual_editor/?token={SESSION_TOKEN}&mode={EDITOR_MODE}"
-    print("\nRivFree · " + ("Cargador colaborador" if EDITOR_MODE == "contributor" else "Editor manual"))
+    print("\nRivFree · " + ("Cargador colaborador" if EDITOR_MODE == "contributor" else "Studio"))
     print(f"Proyecto: {PROJECT_ROOT}")
     print(f"Abrí: {url}")
     print("Para cerrar el editor: Ctrl+C\n")

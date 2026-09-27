@@ -53,3 +53,7 @@ No se borran de tu disco: solamente dejan de formar parte de futuros commits.
 ## Cambios del proyecto
 
 Los cambios notables se documentan en [`CHANGELOG.md`](CHANGELOG.md). No crear un `.md` nuevo por cada corrección puntual.
+
+## RivFree Studio
+
+Para administrar el sitio sin editar código, abrí `Abrir-RivFree-Studio.bat`. El Studio permite cambiar diseño, fondos, carrusel, avisos, orden de secciones, SEO, footer, productos y tiendas. Ver `RIVFREE-STUDIO.md`.

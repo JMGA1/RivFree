@@ -1386,3 +1386,8 @@ a.source-chip:hover{color:var(--ink);border-color:color-mix(in srgb,var(--rf-red
 #importShoppingList:disabled{opacity:.6;cursor:wait;}
 #dismissImport{min-height:44px;padding:11px 16px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:700 13px var(--font-sans);cursor:pointer;}
 @media(max-width:520px){.import-list-dialog{padding:22px;border-radius:18px;}.import-list-actions{display:grid;grid-template-columns:1fr;}.import-list-actions button{width:100%;}}
+
+/* RivFree Studio: safe visual customisation hooks */
+body[data-density="compact"] .card-body{padding:8px!important} body[data-density="compact"] .popular-section{padding-top:12px!important;padding-bottom:12px!important}
+body[data-density="airy"] .card-body{padding:18px!important} body[data-density="airy"] .popular-section{padding-top:28px!important;padding-bottom:28px!important}
+.catalog-section[hidden]{display:none!important}.studio-footer-text{display:inline}.shopping-benefits[hidden],.popular-section[hidden],#heroCampaign[hidden]{display:none!important}

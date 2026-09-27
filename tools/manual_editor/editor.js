@@ -9,6 +9,7 @@
 
   let state = {revision:'', mode:'owner', stores:{}, base_stores:{}, manual_stores:{}, products:[]};
   let dirty = false;
+  let externalDirty = false;
   let statusTimer;
   let contributionPreviewData = null;
 
@@ -20,14 +21,16 @@
     statusTimer = setTimeout(() => el.className = 'status', 4400);
   }
 
-  function setDirty(value) {
-    dirty = value;
-    $('saveState').textContent = value ? 'Cambios del formulario sin guardar' : 'Sin cambios pendientes';
-    $('saveState').style.color = value ? '#ffcf7a' : '';
+  function refreshDirtyState() {
+    const any = dirty || externalDirty;
+    $('saveState').textContent = any ? 'Cambios sin guardar' : 'Sin cambios pendientes';
+    $('saveState').style.color = any ? '#ffcf7a' : '';
   }
+  function setDirty(value) { dirty = value; refreshDirtyState(); }
+  function setExternalDirty(value) { externalDirty = value; refreshDirtyState(); }
 
   window.addEventListener('beforeunload', event => {
-    if (!dirty) return;
+    if (!(dirty || externalDirty)) return;
     event.preventDefault();
     event.returnValue = '';
   });
@@ -54,6 +57,8 @@
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'No se pudo abrir el editor');
     applyState(data);
+    if(!document.querySelector('.tab.active:not([hidden])')) switchTab(data.mode==='contributor'?'products':'appearance');
+    else if(data.mode==='contributor') switchTab('products');
     setDirty(false);
   }
 
@@ -74,9 +79,9 @@
       $('helpText').textContent = 'Cargá los datos, exportá el ZIP y enviáselo a quien administra RivFree. No necesitás hacer commits.';
       $('openSite').hidden = true;
     } else {
-      document.title = 'RivFree · Editor manual';
-      $('brandTitle').textContent = 'RivFree';
-      $('brandSubtitle').textContent = 'Editor local de catálogo';
+      document.title = 'RivFree Studio';
+      $('brandTitle').textContent = 'RivFree Studio';
+      $('brandSubtitle').textContent = 'Editor visual del sitio';
       $('projectEyebrow').textContent = 'PROYECTO LOCAL';
       $('projectDescription').textContent = 'Los cambios se guardan directamente en los archivos del repositorio.';
       $('transferTabLabel').textContent = 'Importar / exportar';
@@ -96,6 +101,7 @@
     renderProducts();
     renderStores();
     setDownloadLinks();
+    window.dispatchEvent(new CustomEvent('rivfree-editor-state',{detail:state}));
   }
 
   function setDownloadLinks() {
@@ -125,6 +131,11 @@
     document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === name));
     document.querySelectorAll('.panel').forEach(el => el.classList.toggle('active', el.dataset.panel === name));
   }
+
+  window.RivFreeEditor = {
+    api, load, applyState, notify, switchTab, setDirty, setExternalDirty,
+    getState:()=>state, getToken:()=>token
+  };
 
   document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.tab)));
   $('reloadState').onclick = async () => {

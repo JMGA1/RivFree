@@ -1,0 +1,44 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from tools.manual_editor import server
+
+class StudioEditorTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory(); root=Path(self.temp.name)
+        self.old={k:getattr(server,k) for k in ['PROJECT_ROOT','DATA_DIR','ASSET_DIR','BACKUP_DIR','PRODUCTS_PATH','STORES_PATH','BASE_STORES_PATH','SITE_CONFIG_PATH','HIGHLIGHTS_PATH','EDITOR_MODE']}
+        server.PROJECT_ROOT=root; server.DATA_DIR=root/'data'; server.ASSET_DIR=root/'assets'/'manual'; server.BACKUP_DIR=root/'.manual-backups'
+        server.PRODUCTS_PATH=server.DATA_DIR/'manual-products.json'; server.STORES_PATH=server.DATA_DIR/'manual-stores.json'; server.BASE_STORES_PATH=server.DATA_DIR/'stores.json'; server.SITE_CONFIG_PATH=server.DATA_DIR/'site-config.json'; server.HIGHLIGHTS_PATH=server.DATA_DIR/'highlights.json'; server.EDITOR_MODE='owner'
+        server.DATA_DIR.mkdir(parents=True); server.BASE_STORES_PATH.write_text('{}',encoding='utf-8'); server.ensure_files()
+    def tearDown(self):
+        for k,v in self.old.items(): setattr(server,k,v)
+        self.temp.cleanup()
+    def test_site_config_is_sanitized_and_saved(self):
+        config=server.default_site_config(); config['branding']['site_name']='Mi RivFree'; config['appearance']['radius']=99; config['appearance']['light']['background_image']='javascript:alert(1)'; config['carousel']['visible_count']=25
+        with self.assertRaises(ValueError):
+            server.save_site_config({'config':config})
+        config['appearance']['light']['background_image']='assets/manual/fondo.webp'
+        state=server.save_site_config({'config':config})
+        saved=json.loads(server.SITE_CONFIG_PATH.read_text(encoding='utf-8'))
+        self.assertEqual(saved['branding']['site_name'],'Mi RivFree')
+        self.assertEqual(saved['appearance']['radius'],32)
+        self.assertEqual(saved['appearance']['light']['background_image'],'assets/manual/fondo.webp')
+        self.assertEqual(saved['carousel']['visible_count'],10)
+        self.assertEqual(state['site_config']['branding']['site_name'],'Mi RivFree')
+    def test_campaigns_support_sponsored_schedule_and_local_image(self):
+        hero=[{'id':'promo-1','poolGroup':'general','theme':'blue','layout':'banner','enabled':True,'sponsored':True,'title':{'es':'Promo','pt-BR':'Promo'},'eyebrow':{'es':'PUBLICIDAD','pt-BR':'PUBLICIDADE'},'description':{'es':'Texto','pt-BR':'Texto'},'cta':{'es':'Ver','pt-BR':'Ver'},'image':'assets/manual/promo.webp','starts_at':'2026-10-01T10:00','ends_at':'2026-10-10T22:00'}]
+        state=server.save_highlights({'hero':hero})
+        item=state['highlights']['hero'][0]
+        self.assertTrue(item['sponsored']); self.assertEqual(item['layout'],'banner'); self.assertEqual(item['image'],'assets/manual/promo.webp'); self.assertIn('starts_at',item)
+    def test_duplicate_campaign_ids_are_rejected(self):
+        item={'id':'same','title':{'es':'A','pt-BR':'A'},'eyebrow':{},'description':{},'cta':{}}
+        with self.assertRaises(ValueError): server.save_highlights({'hero':[item,item]})
+    def test_owner_export_contains_studio_configuration(self):
+        raw=server.export_zip()
+        import io, zipfile
+        with zipfile.ZipFile(io.BytesIO(raw)) as z:
+            names=set(z.namelist())
+        self.assertIn('data/site-config.json',names); self.assertIn('data/highlights.json',names)
+
+if __name__=='__main__': unittest.main()

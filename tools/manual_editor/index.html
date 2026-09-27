@@ -3,19 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RivFree · Editor de catálogo</title>
+<title>RivFree Studio</title>
 <link rel="stylesheet" href="editor.css">
 </head>
 <body>
 <header class="topbar">
-  <div><span class="brand-mark">RF</span><div><strong id="brandTitle">RivFree</strong><small id="brandSubtitle">Editor local de catálogo</small></div></div>
+  <div><span class="brand-mark">RF</span><div><strong id="brandTitle">RivFree Studio</strong><small id="brandSubtitle">Editor visual del sitio</small></div></div>
   <div class="top-actions"><span id="saveState" class="save-state">Sin cambios pendientes</span><button id="reloadState" class="button ghost">Recargar</button><a id="openSite" class="button ghost" href="/" target="_blank" rel="noopener">Ver sitio</a></div>
 </header>
 <main class="shell">
   <aside class="sidebar">
     <div class="project-card"><span class="eyebrow" id="projectEyebrow">PROYECTO LOCAL</span><strong id="projectPath">Cargando…</strong><p id="projectDescription">Los cambios se guardan directamente en los archivos del repositorio.</p></div>
     <nav class="tabs" aria-label="Secciones del editor">
-      <button class="tab active" data-tab="products">Productos <span id="productCount">0</span></button>
+      <button class="tab owner-only active" data-tab="appearance">Diseño</button>
+      <button class="tab owner-only" data-tab="carousel">Carrusel <span id="campaignCount">0</span></button>
+      <button class="tab owner-only" data-tab="page">Página</button>
+      <button class="tab" data-tab="products">Productos <span id="productCount">0</span></button>
       <button class="tab" data-tab="stores">Tiendas <span id="storeCount">0</span></button>
       <button class="tab owner-only" data-tab="collaborations">Colaboraciones <span id="collaborationCount">ZIP</span></button>
       <button class="tab" data-tab="transfer" id="transferTab"><span id="transferTabLabel">Importar / exportar</span></button>
@@ -26,7 +29,63 @@
   <section class="workspace">
     <div id="status" class="status" role="status" aria-live="polite"></div>
 
-    <section class="panel active" data-panel="products">
+
+    <section class="panel owner-only active" data-panel="appearance">
+      <div class="panel-heading"><div><span class="eyebrow">RIVFREE STUDIO</span><h1>Diseño y apariencia</h1><p>Cambiá colores, fondo, tipografía y marca sin tocar CSS.</p></div><button id="saveAppearance" class="button primary" type="button">Guardar diseño</button></div>
+      <div class="studio-split">
+        <form id="appearanceForm" class="editor-card studio-form" autocomplete="off">
+          <div class="subsection"><h3>Marca</h3><div class="grid2">
+            <label class="wide"><span>Nombre del sitio</span><input id="siteName" maxlength="60"></label>
+            <label class="wide"><span>Subtítulo · Español</span><input id="taglineEs" maxlength="180"></label>
+            <label class="wide"><span>Subtítulo · Portugués</span><input id="taglinePt" maxlength="180"></label>
+          </div></div>
+          <div class="subsection"><h3>Estilo general</h3><div class="grid3">
+            <label><span>Tipografía</span><select id="siteFont"><option value="system-modern">Moderna</option><option value="rounded">Redondeada</option><option value="editorial">Editorial</option><option value="mono">Monoespaciada</option></select></label>
+            <label><span>Espaciado</span><select id="siteDensity"><option value="compact">Compacto</option><option value="comfortable">Cómodo</option><option value="airy">Amplio</option></select></label>
+            <label><span>Sombras</span><select id="siteShadow"><option value="none">Sin sombra</option><option value="soft">Suave</option><option value="strong">Marcada</option></select></label>
+            <label><span>Redondeado <b id="radiusValue">12px</b></span><input id="siteRadius" type="range" min="0" max="32" step="1"></label>
+          </div></div>
+          <div class="theme-editor-grid">
+            <fieldset class="theme-editor"><legend>Modo claro</legend><div class="color-grid">
+              <label><span>Fondo</span><input id="lightBackground" type="color"></label><label><span>Tarjetas</span><input id="lightSurface" type="color"></label><label><span>Texto</span><input id="lightText" type="color"></label><label><span>Principal</span><input id="lightPrimary" type="color"></label><label><span>Acento</span><input id="lightAccent" type="color"></label><label><span>Destacado</span><input id="lightHighlight" type="color"></label>
+            </div><label><span>Imagen de fondo</span><input id="lightBgImage" type="text" placeholder="URL o assets/manual/..."></label><label class="file-label"><span>Subir fondo</span><input id="lightBgFile" type="file" accept="image/*"></label><label><span>Oscurecer/aclarar fondo <b id="lightOverlayValue">0%</b></span><input id="lightOverlay" type="range" min="0" max="90"></label></fieldset>
+            <fieldset class="theme-editor"><legend>Modo oscuro</legend><div class="color-grid">
+              <label><span>Fondo</span><input id="darkBackground" type="color"></label><label><span>Tarjetas</span><input id="darkSurface" type="color"></label><label><span>Texto</span><input id="darkText" type="color"></label><label><span>Principal</span><input id="darkPrimary" type="color"></label><label><span>Acento</span><input id="darkAccent" type="color"></label><label><span>Destacado</span><input id="darkHighlight" type="color"></label>
+            </div><label><span>Imagen de fondo</span><input id="darkBgImage" type="text" placeholder="URL o assets/manual/..."></label><label class="file-label"><span>Subir fondo</span><input id="darkBgFile" type="file" accept="image/*"></label><label><span>Oscurecer fondo <b id="darkOverlayValue">0%</b></span><input id="darkOverlay" type="range" min="0" max="90"></label></fieldset>
+          </div>
+        </form>
+        <aside class="studio-preview-card"><div class="preview-toolbar"><strong>Vista previa</strong><div><button class="preview-size active" data-preview-width="100%" type="button">PC</button><button class="preview-size" data-preview-width="390px" type="button">Celular</button></div></div><div class="preview-stage"><iframe id="studioPreview" title="Vista previa de RivFree" src="/?studio-preview=1"></iframe></div><p class="form-help">La vista previa usa tu catálogo local. Los cambios no se publican hasta que guardes y hagas push.</p></aside>
+      </div>
+    </section>
+
+    <section class="panel owner-only" data-panel="carousel">
+      <div class="panel-heading"><div><span class="eyebrow">HOME · CARRUSEL</span><h1>Banners y campañas</h1><p>Creá, programá, reordená y patrociná banners desde una pool editable.</p></div><div class="panel-heading-actions"><button id="newCampaign" class="button">+ Nuevo banner</button><button id="saveCampaigns" class="button primary">Guardar carrusel</button></div></div>
+      <div class="two-column campaign-editor-layout">
+        <div class="list-pane"><div class="campaign-settings-mini"><label><span>Mostrar por carga</span><input id="campaignVisibleCount" type="number" min="1" max="10"></label><label class="check"><input id="campaignAutoplay" type="checkbox"><span>Autoplay</span></label><label><span>Segundos</span><input id="campaignSeconds" type="number" min="3" max="30"></label></div><div id="campaignList" class="item-list"></div></div>
+        <form id="campaignForm" class="editor-card" autocomplete="off">
+          <input id="campaignId" type="hidden"><div class="form-heading"><div><span class="eyebrow">BANNER</span><h2 id="campaignFormTitle">Nuevo banner</h2></div><span id="campaignSponsorBadge" class="badge">Editorial</span></div>
+          <div class="grid2"><label><span>Grupo de la pool</span><select id="campaignGroup"><option value="beauty">Belleza</option><option value="drinks">Bebidas</option><option value="tech">Tecnología</option><option value="food">Alimentos</option><option value="smart">Inteligente</option><option value="general">General</option></select></label><label><span>Color</span><select id="campaignTheme"><option value="rose">Rosa</option><option value="blue">Azul</option><option value="sand">Arena</option><option value="mint">Menta</option></select></label><label><span>Diseño</span><select id="campaignLayout"><option value="split">Texto + producto</option><option value="banner">Imagen completa</option></select></label><label><span>Acción inteligente</span><select id="campaignSmart"><option value="">Ninguna</option><option value="compare">Comparación real</option><option value="multistore">Varias tiendas</option><option value="offer">Oferta real</option><option value="category">Categoría destacada</option></select></label><label class="check"><input id="campaignEnabled" type="checkbox" checked><span>Activo</span></label><label class="check"><input id="campaignSponsored" type="checkbox"><span>Patrocinado / publicidad</span></label></div>
+          <div class="subsection"><h3>Texto</h3><div class="translation-grid"><div><strong>Español</strong><label><span>Etiqueta</span><input id="campaignEyebrowEs"></label><label><span>Título</span><textarea id="campaignTitleEs" rows="2"></textarea></label><label><span>Descripción</span><textarea id="campaignDescriptionEs" rows="3"></textarea></label><label><span>Botón</span><input id="campaignCtaEs"></label></div><div><strong>Português</strong><label><span>Etiqueta</span><input id="campaignEyebrowPt"></label><label><span>Título</span><textarea id="campaignTitlePt" rows="2"></textarea></label><label><span>Descrição</span><textarea id="campaignDescriptionPt" rows="3"></textarea></label><label><span>Botão</span><input id="campaignCtaPt"></label></div></div></div>
+          <div class="grid2"><label><span>Categoría de destino</span><input id="campaignCategory" placeholder="perfumes, bebidas..."></label><label><span>Link externo opcional</span><input id="campaignHref" type="url" placeholder="https://..."></label><label><span>Inicio programado</span><input id="campaignStart" type="datetime-local"></label><label><span>Fin programado</span><input id="campaignEnd" type="datetime-local"></label></div>
+          <div class="subsection"><h3>Imagen</h3><div class="image-grid"><div id="campaignImagePreview" class="image-preview"><span>Sin imagen</span></div><div><label><span>Imagen / URL</span><input id="campaignImage" type="text"></label><label class="file-label"><span>Subir imagen</span><input id="campaignImageFile" type="file" accept="image/*"></label></div></div></div>
+          <div class="form-actions"><button class="button primary" type="submit">Aplicar al borrador</button><button id="duplicateCampaign" class="button" type="button">Duplicar</button><button id="deleteCampaign" class="button danger" type="button">Eliminar</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel owner-only" data-panel="page">
+      <div class="panel-heading"><div><span class="eyebrow">CONTENIDO DEL SITIO</span><h1>Página, avisos y SEO</h1><p>Elegí qué secciones aparecen, su orden y los textos institucionales.</p></div><button id="savePageConfig" class="button primary" type="button">Guardar página</button></div>
+      <div class="studio-page-grid">
+        <article class="editor-card"><div class="subsection"><h3>Orden del inicio</h3><p class="form-help">Usá ↑/↓ para cambiar el orden y el interruptor para ocultar una sección.</p><div id="sectionOrder" class="section-order"></div></div></article>
+        <form id="pageForm" class="editor-card" autocomplete="off">
+          <div class="subsection"><h3>Aviso de disponibilidad</h3><div class="grid2"><label class="check"><input id="noticeEnabled" type="checkbox"><span>Mostrar aviso</span></label><label class="check"><input id="noticeDismissible" type="checkbox"><span>Se puede cerrar</span></label><label><span>Título ES</span><input id="noticeTitleEs"></label><label><span>Título PT</span><input id="noticeTitlePt"></label><label><span>Texto ES</span><textarea id="noticeTextEs" rows="3"></textarea></label><label><span>Texto PT</span><textarea id="noticeTextPt" rows="3"></textarea></label></div></div>
+          <div class="subsection"><h3>SEO y redes</h3><div class="grid2"><label><span>Título Google ES</span><input id="seoTitleEs"></label><label><span>Título Google PT</span><input id="seoTitlePt"></label><label><span>Descripción ES</span><textarea id="seoDescriptionEs" rows="3"></textarea></label><label><span>Descripción PT</span><textarea id="seoDescriptionPt" rows="3"></textarea></label><label class="wide"><span>Imagen al compartir</span><input id="seoSocialImage" placeholder="social-card.png"></label></div></div>
+          <div class="subsection"><h3>Footer</h3><div class="grid2"><label><span>Título ES</span><input id="footerTitleEs"></label><label><span>Título PT</span><input id="footerTitlePt"></label><label><span>Texto ES</span><textarea id="footerTextEs" rows="4"></textarea></label><label><span>Texto PT</span><textarea id="footerTextPt" rows="4"></textarea></label><label class="check"><input id="footerPrivacy" type="checkbox"><span>Mostrar enlace de privacidad</span></label></div></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="products">
       <div class="panel-heading"><div><span class="eyebrow">CATÁLOGO MANUAL</span><h1>Productos y publicaciones</h1><p>Agregá precios vistos en Instagram, tiendas sin scraper o productos puntuales.</p></div><button id="newProduct" class="button primary">+ Nuevo producto</button></div>
       <div class="two-column">
         <div class="list-pane">
@@ -117,7 +176,7 @@
       <div class="panel-heading"><div><span class="eyebrow">DATOS MANUALES</span><h1>Importar, respaldar y publicar</h1><p>Los archivos manuales están separados de los scrapers, por lo que una actualización automática no los reemplaza.</p></div></div>
       <div class="transfer-grid">
         <article class="transfer-card owner-only"><h2>Exportar respaldo</h2><p>Descarga todas las tiendas y publicaciones manuales en un único JSON que después podés volver a importar.</p><a id="downloadJson" class="button" href="#">Descargar JSON</a></article>
-        <article class="transfer-card featured owner-only"><h2>Paquete listo para GitHub</h2><p>Incluye <code>data/manual-products.json</code>, <code>data/manual-stores.json</code> y las imágenes locales usadas.</p><a id="downloadZip" class="button primary" href="#">Descargar ZIP para GitHub</a></article>
+        <article class="transfer-card featured owner-only"><h2>Paquete listo para GitHub</h2><p>Incluye catálogo manual, configuración de RivFree Studio, carrusel e imágenes de <code>assets/manual/</code>.</p><a id="downloadZip" class="button primary" href="#">Descargar ZIP para GitHub</a></article>
         <article class="transfer-card owner-only"><h2>Importar JSON o CSV</h2><p>JSON acepta respaldos del editor. CSV importa productos con encabezados como <code>tienda,nombre,precio_usd,categoria,fuente_tipo,fuente_url</code>.</p><input id="importFile" type="file" accept=".json,.csv,application/json,text/csv"><div class="inline"><select id="importMode"><option value="merge">Combinar con lo existente</option><option value="replace">Reemplazar datos manuales</option></select><button id="importButton" class="button" type="button">Importar</button></div></article>
         <article class="transfer-card owner-only"><h2>Después de editar</h2><pre>git status
 git add .
@@ -136,5 +195,6 @@ git push origin main</pre><p>Al subir los archivos a GitHub Pages, RivFree los m
 </main>
 <template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
 <script src="editor.js"></script>
+<script src="studio-editor.js"></script>
 </body>
 </html>

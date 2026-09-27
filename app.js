@@ -976,7 +976,7 @@ document.getElementById('languageToggle').addEventListener('change', event => {
  LANG=event.target.value;
  try {localStorage.setItem('rivfree-language',LANG);} catch {}
  document.querySelectorAll('dialog[open]').forEach(d=>d.close());
- render(); translateUI(); renderCampaigns(); updateExchangeNote(); if(document.getElementById('shoppingDialog').open)renderShoppingList();
+ render(); translateUI(); window.applyRivFreeSiteConfig?.(window.RIVFREE_SITE_CONFIG); renderCampaigns(); updateExchangeNote(); if(document.getElementById('shoppingDialog').open)renderShoppingList();
 });
 const backToTop=document.getElementById('backToTop');
 window.addEventListener('scroll',()=>{backToTop.hidden=window.scrollY<600;},{passive:true});
@@ -986,5 +986,6 @@ backToTop.addEventListener('click',()=>{
 });
 document.getElementById('closeHistory').addEventListener('click',()=>document.getElementById('historyDialog').close());
 translateUI();
+window.RIVFREE_SITE_READY?.then(()=>window.applyRivFreeSiteConfig?.(window.RIVFREE_SITE_CONFIG));
 initStorefront();
 loadData();

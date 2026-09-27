@@ -1,3 +1,12 @@
+
+## 2026-09-26 — RivFree Studio
+
+- Se agregó un editor visual para apariencia, fondos, tipografía y espaciado.
+- El carrusel ahora puede administrarse sin código, incluyendo programación y banners patrocinados.
+- Se puede reordenar/ocultar secciones del home y editar aviso, SEO y footer.
+- Se agregó `data/site-config.json`, vista previa responsive y backups automáticos.
+- GitHub Pages publica la configuración del Studio y el service worker se actualizó a v26.
+
 # Changelog
 
 ### Lista compartida compacta

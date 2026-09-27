@@ -1,7 +1,9 @@
 // Editable campaign inventory and honest popularity: aggregate feed or this browser only.
 let campaigns={hero:[]}, popularFeed=null;
 const campaignPositions={hero:0};
-const CAMPAIGN_COUNT=5;
+function campaignCount(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.visible_count);return Number.isInteger(n)?Math.max(1,Math.min(10,n)):5;}
+function carouselDelay(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay_seconds);return Math.max(3,Math.min(30,Number.isFinite(n)?n:6))*1000;}
+function campaignIsActive(c){const now=Date.now(),start=c?.starts_at?Date.parse(c.starts_at):NaN,end=c?.ends_at?Date.parse(c.ends_at):NaN;return c?.enabled!==false&&(!Number.isFinite(start)||now>=start)&&(!Number.isFinite(end)||now<=end);}
 const LAST_CAMPAIGNS_KEY='rivfree-last-campaign-selection';
 const smartCampaignCache=new Map(),campaignImageCache=new Map();
 const consultations=new Map();
@@ -30,8 +32,9 @@ function shuffled(items){
 function previousCampaignIds(){
  try{const value=JSON.parse(sessionStorage.getItem(LAST_CAMPAIGNS_KEY)||'[]');return new Set(Array.isArray(value)?value.filter(v=>typeof v==='string'):[]);}catch{return new Set();}
 }
-function chooseBalancedCampaigns(entries,amount=CAMPAIGN_COUNT){
- const valid=Array.isArray(entries)?entries.filter(c=>c&&typeof c.id==='string'&&localized(c.title)&&c.enabled!==false):[];
+function chooseBalancedCampaigns(entries,amount=null){
+ amount=amount||campaignCount();
+ const valid=Array.isArray(entries)?entries.filter(c=>c&&typeof c.id==='string'&&localized(c.title)&&campaignIsActive(c)):[];
  if(valid.length<=amount){try{sessionStorage.setItem(LAST_CAMPAIGNS_KEY,JSON.stringify(valid.map(c=>c.id)));}catch{}return shuffled(valid);}
  const previous=previousCampaignIds(),selected=[],used=new Set();
  const groups=[...new Set(valid.map(c=>c.poolGroup||'general'))];
@@ -67,10 +70,11 @@ async function storefrontJSON(path){
  try{const response=await fetch(path,{cache:'default',signal:controller.signal});if(!response.ok)throw new Error();return await response.json();}finally{clearTimeout(timer);}
 }
 async function initStorefront(){
+ await (window.RIVFREE_SITE_READY||Promise.resolve());
  const rankingPromise=storefrontJSON('data/popular.json').then(value=>({status:'fulfilled',value}),()=>({status:'rejected'}));
  const banners=await storefrontJSON('data/highlights.json').then(value=>({status:'fulfilled',value}),()=>({status:'rejected'}));
  const remoteEntries=banners.status==='fulfilled'&&Array.isArray(banners.value?.hero)?banners.value.hero:[];
- campaigns.hero=chooseBalancedCampaigns(remoteEntries.length?remoteEntries:FALLBACK_HIGHLIGHTS,CAMPAIGN_COUNT);
+ campaigns.hero=chooseBalancedCampaigns(remoteEntries.length?remoteEntries:FALLBACK_HIGHLIGHTS,campaignCount());
  if(campaigns.hero[0]?.smartType){const editorial=campaigns.hero.findIndex(c=>!c.smartType);if(editorial>0)[campaigns.hero[0],campaigns.hero[editorial]]=[campaigns.hero[editorial],campaigns.hero[0]];}
  campaignPositions.hero=0;smartCampaignCache.clear();campaignImageCache.clear();
  renderCampaigns();
@@ -255,15 +259,16 @@ function reduceMotion(){return window.matchMedia('(prefers-reduced-motion: reduc
 function updateAutoplayButton(button,id){
  const paused=autoplayPaused.get(id)||reduceMotion();button.textContent=paused?'▶':'Ⅱ';button.setAttribute('aria-pressed',String(paused));button.setAttribute('aria-label',paused?words('Retomar carrossel','Reanudar carrusel'):words('Pausar carrossel','Pausar carrusel'));
 }
-function toggleAutoplay(id){autoplayPaused.set(id,!autoplayPaused.get(id));nextAdvance.set(id,Date.now()+6000);}
+function toggleAutoplay(id){autoplayPaused.set(id,!autoplayPaused.get(id));nextAdvance.set(id,Date.now()+carouselDelay());}
 function scrollProductRail(id,direction=1){
  const rail=document.getElementById(id),card=rail.querySelector('.card');if(!card)return;
  const step=card.getBoundingClientRect().width+(parseFloat(getComputedStyle(rail).gap)||0),max=rail.scrollWidth-rail.clientWidth;
  if(max<=1)return;
  const target=direction>0?(rail.scrollLeft>=max-2?0:Math.min(max,rail.scrollLeft+step)):(rail.scrollLeft<=2?max:Math.max(0,rail.scrollLeft-step));
- rail.scrollTo?.({left:target,behavior:reduceMotion()?'instant':'smooth'});nextAdvance.set(id,Date.now()+6000);
+ rail.scrollTo?.({left:target,behavior:reduceMotion()?'instant':'smooth'});nextAdvance.set(id,Date.now()+carouselDelay());
 }
 function canAutoplay(root){
+ if(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay===false)return false;
  if(!root||root.hidden||root.closest('[hidden]')||document.hidden||reduceMotion()||autoplayPaused.get(root.id)||root.matches(':hover')||root.contains(document.activeElement))return false;
  const rect=root.getBoundingClientRect();return rect.bottom>0&&rect.top<window.innerHeight;
 }
@@ -271,15 +276,15 @@ function advanceCarousels(now=Date.now()){
  for(const [id,slot] of [['heroCampaign','hero'],['discoverGrid',null],['popularGrid',null]]){
   const root=document.getElementById(id);
   // Pauses also reset the countdown, so leaving a control never causes a jump.
-  if(!canAutoplay(root)){nextAdvance.set(id,now+6000);continue;}
+  if(!canAutoplay(root)){nextAdvance.set(id,now+carouselDelay());continue;}
   const scheduled=nextAdvance.get(id);
   // If the clock moved backwards (or a test uses a synthetic clock), restart the
   // countdown instead of leaving autoplay blocked by a timestamp far in the future.
-  if(!Number.isFinite(scheduled)||scheduled-now>60000){nextAdvance.set(id,now+6000);continue;}
+  if(!Number.isFinite(scheduled)||scheduled-now>Math.max(60000,carouselDelay()*5)){nextAdvance.set(id,now+carouselDelay());continue;}
   if(now<scheduled)continue;
   if(slot){if(campaigns[slot].length>1){campaignPositions[slot]=(campaignPositions[slot]+1)%campaigns[slot].length;renderCampaign(slot,true);}}
   else scrollProductRail(id);
-  nextAdvance.set(id,now+6000);
+  nextAdvance.set(id,now+carouselDelay());
  }
 }
 for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']]){
@@ -289,4 +294,5 @@ for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']]
 }
 document.getElementById('shuffleDiscover').onclick=()=>{renderDiscoverProducts(true);nextAdvance.set('discoverGrid',Date.now()+6000);};
 window.addEventListener('DOMContentLoaded',()=>{for(const [prefix,id] of [['popular','popularGrid'],['discover','discoverGrid']])updateAutoplayButton(document.getElementById(prefix+'Pause'),id);});
+window.addEventListener('message',event=>{if(event.origin!==location.origin||event.data?.type!=='rivfree-studio-campaigns-preview'||!Array.isArray(event.data.hero))return;campaigns.hero=chooseBalancedCampaigns(event.data.hero,campaignCount());campaignPositions.hero=0;smartCampaignCache.clear();campaignImageCache.clear();renderCampaigns();});
 setInterval(advanceCarousels,1000);

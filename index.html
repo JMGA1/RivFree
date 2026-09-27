@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RivFree — Comparador de preços de free shops</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="styles.css?v=20260925-share2">
+<link rel="stylesheet" href="styles.css?v=20260926-studio1">
 <meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
 <meta property="og:type" content="website">
@@ -80,7 +80,7 @@
 <nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><button id="navOffers" type="button">Ofertas</button><a href="#discoverProducts">Por descubrir</a><a href="#popularProducts">Más consultados</a></nav>
 <main>
 <section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel"></section>
-<div class="shopping-benefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
+<div class="shopping-benefits" id="shoppingBenefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
 <section class="popular-section" id="discoverProducts" aria-labelledby="discoverTitle">
  <div class="section-heading"><div><span class="eyebrow">RIVERA · SANTANA DO LIVRAMENTO</span><h2 id="discoverTitle">Por descubrir</h2><p>Una selección aleatoria para inspirar tu próxima compra.</p></div><div class="rail-controls"><button id="shuffleDiscover" type="button" aria-label="Otra selección">↻</button><button id="discoverPrevious" type="button" aria-label="Productos anteriores">←</button><button id="discoverNext" type="button" aria-label="Más productos">→</button><button id="discoverPause" class="autoplay-toggle" type="button" aria-label="Pausar carrusel" aria-pressed="false">Ⅱ</button></div></div>
  <div id="discoverGrid" class="popular-rail"></div>
@@ -89,6 +89,7 @@
  <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div><div class="rail-controls"><button id="popularPrevious" type="button" aria-label="Productos anteriores">←</button><button id="popularNext" type="button" aria-label="Más productos">→</button><button id="popularPause" class="autoplay-toggle" type="button" aria-label="Pausar carrusel" aria-pressed="false">Ⅱ</button></div></div>
  <div id="popularGrid" class="popular-rail"></div>
 </section>
+<section id="catalogSection" class="catalog-section">
 <div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Explorá todas las tiendas y encontrá tu próximo favorito.</p></div><div class="catalog-status"><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
 <div class="controls">
   <div class="controls-card search-hero">
@@ -175,6 +176,7 @@
 <div class="empty-state" id="emptyState" style="display:none;">
   No se encontraron productos con esos filtros.<br>Probá ampliar la búsqueda.
 </div>
+</section>
 
 <dialog id="productDialog" aria-labelledby="productPreviewTitle"><div class="dialog-header"><h2 id="productPreviewTitle"></h2><button class="dialog-close" id="productPreviewClose" type="button" aria-label="Cerrar / Fechar">×</button></div><div id="productPreviewContent"></div></dialog>
 <dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
@@ -211,12 +213,12 @@
 
 <footer>
   <strong>RivFree · Comparador independiente</strong><br>
-  No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar.
-  Consultá la información actualizada en la publicación oficial de cada tienda.
+  <span class="studio-footer-text">No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.</span>
   <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html">Política de Privacidad y Cookies</a></div>
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
+<script src="site-config.js?v=20260926-studio1" defer></script>
 <script src="privacy-config.js?v=20260925-ux1" defer></script>
 <script src="analytics.js?v=20260925-ux1" defer></script>
 <script src="matching.js?v=20260925-partitions1" defer></script>

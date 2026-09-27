@@ -1,0 +1,72 @@
+{
+  "version": "studio-1",
+  "actualizado": null,
+  "branding": {
+    "site_name": "RivFree",
+    "tagline_es": "Explorá y compará los free shops de Rivera y Santana do Livramento",
+    "tagline_pt": "Explore e compare os free shops de Rivera e Santana do Livramento"
+  },
+  "appearance": {
+    "font": "system-modern",
+    "density": "comfortable",
+    "radius": 12,
+    "shadow": "soft",
+    "light": {
+      "background": "#F1ECDE",
+      "surface": "#FFFFFF",
+      "text": "#1B1B1B",
+      "primary": "#123C39",
+      "accent": "#F06449",
+      "highlight": "#BEEB72",
+      "background_image": "",
+      "background_overlay": 0
+    },
+    "dark": {
+      "background": "#101716",
+      "surface": "#17211F",
+      "text": "#F2EFE7",
+      "primary": "#194F4A",
+      "accent": "#FF8068",
+      "highlight": "#C8F47E",
+      "background_image": "",
+      "background_overlay": 0
+    }
+  },
+  "notice": {
+    "enabled": true,
+    "dismissible": true,
+    "title_es": "Antes de tu visita.",
+    "title_pt": "Antes da sua visita.",
+    "text_es": "La web refleja catálogos online, no el stock físico completo de cada tienda.",
+    "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."
+  },
+  "homepage": {
+    "order": ["hero", "benefits", "discover", "popular", "catalog"],
+    "visible": {
+      "hero": true,
+      "benefits": true,
+      "discover": true,
+      "popular": true,
+      "catalog": true
+    }
+  },
+  "carousel": {
+    "visible_count": 5,
+    "autoplay": true,
+    "autoplay_seconds": 6
+  },
+  "seo": {
+    "title_es": "RivFree — Comparador de precios de free shops",
+    "title_pt": "RivFree — Comparador de preços de free shops",
+    "description_es": "Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más.",
+    "description_pt": "Compare preços de free shops de Rivera e Santana do Livramento: perfumes, bebidas, eletrônicos e muito mais.",
+    "social_image": "social-card.png"
+  },
+  "footer": {
+    "title_es": "RivFree · Comparador independiente",
+    "title_pt": "RivFree · Comparador independente",
+    "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.",
+    "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.",
+    "show_privacy": true
+  }
+}
