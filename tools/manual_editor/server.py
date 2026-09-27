@@ -35,6 +35,8 @@ STORES_PATH = DATA_DIR / "manual-stores.json"
 BASE_STORES_PATH = DATA_DIR / "stores.json"
 SITE_CONFIG_PATH = DATA_DIR / "site-config.json"
 HIGHLIGHTS_PATH = DATA_DIR / "highlights.json"
+HEALTH_PATH = DATA_DIR / "health.json"
+META_PATH = DATA_DIR / "meta.json"
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_IMAGE_BYTES = 6 * 1024 * 1024
 MAX_BODY_BYTES = 48 * 1024 * 1024
@@ -440,6 +442,8 @@ def state_payload() -> dict:
         },
         "site_config": load_site_config() if EDITOR_MODE == "owner" else None,
         "highlights": load_highlights() if EDITOR_MODE == "owner" else None,
+        "health": read_json(HEALTH_PATH, {}) if EDITOR_MODE == "owner" else None,
+        "meta": read_json(META_PATH, {}) if EDITOR_MODE == "owner" else None,
     }
 
 
@@ -540,6 +544,44 @@ def delete_product(payload: dict) -> dict:
         products_doc["actualizado"] = now_iso(); products_doc["version"] = new_version("products")
         atomic_write_json(active_products_path(), products_doc)
         return state_payload()
+
+
+def bulk_products(payload: dict) -> dict:
+    """Apply one safe bulk action to manual products only."""
+    with LOCK:
+        check_revision(payload)
+        ids = {text(value, 100) for value in (payload.get("ids") or []) if text(value, 100)}
+        if not ids:
+            raise ValueError("Seleccioná al menos una publicación")
+        action = text(payload.get("action"), 30)
+        products_doc = load_manual_products()
+        matched = [p for p in products_doc["productos"] if text(p.get("id"), 100) in ids]
+        if not matched:
+            raise ValueError("No se encontraron las publicaciones seleccionadas")
+        backup_current()
+        stamp = now_iso()
+        if action == "delete":
+            products_doc["productos"] = [p for p in products_doc["productos"] if text(p.get("id"), 100) not in ids]
+        elif action in {"hide", "show"}:
+            active = action == "show"
+            for product in matched:
+                product["activo"] = active
+                product["actualizado_manual"] = stamp
+        elif action == "category":
+            category = text(payload.get("category"), 120)
+            if not category:
+                raise ValueError("Elegí una categoría")
+            for product in matched:
+                product["categoria"] = category
+                product["actualizado_manual"] = stamp
+        else:
+            raise ValueError("Acción masiva no válida")
+        products_doc["actualizado"] = stamp
+        products_doc["version"] = new_version("products")
+        atomic_write_json(active_products_path(), products_doc)
+        result = state_payload()
+        result["bulk_summary"] = {"action": action, "count": len(matched)}
+        return result
 
 
 def upload_image(payload: dict) -> dict:
@@ -1055,6 +1097,7 @@ class Handler(SimpleHTTPRequestHandler):
                 "/api/manual/delete-store": delete_store,
                 "/api/manual/save-product": save_product,
                 "/api/manual/delete-product": delete_product,
+                "/api/manual/bulk-products": bulk_products,
                 "/api/manual/upload-image": upload_image,
                 "/api/manual/import": import_data,
                 "/api/manual/preview-contribution": preview_contribution,

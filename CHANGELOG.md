@@ -1,3 +1,18 @@
+## 2026-09-26 — RivFree Studio · Panel de control
+
+- La pantalla inicial ahora es **Resumen / Salud**, leyendo `data/health.json` y `data/meta.json` para mostrar estado de scrapers, fallos consecutivos, último éxito y fecha del catálogo.
+- El resumen también alerta por publicaciones manuales sin imagen/inactivas y campañas vencidas o programadas.
+- La vista previa pasó a ser persistente para Diseño, Carrusel y Página.
+- Cada sección visual muestra su propio indicador de cambios pendientes y los botones guardan únicamente esa sección.
+- Se agregó borrador automático en `localStorage` con opción de recuperación al reabrir el Studio.
+- El carrusel distingue **Vigente ahora / Programado / Vencido / Inactivo**.
+- Productos incorpora filtros rápidos, orden, selección múltiple, acciones masivas y “Duplicar en otra tienda”.
+- Errores de validación quedan visibles junto al campo; los errores de servidor no desaparecen solos. SEO muestra contadores de caracteres.
+- Las confirmaciones destructivas usan modales propios con listado de elementos afectados.
+- Diseño incorpora tres plantillas, edición hexadecimal junto al selector de color y ayuda contextual por pestaña.
+- Colaboraciones incorpora buscador interno y los controles de reordenamiento incluyen etiquetas ARIA.
+- `Ctrl/Cmd+S` guarda la pestaña activa.
+
 
 ## 2026-09-26 — RivFree Studio
 

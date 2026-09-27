@@ -59,3 +59,19 @@ La acción de publicación incluye automáticamente `site-config.json` y las im�
 ## Seguridad
 
 El servidor del Studio solo escucha en `127.0.0.1` y las operaciones de escritura requieren un token generado para esa sesión. Colores, URLs, imágenes, cantidades y opciones se validan en el servidor antes de escribir los JSON. Antes de guardar se generan copias en `.manual-backups/`.
+
+## Panel de control y productividad
+
+- **Resumen / Salud** es la pantalla de inicio. Usa `health.json` y `meta.json` en modo lectura y muestra semáforos por scraper, último éxito, fallos consecutivos y cantidad de productos reportados.
+- También resume publicaciones manuales sin imagen/inactivas y campañas vencidas/programadas.
+- La vista previa acompaña Diseño, Carrusel y Página; puede alternarse entre escritorio y celular u ocultarse temporalmente.
+- Cada pestaña tiene su propio punto de cambios pendientes. Guardar Diseño no persiste cambios pendientes de Página, y viceversa.
+- El Studio guarda un borrador local cada pocos segundos cuando hay cambios visuales sin guardar y ofrece recuperarlo al volver a abrirlo.
+- `Ctrl+S` / `Cmd+S` guarda la sección activa (o el formulario de Producto/Tienda).
+
+## Catálogo manual avanzado
+
+Productos permite filtrar por **sin imagen**, **inactivos** y **en oferta**, ordenar por precio/fecha/nombre y seleccionar varias publicaciones para ocultarlas, cambiar categoría o eliminarlas. El botón **Duplicar en otra tienda** conserva nombre, categoría e imagen y deja tienda/precio listos para completar.
+
+Las acciones destructivas muestran un modal con los nombres afectados antes de confirmar. Los errores de formulario quedan junto al campo hasta corregirse.
+

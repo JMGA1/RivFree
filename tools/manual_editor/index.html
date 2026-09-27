@@ -15,9 +15,10 @@
   <aside class="sidebar">
     <div class="project-card"><span class="eyebrow" id="projectEyebrow">PROYECTO LOCAL</span><strong id="projectPath">Cargando…</strong><p id="projectDescription">Los cambios se guardan directamente en los archivos del repositorio.</p></div>
     <nav class="tabs" aria-label="Secciones del editor">
-      <button class="tab owner-only active" data-tab="appearance">Diseño</button>
-      <button class="tab owner-only" data-tab="carousel">Carrusel <span id="campaignCount">0</span></button>
-      <button class="tab owner-only" data-tab="page">Página</button>
+      <button class="tab owner-only active" data-tab="health">Resumen <span id="healthAlertCount" class="tab-count">0</span></button>
+      <button class="tab owner-only" data-tab="appearance">Diseño <span class="dirty-dot" data-dirty-for="appearance" hidden>●</span></button>
+      <button class="tab owner-only" data-tab="carousel">Carrusel <span id="campaignCount">0</span> <span class="dirty-dot" data-dirty-for="carousel" hidden>●</span></button>
+      <button class="tab owner-only" data-tab="page">Página <span class="dirty-dot" data-dirty-for="page" hidden>●</span></button>
       <button class="tab" data-tab="products">Productos <span id="productCount">0</span></button>
       <button class="tab" data-tab="stores">Tiendas <span id="storeCount">0</span></button>
       <button class="tab owner-only" data-tab="collaborations">Colaboraciones <span id="collaborationCount">ZIP</span></button>
@@ -30,8 +31,20 @@
     <div id="status" class="status" role="status" aria-live="polite"></div>
 
 
-    <section class="panel owner-only active" data-panel="appearance">
-      <div class="panel-heading"><div><span class="eyebrow">RIVFREE STUDIO</span><h1>Diseño y apariencia</h1><p>Cambiá colores, fondo, tipografía y marca sin tocar CSS.</p></div><button id="saveAppearance" class="button primary" type="button">Guardar diseño</button></div>
+    <section class="panel owner-only active" data-panel="health">
+      <div class="panel-heading"><div><span class="eyebrow">RESUMEN / SALUD</span><h1>Estado de RivFree</h1><p>Una vista rápida de scrapers, catálogo manual y campañas que necesitan atención.</p></div><button id="refreshHealth" class="button" type="button">Actualizar estado</button></div>
+      <div id="healthKpis" class="health-kpis"></div>
+      <div class="health-grid">
+        <article class="editor-card"><div class="form-heading"><div><span class="eyebrow">SCRAPERS</span><h2>Tiendas automáticas</h2></div><span id="lastCatalogUpdate" class="badge"></span></div><div id="healthStores" class="health-store-list"></div></article>
+        <div class="health-side">
+          <article class="editor-card"><span class="eyebrow">CATÁLOGO MANUAL</span><h2>Publicaciones que revisar</h2><div id="manualHealth" class="health-action-list"></div></article>
+          <article class="editor-card"><span class="eyebrow">CARRUSEL</span><h2>Campañas</h2><div id="campaignHealth" class="health-action-list"></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel owner-only" data-panel="appearance">
+      <div class="panel-heading"><div><span class="eyebrow">RIVFREE STUDIO</span><h1>Diseño y apariencia</h1><p>Cambiá colores, fondo, tipografía y marca sin tocar CSS.</p></div><button id="saveAppearance" class="button primary" type="button">Guardar solo Diseño</button></div>
       <div class="studio-split">
         <form id="appearanceForm" class="editor-card studio-form" autocomplete="off">
           <div class="subsection"><h3>Marca</h3><div class="grid2">
@@ -39,6 +52,7 @@
             <label class="wide"><span>Subtítulo · Español</span><input id="taglineEs" maxlength="180"></label>
             <label class="wide"><span>Subtítulo · Portugués</span><input id="taglinePt" maxlength="180"></label>
           </div></div>
+          <div class="subsection"><h3>Plantillas rápidas</h3><p class="form-help">Punto de partida seguro; después podés ajustar cada color.</p><div id="stylePresets" class="preset-grid"><button type="button" class="preset-card" data-preset="rivfree">RivFree clásico<small>Verde + coral</small></button><button type="button" class="preset-card" data-preset="clean">Claro editorial<small>Neutro + rojo</small></button><button type="button" class="preset-card" data-preset="night">Noche premium<small>Oscuro + lima</small></button></div></div>
           <div class="subsection"><h3>Estilo general</h3><div class="grid3">
             <label><span>Tipografía</span><select id="siteFont"><option value="system-modern">Moderna</option><option value="rounded">Redondeada</option><option value="editorial">Editorial</option><option value="mono">Monoespaciada</option></select></label>
             <label><span>Espaciado</span><select id="siteDensity"><option value="compact">Compacto</option><option value="comfortable">Cómodo</option><option value="airy">Amplio</option></select></label>
@@ -59,7 +73,7 @@
     </section>
 
     <section class="panel owner-only" data-panel="carousel">
-      <div class="panel-heading"><div><span class="eyebrow">HOME · CARRUSEL</span><h1>Banners y campañas</h1><p>Creá, programá, reordená y patrociná banners desde una pool editable.</p></div><div class="panel-heading-actions"><button id="newCampaign" class="button">+ Nuevo banner</button><button id="saveCampaigns" class="button primary">Guardar carrusel</button></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">HOME · CARRUSEL</span><h1>Banners y campañas</h1><p>Creá, programá, reordená y patrociná banners desde una pool editable.</p></div><div class="panel-heading-actions"><button id="newCampaign" class="button">+ Nuevo banner</button><button id="saveCampaigns" class="button primary">Guardar Carrusel</button></div></div>
       <div class="two-column campaign-editor-layout">
         <div class="list-pane"><div class="campaign-settings-mini"><label><span>Mostrar por carga</span><input id="campaignVisibleCount" type="number" min="1" max="10"></label><label class="check"><input id="campaignAutoplay" type="checkbox"><span>Autoplay</span></label><label><span>Segundos</span><input id="campaignSeconds" type="number" min="3" max="30"></label></div><div id="campaignList" class="item-list"></div></div>
         <form id="campaignForm" class="editor-card" autocomplete="off">
@@ -74,12 +88,12 @@
     </section>
 
     <section class="panel owner-only" data-panel="page">
-      <div class="panel-heading"><div><span class="eyebrow">CONTENIDO DEL SITIO</span><h1>Página, avisos y SEO</h1><p>Elegí qué secciones aparecen, su orden y los textos institucionales.</p></div><button id="savePageConfig" class="button primary" type="button">Guardar página</button></div>
+      <div class="panel-heading"><div><span class="eyebrow">CONTENIDO DEL SITIO</span><h1>Página, avisos y SEO</h1><p>Elegí qué secciones aparecen, su orden y los textos institucionales.</p></div><button id="savePageConfig" class="button primary" type="button">Guardar solo Página</button></div>
       <div class="studio-page-grid">
         <article class="editor-card"><div class="subsection"><h3>Orden del inicio</h3><p class="form-help">Usá ↑/↓ para cambiar el orden y el interruptor para ocultar una sección.</p><div id="sectionOrder" class="section-order"></div></div></article>
         <form id="pageForm" class="editor-card" autocomplete="off">
           <div class="subsection"><h3>Aviso de disponibilidad</h3><div class="grid2"><label class="check"><input id="noticeEnabled" type="checkbox"><span>Mostrar aviso</span></label><label class="check"><input id="noticeDismissible" type="checkbox"><span>Se puede cerrar</span></label><label><span>Título ES</span><input id="noticeTitleEs"></label><label><span>Título PT</span><input id="noticeTitlePt"></label><label><span>Texto ES</span><textarea id="noticeTextEs" rows="3"></textarea></label><label><span>Texto PT</span><textarea id="noticeTextPt" rows="3"></textarea></label></div></div>
-          <div class="subsection"><h3>SEO y redes</h3><div class="grid2"><label><span>Título Google ES</span><input id="seoTitleEs"></label><label><span>Título Google PT</span><input id="seoTitlePt"></label><label><span>Descripción ES</span><textarea id="seoDescriptionEs" rows="3"></textarea></label><label><span>Descripción PT</span><textarea id="seoDescriptionPt" rows="3"></textarea></label><label class="wide"><span>Imagen al compartir</span><input id="seoSocialImage" placeholder="social-card.png"></label></div></div>
+          <div class="subsection"><h3>SEO y redes</h3><div class="grid2"><label><span>Título Google ES</span><input id="seoTitleEs" maxlength="70"><small class="char-count" data-count-for="seoTitleEs"></small></label><label><span>Título Google PT</span><input id="seoTitlePt" maxlength="70"><small class="char-count" data-count-for="seoTitlePt"></small></label><label><span>Descripción ES</span><textarea id="seoDescriptionEs" rows="3" maxlength="170"></textarea><small class="char-count" data-count-for="seoDescriptionEs"></small></label><label><span>Descripción PT</span><textarea id="seoDescriptionPt" rows="3" maxlength="170"></textarea><small class="char-count" data-count-for="seoDescriptionPt"></small></label><label class="wide"><span>Imagen al compartir</span><input id="seoSocialImage" placeholder="social-card.png"></label></div></div>
           <div class="subsection"><h3>Footer</h3><div class="grid2"><label><span>Título ES</span><input id="footerTitleEs"></label><label><span>Título PT</span><input id="footerTitlePt"></label><label><span>Texto ES</span><textarea id="footerTextEs" rows="4"></textarea></label><label><span>Texto PT</span><textarea id="footerTextPt" rows="4"></textarea></label><label class="check"><input id="footerPrivacy" type="checkbox"><span>Mostrar enlace de privacidad</span></label></div></div>
         </form>
       </div>
@@ -90,6 +104,8 @@
       <div class="two-column">
         <div class="list-pane">
           <div class="list-tools"><input id="productSearch" type="search" placeholder="Buscar publicación…"><select id="productStoreFilter"><option value="">Todas las tiendas</option></select></div>
+          <div class="product-tools"><select id="productQuickFilter"><option value="">Todos</option><option value="no-image">Sin imagen</option><option value="inactive">Inactivos</option><option value="offer">En oferta</option></select><select id="productSort"><option value="updated-desc">Más recientes</option><option value="updated-asc">Más antiguos</option><option value="price-asc">Precio menor</option><option value="price-desc">Precio mayor</option><option value="name">Nombre A–Z</option></select></div>
+          <div id="bulkProductBar" class="bulk-bar" hidden><strong id="bulkProductCount">0 seleccionados</strong><button id="bulkHideProducts" type="button" class="button">Ocultar</button><select id="bulkCategory"><option value="">Cambiar categoría…</option><option value="perfumes">Perfumes</option><option value="bebidas">Bebidas</option><option value="alimentos">Alimentos</option><option value="electronica">Electrónica</option><option value="informatica">Informática</option><option value="cosmetica">Cosmética</option><option value="hogar">Hogar</option><option value="otros">Otros</option></select><button id="bulkDeleteProducts" type="button" class="button danger">Eliminar</button><button id="bulkClearProducts" type="button" class="button ghost">Quitar selección</button></div>
           <div id="productList" class="item-list"></div>
         </div>
         <form id="productForm" class="editor-card" autocomplete="off">
@@ -114,7 +130,7 @@
             <div><label><span>URL de imagen</span><input id="productImage" type="text" placeholder="https://… o assets/manual/…"></label><label class="file-label"><span>Subir desde la computadora</span><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>Máximo 6 MB. Se guarda en <code>assets/manual/</code>.</small></label><button id="clearImage" class="link-button" type="button">Quitar imagen</button></div>
           </div></div>
           <label><span>Nota interna</span><textarea id="productNote" rows="3" maxlength="1000" placeholder="Solo para tu referencia. No aparece en la tarjeta."></textarea></label>
-          <div class="form-actions"><button class="button primary" type="submit">Guardar publicación</button><button id="duplicateProduct" class="button" type="button" disabled>Duplicar</button><button id="deleteProduct" class="button danger" type="button" disabled>Eliminar</button></div>
+          <div class="form-actions"><button class="button primary" type="submit">Guardar publicación</button><button id="duplicateProduct" class="button" type="button" disabled>Duplicar</button><button id="duplicateProductStore" class="button" type="button" disabled>Duplicar en otra tienda</button><button id="deleteProduct" class="button danger" type="button" disabled>Eliminar</button></div>
         </form>
       </div>
     </section>
@@ -161,7 +177,7 @@
         <article id="contributionPreview" class="contribution-preview" hidden>
           <div class="contribution-head"><div><span class="eyebrow">2 · REVISAR</span><h2 id="contributionTitle">Aporte</h2><p id="contributionMeta"></p></div><span id="contributionAssetCount" class="badge"></span></div>
           <div id="contributionNote" class="contribution-note" hidden></div>
-          <div class="review-toolbar"><button id="selectRecommended" class="button" type="button">Seleccionar recomendados</button><button id="clearContributionSelection" class="button" type="button">Quitar selección</button></div>
+          <div class="review-toolbar"><input id="contributionSearch" type="search" placeholder="Buscar en el aporte…"><button id="selectRecommended" class="button" type="button">Seleccionar recomendados</button><button id="clearContributionSelection" class="button" type="button">Quitar selección</button></div>
           <div class="review-grid">
             <section><h3>Tiendas <span id="previewStoreCount" class="muted-count"></span></h3><div id="previewStores" class="review-list"></div></section>
             <section><h3>Productos <span id="previewProductCount" class="muted-count"></span></h3><div id="previewProducts" class="review-list"></div></section>

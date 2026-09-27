@@ -60,6 +60,19 @@ class ManualEditorPersistenceTests(unittest.TestCase):
         self.assertEqual(products['productos'][0]['nombre'],'Chocolate 100g')
         self.assertEqual(state['products'][0]['fuente_tipo'],'instagram')
 
+    def test_bulk_actions_only_change_selected_manual_products(self):
+        state = server.save_store({'store': {'nombre':'Loja Bulk','color':'#123456'}})
+        state = server.save_product({'revision': state['revision'], 'product': {'tienda':'Loja Bulk','nombre':'Item A','precio_usd':10}})
+        first = state['saved_id']
+        state = server.save_product({'revision': state['revision'], 'product': {'tienda':'Loja Bulk','nombre':'Item B','precio_usd':20}})
+        second = state['saved_id']
+        state = server.bulk_products({'revision': state['revision'], 'ids':[first], 'action':'hide'})
+        by_id={p['id']:p for p in state['products']}
+        self.assertFalse(by_id[first]['activo'])
+        self.assertTrue(by_id[second]['activo'])
+        state = server.bulk_products({'revision': state['revision'], 'ids':[first,second], 'action':'category', 'category':'bebidas'})
+        self.assertEqual({p['categoria'] for p in state['products']},{'bebidas'})
+
     def test_renaming_manual_store_updates_its_manual_products(self):
         state = server.save_store({'store': {'nombre':'Loja Antiga','color':'#123456'}})
         state = server.save_product({'revision': state['revision'], 'product': {'tienda':'Loja Antiga','nombre':'Item 1','precio_usd':1}})

@@ -34,6 +34,15 @@ class StudioEditorTests(unittest.TestCase):
     def test_duplicate_campaign_ids_are_rejected(self):
         item={'id':'same','title':{'es':'A','pt-BR':'A'},'eyebrow':{},'description':{},'cta':{}}
         with self.assertRaises(ValueError): server.save_highlights({'hero':[item,item]})
+    def test_state_includes_health_and_meta_for_dashboard(self):
+        server.HEALTH_PATH = server.DATA_DIR / 'health.json'
+        server.META_PATH = server.DATA_DIR / 'meta.json'
+        server.HEALTH_PATH.write_text(json.dumps({'DFA': {'estado':'ok','fallos_consecutivos':0}}), encoding='utf-8')
+        server.META_PATH.write_text(json.dumps({'actualizado':'2026-09-26T10:00:00+00:00'}), encoding='utf-8')
+        state=server.state_payload()
+        self.assertEqual(state['health']['DFA']['estado'],'ok')
+        self.assertEqual(state['meta']['actualizado'],'2026-09-26T10:00:00+00:00')
+
     def test_owner_export_contains_studio_configuration(self):
         raw=server.export_zip()
         import io, zipfile
