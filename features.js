@@ -64,7 +64,9 @@ document.getElementById('openShoppingList').addEventListener('click',()=>{
  renderShoppingList();
  const dialog=document.getElementById('shoppingDialog');if(!dialog.open)dialog.showModal();
 });
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(console.warn));
+const _rfLocalHost=['127.0.0.1','localhost'].includes(location.hostname);
+const _rfStudioPreview=new URLSearchParams(location.search).has('studio-preview');
+if('serviceWorker' in navigator&&!_rfLocalHost&&!_rfStudioPreview)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(console.warn));
 let priceHistoryPromise;
 async function openPriceHistory(offers){
  const dialog=document.getElementById('historyDialog'),container=document.getElementById('historyContent');

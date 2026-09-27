@@ -14,6 +14,12 @@
 - `Ctrl/Cmd+S` guarda la pestaña activa.
 
 
+### Studio · sincronización y aspecto
+- Evita mezclar HTML, CSS y JavaScript antiguos del Studio mediante versionado de assets y cabeceras `no-store`.
+- Inicialización robusta del Studio mediante una promesa `ready`, para que Diseño/Carrusel/Página se hidraten aunque la API responda después de cargar los scripts.
+- Se descartan borradores locales de la versión anterior del Studio para evitar restaurar formularios incompatibles.
+- Se restauró la identidad visual nativa de RivFree (azul marino + rosa/rojo). Los colores del sitio público solo se sobrescriben cuando el usuario edita la paleta o aplica una plantilla.
+
 ## 2026-09-26 — RivFree Studio
 
 - Se agregó un editor visual para apariencia, fondos, tipografía y espaciado.

@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RivFree Studio</title>
-<link rel="stylesheet" href="editor.css">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<script>
+window.RIVFREE_STUDIO_HTML_BUILD='20260927-studio-sync3';
+// El Studio es una herramienta local: no debe quedar controlado por el Service Worker de la web.
+if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(list=>Promise.all(list.map(r=>r.unregister()))).catch(()=>{});
+if ('caches' in window) caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('rivfree-shell-')).map(k=>caches.delete(k)))).catch(()=>{});
+</script>
+<link rel="stylesheet" href="editor.css?v=20260927-studio-sync3">
 </head>
 <body>
 <header class="topbar">
@@ -52,7 +60,7 @@
             <label class="wide"><span>Subtítulo · Español</span><input id="taglineEs" maxlength="180"></label>
             <label class="wide"><span>Subtítulo · Portugués</span><input id="taglinePt" maxlength="180"></label>
           </div></div>
-          <div class="subsection"><h3>Plantillas rápidas</h3><p class="form-help">Punto de partida seguro; después podés ajustar cada color.</p><div id="stylePresets" class="preset-grid"><button type="button" class="preset-card" data-preset="rivfree">RivFree clásico<small>Verde + coral</small></button><button type="button" class="preset-card" data-preset="clean">Claro editorial<small>Neutro + rojo</small></button><button type="button" class="preset-card" data-preset="night">Noche premium<small>Oscuro + lima</small></button></div></div>
+          <div class="subsection"><h3>Plantillas rápidas</h3><p class="form-help">Punto de partida seguro; después podés ajustar cada color.</p><div id="stylePresets" class="preset-grid"><button type="button" class="preset-card" data-preset="rivfree">RivFree clásico<small>Azul marino + rosa</small></button><button type="button" class="preset-card" data-preset="clean">Claro editorial<small>Neutro + rojo</small></button><button type="button" class="preset-card" data-preset="night">Noche premium<small>Oscuro + lima</small></button></div><div class="native-theme-row"><button id="restoreNativeTheme" type="button" class="button">Restaurar colores nativos de RivFree</button><span id="appearanceModeHint" class="selection-feedback"></span></div></div>
           <div class="subsection"><h3>Estilo general</h3><div class="grid3">
             <label><span>Tipografía</span><select id="siteFont"><option value="system-modern">Moderna</option><option value="rounded">Redondeada</option><option value="editorial">Editorial</option><option value="mono">Monoespaciada</option></select></label>
             <label><span>Espaciado</span><select id="siteDensity"><option value="compact">Compacto</option><option value="comfortable">Cómodo</option><option value="airy">Amplio</option></select></label>
@@ -210,7 +218,7 @@ git push origin main</pre><p>Al subir los archivos a GitHub Pages, RivFree los m
   </section>
 </main>
 <template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
-<script src="editor.js"></script>
-<script src="studio-editor.js"></script>
+<script src="editor.js?v=20260927-studio-sync3"></script>
+<script src="studio-editor.js?v=20260927-studio-sync3"></script>
 </body>
 </html>

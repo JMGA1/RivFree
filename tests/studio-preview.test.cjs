@@ -9,7 +9,7 @@ const settle=()=>new Promise(resolve=>setTimeout(resolve,130));
 async function editor(t,draft=null){
  const dom=new JSDOM(read('tools/manual_editor/index.html'),{url:'http://localhost/tools/manual_editor/?token=test',runScripts:'outside-only',pretendToBeVisual:true});
  const w=dom.window,d=w.document,calls=[],messages=[],notifications=[];
- if(draft)w.localStorage.setItem('rivfree-studio-draft-v2',draft);
+ if(draft)w.localStorage.setItem('rivfree-studio-draft-v3',draft);
  let state={mode:'owner',site_config:JSON.parse(read('data/site-config.json')),highlights:JSON.parse(read('data/highlights.json')),products:[],health:{},meta:{},revision:'test'};
  w.HTMLElement.prototype.scrollIntoView=()=>{};
  const E=w.RivFreeEditor={getState:()=>state,setExternalDirty(){},notify:(...args)=>notifications.push(args),clearFieldErrors(){},setFieldError(el,text){el.dataset.error=text;},
@@ -110,7 +110,7 @@ test('expanded preview returns control to the editor when closed or hidden',asyn
 test('automatic draft recovery includes banner edits without an Apply step',async t=>{
  const first=await editor(t);first.input('campaignTitleEs','Borrador recuperable');
  first.w.dispatchEvent(new first.w.Event('beforeunload'));
- const draft=first.w.localStorage.getItem('rivfree-studio-draft-v2');assert.ok(draft);
+ const draft=first.w.localStorage.getItem('rivfree-studio-draft-v3');assert.ok(draft);
  const next=await editor(t,draft);next.d.querySelector('.draft-recovery button').click();
  assert.equal(next.d.getElementById('campaignTitleEs').value,'Borrador recuperable');
  assert.equal(next.d.querySelector('[data-dirty-for="carousel"]').hidden,false);

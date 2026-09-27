@@ -1,6 +1,8 @@
 (() => {
   'use strict';
 
+  const BUILD = '20260927-studio-sync3';
+  window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const token = params.get('token') || '';
   const $ = id => document.getElementById(id);
@@ -8,6 +10,8 @@
   const categories = new Set(['perfumes','bebidas','alimentos','electronica','informatica','cosmetica','hogar','ropa','accesorios','juguetes','relojes','optica','deportes','herramientas','otros']);
 
   let state = {revision:'', mode:'owner', stores:{}, base_stores:{}, manual_stores:{}, products:[]};
+  let readyResolve;
+  const ready = new Promise(resolve => { readyResolve = resolve; });
   let dirty = false;
   let externalDirty = false;
   let statusTimer;
@@ -140,6 +144,7 @@
     renderStores();
     setDownloadLinks();
     window.dispatchEvent(new CustomEvent('rivfree-editor-state',{detail:state}));
+    if (readyResolve) { readyResolve(state); readyResolve = null; }
   }
 
   function setDownloadLinks() {
@@ -188,7 +193,7 @@
 
   window.RivFreeEditor = {
     api, load, applyState, notify, switchTab, setDirty, setExternalDirty, confirmDialog, setFieldError, clearFieldErrors,
-    getState:()=>state, getToken:()=>token
+    getState:()=>state, getToken:()=>token, ready, build:BUILD
   };
 
   document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.tab)));

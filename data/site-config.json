@@ -12,25 +12,26 @@
     "radius": 12,
     "shadow": "soft",
     "light": {
-      "background": "#F1ECDE",
+      "background": "#F5F6F8",
       "surface": "#FFFFFF",
-      "text": "#1B1B1B",
-      "primary": "#123C39",
-      "accent": "#F06449",
-      "highlight": "#BEEB72",
+      "text": "#172337",
+      "primary": "#AD233C",
+      "accent": "#E94E67",
+      "highlight": "#FFB5B9",
       "background_image": "",
       "background_overlay": 0
     },
     "dark": {
-      "background": "#101716",
-      "surface": "#17211F",
-      "text": "#F2EFE7",
-      "primary": "#194F4A",
-      "accent": "#FF8068",
-      "highlight": "#C8F47E",
+      "background": "#101B2B",
+      "surface": "#19283C",
+      "text": "#F1F5FB",
+      "primary": "#AD233C",
+      "accent": "#E94E67",
+      "highlight": "#FFB5B9",
       "background_image": "",
       "background_overlay": 0
-    }
+    },
+    "colors_customized": false
   },
   "notice": {
     "enabled": true,
@@ -41,7 +42,13 @@
     "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."
   },
   "homepage": {
-    "order": ["hero", "benefits", "discover", "popular", "catalog"],
+    "order": [
+      "hero",
+      "benefits",
+      "discover",
+      "popular",
+      "catalog"
+    ],
     "visible": {
       "hero": true,
       "benefits": true,

@@ -44,6 +44,7 @@ MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = uuid.uuid4().hex
+STUDIO_BUILD = '20260927-studio-sync3'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -221,9 +222,9 @@ def default_site_config() -> dict:
         "version": "studio-1", "actualizado": None,
         "branding": {"site_name": "RivFree", "tagline_es": "Explorá y compará los free shops de Rivera y Santana do Livramento", "tagline_pt": "Explore e compare os free shops de Rivera e Santana do Livramento"},
         "appearance": {
-            "font": "system-modern", "density": "comfortable", "radius": 12, "shadow": "soft",
-            "light": {"background": "#F1ECDE", "surface": "#FFFFFF", "text": "#1B1B1B", "primary": "#123C39", "accent": "#F06449", "highlight": "#BEEB72", "background_image": "", "background_overlay": 0},
-            "dark": {"background": "#101716", "surface": "#17211F", "text": "#F2EFE7", "primary": "#194F4A", "accent": "#FF8068", "highlight": "#C8F47E", "background_image": "", "background_overlay": 0},
+            "font": "system-modern", "density": "comfortable", "radius": 12, "shadow": "soft", "colors_customized": False,
+            "light": {"background": "#F5F6F8", "surface": "#FFFFFF", "text": "#172337", "primary": "#AD233C", "accent": "#E94E67", "highlight": "#FFB5B9", "background_image": "", "background_overlay": 0},
+            "dark": {"background": "#101B2B", "surface": "#19283C", "text": "#F1F5FB", "primary": "#AD233C", "accent": "#E94E67", "highlight": "#FFB5B9", "background_image": "", "background_overlay": 0},
         },
         "notice": {"enabled": True, "dismissible": True, "title_es": "Antes de tu visita.", "title_pt": "Antes da sua visita.", "text_es": "La web refleja catálogos online, no el stock físico completo de cada tienda.", "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."},
         "homepage": {"order": ["hero", "benefits", "discover", "popular", "catalog"], "visible": {"hero": True, "benefits": True, "discover": True, "popular": True, "catalog": True}},
@@ -277,7 +278,7 @@ def normalize_site_config(raw: dict) -> dict:
     return {
         "version": new_version("studio"), "actualizado": now_iso(),
         "branding": {"site_name": text(branding.get("site_name") or "RivFree", 60), "tagline_es": text(branding.get("tagline_es"), 180), "tagline_pt": text(branding.get("tagline_pt"), 180)},
-        "appearance": {"font": font if font in {"system-modern","rounded","editorial","mono"} else "system-modern", "density": density if density in {"compact","comfortable","airy"} else "comfortable", "radius": safe_int(appearance.get("radius"), 12, 0, 32), "shadow": shadow if shadow in {"none","soft","strong"} else "soft", "light": palette("light"), "dark": palette("dark")},
+        "appearance": {"font": font if font in {"system-modern","rounded","editorial","mono"} else "system-modern", "density": density if density in {"compact","comfortable","airy"} else "comfortable", "radius": safe_int(appearance.get("radius"), 12, 0, 32), "shadow": shadow if shadow in {"none","soft","strong"} else "soft", "colors_customized": bool(appearance.get("colors_customized", False)), "light": palette("light"), "dark": palette("dark")},
         "notice": {"enabled": bool(notice.get("enabled", True)), "dismissible": bool(notice.get("dismissible", True)), "title_es": text(notice.get("title_es"), 120), "title_pt": text(notice.get("title_pt"), 120), "text_es": text(notice.get("text_es"), 500), "text_pt": text(notice.get("text_pt"), 500)},
         "homepage": {"order": order, "visible": {k: bool(visible.get(k, True)) for k in allowed_sections}},
         "carousel": {"visible_count": safe_int(carousel.get("visible_count"), 5, 1, 10), "autoplay": bool(carousel.get("autoplay", True)), "autoplay_seconds": safe_int(carousel.get("autoplay_seconds"), 6, 3, 30)},
@@ -432,6 +433,7 @@ def state_payload() -> dict:
         "revision": revision(),
         "mode": EDITOR_MODE,
         "project_root": str(PROJECT_ROOT),
+        "studio_build": STUDIO_BUILD,
         "base_stores": reference,
         "manual_stores": manual_stores_doc.get("tiendas", {}),
         "stores": {**reference, **manual_stores_doc.get("tiendas", {})},
@@ -1013,6 +1015,14 @@ def reset_contribution(payload: dict) -> dict:
 
 
 class Handler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        # Studio local: nunca reutilizar HTML/CSS/JS de otra versión.
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
+        self.send_header("X-RivFree-Studio-Build", STUDIO_BUILD)
+        super().end_headers()
+
     server_version = "RivFreeManualEditor/1.0"
 
     def __init__(self, *args, **kwargs):

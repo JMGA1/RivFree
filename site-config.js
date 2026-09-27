@@ -2,7 +2,7 @@
 'use strict';
 const DEFAULT={
  branding:{site_name:'RivFree',tagline_es:'Explorá y compará los free shops de Rivera y Santana do Livramento',tagline_pt:'Explore e compare os free shops de Rivera e Santana do Livramento'},
- appearance:{font:'system-modern',density:'comfortable',radius:12,shadow:'soft',light:{background:'#F1ECDE',surface:'#FFFFFF',text:'#1B1B1B',primary:'#123C39',accent:'#F06449',highlight:'#BEEB72',background_image:'',background_overlay:0},dark:{background:'#101716',surface:'#17211F',text:'#F2EFE7',primary:'#194F4A',accent:'#FF8068',highlight:'#C8F47E',background_image:'',background_overlay:0}},
+ appearance:{font:'system-modern',density:'comfortable',radius:12,shadow:'soft',colors_customized:false,light:{background:'#F5F6F8',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9',background_image:'',background_overlay:0},dark:{background:'#101B2B',surface:'#19283C',text:'#F1F5FB',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9',background_image:'',background_overlay:0}},
  notice:{enabled:true,dismissible:true,title_es:'Antes de tu visita.',title_pt:'Antes da sua visita.',text_es:'La web refleja catálogos online, no el stock físico completo de cada tienda.',text_pt:'A web reflete catálogos online, não o estoque físico completo de cada loja.'},
  homepage:{order:['hero','benefits','discover','popular','catalog'],visible:{hero:true,benefits:true,discover:true,popular:true,catalog:true}},
  carousel:{visible_count:5,autoplay:true,autoplay_seconds:6},
@@ -36,27 +36,25 @@ function apply(config){
  const font=fonts[a.font]||fonts['system-modern'];
  const lightImg=l.background_image?`linear-gradient(rgba(255,255,255,${Math.max(0,Math.min(.9,Number(l.background_overlay)||0))}),rgba(255,255,255,${Math.max(0,Math.min(.9,Number(l.background_overlay)||0))})),url("${escCssUrl(l.background_image)}")`:'none';
  const darkImg=d.background_image?`linear-gradient(rgba(0,0,0,${Math.max(0,Math.min(.9,Number(d.background_overlay)||0))}),rgba(0,0,0,${Math.max(0,Math.min(.9,Number(d.background_overlay)||0))})),url("${escCssUrl(d.background_image)}")`:'none';
- style.textContent=`
- :root,:root:not([data-theme="dark"]){--font-sans:${font};--font-display:${font};--paper:${l.background||'#F1ECDE'};--surface:${l.surface||'#fff'};--ink:${l.text||'#1B1B1B'};--teal:${l.primary||'#123C39'};--accent:${l.accent||'#F06449'};--lime:${l.highlight||'#BEEB72'};--studio-radius:${radius}px;--studio-shadow:${shadow};--studio-bg-image:${lightImg};}
- :root[data-theme="dark"]{--paper:${d.background||'#101716'};--surface:${d.surface||'#17211F'};--ink:${d.text||'#F2EFE7'};--teal:${d.primary||'#194F4A'};--accent:${d.accent||'#FF8068'};--lime:${d.highlight||'#C8F47E'};--studio-bg-image:${darkImg};}
- body{background-color:var(--paper)!important;background-image:var(--studio-bg-image)!important;background-size:cover!important;background-position:center!important;background-attachment:fixed!important;}
+ const customized=a.colors_customized===true;
+ const structural=`
+ :root{--font-sans:${font};--font-display:${font};--studio-radius:${radius}px;--studio-shadow:${shadow};--studio-bg-image:${lightImg};}
+ :root[data-theme="dark"]{--studio-bg-image:${darkImg};}
+ body{background-image:var(--studio-bg-image)!important;background-size:cover!important;background-position:center!important;background-attachment:fixed!important;}
  .controls-card,.card,.popular-section,.stock-notice-inner,dialog,.directory-store,.campaign-carousel{border-radius:var(--studio-radius)!important;}
  .controls-card,.card,.popular-section{box-shadow:var(--studio-shadow)!important;}
  `;
- style.textContent+=`
- :root{--on-primary:${onColor(l.primary)};--on-accent:${onColor(l.accent)};}
- :root[data-theme="dark"]{--on-primary:${onColor(d.primary)};--on-accent:${onColor(d.accent)};}
+ const colorOverrides=customized?`
+ :root,:root:not([data-theme="dark"]){--paper:${l.background||'#F5F6F8'};--surface:${l.surface||'#fff'};--ink:${l.text||'#172337'};--teal:${l.primary||'#AD233C'};--accent:${l.accent||'#E94E67'};--lime:${l.highlight||'#FFB5B9'};--on-primary:${onColor(l.primary)};--on-accent:${onColor(l.accent)};}
+ :root[data-theme="dark"]{--paper:${d.background||'#101B2B'};--surface:${d.surface||'#19283C'};--ink:${d.text||'#F1F5FB'};--teal:${d.primary||'#AD233C'};--accent:${d.accent||'#E94E67'};--lime:${d.highlight||'#FFB5B9'};--on-primary:${onColor(d.primary)};--on-accent:${onColor(d.accent)};}
  :root,:root:not([data-theme="dark"]),:root[data-theme="dark"]{--rf-red:var(--teal);--rf-red-dark:color-mix(in srgb,var(--teal) 82%,black);--paper-dim:color-mix(in srgb,var(--paper) 90%,var(--ink));--surface-muted:color-mix(in srgb,var(--surface) 95%,var(--ink));--accent-soft:color-mix(in srgb,var(--accent) 14%,var(--surface));--muted:color-mix(in srgb,var(--ink) 70%,var(--surface));--line:color-mix(in srgb,var(--ink) 18%,var(--surface));}
- :root .controls-card,:root .card,:root .popular-section,:root .stock-notice-inner,:root dialog,:root .directory-store,:root .campaign-carousel{border-radius:var(--studio-radius)!important;}
  :root .controls-card,:root .card{background:var(--surface)!important;color:var(--ink);}
- :root .topbar{background:color-mix(in srgb,var(--teal) 40%,#101b2b);border-bottom:3px solid var(--lime);}
  :root .brand-name-free{color:var(--lime);}
- :root .brand p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:11px;line-height:1.35;margin:4px 0 0;}
- :root .brand h1{overflow-wrap:anywhere;}
  :root .brand-mark,:root .topbar .search-button{background:var(--accent);color:var(--on-accent);}
  :root .card-action,:root .card-link.card-cta{background:var(--teal)!important;color:var(--on-primary)!important;}
  :root .card-action:hover,:root .card-link.card-cta:hover{background:var(--rf-red-dark)!important;}
- `;
+ `:'';
+ style.textContent=structural+colorOverrides;
  document.body.dataset.density=['compact','comfortable','airy'].includes(a.density)?a.density:'comfortable';
  const brand=config.branding||{};const name=brand.site_name||'RivFree';
  const h1=document.querySelector('.brand h1');if(h1){const split=/^(.{1,3})(.*)$/.exec(name);h1.replaceChildren(document.createTextNode(split?.[1]||name));if(split?.[2]){const span=document.createElement('span');span.className='brand-name-free';span.textContent=split[2];h1.append(span);}}

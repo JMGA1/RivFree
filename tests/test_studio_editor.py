@@ -50,4 +50,20 @@ class StudioEditorTests(unittest.TestCase):
             names=set(z.namelist())
         self.assertIn('data/site-config.json',names); self.assertIn('data/highlights.json',names)
 
+    def test_native_palette_is_default_until_user_customizes_colors(self):
+        config=server.default_site_config()
+        self.assertFalse(config['appearance']['colors_customized'])
+        self.assertEqual(config['appearance']['light']['background'],'#F5F6F8')
+        self.assertEqual(config['appearance']['dark']['background'],'#101B2B')
+        config['appearance']['colors_customized']=True
+        normalized=server.normalize_site_config(config)
+        self.assertTrue(normalized['appearance']['colors_customized'])
+
+    def test_studio_html_uses_versioned_assets_and_new_controls(self):
+        html=(Path(server.__file__).with_name('index.html')).read_text(encoding='utf-8')
+        self.assertIn('editor.css?v=20260927-studio-sync3',html)
+        self.assertIn('studio-editor.js?v=20260927-studio-sync3',html)
+        self.assertIn('id="healthKpis"',html)
+        self.assertIn('id="restoreNativeTheme"',html)
+
 if __name__=='__main__': unittest.main()
