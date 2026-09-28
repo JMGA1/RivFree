@@ -13,7 +13,7 @@ function openProductPreview(data){
  const dialog=document.getElementById('productDialog'),content=document.getElementById('productPreviewContent');
  document.getElementById('productPreviewTitle').textContent=readableProductName(data.name);content.replaceChildren();
  const imageUrl=safeImageUrl(data.offers.find(o=>safeImageUrl(o.imagen))?.imagen);
- if(imageUrl){const img=document.createElement('img');img.className='product-preview-image';img.src=imageUrl;img.alt=data.name;img.onerror=()=>addImagePlaceholder(img.parentElement);content.append(img);}
+ if(imageUrl){const img=document.createElement('img');img.referrerPolicy='no-referrer';img.className='product-preview-image';img.src=imageUrl;img.alt=data.name;img.onerror=()=>addImagePlaceholder(img.parentElement);content.append(img);}
  for(const offer of [...data.offers].sort(compareOfferPrices)){
   const row=document.createElement('div');row.className='preview-offer';
   const title=document.createElement('strong');title.textContent=offer.tienda;

@@ -14,7 +14,7 @@ function env({cached=null,meta={version:'a'},catalog={productos:[]},manual={vers
  return {ctx,calls,getStored:()=>stored};
 }
 test('unchanged scraped version reuses scraped data and only checks meta plus manual file',async()=>{
- const cached={version:'a|manual:empty',scrapedVersion:'a',scrapedData:{productos:[]},manualData:{version:'empty',productos:[]},preparedVersion:'20260925-partitions1',prepared:{products:[],groups:[],words:[],legacyKeys:{}}};
+ const cached={version:'a|manual:empty',scrapedVersion:'a',scrapedData:{productos:[]},manualData:{version:'empty',productos:[]},preparedVersion:'20260928-security1',prepared:{products:[],groups:[],words:[],legacyKeys:{}}};
  const e=env({cached});await e.ctx.loadCatalogLocally();
  assert.equal(e.calls.some(url=>url.includes('products.json?v=')),false);
  assert.equal(e.calls.some(url=>url.includes('meta.json')),true);
@@ -41,12 +41,12 @@ test('invalid new catalog falls back to cached scraped data',async()=>{
 });
 test('prepared groups are reused when both versions match',async()=>{
  const prepared={products:[],groups:[],words:[],legacyKeys:{}};
- const cached={version:'a|manual:m1',scrapedVersion:'a',scrapedData:{productos:[]},manualData:{version:'m1',productos:[]},preparedVersion:'20260925-partitions1',prepared};
+ const cached={version:'a|manual:m1',scrapedVersion:'a',scrapedData:{productos:[]},manualData:{version:'m1',productos:[]},preparedVersion:'20260928-security1',prepared};
  const e=env({cached,manual:{version:'m1',productos:[]}});e.ctx.prepareCatalog=()=>{throw Error('Matching must not run');};assert.equal((await e.ctx.loadCatalogLocally()).prepared,prepared);
 });
 test('engine revision invalidates prepared groups without redownloading scraped catalog',async()=>{
  const cached={version:'a|manual:m1',scrapedVersion:'a',scrapedData:{productos:[{}]},manualData:{version:'m1',productos:[]},preparedVersion:'old',prepared:{products:[],groups:[],words:[],legacyKeys:{}}};
- const e=env({cached,manual:{version:'m1',productos:[]}});assert.equal((await e.ctx.loadCatalogLocally()).prepared.count,1);assert.equal(e.calls.some(url=>url.includes('products.json?v=')),false);assert.equal(e.getStored().preparedVersion,'20260925-partitions1');
+ const e=env({cached,manual:{version:'m1',productos:[]}});assert.equal((await e.ctx.loadCatalogLocally()).prepared.count,1);assert.equal(e.calls.some(url=>url.includes('products.json?v=')),false);assert.equal(e.getStored().preparedVersion,'20260928-security1');
 });
 
 

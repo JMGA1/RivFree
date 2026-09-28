@@ -12,13 +12,21 @@ const DEFAULT={
 function merge(base,value){
  if(!value||typeof value!=='object'||Array.isArray(value))return typeof structuredClone==='function'?structuredClone(base):JSON.parse(JSON.stringify(base));
  const out={...base};
- for(const [k,v] of Object.entries(value))out[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&base[k]&&typeof base[k]==='object'&&!Array.isArray(base[k]))?merge(base[k],v):v;
+ for(const [k,v] of Object.entries(value)){if(!Object.hasOwn(base,k)||['__proto__','constructor','prototype'].includes(k))continue;if(v===null||typeof v!==typeof base[k]||Array.isArray(v)!==Array.isArray(base[k]))continue;out[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&base[k]&&typeof base[k]==='object'&&!Array.isArray(base[k]))?merge(base[k],v):v;}
  return out;
 }
 const studioPreview=new URLSearchParams(location.search).has('studio-preview')&&window.parent!==window;
 let previewConfigReceived=false;
 function lang(){if(studioPreview)return document.documentElement.lang==='es'?'es':'pt';try{return localStorage.getItem('rivfree-language')==='es'?'es':'pt';}catch{return document.documentElement.lang==='es'?'es':'pt';}}
-function escCssUrl(value){return String(value||'').replace(/["'\\\n\r()]/g,'');}
+function escCssUrl(value){
+ try{
+  const url=new URL(String(value||''),location.href);
+  if(url.username||url.password||(url.protocol!=='https:'&&url.origin!==location.origin))return '';
+  if(!['https:','http:'].includes(url.protocol))return '';
+  return url.href.replace(/[\u0000-\u0020"'\\()<>{}]/g,c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0'));
+ }catch{return '';}
+}
+function hex(value,fallback){return /^#[0-9a-f]{6}$/i.test(String(value))?value:fallback;}
 function onColor(hex){const c=String(hex||'').replace('#','');if(!/^[0-9a-f]{6}$/i.test(c))return '#ffffff';const rgb=[0,2,4].map(i=>parseInt(c.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722>.179?'#000000':'#ffffff';}
 function setMeta(selector,attr,value){const el=document.querySelector(selector);if(el&&value)el.setAttribute(attr,value);}
 function apply(config){
@@ -51,8 +59,8 @@ function apply(config){
  .controls-card,.card,.popular-section{box-shadow:var(--studio-shadow)!important;}
  `;
  const colorOverrides=customized?`
- :root,:root:not([data-theme="dark"]){--paper:${l.background||'#F5F6F8'};--surface:${l.surface||'#fff'};--ink:${l.text||'#172337'};--teal:${l.primary||'#AD233C'};--accent:${l.accent||'#E94E67'};--lime:${l.highlight||'#FFB5B9'};--on-primary:${onColor(l.primary)};--on-accent:${onColor(l.accent)};}
- :root[data-theme="dark"]{--paper:${d.background||'#101B2B'};--surface:${d.surface||'#19283C'};--ink:${d.text||'#F1F5FB'};--teal:${d.primary||'#AD233C'};--accent:${d.accent||'#E94E67'};--lime:${d.highlight||'#FFB5B9'};--on-primary:${onColor(d.primary)};--on-accent:${onColor(d.accent)};}
+ :root,:root:not([data-theme="dark"]){--paper:${hex(l.background,'#F5F6F8')};--surface:${hex(l.surface,'#fff')};--ink:${hex(l.text,'#172337')};--teal:${hex(l.primary,'#AD233C')};--accent:${hex(l.accent,'#E94E67')};--lime:${hex(l.highlight,'#FFB5B9')};--on-primary:${onColor(l.primary)};--on-accent:${onColor(l.accent)};}
+ :root[data-theme="dark"]{--paper:${hex(d.background,'#101B2B')};--surface:${hex(d.surface,'#19283C')};--ink:${hex(d.text,'#F1F5FB')};--teal:${hex(d.primary,'#AD233C')};--accent:${hex(d.accent,'#E94E67')};--lime:${hex(d.highlight,'#FFB5B9')};--on-primary:${onColor(d.primary)};--on-accent:${onColor(d.accent)};}
  :root,:root:not([data-theme="dark"]),:root[data-theme="dark"]{--rf-red:var(--teal);--rf-red-dark:color-mix(in srgb,var(--teal) 82%,black);--paper-dim:color-mix(in srgb,var(--paper) 90%,var(--ink));--surface-muted:color-mix(in srgb,var(--surface) 95%,var(--ink));--accent-soft:color-mix(in srgb,var(--accent) 14%,var(--surface));--muted:color-mix(in srgb,var(--ink) 70%,var(--surface));--line:color-mix(in srgb,var(--ink) 18%,var(--surface));}
  :root .controls-card,:root .card{background:var(--surface)!important;color:var(--ink);}
  :root .brand-name-free{color:var(--lime);}

@@ -15,6 +15,8 @@ except ImportError:
     import maintenance
 import base64
 import hashlib
+import hmac
+import secrets
 import io
 import json
 import mimetypes
@@ -26,7 +28,7 @@ import threading
 import time
 from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse, unquote
 import uuid
 import unicodedata
 import webbrowser
@@ -49,8 +51,8 @@ MAX_BODY_BYTES = 48 * 1024 * 1024
 MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
-SESSION_TOKEN = uuid.uuid4().hex
-STUDIO_BUILD = '20260927-studio-custom3'
+SESSION_TOKEN = secrets.token_urlsafe(32)
+STUDIO_BUILD = '20260928-security1'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -87,7 +89,20 @@ def read_json(path: Path, default):
         return default
 
 
+def guarded_path(path: Path):
+    path = Path(path)
+    root = PROJECT_ROOT.resolve()
+    if not path.resolve().is_relative_to(root):
+        raise ValueError('Ruta fuera del proyecto')
+    for part in [path, *path.parents]:
+        if part == PROJECT_ROOT.parent: break
+        if part.is_symlink(): raise ValueError('No se permiten enlaces simbólicos')
+    return path
+
+
 def atomic_write_json(path: Path, value) -> None:
+    guarded_path(path)
+    guarded_path(path.with_suffix(path.suffix + ".tmp"))
     if path == active_products_path() and isinstance(value, dict):
         previous = {p.get('id'): p for p in read_json(path, {}).get('productos', [])}
         for product in value.get('productos', []):
@@ -112,7 +127,7 @@ def atomic_write_json(path: Path, value) -> None:
 
 
 def ensure_files() -> None:
-    ASSET_DIR.mkdir(parents=True, exist_ok=True)
+    guarded_path(ASSET_DIR).mkdir(parents=True, exist_ok=True)
     if not PRODUCTS_PATH.exists():
         atomic_write_json(PRODUCTS_PATH, {"version": "initial", "actualizado": None, "productos": []})
     if not STORES_PATH.exists():
@@ -148,7 +163,7 @@ def new_version(prefix: str) -> str:
 
 
 def backup_current() -> None:
-    backup_dir = active_backup_dir()
+    backup_dir = guarded_path(active_backup_dir())
     backup_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     target = backup_dir / stamp
@@ -180,8 +195,8 @@ def safe_url(value, required=False):
             raise ValueError("Falta una URL obligatoria")
         return None
     parsed = urlparse(value)
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        raise ValueError(f"URL inválida: {value}")
+    if parsed.scheme != "https" or not parsed.hostname or parsed.username is not None or parsed.password is not None or any(ord(c)<32 for c in value):
+        raise ValueError("URL inválida: usá HTTPS sin credenciales")
     return value
 
 
@@ -189,7 +204,7 @@ def safe_image(value):
     value = text(value, 2000).replace("\\", "/")
     if not value:
         return None
-    allowed_local = value.startswith("assets/manual/") or (EDITOR_MODE == "contributor" and value.startswith(".contributor-work/assets/"))
+    allowed_local = value.startswith("assets/manual/") or (EDITOR_MODE == "contributor" and value.startswith((".contributor-work/assets/", "contributor-assets/")))
     if allowed_local and ".." not in value:
         return value
     return safe_url(value)
@@ -397,9 +412,10 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
     if not name:
         raise ValueError("El nombre de la tienda es obligatorio")
     current = dict(existing or {})
-    networks = dict(current.get("redes") or {})
+    networks = {}
+    previous_networks = current.get("redes") or {}
     for key in ("instagram", "facebook", "whatsapp", "telegram"):
-        raw = payload.get(key)
+        raw = payload.get(key, previous_networks.get(key))
         if raw is not None:
             url = safe_url(raw)
             if url:
@@ -407,7 +423,6 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
             else:
                 networks.pop(key, None)
     info = {
-        **current,
         "nombre_completo": text(payload.get("nombre_completo") or name, 180),
         "direccion": nullable_text(payload.get("direccion"), 300),
         "telefono": nullable_text(payload.get("telefono"), 80),
@@ -481,7 +496,7 @@ def state_payload() -> dict:
         "base_stores": reference,
         "manual_stores": manual_stores_doc.get("tiendas", {}),
         "stores": {**reference, **manual_stores_doc.get("tiendas", {})},
-        "products": products_doc.get("productos", []),
+        "products": [{**p, "imagen": p.get("imagen", "").replace(".contributor-work/assets/", "contributor-assets/")} if isinstance(p.get("imagen"), str) else p for p in products_doc.get("productos", [])],
         "updated": {
             "stores": manual_stores_doc.get("actualizado"),
             "products": products_doc.get("actualizado"),
@@ -630,6 +645,31 @@ def bulk_products(payload: dict) -> dict:
         return result
 
 
+def optimize_image(content: bytes) -> tuple[bytes, bytes]:
+    if not content or len(content)>MAX_IMAGE_BYTES:
+        raise ValueError('La imagen debe pesar menos de 6 MB')
+    try:
+        from PIL import Image, ImageOps, UnidentifiedImageError
+    except ImportError:
+        raise ValueError('Falta Pillow. Ejecutá: python -m pip install -r tools/manual_editor/requirements.txt')
+    try:
+        with Image.open(io.BytesIO(content)) as source:
+            if source.width * source.height > 25_000_000:
+                raise ValueError('La imagen supera 25 megapíxeles')
+            if getattr(source, 'is_animated', False):
+                raise ValueError('Usá una imagen estática; no se convierten animaciones')
+            source.load()
+            image = ImageOps.exif_transpose(source).convert('RGBA' if 'A' in source.getbands() or 'transparency' in source.info else 'RGB')
+            image.info.clear()
+            image.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
+            full = io.BytesIO(); image.save(full, format='WEBP', quality=82, method=6)
+            image.thumbnail((360, 360), Image.Resampling.LANCZOS)
+            thumb = io.BytesIO(); image.save(thumb, format='WEBP', quality=78, method=6)
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
+        raise ValueError('El archivo no es una imagen válida o es demasiado grande') from exc
+    return full.getvalue(), thumb.getvalue()
+
+
 def upload_image(payload: dict) -> dict:
     filename = Path(text(payload.get("filename"), 255)).name
     suffix = Path(filename).suffix.lower()
@@ -644,35 +684,17 @@ def upload_image(payload: dict) -> dict:
         raise ValueError("La imagen no se pudo decodificar") from exc
     if not content or len(content) > MAX_IMAGE_BYTES:
         raise ValueError("La imagen debe pesar menos de 6 MB")
-    try:
-        from PIL import Image, ImageOps, UnidentifiedImageError
-    except ImportError:
-        raise ValueError('Falta Pillow. Ejecutá: python -m pip install -r tools/manual_editor/requirements.txt')
-    try:
-        with Image.open(io.BytesIO(content)) as source:
-            if source.width * source.height > 25_000_000:
-                raise ValueError('La imagen supera 25 megapíxeles')
-            if getattr(source, 'is_animated', False):
-                raise ValueError('Usá una imagen estática; no se convierten animaciones')
-            source.load()
-            image = ImageOps.exif_transpose(source).convert('RGBA' if 'A' in source.getbands() or 'transparency' in source.info else 'RGB')
-            image.thumbnail((1600, 1600), Image.Resampling.LANCZOS)
-            full = io.BytesIO(); image.save(full, format='WEBP', quality=82, method=6)
-            image.thumbnail((360, 360), Image.Resampling.LANCZOS)
-            thumb = io.BytesIO(); image.save(thumb, format='WEBP', quality=78, method=6)
-    except (UnidentifiedImageError, OSError, Image.DecompressionBombError) as exc:
-        raise ValueError('El archivo no es una imagen válida o es demasiado grande') from exc
-    optimized = full.getvalue()
+    optimized, thumbnail_bytes = optimize_image(content)
     digest = hashlib.sha256(optimized).hexdigest()[:16]
     safe_name = re.sub(r'[^A-Za-z0-9._-]+', '-', Path(filename).stem).strip('-._')[:50] or 'imagen'
     with LOCK:
-        asset_dir = active_asset_dir(); asset_dir.mkdir(parents=True, exist_ok=True)
+        asset_dir = guarded_path(active_asset_dir()); asset_dir.mkdir(parents=True, exist_ok=True)
         target = asset_dir / f'{safe_name}-{digest}.webp'
         thumbnail = asset_dir / f'{safe_name}-{digest}-thumb.webp'
-        for path, raw in [(target, optimized), (thumbnail, thumb.getvalue())]:
-            temporary = path.with_suffix('.tmp'); temporary.write_bytes(raw); temporary.replace(path)
-    return {'path': target.relative_to(PROJECT_ROOT).as_posix(),
-            'thumbnail': thumbnail.relative_to(PROJECT_ROOT).as_posix(),
+        for path, raw in [(target, optimized), (thumbnail, thumbnail_bytes)]:
+            guarded_path(path); temporary = guarded_path(path.with_suffix('.tmp')); temporary.write_bytes(raw); temporary.replace(path)
+    return {'path': ('contributor-assets/'+target.name) if EDITOR_MODE=='contributor' else target.relative_to(PROJECT_ROOT).as_posix(),
+            'thumbnail': ('contributor-assets/'+thumbnail.name) if EDITOR_MODE=='contributor' else thumbnail.relative_to(PROJECT_ROOT).as_posix(),
             'original_bytes': len(content), 'bytes': len(optimized)}
 
 
@@ -682,7 +704,7 @@ def normalize_import_store(name: str, info: dict) -> tuple[str, dict]:
     for key in ("instagram", "facebook", "whatsapp", "telegram"):
         if key not in payload and isinstance(payload.get("redes"), dict):
             payload[key] = payload["redes"].get(key)
-    return normalize_store(payload, info)
+    return normalize_store(payload)
 
 
 def import_data(payload: dict) -> dict:
@@ -736,7 +758,7 @@ def export_payload() -> dict:
         "format": "rivfree-manual-v1",
         "exported_at": now_iso(),
         "stores": stores_doc.get("tiendas", {}),
-        "products": products_doc.get("productos", []),
+        "products": [{**p, "imagen": p.get("imagen", "").replace(".contributor-work/assets/", "contributor-assets/")} if isinstance(p.get("imagen"), str) else p for p in products_doc.get("productos", [])],
     }
 
 
@@ -803,11 +825,15 @@ def _safe_zip_members(archive: zipfile.ZipFile) -> list[zipfile.ZipInfo]:
     if len(infos) > 400:
         raise ValueError("El paquete contiene demasiados archivos")
     total = 0
+    seen = set()
     for info in infos:
         name = info.filename.replace("\\", "/")
         parts = Path(name).parts
         if name.startswith("/") or ".." in parts:
             raise ValueError("El paquete contiene una ruta no permitida")
+        if name in seen or any(part.startswith('.') or ':' in part for part in parts) or ((info.external_attr >> 16) & 0o170000)==0o120000:
+            raise ValueError('El paquete contiene rutas duplicadas o enlaces')
+        seen.add(name)
         total += max(0, info.file_size)
         if total > 64 * 1024 * 1024:
             raise ValueError("El contenido descomprimido del aporte es demasiado grande")
@@ -827,8 +853,8 @@ def export_contribution_payload(contributor_name: str = "", note: str = "") -> t
             continue
         item = dict(product)
         image = item.get("imagen")
-        if isinstance(image, str) and image.startswith(".contributor-work/assets/"):
-            path = PROJECT_ROOT / image
+        if isinstance(image, str) and image.startswith((".contributor-work/assets/", "contributor-assets/")):
+            path = (CONTRIB_ASSET_DIR / Path(image).name) if image.startswith("contributor-assets/") else PROJECT_ROOT / image
             try:
                 resolved = path.resolve()
                 resolved.relative_to(asset_root)
@@ -960,7 +986,7 @@ def preview_contribution(payload: dict) -> dict:
     preview_id = "preview-" + uuid.uuid4().hex
     CONTRIBUTION_PREVIEWS[preview_id] = {"manifest": manifest, "assets": assets, "created": time.time()}
     for key in list(CONTRIBUTION_PREVIEWS):
-        if key != preview_id and (len(CONTRIBUTION_PREVIEWS) > 8 or time.time() - CONTRIBUTION_PREVIEWS[key].get("created", 0) > 3600):
+        if key != preview_id and (len(CONTRIBUTION_PREVIEWS) > 3 or time.time() - CONTRIBUTION_PREVIEWS[key].get("created", 0) > 600):
             CONTRIBUTION_PREVIEWS.pop(key, None)
     contributor = manifest.get("contributor") if isinstance(manifest.get("contributor"), dict) else {}
     return {
@@ -981,12 +1007,17 @@ def _save_imported_asset(package_path: str, assets: dict[str, bytes]) -> str | N
     suffix = Path(package_path).suffix.lower()
     if suffix not in ALLOWED_IMAGE_EXTENSIONS or len(raw) > MAX_IMAGE_BYTES:
         return None
-    digest = hashlib.sha256(raw).hexdigest()[:16]
+    try:
+        optimized, _ = optimize_image(raw)
+    except ValueError:
+        return None
+    digest = hashlib.sha256(optimized).hexdigest()[:16]
     stem = re.sub(r"[^A-Za-z0-9._-]+", "-", Path(package_path).stem).strip("-._")[:50] or "aporte"
-    ASSET_DIR.mkdir(parents=True, exist_ok=True)
-    target = ASSET_DIR / f"{stem}-{digest}{suffix}"
-    if not target.exists():
-        target.write_bytes(raw)
+    guarded_path(ASSET_DIR).mkdir(parents=True, exist_ok=True)
+    target = ASSET_DIR / f"{stem}-{digest}.webp"
+    guarded_path(target)
+    temporary = guarded_path(target.with_suffix('.tmp'))
+    temporary.write_bytes(optimized); temporary.replace(target)
     return target.relative_to(PROJECT_ROOT).as_posix()
 
 
@@ -1086,26 +1117,74 @@ class Handler(SimpleHTTPRequestHandler):
         # Studio local: nunca reutilizar HTML/CSS/JS de otra versión.
         self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
         self.send_header("Pragma", "no-cache")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Frame-Options", "SAMEORIGIN")
+        self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'; form-action 'none'")
         self.send_header("Expires", "0")
         self.send_header("X-RivFree-Studio-Build", STUDIO_BUILD)
         super().end_headers()
 
     server_version = "RivFreeManualEditor/1.0"
+    sys_version = ""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(PROJECT_ROOT), **kwargs)
 
+    def setup(self):
+        super().setup()
+        self.connection.settimeout(30)
+
+    def parse_request(self):
+        if not super().parse_request(): return False
+        hosts = self.headers.get_all('Host', [])
+        allowed = {f'127.0.0.1:{self.server.server_port}', f'localhost:{self.server.server_port}'}
+        if len(hosts)!=1 or hosts[0] not in allowed:
+            self._error(403, 'Host no permitido'); return False
+        origin = self.headers.get('Origin')
+        if origin and origin != 'http://' + hosts[0]:
+            self._error(403, 'Origen no permitido'); return False
+        if self.headers.get('Sec-Fetch-Site') == 'cross-site':
+            self._error(403, 'Origen no permitido'); return False
+        return True
+
     def log_message(self, fmt, *args):
-        print("[editor]", fmt % args)
+        message = re.sub(r'([?&#]token=)[^&\s"]+', r'\1[redacted]', fmt % args)
+        print('[editor]', maintenance.redact(message))
 
     def _authorized(self) -> bool:
-        parsed = urlparse(self.path)
-        query_token = parse_qs(parsed.query).get("token", [""])[0]
-        header_token = self.headers.get("X-RivFree-Editor-Token", "")
-        return query_token == SESSION_TOKEN or header_token == SESSION_TOKEN
+        header = self.headers.get('X-RivFree-Editor-Token', '')
+        return hmac.compare_digest(header.encode('utf-8'), SESSION_TOKEN.encode('utf-8'))
+
+    def list_directory(self, path):
+        self.send_error(404, 'No encontrado'); return None
+
+    def send_head(self):
+        raw = urlparse(self.path).path
+        path = unquote(raw)
+        parts = Path(path.lstrip('/')).parts
+        if '\\' in path or '%' in path or any(p.startswith('.') for p in parts):
+            self.send_error(404, 'No encontrado'); return None
+        relative = '/'.join(parts)
+        public_data = {'stores.json','manual-stores.json','manual-products.json','products.json','meta.json','exchange.json','highlights.json','popular.json','site-config.json','price-history.json'}
+        allowed = (not relative or relative=='index.html' or
+            (len(parts)==1 and (Path(relative).suffix in {'.js','.css'} or relative in {'privacy.html','manifest.webmanifest','social-card.png','robots.txt','sitemap.xml'})) or
+            (parts[:2]==('tools','manual_editor') and (len(parts)==2 or (len(parts)==3 and Path(relative).suffix in {'.html','.css','.js'}))) or
+            (len(parts)==2 and parts[0]=='data' and parts[1] in public_data) or
+            (len(parts)==3 and parts[0]=='data' and parts[1] in {'products','price-history'} and Path(relative).suffix=='.json') or
+            (parts and parts[0] in {'assets','icons'} and Path(relative).suffix.lower() in {'.png','.jpg','.jpeg','.webp','.gif','.svg','.ico'}))
+        if parts and parts[0]=='contributor-assets' and len(parts)==2 and EDITOR_MODE=='contributor' and Path(relative).suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+            target=CONTRIB_ASSET_DIR / parts[1]
+            if target.is_symlink() or not target.resolve().is_relative_to(CONTRIB_ASSET_DIR.resolve()) or not target.is_file():
+                self.send_error(404); return None
+            stream=target.open('rb');self.send_response(200);self.send_header('Content-Type',self.guess_type(str(target)));self.send_header('Content-Length',str(target.stat().st_size));self.end_headers();return stream
+        target=PROJECT_ROOT / relative
+        if not allowed or not target.resolve().is_relative_to(PROJECT_ROOT.resolve()) or any((PROJECT_ROOT / Path(*parts[:i])).is_symlink() for i in range(1,len(parts)+1)):
+            self.send_error(404, 'No encontrado'); return None
+        return super().send_head()
 
     def _json(self, value, status=200):
-        raw = json.dumps(value, ensure_ascii=False).encode("utf-8")
+        raw = json.dumps(maintenance.redact_value(value), ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(raw)))
@@ -1116,6 +1195,10 @@ class Handler(SimpleHTTPRequestHandler):
         self._json({"error": str(message)}, status)
 
     def _body(self) -> dict:
+        if self.headers.get("Transfer-Encoding") or len(self.headers.get_all("Content-Length", []))!=1:
+            raise ValueError("Formato de solicitud inválido")
+        if self.headers.get_content_type() != "application/json":
+            raise ValueError("Se requiere application/json")
         length = int(self.headers.get("Content-Length") or 0)
         if length <= 0 or length > MAX_BODY_BYTES:
             raise ValueError("Solicitud vacía o demasiado grande")
@@ -1195,7 +1278,7 @@ class Handler(SimpleHTTPRequestHandler):
         except (ValueError, json.JSONDecodeError) as exc:
             return self._error(400, exc)
         except Exception as exc:
-            return self._error(500, f"Error interno: {exc}")
+            return self._error(500, "Error interno. No se pudo completar la operación.")
 
 
 def main():
@@ -1208,7 +1291,7 @@ def main():
     EDITOR_MODE = args.mode
     ensure_files()
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    url = f"http://127.0.0.1:{args.port}/tools/manual_editor/?token={SESSION_TOKEN}&mode={EDITOR_MODE}"
+    url = f"http://127.0.0.1:{args.port}/tools/manual_editor/?mode={EDITOR_MODE}#token={SESSION_TOKEN}"
     print("\nRivFree · " + ("Cargador colaborador" if EDITOR_MODE == "contributor" else "Studio"))
     print(f"Proyecto: {PROJECT_ROOT}")
     print(f"Abrí: {url}")

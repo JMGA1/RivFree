@@ -71,8 +71,8 @@ class StudioEditorTests(unittest.TestCase):
 
     def test_studio_html_uses_versioned_assets_and_new_controls(self):
         html=(Path(server.__file__).with_name('index.html')).read_text(encoding='utf-8')
-        self.assertIn('editor.css?v=20260927-studio-custom3',html)
-        self.assertIn('studio-editor.js?v=20260927-studio-custom3',html)
+        self.assertIn('editor.css?v=20260928-security1',html)
+        self.assertIn('studio-editor.js?v=20260928-security1',html)
         self.assertIn('id="healthKpis"',html)
         self.assertIn('id="restoreNativeTheme"',html)
         self.assertIn('id="appearanceEditTheme"',html)

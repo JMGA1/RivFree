@@ -8,12 +8,25 @@ import subprocess
 
 PUBLISH_PATHS = ['data/manual-products.json', 'data/manual-stores.json', 'data/site-config.json', 'data/highlights.json', 'assets/manual']
 
-UPDATE_PATHS = ['catalog-worker.js', 'tests/cache.test.cjs', 'tests/test_history_partitions.py', 'RENDIMIENTO-2026-09-27.md', 'site-config.js', 'app.js', 'features.js', 'shopping.js', 'storefront.js', 'index.html', 'styles.css', 'sw.js', 'catalog-cache.js', 'scrapers/catalog_metrics.py', 'scrapers/update_exchange.py', 'tests/test_catalog_metrics.py', 'tests/test_exchange.py', 'tests/visitor-improvements.test.cjs', 'tests/search-filter.test.cjs', 'tests/studio-preview.test.cjs', 'MEJORAS-VISITANTES-2026-09-27.md', 'tools/manual_editor', 'tools/scraper_health_alerts.py',
+UPDATE_PATHS = ['tests/test_studio_editor.py', 'scrapers/requirements.txt', 'security-reports', 'catalog.js', '.github/dependabot.yml', '.github/scraper-alerts.cjs', 'tools/ci_data.py', 'tools/build_public_site.py', 'requirements.in', 'requirements-security.in', 'requirements-security.txt', 'tests/test_security.py', 'tests/security.test.cjs', 'SEGURIDAD-2026-09-28.md', 'catalog-worker.js', 'tests/cache.test.cjs', 'tests/test_history_partitions.py', 'RENDIMIENTO-2026-09-27.md', 'site-config.js', 'app.js', 'features.js', 'shopping.js', 'storefront.js', 'index.html', 'styles.css', 'sw.js', 'catalog-cache.js', 'scrapers/catalog_metrics.py', 'scrapers/update_exchange.py', 'tests/test_catalog_metrics.py', 'tests/test_exchange.py', 'tests/visitor-improvements.test.cjs', 'tests/search-filter.test.cjs', 'tests/studio-preview.test.cjs', 'MEJORAS-VISITANTES-2026-09-27.md', 'tools/manual_editor', 'tools/scraper_health_alerts.py',
                 '.github/workflows/scrape.yml', 'scrapers/publish_data.py',
                 'requirements.txt', '.gitignore', 'tests/test_studio_writes.py',
                 'tests/studio-maintenance.test.cjs', 'tests/test_collaboration_editor.py',
                 'Instalar-dependencias-Studio.bat', 'Instalar-dependencias-Studio.sh',
                 'STUDIO-MEJORAS-2026-09-27.md']
+
+
+def redact(value):
+    value = re.sub(r'://[^/@\s]+@', '://***@', str(value))
+    value = re.sub(r'(?i)([?&](?:token|access_token|key|password)=)[^&\s]+', r'\1***', value)
+    return value
+
+
+def redact_value(value):
+    if isinstance(value, str): return redact(value)
+    if isinstance(value, dict): return {k: redact_value(v) for k,v in value.items()}
+    if isinstance(value, list): return [redact_value(v) for v in value]
+    return value
 
 
 def owner(s):
@@ -61,7 +74,8 @@ def snapshot(s, include_update=False):
     # Include bytes of untracked assets and every tracked edit in the review token.
     digest = hashlib.sha256((git(s, 'rev-parse', 'HEAD') + status + branch + str(include_update)).encode())
     for relative in scope:
-        path = s.PROJECT_ROOT / relative
+        path = s.guarded_path(s.PROJECT_ROOT / relative)
+        if path.is_symlink(): raise ValueError('No se publican enlaces simbólicos')
         for file in sorted(path.rglob('*')) if path.is_dir() else [path]:
             if file.is_symlink(): raise ValueError('No se publican enlaces simbólicos: ' + str(file))
             if file.is_file() and '__pycache__' not in file.parts:
@@ -126,6 +140,10 @@ def backups(s, payload):
             field = {s.PRODUCTS_PATH: ('productos', list), s.STORES_PATH: ('tiendas', dict),
                      s.SITE_CONFIG_PATH: ('branding', dict), s.HIGHLIGHTS_PATH: ('hero', list)}[target]
             if not isinstance(value.get(field[0]), field[1]): raise ValueError('Formato inválido: ' + target.name)
+            if target == s.SITE_CONFIG_PATH: value = s.normalize_site_config(value)
+            elif target == s.HIGHLIGHTS_PATH: value = {**value, 'hero': [s.normalize_campaign(c,i) for i,c in enumerate(value['hero'])]}
+            elif target == s.STORES_PATH: value = {**value, 'tiendas': dict(s.normalize_import_store(k,v) for k,v in value['tiendas'].items())}
+            elif target == s.PRODUCTS_PATH: value = {**value, 'productos': [s.normalize_product(p,p) for p in value['productos']]}
             documents.append((target, value))
         if not documents: raise ValueError('Copia vacía')
         s.backup_current()

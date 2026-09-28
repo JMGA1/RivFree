@@ -1,0 +1,9 @@
+{
+  "python_tests": 111,
+  "javascript_tests": 85,
+  "ui_integration": "passed",
+  "http_security_tests": "passed",
+  "workflow_yaml": "validated locally; not run on GitHub",
+  "public_artifact": "built locally; private paths excluded",
+  "browser_csp_visual_test": "not run: Chromium download unavailable"
+}

@@ -617,7 +617,7 @@ function createProductCard(group) {
   const imageStage=document.createElement('span');imageStage.className='card-image-stage';
   const imageUrl = safeImageUrl(offers.find(offer => safeImageUrl(offer.imagen))?.imagen || group.image);
   if (imageUrl) {
-    const img = document.createElement('img');
+    const img = document.createElement('img');img.referrerPolicy='no-referrer';
     img.src = imageUrl;
     img.loading = 'lazy';
     img.width = 240; img.height = 240;

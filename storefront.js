@@ -67,7 +67,7 @@ try{
 function localized(value){return typeof value==='string'?value:value?.[LANG]||value?.es||'';}
 function campaignURL(raw){
  if(typeof raw!=='string'||!raw.trim())return null;
- try{const url=new URL(raw,location.href);return ['https:','http:'].includes(url.protocol)?url.href:null;}catch{return null;}
+ try{const url=new URL(raw,location.href);return (url.protocol==='https:'||(url.origin===location.origin&&url.protocol==='http:'))&&!url.username&&!url.password?url.href:null;}catch{return null;}
 }
 async function storefrontJSON(path){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),5000);
@@ -216,13 +216,13 @@ function renderCampaign(slot,automatic=false){
  copy.append(cta);
  const visual=document.createElement('div');visual.className='campaign-visual';
  if(c.image){
-  const src=campaignURL(c.image);if(src){const image=document.createElement('img');image.src=src;image.alt=localized(c.imageAlt)||'';image.className='campaign-custom-image';image.decoding='async';image.fetchPriority=automatic?'low':'auto';image.onerror=()=>image.remove();
+  const src=campaignURL(c.image);if(src){const image=document.createElement('img');image.referrerPolicy='no-referrer';image.src=src;image.alt=localized(c.imageAlt)||'';image.className='campaign-custom-image';image.decoding='async';image.fetchPriority=automatic?'low':'auto';image.onerror=()=>image.remove();
    const mobile=campaignURL(c.mobileImage);
    if(mobile){const picture=document.createElement('picture'),source=document.createElement('source');source.media='(max-width: 650px)';source.srcset=mobile;picture.append(source,image);visual.append(picture);}else visual.append(image);}
  }else{
   for(const item of campaignVisualItems(c).slice(0,3)){
    const src=campaignURL(item.src);if(!src)continue;
-   const pedestal=document.createElement('div');pedestal.className='product-pedestal';const image=document.createElement('img');image.src=src;image.alt=localized(item.alt)||'';image.decoding='async';image.width=256;image.height=256;image.fetchPriority=automatic?'low':'auto';image.onerror=()=>{image.remove();pedestal.textContent='RivFree';};pedestal.append(image);visual.append(pedestal);
+   const pedestal=document.createElement('div');pedestal.className='product-pedestal';const image=document.createElement('img');image.referrerPolicy='no-referrer';image.src=src;image.alt=localized(item.alt)||'';image.decoding='async';image.width=256;image.height=256;image.fetchPriority=automatic?'low':'auto';image.onerror=()=>{image.remove();pedestal.textContent='RivFree';};pedestal.append(image);visual.append(pedestal);
   }
  }
  const label=document.createElement('span');label.className='campaign-label';label.textContent=c.sponsored?words('Publicidade','Publicidad'):c.smartResolved?words('Destaque do catálogo','Destacado del catálogo'):words('Seleção RivFree','Selección RivFree');

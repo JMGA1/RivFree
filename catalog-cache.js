@@ -40,7 +40,7 @@ function combineCatalogData(scraped,manual){
  return {...base,productos:[...(base.productos||[]),...manualProducts],manual_actualizado:manual?.actualizado||null};
 }
 // Bump when matching, normalization, manual-catalog merging, or the prepared shape changes.
-const PREPARED_CATALOG_VERSION='20260925-partitions1';
+const PREPARED_CATALOG_VERSION='20260928-security1';
 function validPrepared(value){
  return value && Array.isArray(value.products) && Array.isArray(value.groups) &&
   Array.isArray(value.words) && value.legacyKeys && typeof value.legacyKeys==='object';
@@ -129,7 +129,7 @@ async function loadCatalogLocally() {
 async function loadCatalog() {
  if(typeof Worker==='undefined')return loadCatalogLocally();
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js?v=20260927-mobile-perf');
+  const worker=new Worker('catalog-worker.js?v=20260928-security1');
   const timer=setTimeout(()=>{worker.terminate();reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
   worker.onmessage=({data})=>{clearTimeout(timer);worker.terminate();data.error?reject(Object.assign(new Error(data.error),{catalogFailure:true})):resolve(data);};
   worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');

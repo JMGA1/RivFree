@@ -186,3 +186,8 @@ test('general palette blocks unreadable text and automatic correction allows sav
  await w.RivFreeStudio.saveActive('appearance');assert.equal(calls.length,0);assert.ok(notifications.some(args=>args[0].includes('contraste')));assert.match(d.getElementById('paletteContrast').textContent,/1.00:1/);
  d.querySelector('.palette-contrast button').click();await w.RivFreeStudio.saveActive('appearance');assert.equal(calls.length,1);assert.equal(calls[0].payload.config.appearance.light.text,'#000000');
 });
+
+test('draft recovery date cannot create executable markup',async t=>{
+ const payload='<img src=x onerror="alert(document.domain)">';const {d,w}=await editor(t,JSON.stringify({savedAt:payload,heroDirty:true}));
+ assert.equal(d.querySelector('.draft-recovery img'),null);assert.ok(d.querySelector('.draft-recovery').textContent.includes(payload));assert.equal(w.pwned,undefined);
+});

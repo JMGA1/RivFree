@@ -307,7 +307,7 @@
   function updateCampaignImagePreview() {
     const root=$('campaignImagePreview'); if (!root) return; const src=$('campaignImage').value.trim(); root.replaceChildren();
     if (!src) { const span=document.createElement('span');span.textContent='Sin imagen';root.append(span);return; }
-    const img=document.createElement('img');try{const url=new URL(src,location.origin+'/');if(!['http:','https:'].includes(url.protocol))throw new Error();img.src=url.href;}catch{root.textContent='URL de imagen inválida';return;}img.alt='Vista previa del banner';img.onerror=()=>{root.textContent='No se pudo cargar la imagen. Revisá su ruta o URL.';};root.append(img);
+    const img=document.createElement('img');img.referrerPolicy='no-referrer';try{const url=new URL(src,location.origin+'/');if(!['http:','https:'].includes(url.protocol))throw new Error();img.src=url.href;}catch{root.textContent='URL de imagen inválida';return;}img.alt='Vista previa del banner';img.onerror=()=>{root.textContent='No se pudo cargar la imagen. Revisá su ruta o URL.';};root.append(img);
   }
   function fillCarouselSettings() {
     ensureConfig(); const c=workingConfig.carousel||{}; val('campaignVisibleCount',c.visible_count??5); chk('campaignAutoplay',c.autoplay!==false); val('campaignSeconds',c.autoplay_seconds??6); val('campaignTransition',c.transition||'smooth'); val('campaignTransitionSpeed',String(c.transition_ms??500));
@@ -476,9 +476,11 @@
     if ($('lastCatalogUpdate')) $('lastCatalogUpdate').textContent=meta.actualizado?`Catálogo: ${formatDate(meta.actualizado)}`:'Sin fecha de catálogo';
     const byStore=new Map((meta.resumen||[]).map(item=>[item.tienda,item])); const stores=$('healthStores'); stores.replaceChildren();
     for (const [name,info] of Object.entries(health).sort(([a],[b])=>a.localeCompare(b,'es'))) {
-      const summary=byStore.get(name)||{}; const status=info.estado||'desconocido'; const row=document.createElement('div'); row.className=`health-store ${status}`;
-      const head=document.createElement('div'); head.innerHTML=`<span class="health-light ${status}" aria-hidden="true"></span><strong>${name}</strong><span class="health-status">${status.toUpperCase()}</span>`;
-      const details=document.createElement('div'); details.className='health-store-details'; details.innerHTML=`<span>${Number(summary.productos||0).toLocaleString()} productos</span><span>${info.fallos_consecutivos||0} fallos seguidos</span><span>Último éxito: ${formatDate(info.ultimo_exito)}</span>`;
+      const summary=byStore.get(name)||{}; const status=['ok','error','parcial'].includes(info.estado)?info.estado:'desconocido'; const row=document.createElement('div'); row.className=`health-store ${status}`;
+      const head=document.createElement('div'),light=document.createElement('span'),title=document.createElement('strong'),label=document.createElement('span');
+      light.className=`health-light ${status}`;light.setAttribute('aria-hidden','true');title.textContent=name;label.className='health-status';label.textContent=status.toUpperCase();head.append(light,title,label);
+      const details=document.createElement('div');details.className='health-store-details';
+      for(const text of [`${Number(summary.productos||0).toLocaleString()} productos`,`${Number(info.fallos_consecutivos)||0} fallos seguidos`,`Último éxito: ${formatDate(info.ultimo_exito)}`]){const span=document.createElement('span');span.textContent=text;details.append(span);}
       row.append(head,details); if (info.error) { const error=document.createElement('small'); error.textContent=info.error; row.append(error); } stores.append(row);
     }
     const manual=$('manualHealth'); manual.replaceChildren();
@@ -588,7 +590,9 @@
     if (initialized) return; initialized=true;
     let draft=null; try { draft=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); } catch {}
     if (!draft || (!draft.dirtySections?.length && !draft.heroDirty)) return;
-    const bar=document.createElement('div'); bar.className='draft-recovery'; bar.innerHTML=`<div><strong>Hay un borrador local sin guardar</strong><span>${draft.savedAt?`Guardado automáticamente ${formatDate(draft.savedAt)}`:'Podés recuperarlo antes de seguir.'}</span></div>`;
+    const bar=document.createElement('div');bar.className='draft-recovery';
+    const copy=document.createElement('div'),heading=document.createElement('strong'),details=document.createElement('span');
+    heading.textContent='Hay un borrador local sin guardar';details.textContent=draft.savedAt?`Guardado automáticamente ${formatDate(draft.savedAt)}`:'Podés recuperarlo antes de seguir.';copy.append(heading,details);bar.append(copy);
     const recover=document.createElement('button');recover.type='button';recover.className='button primary';recover.textContent='Recuperar borrador';
     const discard=document.createElement('button');discard.type='button';discard.className='button';discard.textContent='Descartar';
     recover.onclick=()=>{workingConfig=clone(draft.config||workingConfig);workingHero=clone(draft.hero||workingHero);dirtySections=new Set(draft.dirtySections||[]);heroDirty=!!draft.heroDirty;fillAll();updateDirtyUI();bar.remove();E.notify('Borrador recuperado. Revisá los cambios antes de guardar.');};

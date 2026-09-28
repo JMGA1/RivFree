@@ -1,11 +1,17 @@
 """Optional notifications. Credentials are GitHub secrets, never catalog files."""
 import json
 import os
+import re
 from pathlib import Path
 import smtplib
 import ssl
 from email.message import EmailMessage
 from urllib.request import Request, urlopen
+
+
+def safe_text(value):
+    value = re.sub(r'://[^/@\s]+@', '://***@', str(value or 'sin registro'))
+    return re.sub(r'[\x00-\x1f<>`]', ' ', value).replace('@', '＠')[:300]
 
 
 def alerts(health, threshold=3, partial_threshold=3):
@@ -14,7 +20,7 @@ def alerts(health, threshold=3, partial_threshold=3):
         failures = int(state.get('fallos_consecutivos') or 0)
         partial = int(state.get('parciales_consecutivos') or 0)
         if failures >= threshold or partial >= partial_threshold:
-            rows.append(f"{name}: estado {state.get('estado', 'desconocido')}, {failures} fallos / {partial} parciales consecutivos. Último éxito: {state.get('ultimo_exito') or 'sin registro'}.")
+            rows.append(f"{safe_text(name)}: estado {safe_text(state.get('estado', 'desconocido'))}, {failures} fallos / {partial} parciales consecutivos. Último éxito: {safe_text(state.get('ultimo_exito'))}.")
     return rows
 
 
