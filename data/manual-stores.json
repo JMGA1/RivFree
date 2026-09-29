@@ -1,5 +1,75 @@
 {
-  "version": "initial",
-  "actualizado": null,
-  "tiendas": {}
+  "version": "stores-1790643576415-cdff58bc",
+  "actualizado": "2026-09-29T00:59:36.415464+00:00",
+  "tiendas": {
+    "Yury's Free Shop": {
+      "nombre_completo": "Yury's Free Shop",
+      "direccion": "Agraciada 514, Rivera, Uruguay",
+      "telefono": "+598 95 302 277",
+      "email": "info@yurysfreeshop.com",
+      "horario": "Lun a sáb 07:00–18:00, Viernes 08:00-18:00",
+      "sitio_web": "https://www.yurysfreeshop.com/",
+      "redes": {
+        "instagram": "https://www.instagram.com/yurysfreeshop/",
+        "facebook": "https://www.facebook.com/yurysfreeshop"
+      },
+      "nota": null,
+      "catalogo_online": true,
+      "color": "#b42335",
+      "color_texto": "#ffffff",
+      "manual": true
+    },
+    "Neutral": {
+      "nombre_completo": "Neutral Free Shop",
+      "direccion": "Francisco Acuña de Figueroa 1068, 40000 Rivera, Departamento de Rivera",
+      "telefono": "46233627",
+      "email": null,
+      "horario": "Lunes a viernes, 8 a. m.–6 p. m, sábado, 8 a. m.–6:30 p. m., domingo, 8 a. m.–5 p. m.",
+      "sitio_web": "https://www.neutral.com.uy/es/shops/Rivera",
+      "redes": {
+        "instagram": "https://instagram.com/NeutralDutyFree",
+        "facebook": "https://www.facebook.com/neutraldutyfree"
+      },
+      "nota": "La cadena más grande de la zona, con locales en Rivera, Río Branco, Chuy, Artigas, Bella Unión y Acegua. El catálogo online es compartido por toda la cadena.",
+      "catalogo_online": true,
+      "color": "#b42335",
+      "color_texto": "#ffffff",
+      "manual": true
+    },
+    "DFA": {
+      "nombre_completo": "DFA Uruguay (Duty Free Americas)",
+      "direccion": "Av. Sarandí 475, Rivera, Uruguay",
+      "telefono": "+598 4622 1100",
+      "email": null,
+      "horario": "Lunes a viernes, 9 a. m.–6 p. m, sábado, 8:30 a. m.–6 p. m, domingo, 9 a. m.–1 p. m.",
+      "sitio_web": "https://www.dfauy.com/",
+      "redes": {
+        "instagram": "https://www.instagram.com/dfa_uruguay/",
+        "facebook": "https://www.facebook.com/dfauruguay/"
+      },
+      "nota": "Cadena con locales en Rivera, Artigas, Bella Unión, Acegua, Río Branco y Chuy.",
+      "catalogo_online": true,
+      "color": "#b42335",
+      "color_texto": "#ffffff",
+      "manual": true
+    },
+    "Barão Free Shop": {
+      "nombre_completo": "Barão Free Shop",
+      "direccion": "Paysandú 1071, Rivera.",
+      "telefono": "+598 4623 9211",
+      "email": null,
+      "horario": "Lun a vie 7:00–18:00, sáb 7:00–18:00, dom 8:00–12:00",
+      "sitio_web": "https://www.baraofreeshop.com.br/",
+      "redes": {
+        "instagram": "https://www.instagram.com/baraofreeshop/",
+        "facebook": "https://www.facebook.com/baraofshop/",
+        "telegram": "https://t.me/baraofreeshop"
+      },
+      "nota": null,
+      "catalogo_online": true,
+      "color": "#b42335",
+      "color_texto": "#ffffff",
+      "manual": true
+    }
+  }
 }
