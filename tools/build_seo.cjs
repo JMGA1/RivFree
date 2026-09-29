@@ -85,7 +85,7 @@ function build(dest,overrides={}){
   html=html.replace(/<html lang="[^"]+">/,`<html lang="${lang}" data-seo-home="${lang}">`);
   html=html.replace(/<link rel="icon"[^>]*>/,`<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">`);
   html=html.replace('<h1>Riv<span class="brand-name-free">Free</span></h1>',`<div class="seo-brand-title">Riv<span class="brand-name-free">Free</span></div>`);
-  html=html.replace('<main>',`<main><section class="seo-home-heading"><h1>${heading}</h1><p>${pt?'Compare lojas e consulte as publicações originais antes de planejar sua visita.':'Compará tiendas y consultá las publicaciones originales antes de planificar tu visita.'}</p><a href="${esc(pt?url('index-es.html'):base)}" lang="${pt?'es':'pt-BR'}">${pt?'Español':'Português'}</a> · <a href="${esc(url(pt?'pt/':'es/'))}">${pt?'Explorar categorias e lojas':'Explorar categorías y tiendas'}</a></section>`);
+  html=html.replace('<main>',`<main><section class="seo-home-heading" aria-labelledby="homeIntroTitle"><h1 id="homeIntroTitle">${heading}</h1><p>${pt?'Compare lojas e consulte as publicações originais antes de planejar sua visita.':'Compará tiendas y consultá las publicaciones originales antes de planificar tu visita.'}</p><nav class="seo-home-links" aria-label="${pt?'Idioma e catálogo':'Idioma y catálogo'}"><a href="${esc(pt?url('index-es.html'):base)}" lang="${pt?'es':'pt-BR'}">${pt?'Español':'Português'}</a><span aria-hidden="true">·</span><a href="${esc(url(pt?'pt/':'es/'))}">${pt?'Explorar categorias e lojas':'Explorar categorías y tiendas'}</a></nav></section>`);
   return html.replace('</head>',alternates+'</head>');
  }
  // The Spanish entry lives next to index.html so existing relative resources remain valid.
