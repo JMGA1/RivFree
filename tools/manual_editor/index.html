@@ -156,8 +156,16 @@
           <div class="grid2">
             <label class="wide"><span>Nombre *</span><input id="storeName" required maxlength="120" placeholder="Nombre que verá el usuario"></label>
             <label class="wide"><span>Nombre completo</span><input id="storeFullName" maxlength="180"></label>
-            <label><span>Color de etiqueta</span><input id="storeColor" type="color" value="#B42335"></label>
-            <label><span>Color del texto</span><input id="storeTextColor" type="color" value="#FFFFFF"></label>
+            <label><span>Fondo de la etiqueta</span><input id="storeColor" type="color" value="#B42335"></label>
+            <label><span>Letras del nombre</span><input id="storeTextColor" type="color" value="#FFFFFF"></label>
+            <div class="wide store-label-preview">
+              <strong>Así se verá la etiqueta en los productos</strong>
+              <p class="form-help">Fondo cambia el interior de la etiqueta. Letras cambia el color del nombre. La vista previa se actualiza mientras editás.</p>
+              <div class="store-preview-scenes"><div class="store-preview-light"><small>Modo claro</small><span class="store-preview-tag"></span></div><div class="store-preview-dark"><small>Modo oscuro</small><span class="store-preview-tag"></span></div></div>
+              <p id="storeColorValues" class="form-help"></p>
+              <p id="storeContrastHint" class="form-help" role="status"></p>
+              <button id="storeAutoText" type="button" class="button">Elegir letras legibles automáticamente</button>
+            </div>
             <label class="wide"><span>Dirección</span><input id="storeAddress"></label>
             <label><span>Teléfono</span><input id="storePhone"></label>
             <label><span>Email</span><input id="storeEmail" type="email"></label>

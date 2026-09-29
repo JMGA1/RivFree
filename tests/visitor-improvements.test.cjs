@@ -94,3 +94,13 @@ test('native discovery scroll extends the selection without refresh',async t=>{
  const first=grid.firstElementChild;grid.scrollLeft=550;grid.dispatchEvent(new w.Event('scroll'));await pause(50);
  assert.equal(grid.children.length,10);assert.equal(grid.firstElementChild,first);
 });
+
+test('popular rail retains more than five consultations and hides controls at its bounds',async t=>{
+ const {d,run}=await page(t);
+ run(`PRODUCT_GROUPS=Array.from({length:8},(_,i)=>({...PRODUCT_GROUPS[i%3],key:'rank-'+i}));for(const g of PRODUCT_GROUPS)consultations.set(g.key,{count:2,last:1});renderPopularProducts();`);
+ const rail=d.getElementById('popularGrid');assert.equal(rail.children.length,8);assert.equal(d.getElementById('popularPause'),null);
+ Object.defineProperty(rail,'clientWidth',{value:1000,configurable:true});Object.defineProperty(rail,'scrollWidth',{value:1600,configurable:true});
+ run('updatePopularArrows()');assert.equal(d.getElementById('popularPrevious').disabled,true);assert.equal(d.getElementById('popularNext').disabled,false);
+ rail.scrollLeft=600;run('updatePopularArrows()');assert.equal(d.getElementById('popularPrevious').disabled,false);assert.equal(d.getElementById('popularNext').disabled,true);
+ Object.defineProperty(rail,'scrollWidth',{value:1000});rail.scrollLeft=0;run('updatePopularArrows()');assert.equal(d.getElementById('popularPrevious').disabled,true);assert.equal(d.getElementById('popularNext').disabled,true);
+});

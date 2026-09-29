@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RivFree — Comparador de preços de free shops</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="styles.css?v=20260928-security1">
+<link rel="stylesheet" href="styles.css?v=20260928-seo3">
 <meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
 <meta name="theme-color" content="#B42335">
 <meta property="og:type" content="website">
@@ -92,8 +92,12 @@
  </div>
 </section>
 <section class="popular-section" id="popularProducts" aria-labelledby="popularTitle">
- <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div><div class="rail-controls"><button id="popularPrevious" type="button" aria-label="Productos anteriores">←</button><button id="popularNext" type="button" aria-label="Más productos">→</button><button id="popularPause" class="autoplay-toggle" type="button" aria-label="Pausar carrusel" aria-pressed="false">Ⅱ</button></div></div>
- <div id="popularGrid" class="popular-rail"></div>
+ <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div></div>
+ <div class="discovery-carousel">
+  <button id="popularPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="popularGrid" disabled>‹</button>
+  <div id="popularGrid" class="popular-rail" tabindex="0" role="region" aria-label="Más consultados"></div>
+  <button id="popularNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="popularGrid" disabled>›</button>
+ </div>
 </section>
 <section id="catalogSection" class="catalog-section">
 <div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Explorá todas las tiendas y encontrá tu próximo favorito.</p></div><div class="catalog-status"><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
@@ -224,18 +228,18 @@
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="site-config.js?v=20260928-security1" defer></script>
+<script src="site-config.js?v=20260928-seo3" defer></script>
 <script src="privacy-config.js?v=20260925-ux1" defer></script>
 <script src="analytics.js?v=20260925-ux1" defer></script>
-<script src="matching.js?v=20260928-security1" defer></script>
-<script src="catalog.js?v=20260928-security1" defer></script>
-<script src="catalog-cache.js?v=20260928-security1" defer></script>
-<script src="features.js?v=20260928-security1" defer></script>
+<script src="matching.js?v=20260928-seo3" defer></script>
+<script src="catalog.js?v=20260928-seo3" defer></script>
+<script src="catalog-cache.js?v=20260928-seo3" defer></script>
+<script src="features.js?v=20260928-seo3" defer></script>
 <script src="shared-list-codec.js?v=20260925-share2" defer></script>
-<script src="shopping.js?v=20260928-security1" defer></script>
-<script src="storefront.js?v=20260928-security1" defer></script>
+<script src="shopping.js?v=20260928-seo3" defer></script>
+<script src="storefront.js?v=20260928-seo3" defer></script>
 <script src="product-details.js?v=20260925-core1" defer></script>
-<script src="app.js?v=20260928-security1" defer></script>
+<script src="app.js?v=20260928-seo3" defer></script>
 <!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c7ffd1476a25414983f7c03faf7e0ace"}'></script>
 <!-- End Cloudflare Web Analytics -->

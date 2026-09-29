@@ -1,6 +1,7 @@
 """Build Pages from an explicit public inventory, excluding symlinks and private files."""
 from pathlib import Path
 import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / '_site'
@@ -24,5 +25,7 @@ def build():
             raise ValueError('Private or linked public file: ' + str(rel))
         target = DEST/rel;target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(path,target)
+
+    subprocess.run(['node', str(ROOT/'tools/build_seo.cjs'), str(DEST)], check=True)
 
 if __name__ == '__main__': build()

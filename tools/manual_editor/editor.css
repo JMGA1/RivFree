@@ -171,3 +171,5 @@ button:focus-visible{outline:3px solid #227bba;outline-offset:3px}
 #duplicateWarning:not(:empty){padding:12px;border:2px solid #bd8118;border-radius:8px}
 [data-preset].selected::after{content:' ✓ Activa';font-weight:700}
 :focus-visible{outline:3px solid #268bd2;outline-offset:3px}
+
+.store-label-preview{padding:16px;border:1px solid var(--line);border-radius:12px}.store-preview-scenes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.store-preview-scenes>div{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:18px;border-radius:10px;min-width:0}.store-preview-light{background:#f5f6f8;color:#172337}.store-preview-dark{background:#19283c;color:#f1f5fb}.store-preview-tag{display:inline-block;max-width:100%;overflow-wrap:anywhere;border:1px solid;border-radius:999px;min-height:28px;padding:5px 9px;font:700 11px/1.1 var(--font-sans,system-ui)}.store-label-preview .low-contrast{color:#a42435;font-weight:700}#storeColor,#storeTextColor{height:48px;padding:4px;cursor:pointer}@media(max-width:500px){.store-preview-scenes{grid-template-columns:1fr}}

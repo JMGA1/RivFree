@@ -3,7 +3,19 @@ try {
  const savedLanguage = localStorage.getItem('rivfree-language');
  LANG = savedLanguage === 'es' || savedLanguage === 'pt-BR' ? savedLanguage : 'pt-BR';
 } catch {}
+if(document.documentElement.dataset.seoHome) LANG=document.documentElement.dataset.seoHome;
 const translations = {
+ 'Favoritos y conversión':'Favoritos e conversão',
+ 'Cotización':'Cotação',
+ 'Reales por dólar':'Reais por dólar',
+ 'Cerrar / Fechar':'Fechar / Cerrar',
+ 'Productos siguientes':'Próximos produtos',
+ 'Compará precios de free shops en Rivera y Livramento':'Compare preços de free shops em Rivera e Livramento',
+ 'cargando...':'carregando...',
+ '¿Importar esta lista?':'Importar esta lista?',
+ 'Ahora no':'Agora não',
+ 'No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.':'Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.',
+
  'Ocultar productos sin precio':'Ocultar produtos sem preço',
  'Por descubrir':'Por descobrir','Una selección aleatoria para inspirar tu próxima compra.':'Uma seleção aleatória para inspirar sua próxima compra.',
  'Otra selección':'Outra seleção','Pausar carrusel':'Pausar carrossel',
@@ -110,6 +122,7 @@ const translations = {
  'Agregado manualmente':'Adicionado manualmente','Ver publicación ↗':'Ver publicação ↗',
 };
 function tr(value) {
+ value=seoSpanishSources[value] || value;
  if(LANG==='es') return value;
  if(translations[value]) return translations[value];
  return value.replace(/^Actualizado: /,'Atualizado: ').replace(/^Datos anteriores: /,'Dados anteriores: ')
@@ -121,10 +134,11 @@ function tr(value) {
  .replace(/\bsin precio\b/g,'sem preço').replace(/\bsin preço\b/g,'sem preço')
  .replace(/publicaciones totales/,'publicações no total').replace(/mostrando/,'exibindo');
 }
+const seoSpanishSources = Object.fromEntries(Object.entries(translations).map(([es,pt])=>[pt,es]));
 const textSources = new WeakMap();
 function translateUI() {
  document.documentElement.lang=LANG;
- document.title = LANG==='pt-BR' ? 'RivFree — Comparador de preços de free shops' : 'RivFree — Comparador de precios de free shops';
+ document.title = LANG==='pt-BR' ? 'RivFree | Compare preços de free shops em Rivera e Livramento' : 'RivFree | Compará precios de free shops en Rivera y Livramento';
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  while(walker.nextNode()) {
   const n=walker.currentNode;
@@ -164,7 +178,7 @@ function applyStoreVisual(element,storeName){
  const color=validHexColor(info.color)?info.color:null;
  if(!color)return;
  element.style.setProperty('--store-bg',color);
- element.style.setProperty('--store-border',color);
+ element.style.setProperty('--store-border',contrastingText(color)==='#171419'&&validHexColor(info.color_texto)?info.color_texto:color);
  element.style.setProperty('--store-fg',validHexColor(info.color_texto)?info.color_texto:contrastingText(color));
 }
 async function loadStoreInfoFiles(){
@@ -1029,6 +1043,9 @@ window.setRivFreePreviewLanguage = language => {
  if(LANG!==language){LANG=language;render();translateUI();}
 };
 document.getElementById('languageToggle').addEventListener('change', event => {
+ if(document.documentElement.dataset.seoHome && !new URLSearchParams(location.search).has('studio-preview')){
+  const target=new URL(event.target.value==='es'?'index-es.html':'./',location.href);target.search=location.search;target.hash=location.hash;location.assign(target.href);return;
+ }
  LANG=event.target.value;
  try {localStorage.setItem('rivfree-language',LANG);} catch {}
  document.querySelectorAll('dialog[open]').forEach(d=>d.close());

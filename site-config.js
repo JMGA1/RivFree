@@ -17,7 +17,7 @@ function merge(base,value){
 }
 const studioPreview=new URLSearchParams(location.search).has('studio-preview')&&window.parent!==window;
 let previewConfigReceived=false;
-function lang(){if(studioPreview)return document.documentElement.lang==='es'?'es':'pt';try{return localStorage.getItem('rivfree-language')==='es'?'es':'pt';}catch{return document.documentElement.lang==='es'?'es':'pt';}}
+function lang(){const pageLanguage=document.documentElement.dataset.seoHome;if(!studioPreview&&['es','pt-BR'].includes(pageLanguage))return pageLanguage==='es'?'es':'pt';if(studioPreview)return document.documentElement.lang==='es'?'es':'pt';try{return localStorage.getItem('rivfree-language')==='es'?'es':'pt';}catch{return document.documentElement.lang==='es'?'es':'pt';}}
 function escCssUrl(value){
  try{
   const url=new URL(String(value||''),location.href);
@@ -71,7 +71,7 @@ function apply(config){
  style.textContent=structural+colorOverrides;
  document.body.dataset.density=['compact','comfortable','airy'].includes(a.density)?a.density:'comfortable';
  const brand=config.branding||{};const name=brand.site_name||'RivFree';
- const h1=document.querySelector('.brand h1');if(h1){const split=/^(.{1,3})(.*)$/.exec(name);h1.replaceChildren(document.createTextNode(split?.[1]||name));if(split?.[2]){const span=document.createElement('span');span.className='brand-name-free';span.textContent=split[2];h1.append(span);}}
+ const h1=document.querySelector('.brand h1, .brand .seo-brand-title');if(h1){const split=/^(.{1,3})(.*)$/.exec(name);h1.replaceChildren(document.createTextNode(split?.[1]||name));if(split?.[2]){const span=document.createElement('span');span.className='brand-name-free';span.textContent=split[2];h1.append(span);}}
  const tagline=document.querySelector('.brand p');if(tagline){tagline.textContent=lang()==='es'?(brand.tagline_es??DEFAULT.branding.tagline_es):(brand.tagline_pt??DEFAULT.branding.tagline_pt);tagline.title=tagline.textContent;}
  const notice=document.getElementById('stockNotice');if(notice){const n=config.notice||{};let dismissed=false;try{dismissed=!location.search.includes('studio-preview')&&sessionStorage.getItem('rivfree-stock-notice-dismissed')==='true';}catch{}notice.hidden=n.enabled===false||dismissed;const strong=notice.querySelector('.stock-notice-text strong');const textNode=notice.querySelector('.stock-notice-text');if(strong)strong.textContent=lang()==='es'?(n.title_es||''):(n.title_pt||'');if(textNode){[...textNode.childNodes].filter(x=>x.nodeType===3).forEach(x=>x.remove());textNode.append(document.createTextNode(' '+(lang()==='es'?(n.text_es||''):(n.text_pt||''))));}const close=notice.querySelector('.stock-notice-close');if(close)close.hidden=n.dismissible===false;}
  const ids={hero:'heroCampaign',benefits:'shoppingBenefits',discover:'discoverProducts',popular:'popularProducts',catalog:'catalogSection'};const main=document.querySelector('main');const hp=config.homepage||{};if(main){for(const key of hp.order||DEFAULT.homepage.order){const el=document.getElementById(ids[key]);if(el)main.append(el);}for(const [key,id] of Object.entries(ids)){const el=document.getElementById(id);if(el)el.hidden=!!(hp.visible&&hp.visible[key]===false);}const discoverLink=document.querySelector('a[href="#discoverProducts"]');if(discoverLink)discoverLink.hidden=hp.visible?.discover===false;const popularLink=document.querySelector('a[href="#popularProducts"]');if(popularLink)popularLink.hidden=hp.visible?.popular===false;}

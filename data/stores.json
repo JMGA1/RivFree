@@ -11,7 +11,9 @@
       "facebook": "https://www.facebook.com/dfauruguay/"
     },
     "nota": "Cadena con locales en Rivera, Artigas, Bella Unión, Acegua, Río Branco y Chuy.",
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#FFFFFF",
+    "color_texto": "#154F96"
   },
   "Sineriz": {
     "nombre_completo": "Siñeriz Shopping",
@@ -24,7 +26,9 @@
       "instagram": "https://www.instagram.com/sinerizfreeshop/"
     },
     "nota": null,
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#A42435",
+    "color_texto": "#FFFFFF"
   },
   "Barão Free Shop": {
     "nombre_completo": "Barão Free Shop",
@@ -39,7 +43,9 @@
       "telegram": "https://t.me/baraofreeshop"
     },
     "nota": null,
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#176A3A",
+    "color_texto": "#FFFFFF"
   },
   "Yury's Free Shop": {
     "nombre_completo": "Yury's Free Shop",
@@ -53,7 +59,9 @@
       "facebook": "https://www.facebook.com/yurysfreeshop"
     },
     "nota": null,
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#184B9C",
+    "color_texto": "#FFFFFF"
   },
   "Neutral": {
     "nombre_completo": "Neutral Free Shop",
@@ -67,7 +75,9 @@
       "facebook": "https://www.facebook.com/neutraldutyfree"
     },
     "nota": "La cadena más grande de la zona, con locales en Rivera, Río Branco, Chuy, Artigas, Bella Unión y Acegua. El catálogo online es compartido por toda la cadena.",
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#FFDF28",
+    "color_texto": "#222000"
   },
   "Oprha Free Shop": {
     "nombre_completo": "Oprha Free Shop",
@@ -81,7 +91,9 @@
       "facebook": "https://www.facebook.com/orphafreeshoprivera/"
     },
     "nota": "Especializada únicamente en perfumes y cosméticos.",
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#29252D",
+    "color_texto": "#F5E5B5"
   },
   "Mantra Free Shop": {
     "nombre_completo": "Mantra Free Shop",
@@ -96,6 +108,8 @@
       "whatsapp": "https://wa.me/555591261678"
     },
     "nota": "Catálogo online disponible; los precios y la disponibilidad pueden cambiar sin aviso.",
-    "catalogo_online": true
+    "catalogo_online": true,
+    "color": "#151515",
+    "color_texto": "#F5D477"
   }
 }

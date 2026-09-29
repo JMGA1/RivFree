@@ -277,9 +277,10 @@ function renderPopularProducts(){
  document.getElementById('popularNote').textContent=source==='global'?words('Consultas do site · atualização: ','Consultas del sitio · actualización: ')+new Date(popularFeed.updatedAt).toLocaleDateString(LANG):source==='local'?words('Baseado nas suas consultas neste navegador.','Basado en tus consultas en este navegador.'):words('Uma seleção para começar. Seu ranking aparece conforme você consulta produtos.','Una selección para empezar. Tu ranking aparece a medida que consultás productos.');
  grid.dataset.source=source;
  const savedScroll=grid.scrollLeft;
- grid.replaceChildren(...ranked.slice(0,5).map(g=>createProductCard({...g,visibleOffers:g.offers})));
+ grid.replaceChildren(...ranked.map(g=>createProductCard({...g,visibleOffers:g.offers})));
  grid.scrollLeft=savedScroll;
- document.getElementById('popularPrevious').disabled=ranked.length<2;document.getElementById('popularNext').disabled=ranked.length<2;
+ updatePopularArrows();
+ requestAnimationFrame(updatePopularArrows);
 }
 document.querySelectorAll('[data-category-shortcut],#navOffers').forEach(b=>b.disabled=true);
 document.getElementById('headerShoppingList').onclick=()=>document.getElementById('openShoppingList').click();
@@ -370,7 +371,7 @@ function scrollProductRail(id,direction=1){
  const rail=document.getElementById(id),card=rail.querySelector('.card');if(!card)return;
  const step=card.getBoundingClientRect().width+(parseFloat(getComputedStyle(rail).gap)||0),max=rail.scrollWidth-rail.clientWidth;
  if(max<=1)return;
- const target=direction>0?(rail.scrollLeft>=max-2?0:Math.min(max,rail.scrollLeft+step)):(rail.scrollLeft<=2?max:Math.max(0,rail.scrollLeft-step));
+ const target=Math.max(0,Math.min(max,rail.scrollLeft+direction*step));
  rail.scrollTo?.({left:target,behavior:reduceMotion()?'instant':'smooth'});nextAdvance.set(id,Date.now()+carouselDelay());
 }
 let carouselInteractionUntil=0;
@@ -384,7 +385,7 @@ function canAutoplay(root){
  const rect=root.getBoundingClientRect();return rect.bottom>0&&rect.top<window.innerHeight;
 }
 function advanceCarousels(now=Date.now()){
- for(const [id,slot] of [['heroCampaign','hero'],['popularGrid',null]]){
+ for(const [id,slot] of [['heroCampaign','hero']]){
   const root=document.getElementById(id);
   // Pauses also reset the countdown, so leaving a control never causes a jump.
   if(!canAutoplay(root)){nextAdvance.set(id,now+carouselDelay());continue;}
@@ -398,12 +399,21 @@ function advanceCarousels(now=Date.now()){
   nextAdvance.set(id,now+carouselDelay());
  }
 }
-for(const [prefix,id] of [['popular','popularGrid']]){
- for(const [suffix,direction] of [['Previous',-1],['Next',1]])document.getElementById(prefix+suffix).onclick=()=>scrollProductRail(id,direction);
- const pause=document.getElementById(prefix+'Pause');pause.onclick=()=>{toggleAutoplay(id);updateAutoplayButton(pause,id);};
- const rail=document.getElementById(id);rail.addEventListener('pointerdown',()=>nextAdvance.set(id,Date.now()+6000));rail.addEventListener('keydown',()=>nextAdvance.set(id,Date.now()+6000));
+function updatePopularArrows(){
+ const rail=document.getElementById('popularGrid');
+ const max=rail.scrollWidth-rail.clientWidth;
+ document.getElementById('popularPrevious').disabled=max<=2||rail.scrollLeft<=2;
+ document.getElementById('popularNext').disabled=max<=2||rail.scrollLeft>=max-2;
 }
-window.addEventListener('DOMContentLoaded',()=>{for(const [prefix,id] of [['popular','popularGrid']])updateAutoplayButton(document.getElementById(prefix+'Pause'),id);});
+for(const [suffix,direction] of [['Previous',-1],['Next',1]])document.getElementById('popular'+suffix).onclick=()=>scrollProductRail('popularGrid',direction);
+const popularRail=document.getElementById('popularGrid');
+popularRail.addEventListener('scroll',updatePopularArrows,{passive:true});
+popularRail.addEventListener('keydown',event=>{
+ if(event.target!==event.currentTarget||!['ArrowLeft','ArrowRight'].includes(event.key))return;
+ event.preventDefault();scrollProductRail('popularGrid',event.key==='ArrowLeft'?-1:1);
+});
+window.addEventListener('resize',()=>{updatePopularArrows();updateDiscoveryArrows();});
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(updatePopularArrows).observe(popularRail);
 function applyStudioCampaigns(data){
  const previous=studioCampaignState;
  studioCampaignState=data;
