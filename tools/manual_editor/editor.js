@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260928-security1';
+  const BUILD = '20260929-studio-sync1';
   window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const fragment = new URLSearchParams(location.hash.slice(1));

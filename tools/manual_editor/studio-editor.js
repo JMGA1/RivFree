@@ -1,12 +1,12 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260927-studio-custom3';
+  const BUILD = '20260929-studio-sync1';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
   if (window.RIVFREE_STUDIO_HTML_BUILD && window.RIVFREE_STUDIO_HTML_BUILD !== BUILD) {
-    const u = new URL(location.href); u.searchParams.set('studio-sync', Date.now()); location.replace(u.href); return;
+    E.notify('Los archivos de Studio pertenecen a versiones distintas. Cerrá el editor, actualizá la carpeta completa y volvé a abrir el BAT. No se recargará automáticamente.', true); return;
   }
   const $ = id => document.getElementById(id);
   const clone = value => JSON.parse(JSON.stringify(value ?? {}));
