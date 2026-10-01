@@ -1,6 +1,6 @@
 {
-  "version": "studio-1790878348956-f4ce3631",
-  "actualizado": "2026-10-01T18:12:28.956574+00:00",
+  "version": "studio-1790878709369-a249dce5",
+  "actualizado": "2026-10-01T18:18:29.369479+00:00",
   "branding": {
     "site_name": "RivFree",
     "tagline_es": "Explorá y compará los free shops de nuestra frontera",
@@ -77,8 +77,8 @@
     "enabled": true,
     "title_es": "RivFree es un comparador de precios.",
     "title_pt": "O RivFree é um comparador de preços.",
-    "text_es": "No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.",
-    "text_pt": "Não vendemos produtos nem somos afiliados às lojas: cada compra é feita diretamente com o free shop.",
+    "text_es": "No vendemos productos, no contamos con una tienda física ni estamos afiliados a los comercios publicados. Todas las compras se realizan directamente con el free shop correspondiente.",
+    "text_pt": "Não vendemos produtos, não possuímos loja física nem somos afiliados às lojas divulgadas. Todas as compras são realizadas diretamente com o free shop correspondente.",
     "short_es": "Solo comparamos precios: no vendemos ni estamos afiliados a las tiendas.",
     "short_pt": "Só comparamos preços: não vendemos nem somos afiliados às lojas."
   },
@@ -94,7 +94,7 @@
     },
     "tiktok": {
       "url": "",
-      "visible": true
+      "visible": false
     },
     "whatsapp": {
       "url": "",
