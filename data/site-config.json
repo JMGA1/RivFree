@@ -1,10 +1,10 @@
 {
-  "version": "studio-1790524788825-94538876",
-  "actualizado": "2026-09-27T15:59:48.825353+00:00",
+  "version": "studio-1790878348956-f4ce3631",
+  "actualizado": "2026-10-01T18:12:28.956574+00:00",
   "branding": {
     "site_name": "RivFree",
     "tagline_es": "Explorá y compará los free shops de nuestra frontera",
-    "tagline_pt": "Explore e compare os free shops de Rivera e Santana do Livramento"
+    "tagline_pt": "Explore e compare os free shops da nossa fronteira"
   },
   "appearance": {
     "font": "system-modern",
@@ -47,14 +47,16 @@
       "benefits",
       "discover",
       "popular",
-      "catalog"
+      "recommended",
+      "most"
     ],
     "visible": {
       "hero": true,
       "benefits": true,
       "discover": true,
       "popular": true,
-      "catalog": true
+      "recommended": true,
+      "most": true
     }
   },
   "carousel": {
@@ -70,13 +72,6 @@
     "description_es": "Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más.",
     "description_pt": "Compare preços de free shops de Rivera e Santana do Livramento: perfumes, bebidas, eletrônicos e muito mais.",
     "social_image": "social-card.png"
-  },
-  "footer": {
-    "title_es": "RivFree · Comparador independiente",
-    "title_pt": "RivFree · Comparador independente",
-    "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.",
-    "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.",
-    "show_privacy": true
   },
   "top_notice": {
     "enabled": true,
@@ -130,5 +125,12 @@
       40,
       60
     ]
+  },
+  "footer": {
+    "title_es": "RivFree · Comparador independiente",
+    "title_pt": "RivFree · Comparador independente",
+    "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.",
+    "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.",
+    "show_privacy": true
   }
 }
