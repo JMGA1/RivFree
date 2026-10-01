@@ -1,0 +1,2 @@
+# Conector de PostgreSQL (puro Python, licencia BSD). Opcional: solo para Studio → Base de datos y la copia diaria.
+pg8000>=1.31,<2

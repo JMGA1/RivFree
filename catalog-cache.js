@@ -40,7 +40,7 @@ function combineCatalogData(scraped,manual){
  return {...base,productos:[...(base.productos||[]),...manualProducts],manual_actualizado:manual?.actualizado||null};
 }
 // Bump when matching, normalization, manual-catalog merging, or the prepared shape changes.
-const PREPARED_CATALOG_VERSION='20260928-security1';
+const PREPARED_CATALOG_VERSION='20261001-v51-brands';
 function validPrepared(value){
  return value && Array.isArray(value.products) && Array.isArray(value.groups) &&
   Array.isArray(value.words) && value.legacyKeys && typeof value.legacyKeys==='object';
@@ -129,9 +129,17 @@ async function loadCatalogLocally() {
 async function loadCatalog() {
  if(typeof Worker==='undefined')return loadCatalogLocally();
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js?v=20260928-security1');
+  const worker=new Worker('catalog-worker.js?v=20261001-v52');
   const timer=setTimeout(()=>{worker.terminate();reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
-  worker.onmessage=({data})=>{clearTimeout(timer);worker.terminate();data.error?reject(Object.assign(new Error(data.error),{catalogFailure:true})):resolve(data);};
+  const products=[],groups=[],legacyKeys={};
+  worker.onmessage=({data})=>{
+   if(data?.part==='products'){for(const p of data.items)products.push(p);return;}
+   if(data?.part==='groups'){for(const g of data.items){g.offers=g.o.map(x=>typeof x==='number'?products[x]:x);delete g.o;groups.push(g);}return;}
+   if(data?.part==='legacy'){for(const [key,value] of data.items)legacyKeys[key]=value;return;}
+   clearTimeout(timer);worker.terminate();
+   if(data?.part==='done')resolve({data:data.data,offline:data.offline,prepared:{products,groups,legacyKeys,words:data.words}});
+   else data.error?reject(Object.assign(new Error(data.error),{catalogFailure:true})):resolve(data);
+  };
   worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');
  });}catch(error){if(error.catalogFailure)throw error;return loadCatalogLocally();}
 }

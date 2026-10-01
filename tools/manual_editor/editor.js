@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260929-studio-sync1';
+  const BUILD = '20261001-studio7';
   window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const fragment = new URLSearchParams(location.hash.slice(1));
@@ -10,7 +10,7 @@
   if(fragment.has('token')||params.has('token')){params.delete('token');history.replaceState(null,'',location.pathname+(params.size?'?'+params:''));}
   const $ = id => document.getElementById(id);
   const apiHeaders = {'Content-Type': 'application/json', 'X-RivFree-Editor-Token': token};
-  const categories = new Set(['perfumes','bebidas','alimentos','electronica','informatica','cosmetica','hogar','ropa','accesorios','juguetes','relojes','optica','deportes','herramientas','otros']);
+  const categories = new Set(['perfumes','bebidas','alimentos','electronica','informatica','electrodomesticos','cosmetica','hogar','ropa','accesorios','juguetes','relojes','optica','deportes','herramientas','otros']);
 
   let state = {revision:'', mode:'owner', stores:{}, base_stores:{}, manual_stores:{}, products:[]};
   let readyResolve;
@@ -206,7 +206,7 @@
 
   window.RivFreeEditor = {
     api, load, applyState, notify, switchTab, setDirty, setExternalDirty, confirmDialog, setFieldError, clearFieldErrors,
-    hasUnsaved:()=>dirty || externalDirty, getState:()=>state, getToken:()=>token, ready, build:BUILD
+    hasUnsaved:()=>dirty || externalDirty, productPayload,storePayload,editProduct,getState:()=>state, getToken:()=>token, ready, build:BUILD
   };
 
   document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchTab(el.dataset.tab)));
@@ -283,18 +283,18 @@
     $('productForm').reset(); $('productId').value=''; $('productActive').checked=true; $('productCategory').value='otros'; $('productSource').value='manual';
     $('productFormEyebrow').textContent='NUEVA PUBLICACIÓN'; $('productFormTitle').textContent='Agregar producto';
     $('duplicateProduct').disabled=true; $('duplicateProductStore').disabled=true; $('deleteProduct').disabled=true;
-    updateActiveBadge(); updateImagePreview(); highlightSelectedProduct(); setDirty(false);
+    updateActiveBadge(); updateImagePreview(); highlightSelectedProduct(); setDirty(false); window.dispatchEvent(new Event("rivfree-editor-selection"));
   }
 
   function editProduct(id) {
-    const p = state.products.find(item => item.id === id); if (!p) return;
-    $('productId').value=p.id; $('productName').value=p.nombre||''; $('productStore').value=p.tienda||'';
-    $('productCategory').value=categories.has(p.categoria)?p.categoria:'otros'; $('productPrice').value=p.precio_usd??''; $('productOldPrice').value=p.precio_original_usd??'';
+    const p = typeof id==='object'?id:state.products.find(item => item.id === id); if (!p) return;
+    window.RivFreeCatalogFields.fillProduct(p);$('productId').value=p.id; $('productName').value=p.nombre||''; $('productStore').value=p.tienda||'';
+    $('productCategory').value=Catalog.category(p.categoria,p.nombre); $('productPrice').value=p.precio_usd??''; $('productOldPrice').value=p.precio_original_usd??'';
     $('productOffer').checked=!!p.en_oferta; $('productActive').checked=p.activo!==false; $('productSource').value=p.fuente_tipo||'manual'; $('productSourceUrl').value=p.fuente_url||'';
     $('productUrl').value=p.url||''; $('productImage').value=p.imagen||''; $('productNote').value=p.nota_manual||''; $('productImageFile').value='';
     $('productFormEyebrow').textContent='EDITANDO PUBLICACIÓN'; $('productFormTitle').textContent=p.nombre;
     $('duplicateProduct').disabled=false; $('duplicateProductStore').disabled=false; $('deleteProduct').disabled=false;
-    updateActiveBadge(); updateImagePreview(); highlightSelectedProduct(); setDirty(false);
+    updateActiveBadge(); updateImagePreview(); highlightSelectedProduct(); setDirty(false); window.dispatchEvent(new Event("rivfree-editor-selection"));
   }
 
   function updateActiveBadge() {
@@ -317,7 +317,7 @@
   }
 
   function productPayload() {
-    return {id:$('productId').value,tienda:$('productStore').value,nombre:$('productName').value,categoria:$('productCategory').value,precio_usd:$('productPrice').value,precio_original_usd:$('productOldPrice').value,en_oferta:$('productOffer').checked,activo:$('productActive').checked,fuente_tipo:$('productSource').value,fuente_url:$('productSourceUrl').value,url:$('productUrl').value,imagen:$('productImage').value,nota_manual:$('productNote').value};
+    return {...window.RivFreeCatalogFields.product(),id:$('productId').value,tienda:$('productStore').value,nombre:$('productName').value,categoria:$('productCategory').value,precio_usd:$('productPrice').value,precio_original_usd:$('productOldPrice').value,en_oferta:$('productOffer').checked,activo:$('productActive').checked,fuente_tipo:$('productSource').value,fuente_url:$('productSourceUrl').value,url:$('productUrl').value,imagen:$('productImage').value,nota_manual:$('productNote').value};
   }
 
   $('productForm').addEventListener('submit', async event => {
@@ -362,7 +362,7 @@
       const left=document.createElement('div');const title=document.createElement('strong');title.textContent=name;
       const meta=document.createElement('small');
       const editable=!!state.manual_stores[name];
-      meta.textContent=(editable?(state.mode==='contributor'?'Incluida en tu aporte':'Configuración manual'):(state.mode==='contributor'?'Tienda disponible':'Tienda base'))+(info.direccion?` · ${info.direccion}`:'');
+      meta.textContent=(editable?(state.mode==='contributor'?'Incluida en tu aporte':'Configuración manual'):(state.mode==='contributor'?'Tienda disponible':'Tienda base'))+(info.ocultar_fotos===true?' · Fotos ocultas':'')+(info.direccion?` · ${info.direccion}`:'');
       left.append(title,meta);
       const color=document.createElement('span');color.className='price';const dot=document.createElement('span');dot.className='manual-dot';dot.style.background=/^#[0-9a-f]{6}$/i.test(info.color||'')?info.color:'#B42335';color.append(dot,document.createTextNode(editable?'Editable':'Referencia'));
       item.append(left,color);item.onclick=()=>editStore(name);list.append(item);
@@ -384,17 +384,20 @@
   }
   for(const id of ['storeName','storeColor','storeTextColor'])$(id).addEventListener('input',updateStorePreview);
   $('storeAutoText').onclick=()=>{const l=storeLuminance($('storeColor').value);$('storeTextColor').value=(l+.05)/.05>=1.05/(l+.05)?'#000000':'#ffffff';updateStorePreview();setDirty(true);};
-  function resetStore(){$('storeForm').reset();$('storeOriginalName').value='';$('storeColor').value='#B42335';$('storeTextColor').value='#FFFFFF';$('storeFormEyebrow').textContent='NUEVA TIENDA';$('storeFormTitle').textContent='Agregar free shop';$('storeKindBadge').textContent='Manual';$('deleteStore').disabled=true;highlightSelectedStore();updateStorePreview();setDirty(false);}
-  function editStore(name){const info=state.stores[name]||{};$('storeOriginalName').value=name;$('storeName').value=name;$('storeFullName').value=info.nombre_completo||name;$('storeColor').value=/^#[0-9a-f]{6}$/i.test(info.color||'')?info.color:'#B42335';$('storeTextColor').value=/^#[0-9a-f]{6}$/i.test(info.color_texto||'')?info.color_texto:'#FFFFFF';$('storeAddress').value=info.direccion||'';$('storePhone').value=info.telefono||'';$('storeEmail').value=info.email||'';$('storeHours').value=info.horario||'';$('storeWebsite').value=info.sitio_web||'';$('storeInstagram').value=info.redes?.instagram||'';$('storeFacebook').value=info.redes?.facebook||'';$('storeWhatsapp').value=info.redes?.whatsapp||'';$('storeCatalogOnline').checked=!!info.catalogo_online;$('storeNote').value=info.nota||'';$('storeFormEyebrow').textContent=state.manual_stores[name]?'EDITANDO CONFIGURACIÓN':(state.mode==='contributor'?'COPIAR/PROPONER DATOS':'SOBRESCRIBIR TIENDA BASE');$('storeFormTitle').textContent=name;$('storeKindBadge').textContent=state.manual_stores[name]?'Manual':'Referencia';$('deleteStore').disabled=!state.manual_stores[name];highlightSelectedStore();updateStorePreview();setDirty(false);}
-  function storePayload(){return {nombre:$('storeName').value,nombre_completo:$('storeFullName').value,color:$('storeColor').value,color_texto:$('storeTextColor').value,direccion:$('storeAddress').value,telefono:$('storePhone').value,email:$('storeEmail').value,horario:$('storeHours').value,sitio_web:$('storeWebsite').value,instagram:$('storeInstagram').value,facebook:$('storeFacebook').value,whatsapp:$('storeWhatsapp').value,catalogo_online:$('storeCatalogOnline').checked,nota:$('storeNote').value};}
-  $('storeForm').addEventListener('submit',async event=>{event.preventDefault();clearFieldErrors($('storeForm'));if(!$('storeName').value.trim())return setFieldError($('storeName'),'El nombre de la tienda es obligatorio.');for(const id of ['storeWebsite','storeInstagram','storeFacebook','storeWhatsapp'])if(!validHttpUrl($(id),true))return setFieldError($(id),'Usá una URL https:// sin credenciales');try{const saved=await api('/api/manual/save-store',{original_name:$('storeOriginalName').value,store:storePayload()});applyState(saved);editStore($('storeName').value.trim());notify(state.mode==='contributor'?'Tienda guardada en tu aporte.':'Tienda guardada. Ya aparecerá en filtros y tarjetas cuando tenga productos.');}catch(e){notify(e.message,true);}});
+  function resetStore(){$('storeForm').reset();window.RivFreeCatalogFields.fillStore({});$('storeOriginalName').value='';$('storeColor').value='#B42335';$('storeTextColor').value='#FFFFFF';$('storeFormEyebrow').textContent='NUEVA TIENDA';$('storeFormTitle').textContent='Agregar free shop';$('storeKindBadge').textContent='Manual';$('deleteStore').disabled=true;highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
+  function editStore(name){const info=state.stores[name]||{};window.RivFreeCatalogFields.fillStore(info);$('storeOriginalName').value=name;$('storeName').value=name;$('storeFullName').value=info.nombre_completo||name;$('storeColor').value=/^#[0-9a-f]{6}$/i.test(info.color||'')?info.color:'#B42335';$('storeTextColor').value=/^#[0-9a-f]{6}$/i.test(info.color_texto||'')?info.color_texto:'#FFFFFF';$('storeAddress').value=info.direccion||'';$('storePhone').value=info.telefono||'';$('storeEmail').value=info.email||'';$('storeHours').value=info.horario||'';$('storeWebsite').value=(info.sitio_web||'').replace(/^http:/,'https:');$('storeInstagram').value=(info.redes?.instagram||'').replace(/^http:/,'https:');$('storeFacebook').value=(info.redes?.facebook||'').replace(/^http:/,'https:');$('storeWhatsapp').value=info.redes?.whatsapp||'';$('storeTelegram').value=(info.redes?.telegram||'').replace(/^http:/,'https:');$('storeCatalogOnline').checked=!!info.catalogo_online;$('storeHidePhotos').checked=info.ocultar_fotos===true;$('storeNote').value=info.nota||'';$('storeFormEyebrow').textContent=state.manual_stores[name]?'EDITANDO CONFIGURACIÓN':(state.mode==='contributor'?'COPIAR/PROPONER DATOS':'SOBRESCRIBIR TIENDA BASE');$('storeFormTitle').textContent=name;$('storeKindBadge').textContent=state.manual_stores[name]?'Manual':'Referencia';$('deleteStore').disabled=!state.manual_stores[name];highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
+  function storePayload(){return {...window.RivFreeCatalogFields.store(),nombre:$('storeName').value,nombre_completo:$('storeFullName').value,color:$('storeColor').value,color_texto:$('storeTextColor').value,direccion:$('storeAddress').value,telefono:$('storePhone').value,email:$('storeEmail').value,horario:$('storeHours').value,sitio_web:$('storeWebsite').value,instagram:$('storeInstagram').value,facebook:$('storeFacebook').value,whatsapp:$('storeWhatsapp').value,telegram:$('storeTelegram').value,catalogo_online:$('storeCatalogOnline').checked,ocultar_fotos:$('storeHidePhotos').checked,nota:$('storeNote').value};}
+  $('storeForm').addEventListener('submit',async event=>{event.preventDefault();clearFieldErrors($('storeForm'));if(!$('storeName').value.trim())return setFieldError($('storeName'),'El nombre de la tienda es obligatorio.');for(const id of ['storeWebsite','storeInstagram','storeFacebook','storeWhatsapp','storeTelegram'])if(!validHttpUrl($(id),true))return setFieldError($(id),'Usá una URL https:// sin credenciales');try{const saved=await api('/api/manual/save-store',{original_name:$('storeOriginalName').value,store:storePayload()});applyState(saved);editStore($('storeName').value.trim());notify(state.mode==='contributor'?'Tienda guardada en tu aporte.':'Tienda guardada. Ya aparecerá en filtros y tarjetas cuando tenga productos.');}catch(e){notify(e.message,true);}});
   $('newStore').onclick=()=>{resetStore();$('storeName').focus();};
   $('deleteStore').onclick=async()=>{const name=$('storeOriginalName').value;if(!name)return;const relatedProducts=state.products.filter(p=>p.tienda===name),isBase=!!state.base_stores[name];let deleteProducts=false;if(relatedProducts.length&&!isBase){const ok=await confirmDialog({title:`Eliminar ${name}`,message:`La tienda tiene ${relatedProducts.length} publicaciones manuales. Para eliminar la tienda también deben eliminarse.`,items:relatedProducts.map(p=>p.nombre),confirmText:'Eliminar tienda y publicaciones',danger:true});if(!ok)return;deleteProducts=true;}else{const ok=await confirmDialog({title:isBase?'Quitar configuración manual':'Eliminar tienda',message:isBase?'Se volverán a usar los datos de la tienda base.':'La tienda manual será eliminada.',items:[name],confirmText:isBase?'Quitar configuración':'Eliminar tienda',danger:true});if(!ok)return;}try{const saved=await api('/api/manual/delete-store',{name,delete_products:deleteProducts});applyState(saved);resetStore();notify(isBase?'Configuración eliminada; se usa nuevamente la referencia.':'Tienda eliminada.');}catch(e){notify(e.message,true);}};
   $('storeSearch').addEventListener('input',renderStores);
 
-  function csvRows(text){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'){if(quoted&&n==='"'){cell+='"';i++;}else quoted=!quoted;}else if(c===','&&!quoted){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(v=>v.trim()))rows.push(row);row=[];cell='';}else cell+=c;}row.push(cell);if(row.some(v=>v.trim()))rows.push(row);return rows;}
-  function csvToProducts(raw){const rows=csvRows(raw);if(rows.length<2)return[];const headers=rows[0].map(h=>h.trim().toLowerCase());return rows.slice(1).map(row=>{const p={};headers.forEach((h,i)=>p[h]=(row[i]||'').trim());for(const k of ['precio_usd','precio_original_usd'])if(p[k]!==''&&p[k]!=null)p[k]=Number(String(p[k]).replace(',','.'));for(const k of ['activo','en_oferta'])if(k in p)p[k]=!['false','0','no','não'].includes(String(p[k]).toLowerCase());return p;}).filter(p=>p.tienda&&p.nombre);}
-  $('importButton').onclick=async()=>{const file=$('importFile').files[0];if(!file)return notify('Elegí un archivo JSON o CSV.',true);try{const raw=await file.text();let data;if(file.name.toLowerCase().endsWith('.csv'))data={products:csvToProducts(raw)};else{const parsed=JSON.parse(raw);data=parsed.format==='rivfree-manual-v1'?parsed:(Array.isArray(parsed)?{products:parsed}:parsed);}const replace=$('importMode').value==='replace';if(replace){const ok=await confirmDialog({title:'Reemplazar catálogo manual',message:'Esto reemplazará todas las tiendas y publicaciones manuales actuales por el contenido del archivo.',confirmText:'Reemplazar datos',danger:true});if(!ok)return;}const saved=await api('/api/manual/import',{mode:replace?'replace':'merge',data});applyState(saved);resetProduct();resetStore();notify('Importación completada.');}catch(e){notify(e.message,true);}};
+  const baseSearch=document.createElement('details');baseSearch.className='editor-card';
+  baseSearch.innerHTML='<summary>Editar una publicación del catálogo existente</summary><p>Buscá por producto o tienda. Al guardar, una edición manual de la misma URL tiene prioridad sobre el scraper.</p><div class="list-tools"><input id="baseCatalogQuery" type="search" aria-label="Buscar en catálogo completo" placeholder="Ej.: iPhone 16"><button id="baseCatalogFind" type="button" class="button">Buscar</button></div><div id="baseCatalogResults"></div>';
+  $('productList').before(baseSearch);
+  $('baseCatalogFind').onclick=async()=>{try{const response=await fetch('/api/manual/catalog?q='+encodeURIComponent($('baseCatalogQuery').value),{headers:{'X-RivFree-Editor-Token':token},cache:'no-store'});const result=await response.json();if(!response.ok)throw Error(result.error||'No se pudo buscar');const box=$('baseCatalogResults');box.replaceChildren();for(const p of result.products){const button=document.createElement('button');button.type='button';button.className='list-item';button.textContent=p.nombre+' · '+p.tienda;button.onclick=()=>{const existing=state.products.find(x=>x.tienda===p.tienda&&x.url===p.url);editProduct(existing||{...p,id:'',activo:true});setDirty(true);};box.append(button);}if(!result.products.length)box.textContent='Sin resultados. Escribí al menos dos caracteres.';}catch(error){notify(error.message,true);}};
+  const csvToProducts=window.RivFreeCatalogFields.csv;
+  $('importButton').onclick=async()=>{const file=$('importFile').files[0];if(!file)return notify('Elegí un archivo JSON o CSV.',true);try{if(!/\.(csv|json)$/i.test(file.name))throw Error('Para Excel, guardá primero el archivo como CSV UTF-8. No se admite .xlsx ni .xls directamente.');const raw=await file.text();let data;if(file.name.toLowerCase().endsWith('.csv'))data={products:csvToProducts(raw)};else{const parsed=JSON.parse(raw);data=parsed.format==='rivfree-manual-v1'?parsed:(Array.isArray(parsed)?{products:parsed}:parsed);}const replace=$('importMode').value==='replace';if(replace){const ok=await confirmDialog({title:'Reemplazar catálogo manual',message:'Esto reemplazará todas las tiendas y publicaciones manuales actuales por el contenido del archivo.',confirmText:'Reemplazar datos',danger:true});if(!ok)return;}const saved=await api('/api/manual/import',{mode:replace?'replace':'merge',data});applyState(saved);resetProduct();resetStore();notify(`Importación completada: ${data.products?.length||data.productos?.length||0} filas procesadas.`);}catch(e){notify(e.message,true);}};
 
   async function fileAsBase64(file) {
     return await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer el archivo'));reader.readAsDataURL(file);});
@@ -470,7 +473,7 @@
   $('downloadContribution').addEventListener('click',event=>{if(!$('contributorName').value.trim()){event.preventDefault();notify('Escribí tu nombre o identificador antes de exportar.',true);}});
   $('resetContribution').onclick=async()=>{const ok=await confirmDialog({title:'Vaciar aporte local',message:'Se borrarán todos los productos, tiendas e imágenes guardados en esta bandeja de colaborador.',confirmText:'Vaciar aporte',danger:true});if(!ok)return;try{const saved=await api('/api/manual/reset-contribution',{});applyState(saved);resetProduct();resetStore();notify('Tu bandeja de colaboración quedó vacía.');}catch(e){notify(e.message,true);}};
 
-  for(const id of ['productSourceUrl','productUrl','storeWebsite','storeInstagram','storeFacebook','storeWhatsapp']) {
+  for(const id of ['productSourceUrl','productUrl','storeWebsite','storeInstagram','storeFacebook','storeWhatsapp','storeTelegram']) {
     $(id)?.addEventListener('blur',()=>{const el=$(id); if(el.value.trim()&&!validHttpUrl(el,true))setFieldError(el,'Usá una URL https:// sin credenciales'); else {el.classList.remove('field-invalid');el.closest('label')?.querySelector('.field-error')?.remove();}});
   }
   document.addEventListener('keydown',event=>{

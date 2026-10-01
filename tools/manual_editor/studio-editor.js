@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20260929-studio-sync1';
+  const BUILD = '20261001-studio7';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -12,10 +12,10 @@
   const clone = value => JSON.parse(JSON.stringify(value ?? {}));
   const sectionLabels = {
     hero: 'Carrusel principal', benefits: 'Pasos 01 · 02 · 03', discover: 'Por descubrir',
-    popular: 'Más consultados', catalog: 'Catálogo y filtros'
+    popular: 'Más consultados por ti', recommended: 'Inspirado en tus búsquedas', most: 'Más buscados'
   };
   const DRAFT_KEY = 'rivfree-studio-draft-v3';
-  const STUDIO_TABS = new Set(['appearance', 'carousel', 'page']);
+  const STUDIO_TABS = new Set(['appearance', 'carousel', 'page', 'products', 'stores']);
 
   const NATIVE_PALETTE = {
     light:{background:'#F5F6F8',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'},
@@ -183,20 +183,58 @@
     val('noticeTitleEs',n.title_es); val('noticeTitlePt',n.title_pt); val('noticeTextEs',n.text_es); val('noticeTextPt',n.text_pt);
     val('seoTitleEs',seo.title_es); val('seoTitlePt',seo.title_pt); val('seoDescriptionEs',seo.description_es); val('seoDescriptionPt',seo.description_pt); val('seoSocialImage',seo.social_image||'social-card.png');
     val('footerTitleEs',f.title_es); val('footerTitlePt',f.title_pt); val('footerTextEs',f.text_es); val('footerTextPt',f.text_pt); chk('footerPrivacy',f.show_privacy!==false);
-    renderSectionOrder(); updateSeoCounters();
+    const top=c.top_notice||{}, social=c.social||{}, nav=c.nav||{}, tiers=Array.isArray(c.offers?.tiers)?c.offers.tiers:[20,40,60];
+    chk('topNoticeEnabled',top.enabled!==false);
+    for (const [id,key] of [['TitleEs','title_es'],['TitlePt','title_pt'],['TextEs','text_es'],['TextPt','text_pt'],['ShortEs','short_es'],['ShortPt','short_pt']]) val('topNotice'+id,top[key]);
+    for (const key of SITE_SOCIAL) { const item=social[key]||{}; val(socialId(key,'Url'),item.url); chk(socialId(key,'Visible'),item.visible===true); }
+    chk('socialShowPending',social.show_without_link!==false);
+    chk('navShowStores',nav.stores!==false); chk('navShowOffers',nav.offers!==false); chk('navShowExchange',nav.exchange!==false); chk('navShowList',nav.list!==false);
+    for (let i=1;i<=4;i++) val('offerTier'+i,tiers[i-1]??'');
+    checkSocialInputs(); renderSectionOrder(); updateSeoCounters();
+  }
+  // Site social networks: accepts full links, @usuario or a WhatsApp number and turns them into https links.
+  const SITE_SOCIAL=['instagram','facebook','tiktok','whatsapp','youtube','x','telegram'];
+  const SOCIAL_LABELS={instagram:'Instagram',facebook:'Facebook',tiktok:'TikTok',whatsapp:'WhatsApp',youtube:'YouTube',x:'X',telegram:'Telegram'};
+  const SOCIAL_HANDLE={instagram:u=>'https://instagram.com/'+u,tiktok:u=>'https://www.tiktok.com/@'+u,x:u=>'https://x.com/'+u,telegram:u=>'https://t.me/'+u,youtube:u=>'https://www.youtube.com/@'+u,facebook:u=>'https://facebook.com/'+u};
+  function socialId(key,suffix){ return 'social'+key[0].toUpperCase()+key.slice(1)+suffix; }
+  function socialUrl(key,value){
+    let v=String(value||'').trim(); if(!v) return '';
+    if (key==='whatsapp' && /^\+?[\d\s().-]{8,}$/.test(v)) return 'https://wa.me/'+v.replace(/\D/g,'');
+    const handle=/^@([\w.-]{1,60})$/.exec(v); if (handle && SOCIAL_HANDLE[key]) return SOCIAL_HANDLE[key](handle[1]);
+    if (/^http:\/\//i.test(v)) v='https://'+v.slice(7);
+    else if (!/^[a-z][a-z0-9+.-]*:/i.test(v) && /^[\w-]+(\.[\w-]+)+(\/|$)/.test(v)) v='https://'+v;
+    return v;
+  }
+  function validSocialUrl(value){ if(!value) return true; try { const u=new URL(value); return u.protocol==='https:'&&!!u.hostname&&!u.username&&!u.password; } catch { return false; } }
+  function checkSocialInputs(){
+    const bad=[];
+    for (const key of SITE_SOCIAL) {
+      const input=$(socialId(key,'Url')), visible=$(socialId(key,'Visible')); if(!input) continue;
+      const ok=validSocialUrl(socialUrl(key,input.value)); input.classList.toggle('invalid',!ok); input.setAttribute('aria-invalid',String(!ok)); if(!ok) bad.push(SOCIAL_LABELS[key]);
+      input.closest('.social-row')?.classList.toggle('is-hidden',!visible?.checked);
+    }
+    const hint=$('socialHint'); if(hint) hint.textContent=bad.length?'Revisá el enlace de '+bad.join(', ')+': tiene que empezar con https://':'';
+    return !bad.length;
   }
   function readPage() {
     ensureConfig();
     workingConfig.notice = {enabled:$('noticeEnabled').checked,dismissible:$('noticeDismissible').checked,title_es:$('noticeTitleEs').value.trim(),title_pt:$('noticeTitlePt').value.trim(),text_es:$('noticeTextEs').value.trim(),text_pt:$('noticeTextPt').value.trim()};
     workingConfig.seo = {title_es:$('seoTitleEs').value.trim(),title_pt:$('seoTitlePt').value.trim(),description_es:$('seoDescriptionEs').value.trim(),description_pt:$('seoDescriptionPt').value.trim(),social_image:$('seoSocialImage').value.trim()||'social-card.png'};
     workingConfig.footer = {title_es:$('footerTitleEs').value.trim(),title_pt:$('footerTitlePt').value.trim(),text_es:$('footerTextEs').value.trim(),text_pt:$('footerTextPt').value.trim(),show_privacy:$('footerPrivacy').checked};
+    workingConfig.top_notice = {enabled:$('topNoticeEnabled').checked,title_es:$('topNoticeTitleEs').value.trim(),title_pt:$('topNoticeTitlePt').value.trim(),text_es:$('topNoticeTextEs').value.trim(),text_pt:$('topNoticeTextPt').value.trim(),short_es:$('topNoticeShortEs').value.trim(),short_pt:$('topNoticeShortPt').value.trim()};
+    const social={show_without_link:$('socialShowPending').checked};
+    for (const key of SITE_SOCIAL) { const url=socialUrl(key,$(socialId(key,'Url')).value); social[key]={url:validSocialUrl(url)?url:'',visible:$(socialId(key,'Visible')).checked}; }
+    workingConfig.social = social;
+    workingConfig.nav = {stores:$('navShowStores').checked,offers:$('navShowOffers').checked,exchange:$('navShowExchange').checked,list:$('navShowList').checked};
+    const tiers=[...new Set([1,2,3,4].map(i=>$('offerTier'+i).value.trim()).filter(Boolean).map(Number).filter(n=>Number.isInteger(n)&&n>=5&&n<=95))].sort((a,b)=>a-b);
+    workingConfig.offers = {tiers:tiers.length?tiers:[20,40,60]};
     return workingConfig;
   }
 
   function renderSectionOrder() {
     ensureConfig();
     const hp = workingConfig.homepage = workingConfig.homepage || {order:Object.keys(sectionLabels),visible:{}};
-    hp.order = Array.isArray(hp.order) ? hp.order : Object.keys(sectionLabels);
+    hp.order = Array.isArray(hp.order) ? hp.order.filter(key=>key in sectionLabels) : Object.keys(sectionLabels);
     for (const key of Object.keys(sectionLabels)) if (!hp.order.includes(key)) hp.order.push(key);
     hp.visible = hp.visible || {};
     const root=$('sectionOrder'); if (!root) return; root.replaceChildren();
@@ -343,12 +381,15 @@
         previewSelectedId=current.id;
       } catch {}
     }
+    let entity=null;try{if(activeTab()==='products')entity={kind:'product',value:E.productPayload()};if(activeTab()==='stores')entity={kind:'store',value:E.storePayload()};}catch(error){if($('previewStatus'))$('previewStatus').textContent=error.message;return;}
     const selected=previewSelectedId?(heroForPreview.find(x=>x.id===previewSelectedId)||null):null;
     if($('previewContext'))$('previewContext').textContent=selected?`Editando: ${selected.title?.[previewLanguage]||selected.title?.es||'Sin título'} · ${campaignScheduleState(selected).label}. ${selected.smartType?'El contenido inteligente se genera desde el catálogo.':'Este banner permanece fijo mientras editás.'}`:'Página completa · la vista previa no publica cambios.';
+    if(entity&&$('previewContext'))$('previewContext').textContent=`Editando ${entity.kind==='product'?'producto':'tienda'}: ${entity.value.nombre||'sin nombre'} · borrador en vivo, guardá para aplicar.`;
     if ($('previewStatus')) $('previewStatus').textContent='Actualizando vista previa…';
     try {
       frame.contentWindow?.postMessage({type:'rivfree-studio-preview',config:workingConfig,theme:previewTheme,language:previewLanguage},location.origin);
       frame.contentWindow?.postMessage({type:'rivfree-studio-campaigns-preview',hero:heroForPreview,selectedId:previewSelectedId,revision},location.origin);
+      frame.contentWindow?.postMessage({type:'rivfree-studio-entity',entity,field:document.activeElement?.closest('.hours-day')?.id.replace('hoursDay','storeDay')||document.activeElement?.id,stores:E.getState().stores},location.origin);
       clearTimeout(previewAckTimer);
       previewAckTimer=setTimeout(()=>{if($('previewStatus'))$('previewStatus').textContent='La vista previa no respondió. Usá Recargar vista.';},5000);
     } catch {}
@@ -391,7 +432,7 @@
   function mergeSection(base, source, section) {
     const next=clone(base);
     if (section==='appearance') { next.branding=clone(source.branding||{}); next.appearance=clone(source.appearance||{}); }
-    if (section==='page') { next.notice=clone(source.notice||{}); next.homepage=clone(source.homepage||{}); next.seo=clone(source.seo||{}); next.footer=clone(source.footer||{}); }
+    if (section==='page') { for (const key of ['notice','homepage','seo','footer','top_notice','social','nav','offers']) next[key]=clone(source[key]||{}); }
     if (section==='carousel') next.carousel=clone(source.carousel||{});
     return next;
   }
@@ -415,6 +456,7 @@
   async function saveConfigSection(section, message) {
     ensureConfig();
     if(section==='appearance' && document.querySelector('.hex-input.invalid')) { E.notify('Corregí el color hexadecimal marcado antes de guardar.',true); return false; }
+    if(section==='page' && !checkSocialInputs()) { E.notify($('socialHint').textContent||'Revisá los enlaces de redes sociales.',true); $('siteSocialRows')?.querySelector('input.invalid')?.focus(); return false; }
     if (section==='appearance') readAppearance(); else if (section==='page') readPage(); else if (section==='carousel') readCarouselSettings();
     if(section==='appearance'&&workingConfig.appearance?.colors_customized&&paletteContrast().some(row=>row.critical&&row.ratio<row.min)){E.notify('El texto no alcanza contraste 4.5:1 en ambos modos. Ajustá los colores o usá Corregir texto antes de guardar.',true);return false;}
     try {
@@ -512,7 +554,7 @@
     const toolbar=card.querySelector('.preview-toolbar');
     toolbar.innerHTML=`<strong>Vista previa en vivo</strong><div class="preview-actions"><button type="button" id="previewExpand" class="preview-size" aria-pressed="false">Ampliar vista</button><button type="button" id="previewReload" class="preview-size">Recargar vista</button><button type="button" id="previewDockToggle" class="preview-size" aria-expanded="true">Ocultar</button></div>`;
     const controls=document.createElement('div');controls.className='preview-controls';
-    controls.innerHTML=`<label>Dispositivo<select id="previewDevice"><option value="1280">Escritorio · 1280 px</option><option value="768">Tablet · 768 px</option><option value="390">Celular · 390 px</option></select></label><label>Tema<select id="previewTheme"><option value="light">Claro</option><option value="dark">Oscuro</option></select></label><label>Idioma<select id="previewLanguage"><option value="es">Español</option><option value="pt-BR">Português</option></select></label><label>Ir a<select id="previewTarget"><option value="top">Inicio</option><option value="heroCampaign">Banner</option><option value="catalogSection">Catálogo</option><option value="footer">Pie de página</option></select></label>`;
+    controls.innerHTML=`<label>Dispositivo<select id="previewDevice"><option value="1280">Escritorio · 1280 px</option><option value="768">Tablet · 768 px</option><option value="390">Celular · 390 px</option></select></label><label>Tema<select id="previewTheme"><option value="light">Claro</option><option value="dark">Oscuro</option></select></label><label>Idioma<select id="previewLanguage"><option value="es">Español</option><option value="pt-BR">Português</option></select></label><label>Ir a<select id="previewTarget"><option value="top">Inicio</option><option value="heroCampaign">Banner</option><option value="discoverProducts">Por descubrir</option><option value="popularProducts">Más consultados</option><option value="basedOnSearches">Inspirado en búsquedas</option><option value="mostSearched">Más buscados</option><option value="stores">Tiendas</option><option value="footer">Pie de página</option></select></label>`;
     toolbar.after(controls);
     const status=document.createElement('p');status.id='previewStatus';status.className='preview-status';status.setAttribute('role','status');status.textContent='Cargando vista previa…';controls.after(status);
     const context=document.createElement('p');context.id='previewContext';context.className='preview-context';status.after(context);
@@ -612,7 +654,10 @@
 
   // Main form listeners
   $('appearanceForm')?.addEventListener('input',event=>{ensureConfig();const colorIds=/^(light|dark)(Background|Surface|Text|Primary|Accent|Highlight)$/;if(colorIds.test(event.target.id))workingConfig.appearance.colors_customized=true;readAppearance();if(event.target.id==='siteRadius')$('radiusValue').textContent=`${event.target.value}px`;if(event.target.id==='lightOverlay')$('lightOverlayValue').textContent=`${event.target.value}%`;if(event.target.id==='darkOverlay')$('darkOverlayValue').textContent=`${event.target.value}%`;markDirty('appearance');sendPreview();});
-  $('pageForm')?.addEventListener('input',event=>{readPage();updateSeoCounters();markDirty('page');sendPreview();});
+  $('pageForm')?.addEventListener('input',event=>{readPage();updateSeoCounters();checkSocialInputs();markDirty('page');sendPreview();});
+  // Tidy the social links when leaving the field (e.g. "@rivfree" → https://instagram.com/rivfree).
+  $('siteSocialRows')?.addEventListener('focusout',event=>{const input=event.target.closest?.('input[data-network]');if(!input)return;const next=socialUrl(input.dataset.network,input.value);if(next!==input.value.trim()&&validSocialUrl(next)){input.value=next;readPage();markDirty('page');sendPreview();}checkSocialInputs();});
+  for (let i=1;i<=4;i++) $('offerTier'+i)?.addEventListener('change',()=>{readPage();const tiers=workingConfig.offers.tiers;for(let j=1;j<=4;j++)$('offerTier'+j).value=tiers[j-1]??'';});
   $('saveAppearance')?.addEventListener('click',()=>saveConfigSection('appearance','Diseño guardado. Los cambios pendientes de Página/Carrusel no se guardaron.'));
   $('savePageConfig')?.addEventListener('click',()=>saveConfigSection('page','Página guardada. Los cambios pendientes de Diseño/Carrusel no se guardaron.'));
   $('saveCampaigns')?.addEventListener('click',saveCarousel);
@@ -656,7 +701,7 @@
   window.addEventListener('message',event=>{
     if(event.origin!==location.origin || event.source!==$('studioPreview')?.contentWindow)return;
     if(event.data?.type==='rivfree-studio-ready')sendPreview();
-    if(event.data?.type==='rivfree-studio-applied' && event.data.revision===previewRevision){clearTimeout(previewAckTimer);$('previewStatus').textContent='✓ Vista actualizada · '+(anyDirty()?'borrador sin guardar':'archivos guardados');}
+    if(event.data?.type==='rivfree-studio-applied' && event.data.revision===previewRevision){clearTimeout(previewAckTimer);$('previewStatus').textContent='✓ Vista actualizada · '+(E.hasUnsaved?.()||anyDirty()?'borrador sin guardar':'archivos guardados');}
   });
 
   function setupEditingFeedback(){
@@ -671,6 +716,8 @@
   window.addEventListener('beforeunload',saveDraftNow);
   window.addEventListener('rivfree-editor-state',stateEvent);
   window.addEventListener('rivfree-tab-change',syncPreviewVisibility);
+  window.addEventListener('rivfree-editor-selection',sendPreview);
+  for(const id of ['productForm','storeForm'])for(const event of ['input','change','focusin'])$(id).addEventListener(event,sendPreview);
 
   // Expose active-tab save for Ctrl/Cmd+S in editor.js.
   window.RivFreeStudio = {

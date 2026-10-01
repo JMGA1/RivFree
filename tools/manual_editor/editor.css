@@ -173,3 +173,53 @@ button:focus-visible{outline:3px solid #227bba;outline-offset:3px}
 :focus-visible{outline:3px solid #268bd2;outline-offset:3px}
 
 .store-label-preview{padding:16px;border:1px solid var(--line);border-radius:12px}.store-preview-scenes{display:grid;grid-template-columns:1fr 1fr;gap:10px}.store-preview-scenes>div{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:18px;border-radius:10px;min-width:0}.store-preview-light{background:#f5f6f8;color:#172337}.store-preview-dark{background:#19283c;color:#f1f5fb}.store-preview-tag{display:inline-block;max-width:100%;overflow-wrap:anywhere;border:1px solid;border-radius:999px;min-height:28px;padding:5px 9px;font:700 11px/1.1 var(--font-sans,system-ui)}.store-label-preview .low-contrast{color:#a42435;font-weight:700}#storeColor,#storeTextColor{height:48px;padding:4px;cursor:pointer}@media(max-width:500px){.store-preview-scenes{grid-template-columns:1fr}}
+
+/* Catalog forms need the same reserved preview space as appearance controls. */
+.studio-active .two-column{grid-template-columns:minmax(0,1fr);min-width:0}
+.studio-active .two-column .list-pane{position:static;max-height:320px;overflow:auto;min-width:0}
+.studio-active .editor-card{min-width:0}
+.studio-active .grid2{grid-template-columns:minmax(0,1fr)}
+@media(min-width:1251px) and (max-width:1500px){.studio-active .shell{grid-template-columns:minmax(0,1fr)}.studio-active .sidebar{padding:12px;border-right:0}.studio-active .tabs{display:flex;overflow:auto;margin:0}.studio-active .tab{width:auto;white-space:nowrap}.studio-active .project-card,.studio-active .help-card{display:none}}
+
+.hours-day{min-width:0;margin:0 0 12px;padding:12px;border:1px solid var(--line,#d6dce5);border-radius:12px}.hours-day legend{padding:0 6px;font-weight:700}.hours-day:disabled{opacity:.55}.hours-turn{display:flex;align-items:end;gap:8px;margin:10px 0}.hours-turn label{flex:1;min-width:0;margin:0!important}.hours-turn input{width:100%;min-width:0}.hours-turn button{padding:9px 10px;flex-shrink:0}.hours-day .check{display:flex;gap:8px;align-items:center}.hours-day .check input{width:auto}@media(max-width:650px){.hours-turn{flex-wrap:wrap}.hours-turn button{width:100%}}
+
+/* v6 · Site social networks, navigation and offer tiers (Página). Icons: Simple Icons, CC0. */
+.social-rows{display:grid;gap:8px;margin:4px 0 12px}
+.social-row{display:grid;grid-template-columns:30px 96px minmax(0,1fr) auto;align-items:center;gap:10px}
+.social-row>label:not(.check){font-weight:700;font-size:13px}
+.social-row input[type=text]{min-width:0}
+.social-row input.invalid{border-color:#c62f3b;box-shadow:0 0 0 2px rgb(198 47 59 / 18%)}
+.social-visible{margin:0;white-space:nowrap}
+.social-icon{--bg:#5b6577;--glyph:none;position:relative;width:30px;height:30px;border-radius:9px;background:var(--bg)}
+.social-icon::before{content:"";position:absolute;inset:7px;background:#fff;-webkit-mask:var(--glyph) center/contain no-repeat;mask:var(--glyph) center/contain no-repeat}
+.social-instagram{--bg:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);--glyph:url(../../icons/social/instagram.svg)}
+.social-facebook{--bg:#0866FF;--glyph:url(../../icons/social/facebook.svg)}
+.social-tiktok{--bg:#010101;--glyph:url(../../icons/social/tiktok.svg)}
+.social-whatsapp{--bg:#25D366;--glyph:url(../../icons/social/whatsapp.svg)}
+.social-youtube{--bg:#FF0000;--glyph:url(../../icons/social/youtube.svg)}
+.social-x{--bg:#000;--glyph:url(../../icons/social/x.svg)}
+.social-telegram{--bg:#26A5E4;--glyph:url(../../icons/social/telegram.svg)}
+.social-row.is-hidden .social-icon{opacity:.35}
+#socialHint:not(:empty){color:#a3203a;font-weight:700}
+.tier-inputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tier-field{display:flex;align-items:center;gap:6px}.tier-field input{width:100%;min-width:0}.tier-field b{font-size:12px;white-space:nowrap;color:var(--muted)}
+@media(max-width:760px){.social-row{grid-template-columns:30px minmax(0,1fr) auto}.social-row>label:not(.check){display:none}.tier-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.studio-active .social-row{grid-template-columns:30px minmax(0,1fr) auto}.studio-active .social-row>label:not(.check){display:none}.studio-active .tier-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid2.nav-toggles,.studio-active .grid2.nav-toggles{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px}.nav-toggles .check{min-height:0;margin:4px 0}
+.hide-photos-box{padding:10px 12px;border:1px dashed var(--line,#d6dce5);border-radius:10px}.hide-photos-box .form-help{margin:4px 0 0}
+/* Studio → Base de datos (PostgreSQL) */
+.db-grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.db-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.db-card-head h2{margin:0}
+.db-connection label{display:grid;gap:6px;margin-top:12px}
+.db-url-field{display:flex;gap:8px}.db-url-field input{flex:1;min-width:0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12.5px}
+.db-masked{margin:10px 0 0;padding:8px 10px;border-radius:8px;background:#eef3f9;color:#344860;font:12px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.db-message:not(:empty){margin:10px 0 0;padding:9px 12px;border-radius:9px;background:#eef3f9;font-weight:700}
+.db-message[data-kind=ok]{background:#e7f6ec;color:#17643a}.db-message[data-kind=error]{background:#fdecef;color:#a3203a}
+.db-warning{margin:0 0 14px;padding:12px 14px;border:2px solid #bd8118;border-radius:10px;background:#fff7e6;font-weight:700}
+.db-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:14px}
+.db-stats>div{display:grid;gap:2px;padding:12px;border:1px solid var(--line,#d6dce5);border-radius:10px}
+.db-stats strong{font-size:20px}.db-stats small{color:var(--muted,#5b6577);font-size:11.5px;font-weight:700}
+.db-steps{margin:8px 0;padding-left:20px;line-height:1.6}.db-steps code,.db-github code{padding:1px 5px;border-radius:5px;background:#eef3f9}
+.db-queries details{margin-top:8px;border:1px solid var(--line,#d6dce5);border-radius:9px;padding:8px 10px}.db-queries summary{cursor:pointer;font-weight:700}
+.db-queries pre{margin:8px 0 0;padding:10px;border-radius:8px;background:#172337;color:#e8eef7;font-size:12px;white-space:pre-wrap}
+.hide-photos-box{margin-bottom:6px}

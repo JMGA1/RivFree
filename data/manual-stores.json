@@ -1,5 +1,559 @@
 {
-  "version": "initial",
-  "actualizado": null,
-  "tiendas": {}
+  "version": "stores-1790806395140-5e88a855",
+  "actualizado": "2026-09-30T22:13:15.140968+00:00",
+  "tiendas": {
+    "Barão Free Shop": {
+      "nombre_completo": "Barão Free Shop",
+      "direccion": "Agraciada 397 / Paysandú 1071, Rivera, Uruguay",
+      "telefono": "+598 4623 9211",
+      "email": "barao.e.voce@adinet.com.uy",
+      "horario": "Lun a vie 7:00–18:00, sáb 7:00–18:00, dom 8:00–12:00",
+      "sitio_web": "https://www.baraofreeshop.com.br/",
+      "redes": {
+        "instagram": "https://www.instagram.com/baraofreeshop/",
+        "facebook": "https://www.facebook.com/baraofshop/",
+        "whatsapp": "https://wa.me/5555981187666",
+        "telegram": "https://t.me/baraofreeshop"
+      },
+      "nota": null,
+      "catalogo_online": true,
+      "color": "#176a3a",
+      "color_texto": "#ffffff",
+      "weekly_hours": {
+        "0": [
+          [
+            "08:00",
+            "12:00"
+          ]
+        ],
+        "1": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "2": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "5": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "6": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ]
+      },
+      "source": "https://www.baraofreeshop.com.br/contato",
+      "verified_at": "2026-09-30",
+      "timezone": "America/Montevideo",
+      "whatsapp_source": "https://www.baraofreeshop.com.br/contato",
+      "manual": true,
+      "description": {
+        "es": "",
+        "pt-BR": ""
+      },
+      "specialties": [],
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.5,
+        "count": 1255,
+        "url": "https://maps.app.goo.gl/qvAKto6xVMYoZSYk8"
+      },
+      "photos": [],
+      "ubicacion": {
+        "lat": -30.8970535,
+        "lng": -55.5390259
+      }
+    },
+    "DFA": {
+      "nombre_completo": "DFA Uruguay (Duty Free Americas)",
+      "direccion": "Av. Sarandí 475, Rivera, Uruguay",
+      "telefono": "+598 4622 1100",
+      "email": null,
+      "horario": "Martes a viernes 09:00AM-18:00PM sábado, 8:30 a. m.–6 p. m. y domingo, 9 a. m.–1 p. m. lunes, Cerrado",
+      "sitio_web": "https://www.dfauy.com/",
+      "redes": {
+        "instagram": "https://www.instagram.com/dfa_uruguay/",
+        "facebook": "https://www.facebook.com/dfauruguay/"
+      },
+      "nota": "Cadena con locales en Rivera, Artigas, Bella Unión, Acegua, Río Branco y Chuy.",
+      "catalogo_online": true,
+      "color": "#ffffff",
+      "color_texto": "#154f96",
+      "manual": true,
+      "description": {
+        "es": "",
+        "pt-BR": ""
+      },
+      "specialties": [],
+      "timezone": "America/Montevideo",
+      "weekly_hours": {
+        "0": [
+          [
+            "09:00",
+            "13:00"
+          ]
+        ],
+        "1": [],
+        "2": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "5": [
+          [
+            "09:00",
+            "18:00"
+          ]
+        ],
+        "6": [
+          [
+            "08:30",
+            "18:00"
+          ]
+        ]
+      },
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.3,
+        "count": 611,
+        "url": "https://maps.app.goo.gl/1jhkzeZdXmXdAAYw8"
+      },
+      "photos": [],
+      "source": null,
+      "verified_at": "2026-09-30",
+      "ubicacion": {
+        "lat": -30.898677,
+        "lng": -55.538879
+      }
+    },
+    "Mantra Free Shop": {
+      "nombre_completo": "Mantra Free Shop",
+      "direccion": "Av. Sarandí 402, Rivera, Uruguay",
+      "telefono": "+55 55 99126-1678",
+      "email": "mantradutyfree@gmail.com",
+      "horario": "Lun a sáb 7:30–18:00, dom 8:30–12:30",
+      "sitio_web": "https://mantrafreeshop.com/",
+      "redes": {
+        "instagram": "https://instagram.com/mantra_free_shop",
+        "facebook": "https://facebook.com/mantradutyfree",
+        "whatsapp": "https://wa.me/555591261678"
+      },
+      "nota": "Catálogo online disponible; los precios y la disponibilidad pueden cambiar sin aviso.",
+      "catalogo_online": true,
+      "color": "#151515",
+      "color_texto": "#f5d477",
+      "weekly_hours": {
+        "0": [
+          [
+            "08:30",
+            "12:30"
+          ]
+        ],
+        "1": [
+          [
+            "07:30",
+            "18:00"
+          ]
+        ],
+        "2": [
+          [
+            "07:30",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "07:30",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "07:30",
+            "18:00"
+          ]
+        ],
+        "5": [
+          [
+            "07:30",
+            "18:00"
+          ]
+        ],
+        "6": [
+          [
+            "07:30",
+            "18:00"
+          ]
+        ]
+      },
+      "source": "https://mantrafreeshop.com/Eletr%C3%B4nicos-c31413558",
+      "verified_at": "2026-09-30",
+      "timezone": "America/Montevideo",
+      "description": {
+        "es": "Mantra ofrece un catálogo de cosméticos, fragancias, electrónica, electrodomésticos, bebidas, alimentos y vestimenta. Su presentación institucional destaca la experiencia de su equipo en el sector free shop y la atención familiar.",
+        "pt-BR": "A Mantra oferece cosméticos, fragrâncias, eletrônicos, eletrodomésticos, bebidas, alimentos e vestuário. Sua apresentação institucional destaca a experiência da equipe no setor de free shops e o atendimento familiar."
+      },
+      "manual": true,
+      "specialties": [],
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.2,
+        "count": 271,
+        "url": "https://maps.app.goo.gl/amTyiodjwtFHqkCEA"
+      },
+      "photos": [],
+      "ubicacion": {
+        "lat": -30.8975956,
+        "lng": -55.5383641
+      }
+    },
+    "Neutral": {
+      "nombre_completo": "Neutral Free Shop",
+      "direccion": "Rivera, Uruguay (ver sucursal exacta en el sitio)",
+      "telefono": "46233627",
+      "email": null,
+      "horario": "Lunes a viernes, 8 a. m.–6 p. m. sábado, 8 a. m.–6:30 p. m. domingo, 8 a. m.–5 p. m.",
+      "sitio_web": "https://www.neutral.com.uy/es/shops/Rivera",
+      "redes": {
+        "instagram": "https://instagram.com/NeutralDutyFree",
+        "facebook": "https://www.facebook.com/neutraldutyfree"
+      },
+      "nota": "La cadena más grande de la zona, con locales en Rivera, Río Branco, Chuy, Artigas, Bella Unión y Acegua. El catálogo online es compartido por toda la cadena.",
+      "catalogo_online": true,
+      "color": "#ffdf28",
+      "color_texto": "#222000",
+      "manual": true,
+      "description": {
+        "es": "",
+        "pt-BR": ""
+      },
+      "specialties": [],
+      "timezone": "America/Montevideo",
+      "weekly_hours": {
+        "0": [
+          [
+            "08:00",
+            "17:00"
+          ]
+        ],
+        "1": [],
+        "2": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "5": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "6": [
+          [
+            "08:00",
+            "18:30"
+          ]
+        ]
+      },
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.3,
+        "count": 1856,
+        "url": "https://maps.app.goo.gl/ov3PWfgiM9Y6WUyk7"
+      },
+      "photos": [],
+      "source": null,
+      "verified_at": "2026-09-30",
+      "ubicacion": {
+        "lat": -30.8981269,
+        "lng": -55.5394789
+      }
+    },
+    "Oprha Free Shop": {
+      "nombre_completo": "Oprha Free Shop",
+      "direccion": "Av. Sarandí 305, Rivera, Uruguay",
+      "telefono": "46224469",
+      "email": null,
+      "horario": "lunes y martes 08:00 - 12-00PM, miercoles a sabado 08:00-18:00. Domingo 08:00-12:00PM",
+      "sitio_web": "https://www.oprhafreeshop.com.br/",
+      "redes": {
+        "instagram": "https://www.instagram.com/oprhafreeshop/",
+        "facebook": "https://www.facebook.com/orphafreeshoprivera/"
+      },
+      "nota": "Especializada únicamente en perfumes y cosméticos.",
+      "catalogo_online": true,
+      "color": "#29252d",
+      "color_texto": "#f5e5b5",
+      "manual": true,
+      "description": {
+        "es": "",
+        "pt-BR": ""
+      },
+      "specialties": [],
+      "timezone": "America/Montevideo",
+      "weekly_hours": {
+        "0": [
+          [
+            "09:00",
+            "12:00"
+          ]
+        ],
+        "1": [
+          [
+            "08:00",
+            "12:00"
+          ],
+          [
+            "14:00",
+            "18:00"
+          ]
+        ],
+        "2": [
+          [
+            "08:00",
+            "12:00"
+          ],
+          [
+            "14:00",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "5": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
+        "6": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ]
+      },
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.3,
+        "count": 123,
+        "url": "https://maps.app.goo.gl/fMYt5wT41tiWvSUW7"
+      },
+      "photos": [],
+      "source": null,
+      "verified_at": "2026-09-30",
+      "ubicacion": {
+        "lat": -30.8962439,
+        "lng": -55.5371108
+      }
+    },
+    "Sineriz": {
+      "nombre_completo": "Siñeriz Shopping",
+      "direccion": "Sepé 51, Rivera, Uruguay",
+      "telefono": "+598 4624 1000",
+      "email": null,
+      "horario": "Todos los días de 10:00 a 20:00 · Siñeriz Shopping, Sepé 51",
+      "sitio_web": "https://www.sineriz.com.uy/",
+      "redes": {
+        "instagram": "https://www.instagram.com/sinerizfreeshop/"
+      },
+      "nota": null,
+      "catalogo_online": true,
+      "color": "#a42435",
+      "color_texto": "#ffffff",
+      "weekly_hours": {
+        "0": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ],
+        "1": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ],
+        "2": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ],
+        "3": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ],
+        "4": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ],
+        "5": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ],
+        "6": [
+          [
+            "10:00",
+            "20:00"
+          ]
+        ]
+      },
+      "source": "https://www.sineriz.com.uy/contato-conosco/",
+      "verified_at": "2026-09-30",
+      "timezone": "America/Montevideo",
+      "description": {
+        "es": "Siñeriz cuenta con dos locales en Rivera: el free shop del centro, en Sarandí 338, y Siñeriz Shopping, en Sepé 51, inaugurado en agosto de 2012. Esta ficha muestra los datos del shopping. La sucursal del centro tiene otros horarios y teléfono.",
+        "pt-BR": "A Siñeriz tem duas lojas em Rivera: o free shop do centro, na Sarandí 338, e o Siñeriz Shopping, na Sepé 51, inaugurado em agosto de 2012. Esta ficha apresenta os dados do shopping. A loja do centro tem outros horários e telefone."
+      },
+      "manual": true,
+      "specialties": [],
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.5,
+        "count": 15061,
+        "url": "https://maps.app.goo.gl/WeT97DKs6muduzL8A"
+      },
+      "photos": [],
+      "ubicacion": {
+        "lat": -30.9000187,
+        "lng": -55.5251471
+      }
+    },
+    "Yury's Free Shop": {
+      "nombre_completo": "Yury's Free Shop",
+      "direccion": "Agraciada 514, Rivera, Uruguay",
+      "telefono": "+598 95 302 277",
+      "email": "info@yurysfreeshop.com",
+      "horario": "Lunes a Sabado 07:00-18:00",
+      "sitio_web": "https://www.yurysfreeshop.com/",
+      "redes": {
+        "instagram": "https://www.instagram.com/yurysfreeshop/",
+        "facebook": "https://www.facebook.com/yurysfreeshop",
+        "whatsapp": "https://wa.me/59894553222"
+      },
+      "nota": null,
+      "catalogo_online": true,
+      "color": "#184b9c",
+      "color_texto": "#ffffff",
+      "whatsapp_source": "https://www.yurysfreeshop.com/contato",
+      "manual": true,
+      "description": {
+        "es": "",
+        "pt-BR": ""
+      },
+      "specialties": [],
+      "timezone": "America/Montevideo",
+      "weekly_hours": {
+        "0": [],
+        "1": [],
+        "2": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "3": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "4": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "5": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
+        "6": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ]
+      },
+      "hours_exceptions": {},
+      "google": {
+        "rating": 4.4,
+        "count": 1035,
+        "url": "https://maps.app.goo.gl/xBtTep5CsAAu7eov9"
+      },
+      "photos": [],
+      "source": null,
+      "verified_at": "2026-09-30",
+      "ubicacion": {
+        "lat": -30.8988464,
+        "lng": -55.5405517
+      }
+    }
+  }
 }

@@ -99,6 +99,13 @@ const translations = {
  'Dirección':'Endereço','Teléfono':'Telefone','Correo':'E-mail','Horario':'Horário','Información':'Informações',
  'Sitio oficial':'Site oficial','No hay información adicional disponible.':'Não há informações adicionais disponíveis.',
  'Modo claro':'Modo claro','Modo oscuro':'Modo escuro',
+ 'RivFree es un comparador de precios.':'O RivFree é um comparador de preços.',
+ 'No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.':'Não vendemos produtos nem somos afiliados às lojas: cada compra é feita diretamente com o free shop.',
+ 'Solo comparamos precios:':'Só comparamos preços:','no vendemos ni estamos afiliados a las tiendas.':'não vendemos nem somos afiliados às lojas.',
+ 'Abrila en otro celular con un enlace, sin crear cuenta.':'Abra em outro celular com um link, sem criar conta.','Compartir lista':'Compartilhar lista',
+ 'Ordenar':'Ordenar','Favoritos':'Favoritos','Detalles del catálogo':'Detalhes do catálogo','Mostrar solo favoritos':'Mostrar só favoritos',
+ 'Tiendas':'Lojas','Dólar hoy':'Dólar hoje','Cotización del día':'Cotação do dia',
+ 'Aviso importante':'Aviso importante','Redes sociales de RivFree':'Redes sociais do RivFree','Tocá una o varias para ver solo sus productos. Sin elegir, se muestran todas.':'Toque em uma ou mais para ver só os produtos delas. Sem escolher, aparecem todas.','Mostrar solo favoritos':'Mostrar só favoritos','Filtrar ofertas por descuento':'Filtrar ofertas por desconto','Descuento':'Desconto','Todas las ofertas':'Todas as ofertas','o más':'ou mais','Mayor descuento':'Maior desconto',
  'Cerrar':'Fechar','Cerrar aviso':'Fechar aviso','Volver al inicio y recargar':'Voltar ao início e recarregar',
  'Aviso sobre disponibilidad':'Aviso sobre disponibilidade',
  'PRIVACIDAD · RIVFREE':'PRIVACIDADE · RIVFREE',
@@ -183,13 +190,33 @@ function applyStoreVisual(element,storeName){
 }
 async function loadStoreInfoFiles(){
  const [baseValue,manualValue]=await Promise.all([
-  fetchWithTimeout('data/stores.json',{cache:'default'},8000).catch(()=>null),
+  fetchWithTimeout('data/stores.json',{cache:'no-store'},8000).catch(()=>null),
   fetchWithTimeout('data/manual-stores.json',{cache:'no-store'},8000).catch(()=>null)
  ]);
  const base=baseValue&&!Array.isArray(baseValue)&&typeof baseValue==='object'?baseValue:{};
  const manual=manualValue?.tiendas&&!Array.isArray(manualValue.tiendas)&&typeof manualValue.tiendas==='object'?manualValue.tiendas:{};
  return {...base,...manual};
 }
+// Studio → Tiendas → "Ocultar las fotos de los productos". The photo is kept aside (not deleted), so the Studio
+// preview can switch it back; a product sold elsewhere uses the other store's photo.
+function applyHiddenPhotos(){
+ const hidden=new Set(Object.entries(STORE_INFO||{}).filter(([,info])=>info?.ocultar_fotos===true).map(([name])=>name));
+ const signature=[...hidden].sort().join('|');
+ if(applyHiddenPhotos.signature===signature&&applyHiddenPhotos.catalog===PRODUCT_GROUPS)return false;
+ const first=applyHiddenPhotos.catalog!==PRODUCT_GROUPS;applyHiddenPhotos.signature=signature;applyHiddenPhotos.catalog=PRODUCT_GROUPS;
+ if(first&&!hidden.size)return false;
+ const fix=offer=>{
+  if(!offer)return;
+  if(hidden.has(offer.tienda)){if(offer.imagen){offer.imagen_oculta=offer.imagen;offer.imagen='';}}
+  else if(offer.imagen_oculta){offer.imagen=offer.imagen_oculta;delete offer.imagen_oculta;}
+ };
+ for(const product of ALL_PRODUCTS)fix(product);
+ for(const group of PRODUCT_GROUPS){group.offers.forEach(fix);group.image=group.offers.find(o=>safeImageUrl(o.imagen))?.imagen||null;}
+ // Cards reuse cached views: start them again so no hidden photo survives.
+ getFiltered.catalog=null;getFiltered.viewCatalog=null;
+ return true;
+}
+window.RivFreeApplyHiddenPhotos=()=>{if(applyHiddenPhotos()&&ALL_PRODUCTS.length){if(typeof campaignCatalog!=='undefined')campaignCatalog=null;render(true);if(typeof renderPopularProducts==='function'){railSignature='';renderPopularProducts();}}};
 function announce(message) {
  const el=document.getElementById('actionStatus');el.textContent=message;el.hidden=false;
  clearTimeout(announce.timer);announce.timer=setTimeout(()=>{el.hidden=true;},3500);
@@ -216,7 +243,7 @@ function handleProductClick(event){
  if(target.dataset.action==='share'&&data){shareProduct(data);return;}
  if(target.dataset.action==='history'&&data){openPriceHistory(data.offers);return;}
  if(target.dataset.action==='favorite'&&data){toggleFavorite(data.key);return;}
- if(target.dataset.action==='preview'&&data){recordProductConsult(data.key);openProductPreview(data);return;}
+ if(target.dataset.action==='preview'&&data){event.preventDefault();recordProductConsult(data.key);openProductPreview(data);return;}
  if(data&&['compare','external'].includes(target.dataset.action))recordProductConsult(data.key);
  if(target.dataset.action==='compare'&&data)openComparison(data.name,data.offers);
  if(target.dataset.action==='external')announce(tr('Abriendo la publicación original en otra pestaña'));
@@ -263,6 +290,13 @@ let ALL_PRODUCTS = [];
 let PRODUCT_GROUPS = [];
 let STORE_INFO = {};
 let ACTIVE_SEARCH = '';
+let MIN_DISCOUNT = 0;
+// Percentage saved against the store's previous price (0 when the store did not publish one).
+function discountOf(product){
+  if(!product?.en_oferta||!hasPrice(product)||!Number.isFinite(product.precio_original_usd)||product.precio_original_usd<=product.precio_usd)return 0;
+  return Math.round((1-product.precio_usd/product.precio_original_usd)*100);
+}
+function groupDiscount(group){return Math.max(0,...(group.visibleOffers||group.offers).map(discountOf));}
 const PAGE_SIZE = window.matchMedia('(max-width: 650px)').matches ? 24 : 48;
 let visibleLimit = PAGE_SIZE;
 
@@ -302,13 +336,16 @@ async function loadData() {
   document.getElementById('loadError').hidden=true;
   try {
     const [loaded, storeInfo, ratesRes] = await Promise.all([
-      loadCatalog(), loadStoreInfoFiles(), fetchWithTimeout('data/exchange.json',{cache:'default'},8000).catch(()=>null)
+      loadCatalog(), loadStoreInfoFiles(),
+      // The rate is shown in the navigation bar as soon as it arrives, without waiting for the catalog.
+      fetchWithTimeout('data/exchange.json',{cache:'default'},8000).then(value=>{if(isRate(value)){automaticExchange=mergeExchange(automaticExchange,value);updateExchangeNote();}return value;}).catch(()=>null)
     ]);
     const {data,prepared,offline}=loaded;
     STORE_INFO=storeInfo;
     if(isRate(ratesRes))automaticExchange=mergeExchange(automaticExchange,ratesRes);
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
+    applyHiddenPhotos();
     indexFavoriteOffers();
     migrateFavorites(PRODUCT_GROUPS,prepared.legacyKeys);
     SEARCH_WORDS=prepared.words;
@@ -340,7 +377,11 @@ async function loadData() {
     restoreFilters();
     translateUI();
     render();
+    // Let the browser paint before the rest of the page reacts to the new catalog.
+    await new Promise(resolve=>setTimeout(resolve,0));
     window.dispatchEvent(new CustomEvent('rivfree:catalog-ready'));
+    // Warm up the alphabetical order while the visitor is reading the home page.
+    const warm=()=>nameRank(PRODUCT_GROUPS[0]||{});if('requestIdleCallback' in window)requestIdleCallback(warm,{timeout:8000});else setTimeout(warm,3000);
   } catch (e) {
     document.getElementById('loadError').hidden=false;
     document.getElementById('loadErrorText').textContent=tr('No se pudo cargar el catálogo. Revisá tu conexión y reintentá.');
@@ -355,6 +396,11 @@ function populateFilters() {
   const stores = [...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p => p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b,LANG));
   const storesField = document.getElementById('storesField');
   storesField.replaceChildren();
+  // Nothing selected = every store. Choosing stores shows only their products; «Todas» clears the choice.
+  const all=document.createElement('button');all.type='button';all.id='storeFilterAll';all.className='store-filter-chip store-filter-all';
+  all.textContent=tr('Todas');all.setAttribute('aria-pressed','true');
+  all.addEventListener('click',()=>{storesField.querySelectorAll('.storeChk').forEach(el=>{el.checked=false;});render(true);});
+  storesField.appendChild(all);
   stores.forEach(store => {
     const label = document.createElement('label');
     label.className = 'chk store-filter-chip';
@@ -364,13 +410,18 @@ function populateFilters() {
     checkbox.type = 'checkbox';
     checkbox.value = store;
     checkbox.className = 'storeChk';
-    checkbox.checked = true;
+    checkbox.checked = false;
     const text=document.createElement('span');text.className='store-filter-name';text.textContent=store;
     // Advanced filters intentionally use store names only: no third-party logos.
     label.append(checkbox,text);
     storesField.appendChild(label);
   });
-  storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => render(true)));
+  storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => {
+    // Choosing every store is the same as choosing none: go back to «Todas».
+    const boxes=[...storesField.querySelectorAll('.storeChk')];
+    if(boxes.length>1&&boxes.every(box=>box.checked))boxes.forEach(box=>{box.checked=false;});
+    render(true);
+  }));
 
   const categories = [...new Set(
     ALL_PRODUCTS.map(p => p.categoryId)
@@ -396,12 +447,17 @@ function getFiltered() {
   const orden = document.getElementById('orden').value;
   const pricedOnly = document.getElementById('hideUnavailable')?.checked;
   const favoritesOnly = document.getElementById('favoritesOnly').checked;
-  const collator = getFiltered.collator ||= new Intl.Collator('es');
 
-  const cacheKey=JSON.stringify([ACTIVE_SEARCH,cat,String(min),String(max),soloOfertas,pricedOnly,favoritesOnly,favoritesOnly?[...favorites]:[],activeStores,orden]);
+  const minDiscount=soloOfertas?MIN_DISCOUNT:0;
+  const facet=typeof RivFreeFacet==='function'?RivFreeFacet():null;
+  const cacheKey=JSON.stringify([ACTIVE_SEARCH,facet?.id||'',cat,String(min),String(max),soloOfertas,minDiscount,pricedOnly,favoritesOnly,favoritesOnly?[...favorites]:[],activeStores,orden]);
   if(getFiltered.catalog!==PRODUCT_GROUPS){getFiltered.catalog=PRODUCT_GROUPS;getFiltered.cache=new Map();}
   if(getFiltered.cache.has(cacheKey))return getFiltered.cache.get(cacheKey);
   let candidates=PRODUCT_GROUPS;
+  if(facet){
+    if(getFiltered.keyCatalog!==PRODUCT_GROUPS){getFiltered.keyCatalog=PRODUCT_GROUPS;getFiltered.byKey=new Map(PRODUCT_GROUPS.map(g=>[g.key,g]));}
+    candidates=[...facet.keys].map(key=>getFiltered.byKey.get(key)).filter(Boolean);
+  }
   if(cat.length){
     if(getFiltered.categoryCatalog!==PRODUCT_GROUPS){
       getFiltered.categoryCatalog=PRODUCT_GROUPS;getFiltered.categories=new Map();
@@ -410,38 +466,56 @@ function getFiltered() {
         getFiltered.categories.get(category).push(group);
       }
     }
-    candidates=[...new Set(cat.flatMap(c=>getFiltered.categories.get(c)||[]))];
+    const inCategories=cat.length===1?(getFiltered.categories.get(cat[0])||[]):[...new Set(cat.flatMap(c=>getFiltered.categories.get(c)||[]))];
+    candidates=facet?candidates.filter(g=>g.offers.some(o=>cat.includes(o.categoryId))):inCategories;
   }
-  let groups = candidates.filter(g=>!favoritesOnly || (favorites.has(g.key)||g.offers.some(o=>favorites.has(offerFavoriteKey(o))))).map(group => {
+  if(soloOfertas){
+    // Only a few hundred groups have offers: skip the rest of the catalog.
+    if(getFiltered.offerCatalog!==PRODUCT_GROUPS){getFiltered.offerCatalog=PRODUCT_GROUPS;getFiltered.offerGroups=new Set(PRODUCT_GROUPS.filter(g=>g.offers.some(o=>o.en_oferta)));}
+    candidates=candidates===PRODUCT_GROUPS?[...getFiltered.offerGroups]:candidates.filter(g=>getFiltered.offerGroups.has(g));
+  }
+  if(getFiltered.storeCatalog!==PRODUCT_GROUPS){getFiltered.storeCatalog=PRODUCT_GROUPS;getFiltered.storeNames=new Set(PRODUCT_GROUPS.flatMap(g=>g.offers.map(o=>o.tienda)));}
+  const storeSet=new Set(activeStores),allStores=!activeStores.length||[...getFiltered.storeNames].every(name=>storeSet.has(name));
+  const offerFilter=cat.length||!isNaN(min)||!isNaN(max)||soloOfertas||pricedOnly||!allStores;
+  if(getFiltered.viewCatalog!==PRODUCT_GROUPS){getFiltered.viewCatalog=PRODUCT_GROUPS;getFiltered.views=new WeakMap();}
+  // Without offer-level filters, narrow a text search on the raw groups first (typo fallback still sees everything).
+  if(searchTokens.length&&!offerFilter){const exact=candidates.filter(g=>g.offers.some(p=>Catalog.matchesSearch(p,query)));if(exact.length)candidates=exact;}
+  let groups=[];
+  for(const group of candidates){
+    if(favoritesOnly&&!(favorites.has(group.key)||group.offers.some(o=>favorites.has(offerFavoriteKey(o)))))continue;
+    if(!offerFilter){
+      // Unfiltered views are reused between renders instead of copying every group again.
+      let view=getFiltered.views.get(group);
+      if(!view){view={...group,visibleOffers:group.offers,lowestVisiblePrice:group.offers.find(hasPrice)?.precio_usd ?? Infinity};getFiltered.views.set(group,view);}
+      if(view.visibleOffers.length)groups.push(view);
+      continue;
+    }
     const visibleOffers = group.offers.filter(product => {
-      if (!activeStores.includes(product.tienda)) return false;
+      if (!allStores && !storeSet.has(product.tienda)) return false;
       if (pricedOnly && !hasPrice(product)) return false;
       if (cat.length && !cat.includes(product.categoryId)) return false;
       if (!isNaN(min) && (!hasPrice(product) || product.precio_usd < min)) return false;
       if (!isNaN(max) && (!hasPrice(product) || product.precio_usd > max)) return false;
       if (soloOfertas && !product.en_oferta) return false;
+      if (minDiscount && discountOf(product) < minDiscount) return false;
       return true;
     });
-    return {...group, visibleOffers, lowestVisiblePrice:visibleOffers.find(hasPrice)?.precio_usd ?? Infinity};
-  }).filter(group => {
-    if (!group.visibleOffers.length) return false;
-    if (!searchTokens.length) return true;
-    return true;
-  });
+    if(visibleOffers.length)groups.push({...group, visibleOffers, lowestVisiblePrice:visibleOffers.find(hasPrice)?.precio_usd ?? Infinity});
+  }
   if(searchTokens.length){
     const exact=groups.filter(g=>g.visibleOffers.some(p=>Catalog.matchesSearch(p,query)));
     if(exact.length)groups=exact;
     else {
       const alternatives=searchTokens.map(searchAlternatives);
-      groups=groups.filter(g=>g.visibleOffers.some(p=>alternatives.every(options=>options.some(t=>p.searchIndex.split(' ').includes(t)))));
-      groups.forEach(g=>{g.approximate=true;});
+      groups=groups.filter(g=>g.visibleOffers.some(p=>alternatives.every(options=>options.some(t=>p.searchIndex.split(' ').includes(t))))).map(g=>({...g,approximate:true}));
     }
   }
 
   const lowestPrice = group => group.lowestVisiblePrice;
   if (orden === 'ofertas') groups.sort((a,b)=>Number(b.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))-Number(a.visibleOffers.some(p=>p.en_oferta&&hasPrice(p)))||lowestPrice(a)-lowestPrice(b));
+  else if (orden === 'descuento') groups.sort((a,b)=>groupDiscount(b)-groupDiscount(a)||lowestPrice(a)-lowestPrice(b));
   else if (orden === 'caida') groups.sort((a,b)=>groupDrop(b)-groupDrop(a)||lowestPrice(a)-lowestPrice(b));
-  else if (orden === 'nuevos') groups.sort((a,b)=>groupAdded(b)-groupAdded(a)||collator.compare(a.name,b.name));
+  else if (orden === 'nuevos') groups.sort((a,b)=>groupAdded(b)-groupAdded(a)||nameRank(a)-nameRank(b));
   else if (orden === 'precio_asc') groups.sort((a,b) => lowestPrice(a) - lowestPrice(b));
   else if (orden === 'precio_desc') groups.sort((a,b) => {
     const aPrice = lowestPrice(a), bPrice = lowestPrice(b);
@@ -450,7 +524,7 @@ function getFiltered() {
     return bPrice - aPrice;
   });
   else if (orden === 'nombre_asc') {
-    groups.sort((a,b)=>collator.compare(a.name,b.name));
+    groups.sort((a,b)=>nameRank(a)-nameRank(b));
     const priced=[],unavailable=[];
     for(const group of groups)(Number.isFinite(lowestPrice(group))?priced:unavailable).push(group);
     groups=priced.concat(unavailable);
@@ -461,14 +535,31 @@ function getFiltered() {
   return groups;
 }
 
+// Alphabetical position of every group, computed once per catalog (sorting 30k names
+// with Intl.Collator on every filter change was the slowest part of filtering).
+function nameRank(group){
+  if(nameRank.catalog!==PRODUCT_GROUPS){
+    nameRank.catalog=PRODUCT_GROUPS;nameRank.ranks=new Map();
+    // Accent- and case-insensitive keys compared as plain strings: same order as a Spanish collator for catalog names, ~10× faster.
+    const keyed=PRODUCT_GROUPS.map(g=>[Catalog.norm(g.name).replace(/[^a-z0-9ñ ]+/g,' ').trim(),g.key]);
+    keyed.sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:0).forEach(([,key],i)=>nameRank.ranks.set(key,i));
+  }
+  return nameRank.ranks.get(group.key)??Number.MAX_SAFE_INTEGER;
+}
 function render(resetLimit = false, appendOnly = false) {
   if (resetLimit === true) visibleLimit = PAGE_SIZE;
   if(!validatePrices())return;
   syncFiltersURL();
   document.body.classList.toggle('search-results-mode',Boolean(ACTIVE_SEARCH.trim()));
   if(!ACTIVE_SEARCH.trim())renderPopularProducts();
-  const items = getFiltered();
+  updateAdvancedCount();
   const grid = document.getElementById('grid');
+  // On the home page the results grid is hidden: skip filtering and card building until it is shown.
+  if(window.RivFreeCatalogVisible&&!window.RivFreeCatalogVisible()){
+    updateOfferTiers();if(render.lastItems){grid.replaceChildren();render.lastItems=null;}return;
+  }
+  const items = getFiltered();
+  updateOfferTiers();
   const empty = document.getElementById('emptyState');
   const meta = document.getElementById('resultsMeta');
   const loadMoreWrap = document.getElementById('loadMoreWrap');
@@ -479,8 +570,9 @@ function render(resetLimit = false, appendOnly = false) {
     total + group.visibleOffers.filter(hasPrice).length, 0);
   const unavailable = offersShown - pricedShown;
   const shownText = items.length > visibleItems.length ? ` · mostrando ${visibleItems.length}` : '';
-  meta.textContent = tr(`${items.length.toLocaleString(LANG)} producto${items.length === 1 ? '' : 's'}${shownText}`);
-  document.getElementById('resultsDetails').textContent = tr(`${pricedShown} precios disponibles · ${unavailable} sin precio · ${ALL_PRODUCTS.length} publicaciones totales`);
+  meta.textContent = tr(`${items.length.toLocaleString(LANG)} producto${items.length === 1 ? '' : 's'}`);
+  meta.title = shownText ? tr(shownText.replace(/^ · /,'')) : '';
+  document.getElementById('resultsDetails').textContent = tr(`${pricedShown} precios disponibles · ${unavailable} sin precio · ${ALL_PRODUCTS.length} publicaciones totales`) + (shownText ? ' ·' + tr(shownText.replace(/^ ·/,'')) : '');
 
   if (items.length === 0) {
     grid.innerHTML = '';
@@ -493,10 +585,65 @@ function render(resetLimit = false, appendOnly = false) {
 
   if(items.some(g=>g.approximate))meta.textContent+=' · '+tr('Resultados aproximados');
   const append=appendOnly&&render.lastItems===items;
-  const cards = visibleItems.slice(append?grid.children.length:0).map(createProductCard);
+  // Paint the first cards right away and add the rest in small batches, so taps stay responsive.
+  const ticket=render.ticket=(render.ticket||0)+1;
+  const start=append?grid.children.length:0,first=Math.min(visibleItems.length,start+12);
+  const cards = visibleItems.slice(start,first).map(createProductCard);
   if(append)grid.append(...cards);else grid.replaceChildren(...cards);
   render.lastItems=items;
+  if(first<visibleItems.length){
+    const more=()=>{
+      if(render.ticket!==ticket||render.lastItems!==items)return;
+      const from=grid.children.length,to=Math.min(visibleItems.length,from+12);
+      grid.append(...visibleItems.slice(from,to).map(createProductCard));
+      if(to<visibleItems.length)setTimeout(more,0);
+    };
+    setTimeout(more,0);
+  }
 }
+
+// Discount shortcuts shown above the catalog while browsing offers. Studio sets the tiers (Página → Ofertas).
+function offerTierValues(){
+  const raw=window.RIVFREE_SITE_CONFIG?.offers?.tiers;
+  const list=Array.isArray(raw)?[...new Set(raw.map(Number).filter(n=>Number.isInteger(n)&&n>=5&&n<=95))].sort((a,b)=>a-b).slice(0,4):[];
+  return list.length?list:[20,40,60];
+}
+function syncOfferTierButtons(){
+  const box=document.getElementById('offerTiers');if(!box)return false;
+  const tiers=offerTierValues(),current=[...box.querySelectorAll('[data-discount]')].map(b=>Number(b.dataset.discount)).filter(Boolean);
+  if(current.join()===tiers.join())return false;
+  box.querySelectorAll('[data-discount]:not([data-discount="0"])').forEach(button=>button.remove());
+  const shades={1:[3],2:[1,3],3:[1,2,3],4:[1,2,2,3]}[tiers.length];
+  tiers.forEach((tier,i)=>{
+    const button=document.createElement('button');button.type='button';button.className='offer-tier tier-'+shades[i];button.dataset.discount=String(tier);button.setAttribute('aria-pressed','false');
+    const main=document.createElement('span');main.className='offer-tier-main';const value=document.createElement('b');value.textContent=tier+'%';const more=document.createElement('span');more.textContent=tr('o más');main.append(value,' ',more);
+    const count=document.createElement('span');count.className='offer-tier-count';button.append(main,count);box.append(button);
+  });
+  if(MIN_DISCOUNT&&!tiers.includes(MIN_DISCOUNT))MIN_DISCOUNT=0;
+  return true;
+}
+document.addEventListener('rivfree-site-config-applied',()=>{if(syncOfferTierButtons()&&document.getElementById('soloOfertas')?.checked&&PRODUCT_GROUPS.length)render(true);});
+function updateOfferTiers(){
+  const box=document.getElementById('offerTiers');if(!box)return;
+  const active=document.getElementById('soloOfertas').checked;box.hidden=!active;
+  document.body.classList.toggle('offers-mode',active);
+  if(!active)return;
+  const saved=MIN_DISCOUNT;MIN_DISCOUNT=0;let base;try{base=getFiltered();}finally{MIN_DISCOUNT=saved;}
+  for(const button of box.querySelectorAll('[data-discount]')){
+    const tier=Number(button.dataset.discount);
+    const count=tier?base.filter(g=>g.visibleOffers.some(o=>discountOf(o)>=tier)).length:base.length;
+    button.querySelector('.offer-tier-count').textContent=count.toLocaleString(LANG);
+    button.setAttribute('aria-pressed',String(tier===MIN_DISCOUNT));
+    button.disabled=!count&&tier!==MIN_DISCOUNT;
+    button.title=tier?(LANG==='es'?`Ofertas con ${tier}% de descuento o más`:`Ofertas com ${tier}% de desconto ou mais`):'';
+  }
+}
+document.getElementById('offerTiers')?.addEventListener('click',event=>{
+  const button=event.target.closest('[data-discount]');if(!button||button.disabled)return;
+  MIN_DISCOUNT=Number(button.dataset.discount)||0;
+  if(MIN_DISCOUNT&&document.getElementById('orden').value==='nombre_asc')document.getElementById('orden').value='descuento';
+  render(true);
+});
 
 function waitForPaint() {
   return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
@@ -672,7 +819,8 @@ function createProductCard(group) {
   if (product.en_oferta) {
     const offer = document.createElement('span');
     offer.className = 'badge-oferta';
-    offer.textContent = tr('Oferta');
+    const discount = Math.max(0,...offers.map(discountOf));
+    offer.textContent = tr('Oferta') + (discount >= 5 ? ` · −${discount}%` : '');
     badges.appendChild(offer);
   }
   if (storeCount > 1) {
@@ -806,6 +954,7 @@ function fillStoreInfo(container,storeName) {
   appendStoreDetail(container, 'Horario', info.horario || tr('Horario no informado'));
   appendStoreDetail(container, 'Información', info.nota);
 
+  if (window.RivFreeStores) { container.appendChild(window.RivFreeStores.contactLinks(info, storeName, {contact:false})); return; }
   const links = document.createElement('div');
   links.className = 'store-links';
   const destinations = {mapa:tr('Ver en el mapa'),sitio_web:'Sitio oficial', instagram:'Instagram', facebook:'Facebook', telegram:'Telegram', whatsapp:'WhatsApp'};
@@ -911,6 +1060,22 @@ document.getElementById('stockNoticeClose').addEventListener('click', () => {
   try { sessionStorage.setItem('rivfree-stock-notice-dismissed', 'true'); } catch {}
 });
 
+// "Filtros avanzados" opens from a compact button in the filter row; the panel spans the full card below.
+(()=>{
+  const toggle=document.getElementById('advancedToggle'),details=document.getElementById('advancedFilters');
+  if(!toggle||!details)return;
+  toggle.addEventListener('click',()=>{details.open=!details.open;if(details.open)details.querySelector('input,button')?.focus({preventScroll:true});});
+  details.addEventListener('toggle',()=>{toggle.setAttribute('aria-expanded',String(details.open));toggle.classList.toggle('open',details.open);});
+})();
+function updateAdvancedCount(){
+  const badge=document.getElementById('advancedCount');if(!badge)return;
+  const {min,max}=readPriceRange();
+  const stores=[...document.querySelectorAll('.storeChk')];
+  const chosen=stores.filter(el=>el.checked).length;
+  const count=(Number.isFinite(min)||Number.isFinite(max)?1:0)+(document.getElementById('soloOfertas').checked?1:0)+(chosen?1:0);
+  badge.textContent=String(count);badge.hidden=!count;
+  document.getElementById('storeFilterAll')?.setAttribute('aria-pressed',String(!chosen));
+}
 document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('hideUnavailable').checked=false;
   document.getElementById('search').value = '';
@@ -919,9 +1084,9 @@ document.getElementById('clearFilters').addEventListener('click', () => {
   document.getElementById('minPrice').value = '';
   document.getElementById('maxPrice').value = '';
   document.getElementById('orden').value = 'nombre_asc';
-  document.getElementById('soloOfertas').checked = false;
+  document.getElementById('soloOfertas').checked = false;MIN_DISCOUNT=0;
   document.getElementById('favoritesOnly').checked = false;
-  document.querySelectorAll('.storeChk').forEach(el => { el.checked = true; });
+  document.querySelectorAll('.storeChk').forEach(el => { el.checked = false; });
   render(true);
 });
 

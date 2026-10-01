@@ -23,3 +23,10 @@ debug_barao_output.txt
 scrape.log
 
 _publish_source/
+.pytest_cache/
+
+# Base local de vista previa (42 MB). Se regenera con: python database/manage.py import
+database/catalog.sqlite
+
+# Conexión a PostgreSQL guardada por Studio (contiene la contraseña: nunca se sube)
+.rivfree-local/

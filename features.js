@@ -45,8 +45,10 @@ function syncFiltersURL(){
  p.delete('category');for(const category of selectedCategories())p.append('category',category);
  for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='nombre_asc'))p.set(key,value);else p.delete(key);}
  for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly'],['priced','hideUnavailable']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
+ if(document.getElementById('soloOfertas').checked&&MIN_DISCOUNT)p.set('discount',String(MIN_DISCOUNT));else p.delete('discount');
  const stores=[...document.querySelectorAll('.storeChk')];p.delete('store');p.delete('stores');
- if(stores.some(el=>!el.checked)){p.set('stores','selected');stores.filter(el=>el.checked).forEach(el=>p.append('store',el.value));}
+ // Only the chosen stores go in the link; none chosen means every store.
+ if(stores.some(el=>el.checked)){p.set('stores','selected');stores.filter(el=>el.checked).forEach(el=>p.append('store',el.value));}
  if(url.href!==location.href)history.replaceState(null,'',url);
 }
 function restoreFilters(){
@@ -59,7 +61,10 @@ function restoreFilters(){
   else el.value=value!==''&&Number.isFinite(Number(value))&&Number(value)>=0?value:'';
  }
  for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly'],['priced','hideUnavailable']])document.getElementById(id).checked=p.get(key)==='1';
- document.querySelectorAll('.storeChk').forEach(el=>{el.checked=!p.has('stores')||p.getAll('store').includes(el.value);});
+ {const discount=Number(p.get('discount'));MIN_DISCOUNT=Number.isInteger(discount)&&discount>=5&&discount<=95?discount:0;}
+ {const chosen=p.has('stores')?p.getAll('store'):[];const boxes=[...document.querySelectorAll('.storeChk')];
+  boxes.forEach(el=>{el.checked=chosen.includes(el.value);});
+  if(boxes.length&&boxes.every(el=>el.checked))boxes.forEach(el=>{el.checked=false;});}
 }
 window.addEventListener('popstate',()=>{restoreFilters();render(true);syncCategoryInput();});
 document.getElementById('favoritesOnly').addEventListener('change',()=>render(true));

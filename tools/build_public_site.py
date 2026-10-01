@@ -14,7 +14,7 @@ def build():
     paths = [p for p in ROOT.iterdir() if p.suffix in {'.html','.css','.js'} or p.name in
              {'manifest.webmanifest','social-card.png','robots.txt','sitemap.xml'}]
     paths += [ROOT/'data'/name for name in DATA]
-    for directory in ['icons','assets/manual','data/products','data/price-history']:
+    for directory in ['icons','assets/manual','data/products','data/price-history','politicas']:
         paths += [p for p in (ROOT/directory).rglob('*') if p.is_file()]
     for path in paths:
         rel = path.relative_to(ROOT)

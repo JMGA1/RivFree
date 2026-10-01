@@ -7,7 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <script src="bootstrap.js"></script>
-<link rel="stylesheet" href="editor.css?v=20260929-studio-sync1">
+<link rel="stylesheet" href="editor.css?v=20261001-studio7">
 </head>
 <body>
 <header class="topbar">
@@ -26,6 +26,7 @@
       <button class="tab" data-tab="stores">Tiendas <span id="storeCount">0</span></button>
       <button class="tab owner-only" data-tab="collaborations">Colaboraciones <span id="collaborationCount">ZIP</span></button>
       <button class="tab owner-only" data-tab="maintenance">Publicar / copias</button>
+      <button class="tab owner-only" data-tab="database">Base de datos <span id="dbTabState" class="tab-count" hidden>✓</span></button>
       <button class="tab" data-tab="transfer" id="transferTab"><span id="transferTabLabel">Importar / exportar</span></button>
     </nav>
     <div class="help-card" id="helpCard"><strong id="helpTitle">Publicar en GitHub</strong><p id="helpText">Guardá y abrí Publicar / copias para revisar y publicar desde el Studio.</p></div>
@@ -103,6 +104,7 @@
       <div class="studio-page-grid">
         <article class="editor-card"><div class="subsection"><h3>Orden del inicio</h3><p class="form-help">Usá ↑/↓ para cambiar el orden y el interruptor para ocultar una sección.</p><div id="sectionOrder" class="section-order"></div></div></article>
         <form id="pageForm" class="editor-card" autocomplete="off">
+          <div class="subsection"><h3>Aviso superior</h3><p class="form-help">Franja que aparece arriba de todo al entrar. Si el visitante la cierra, no la vuelve a ver durante 30 días. En celulares se usa la versión corta.</p><div class="grid2"><label class="check wide"><input id="topNoticeEnabled" type="checkbox"><span>Mostrar aviso superior</span></label><label><span>Título ES</span><input id="topNoticeTitleEs" maxlength="120"></label><label><span>Título PT</span><input id="topNoticeTitlePt" maxlength="120"></label><label><span>Texto ES</span><textarea id="topNoticeTextEs" rows="3" maxlength="400"></textarea></label><label><span>Texto PT</span><textarea id="topNoticeTextPt" rows="3" maxlength="400"></textarea></label><label><span>Versión corta ES</span><textarea id="topNoticeShortEs" rows="2" maxlength="200"></textarea></label><label><span>Versión corta PT</span><textarea id="topNoticeShortPt" rows="2" maxlength="200"></textarea></label></div></div><div class="subsection"><h3>Redes sociales de RivFree</h3><p class="form-help">Pegá el enlace de cada red y guardá. Los íconos aparecen arriba del buscador (en computadoras) y en el pie de página. También podés escribir <b>@usuario</b>, o el número de WhatsApp con código de país. Sin enlace, el ícono se ve pero no abre nada.</p><div class="social-rows" id="siteSocialRows"><div class="social-row"><span class="social-icon social-instagram" aria-hidden="true"></span><label for="socialInstagramUrl">Instagram</label><input id="socialInstagramUrl" type="text" inputmode="url" data-network="instagram" aria-label="Enlace de Instagram" placeholder="https://instagram.com/tu_usuario o @tu_usuario" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialInstagramVisible" type="checkbox" aria-label="Mostrar Instagram"><span>Mostrar</span></label></div><div class="social-row"><span class="social-icon social-facebook" aria-hidden="true"></span><label for="socialFacebookUrl">Facebook</label><input id="socialFacebookUrl" type="text" inputmode="url" data-network="facebook" aria-label="Enlace de Facebook" placeholder="https://facebook.com/tu_pagina" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialFacebookVisible" type="checkbox" aria-label="Mostrar Facebook"><span>Mostrar</span></label></div><div class="social-row"><span class="social-icon social-tiktok" aria-hidden="true"></span><label for="socialTiktokUrl">TikTok</label><input id="socialTiktokUrl" type="text" inputmode="url" data-network="tiktok" aria-label="Enlace de TikTok" placeholder="https://tiktok.com/@tu_usuario o @tu_usuario" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialTiktokVisible" type="checkbox" aria-label="Mostrar TikTok"><span>Mostrar</span></label></div><div class="social-row"><span class="social-icon social-whatsapp" aria-hidden="true"></span><label for="socialWhatsappUrl">WhatsApp</label><input id="socialWhatsappUrl" type="text" inputmode="url" data-network="whatsapp" aria-label="Enlace de WhatsApp" placeholder="Número con código de país o https://wa.me/598…" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialWhatsappVisible" type="checkbox" aria-label="Mostrar WhatsApp"><span>Mostrar</span></label></div><div class="social-row"><span class="social-icon social-youtube" aria-hidden="true"></span><label for="socialYoutubeUrl">YouTube</label><input id="socialYoutubeUrl" type="text" inputmode="url" data-network="youtube" aria-label="Enlace de YouTube" placeholder="https://youtube.com/@tu_canal" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialYoutubeVisible" type="checkbox" aria-label="Mostrar YouTube"><span>Mostrar</span></label></div><div class="social-row"><span class="social-icon social-x" aria-hidden="true"></span><label for="socialXUrl">X (Twitter)</label><input id="socialXUrl" type="text" inputmode="url" data-network="x" aria-label="Enlace de X" placeholder="https://x.com/tu_usuario o @tu_usuario" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialXVisible" type="checkbox" aria-label="Mostrar X"><span>Mostrar</span></label></div><div class="social-row"><span class="social-icon social-telegram" aria-hidden="true"></span><label for="socialTelegramUrl">Telegram</label><input id="socialTelegramUrl" type="text" inputmode="url" data-network="telegram" aria-label="Enlace de Telegram" placeholder="https://t.me/tu_canal o @tu_canal" autocomplete="off" spellcheck="false"><label class="check social-visible"><input id="socialTelegramVisible" type="checkbox" aria-label="Mostrar Telegram"><span>Mostrar</span></label></div></div><label class="check"><input id="socialShowPending" type="checkbox"><span>Mostrar los íconos aunque todavía no tengan enlace</span></label><p id="socialHint" class="form-help" role="status" aria-live="polite"></p></div><div class="subsection"><h3>Barra de navegación</h3><p class="form-help">Accesos que se ven junto a Categorías.</p><div class="grid2 nav-toggles"><label class="check"><input id="navShowStores" type="checkbox"><span>Tiendas</span></label><label class="check"><input id="navShowOffers" type="checkbox"><span>Ofertas</span></label><label class="check"><input id="navShowExchange" type="checkbox"><span>Dólar hoy (cotización)</span></label><label class="check"><input id="navShowList" type="checkbox"><span>Mi lista</span></label></div></div><div class="subsection"><h3>Botones de descuento en Ofertas</h3><p class="form-help">Hasta 4 porcentajes entre 5 y 95. Se ordenan de menor a mayor. Dejá vacío el que no uses.</p><div class="tier-inputs"><label><span>Botón 1</span><span class="tier-field"><input id="offerTier1" type="number" min="5" max="95" step="1" inputmode="numeric"><b>% o más</b></span></label><label><span>Botón 2</span><span class="tier-field"><input id="offerTier2" type="number" min="5" max="95" step="1" inputmode="numeric"><b>% o más</b></span></label><label><span>Botón 3</span><span class="tier-field"><input id="offerTier3" type="number" min="5" max="95" step="1" inputmode="numeric"><b>% o más</b></span></label><label><span>Botón 4</span><span class="tier-field"><input id="offerTier4" type="number" min="5" max="95" step="1" inputmode="numeric"><b>% o más</b></span></label></div></div>
           <div class="subsection"><h3>Aviso de disponibilidad</h3><div class="grid2"><label class="check"><input id="noticeEnabled" type="checkbox"><span>Mostrar aviso</span></label><label class="check"><input id="noticeDismissible" type="checkbox"><span>Se puede cerrar</span></label><label><span>Título ES</span><input id="noticeTitleEs"></label><label><span>Título PT</span><input id="noticeTitlePt"></label><label><span>Texto ES</span><textarea id="noticeTextEs" rows="3"></textarea></label><label><span>Texto PT</span><textarea id="noticeTextPt" rows="3"></textarea></label></div></div>
           <div class="subsection"><h3>SEO y redes</h3><div class="grid2"><label><span>Título Google ES</span><input id="seoTitleEs" maxlength="70"><small class="char-count" data-count-for="seoTitleEs"></small></label><label><span>Título Google PT</span><input id="seoTitlePt" maxlength="70"><small class="char-count" data-count-for="seoTitlePt"></small></label><label><span>Descripción ES</span><textarea id="seoDescriptionEs" rows="3" maxlength="170"></textarea><small class="char-count" data-count-for="seoDescriptionEs"></small></label><label><span>Descripción PT</span><textarea id="seoDescriptionPt" rows="3" maxlength="170"></textarea><small class="char-count" data-count-for="seoDescriptionPt"></small></label><label class="wide"><span>Imagen al compartir</span><input id="seoSocialImage" placeholder="social-card.png"></label></div></div>
           <div class="subsection"><h3>Footer</h3><div class="grid2"><label><span>Título ES</span><input id="footerTitleEs"></label><label><span>Título PT</span><input id="footerTitlePt"></label><label><span>Texto ES</span><textarea id="footerTextEs" rows="4"></textarea></label><label><span>Texto PT</span><textarea id="footerTextPt" rows="4"></textarea></label><label class="check"><input id="footerPrivacy" type="checkbox"><span>Mostrar enlace de privacidad</span></label></div></div>
@@ -116,7 +118,7 @@
         <div class="list-pane">
           <div class="list-tools"><input id="productSearch" type="search" placeholder="Buscar publicación…"><select id="productStoreFilter"><option value="">Todas las tiendas</option></select></div>
           <div class="product-tools"><select id="productQuickFilter"><option value="">Todos</option><option value="no-image">Sin imagen</option><option value="inactive">Inactivos</option><option value="offer">En oferta</option></select><select id="productSort"><option value="updated-desc">Más recientes</option><option value="updated-asc">Más antiguos</option><option value="price-asc">Precio menor</option><option value="price-desc">Precio mayor</option><option value="name">Nombre A–Z</option></select></div>
-          <div id="bulkProductBar" class="bulk-bar" hidden><strong id="bulkProductCount">0 seleccionados</strong><button id="bulkHideProducts" type="button" class="button">Ocultar</button><select id="bulkCategory"><option value="">Cambiar categoría…</option><option value="perfumes">Perfumes</option><option value="bebidas">Bebidas</option><option value="alimentos">Alimentos</option><option value="electronica">Electrónica</option><option value="informatica">Informática</option><option value="cosmetica">Cosmética</option><option value="hogar">Hogar</option><option value="otros">Otros</option></select><button id="bulkDeleteProducts" type="button" class="button danger">Eliminar</button><button id="bulkClearProducts" type="button" class="button ghost">Quitar selección</button></div>
+          <div id="bulkProductBar" class="bulk-bar" hidden><strong id="bulkProductCount">0 seleccionados</strong><button id="bulkHideProducts" type="button" class="button">Ocultar</button><select id="bulkCategory"><option value="">Cambiar categoría…</option><option value="perfumes">Perfumes</option><option value="bebidas">Bebidas</option><option value="alimentos">Alimentos</option><option value="electronica">Electrónica</option><option value="informatica">Informática</option><option value="electrodomesticos">Electrodomésticos</option><option value="cosmetica">Cosmética</option><option value="hogar">Hogar</option><option value="otros">Otros</option></select><button id="bulkDeleteProducts" type="button" class="button danger">Eliminar</button><button id="bulkClearProducts" type="button" class="button ghost">Quitar selección</button></div>
           <div id="productList" class="item-list"></div>
         </div>
         <form id="productForm" class="editor-card" autocomplete="off">
@@ -125,7 +127,7 @@
           <div class="grid2">
             <label class="wide"><span>Producto *</span><input id="productName" required maxlength="300" placeholder="Ej.: JBL Flip 6"></label>
             <label><span>Tienda *</span><select id="productStore" required></select></label>
-            <label><span>Categoría</span><select id="productCategory"><option value="perfumes">Perfumes</option><option value="bebidas">Bebidas</option><option value="alimentos">Alimentos y chocolates</option><option value="electronica">Electrónica</option><option value="informatica">Informática</option><option value="cosmetica">Cuidado personal / cosmética</option><option value="hogar">Hogar</option><option value="ropa">Ropa y calzado</option><option value="accesorios">Accesorios</option><option value="juguetes">Juguetes</option><option value="relojes">Relojes</option><option value="optica">Óptica</option><option value="deportes">Deportes</option><option value="herramientas">Herramientas</option><option value="otros">Otros</option></select></label>
+            <label><span>Categoría</span><select id="productCategory"><option value="perfumes">Perfumes</option><option value="bebidas">Bebidas</option><option value="alimentos">Alimentos y chocolates</option><option value="electronica">Electrónica</option><option value="informatica">Informática</option><option value="electrodomesticos">Electrodomésticos</option><option value="cosmetica">Cuidado personal / cosmética</option><option value="hogar">Hogar</option><option value="ropa">Ropa y calzado</option><option value="accesorios">Accesorios</option><option value="juguetes">Juguetes</option><option value="relojes">Relojes</option><option value="optica">Óptica</option><option value="deportes">Deportes</option><option value="herramientas">Herramientas</option><option value="otros">Otros</option></select></label>
             <label><span>Precio USD</span><input id="productPrice" type="number" min="0" step="0.01" placeholder="29.90"></label>
             <label><span>Precio anterior USD</span><input id="productOldPrice" type="number" min="0" step="0.01" placeholder="39.90"></label>
             <label class="check"><input id="productOffer" type="checkbox"><span>Marcar como oferta</span></label>
@@ -173,8 +175,10 @@
             <label class="wide"><span>Sitio web</span><input id="storeWebsite" type="url" placeholder="https://…"></label>
             <label><span>Instagram</span><input id="storeInstagram" type="url" placeholder="https://instagram.com/…"></label>
             <label><span>Facebook</span><input id="storeFacebook" type="url"></label>
-            <label><span>WhatsApp</span><input id="storeWhatsapp" type="url"></label>
+            <label><span>WhatsApp</span><input id="storeWhatsapp" type="url" placeholder="https://wa.me/598…"></label>
+            <label><span>Telegram</span><input id="storeTelegram" type="url" placeholder="https://t.me/…"></label>
             <label class="check"><input id="storeCatalogOnline" type="checkbox"><span>Tiene catálogo online</span></label>
+            <div class="wide hide-photos-box"><label class="check"><input id="storeHidePhotos" type="checkbox"><span>Ocultar las fotos de los productos de esta tienda</span></label><p class="form-help">En el sitio, sus productos se muestran sin foto. Si otra tienda vende el mismo producto, se usa la foto de esa tienda. No borra nada: desmarcá la opción para volver a mostrarlas.</p></div>
           </div>
           <label><span>Información / nota pública</span><textarea id="storeNote" rows="4" maxlength="1000"></textarea></label>
           <div class="form-actions"><button class="button primary" type="submit">Guardar tienda</button><button id="deleteStore" class="button danger" type="button" disabled>Eliminar configuración manual</button></div>
@@ -214,12 +218,57 @@
         <article class="transfer-card"><h2>Copias de los últimos guardados</h2><p>Restaura datos locales. Antes de restaurar se guarda otra copia. Publicá después para actualizar la web.</p><button id="listBackups" class="button">Ver copias</button><div id="backupList"></div></article>
       </div>
     </section>
+    <section class="panel owner-only" data-panel="database">
+      <div class="panel-heading"><div><span class="eyebrow">POSTGRESQL · OPCIONAL</span><h1>Base de datos</h1><p>Guardá tiendas, productos y el historial de precios en tu base PostgreSQL. El sitio público no se conecta a la base, así que la contraseña nunca queda a la vista.</p></div></div>
+      <p id="dbDriverWarning" class="db-warning" hidden>Falta el conector de PostgreSQL. Cerrá Studio, ejecutá <b>Instalar-dependencias-Studio</b> y volvé a abrirlo.</p>
+      <div class="transfer-grid db-grid">
+        <article class="transfer-card db-connection">
+          <div class="db-card-head"><h2>1 · Conexión</h2><span id="dbBadge" class="badge">Sin configurar</span></div>
+          <p id="dbMasked" class="db-masked" hidden></p>
+          <label class="wide"><span>Dirección de conexión</span><span class="db-url-field"><input id="dbUrl" type="password" autocomplete="off" spellcheck="false" placeholder="postgresql://usuario:contraseña@servidor/base?sslmode=require"><button id="dbShowUrl" class="button" type="button" aria-pressed="false">Mostrar</button></span></label>
+          <p class="form-help">Copiala del panel de tu proveedor (Neon: <b>Connect</b> · Aiven: <b>Service URI</b>). Se guarda solo en esta computadora, en la carpeta <code>.rivfree-local</code>, que no se publica ni se sube a GitHub.</p>
+          <div class="form-actions"><button id="dbSave" class="button primary" type="button">Guardar y probar</button><button id="dbTest" class="button" type="button">Probar conexión</button><button id="dbForget" class="button danger" type="button" hidden>Olvidar conexión</button></div>
+          <p id="dbMessage" class="db-message" role="status" aria-live="polite"></p>
+        </article>
+        <article class="transfer-card db-copy">
+          <h2>2 · Copiar el catálogo</h2>
+          <p>Copia las tiendas, todas las ofertas y anota cada cambio de precio. Las tablas se crean solas la primera vez. Se puede repetir cuando quieras.</p>
+          <div class="form-actions"><button id="dbSync" class="button primary" type="button" disabled>Copiar ahora</button></div>
+          <div id="dbStats" class="db-stats" hidden></div>
+          <p id="dbLastSync" class="form-help"></p>
+        </article>
+        <article class="transfer-card db-github">
+          <h2>3 · Copia automática todos los días</h2>
+          <ol class="db-steps">
+            <li>En GitHub abrí tu repositorio → <b>Settings</b> → <b>Secrets and variables</b> → <b>Actions</b>.</li>
+            <li>Tocá <b>New repository secret</b>. En <b>Name</b> escribí <code>DATABASE_URL</code> y en <b>Secret</b> pegá la misma dirección de conexión.</li>
+            <li>Listo: cada actualización diaria de precios también copia el catálogo a tu base.</li>
+          </ol>
+          <p class="form-help">La guía completa, con proveedores gratis, está en <b>POSTGRESQL-LEEME.md</b>.</p>
+        </article>
+        <article class="transfer-card db-queries">
+          <h2>Consultas útiles</h2>
+          <p>Pegalas en el editor SQL de tu proveedor.</p>
+          <details><summary>Bajadas de precio recientes</summary><pre>select * from rivfree.price_drops
+order by changed_at desc limit 50;</pre></details>
+          <details><summary>Ofertas actuales de una tienda</summary><pre>select name, price_usd, old_price_usd
+from rivfree.current_offers
+where store = 'DFA' and on_sale
+order by price_usd;</pre></details>
+          <details><summary>Historial de un producto</summary><pre>select o.name, c.changed_at, c.price_usd
+from rivfree.price_changes c
+join rivfree.offers o on o.id = c.offer_id
+where o.name ilike '%sauvage%'
+order by c.changed_at;</pre></details>
+        </article>
+      </div>
+    </section>
     <section class="panel" data-panel="transfer">
       <div class="panel-heading"><div><span class="eyebrow">DATOS MANUALES</span><h1>Importar, respaldar y publicar</h1><p>Los archivos manuales están separados de los scrapers, por lo que una actualización automática no los reemplaza.</p></div></div>
       <div class="transfer-grid">
         <article class="transfer-card owner-only"><h2>Exportar respaldo</h2><p>Descarga todas las tiendas y publicaciones manuales en un único JSON que después podés volver a importar.</p><a id="downloadJson" class="button" href="#">Descargar JSON</a></article>
         <article class="transfer-card featured owner-only"><h2>Paquete listo para GitHub</h2><p>Incluye catálogo manual, configuración de RivFree Studio, carrusel e imágenes de <code>assets/manual/</code>.</p><a id="downloadZip" class="button primary" href="#">Descargar ZIP para GitHub</a></article>
-        <article class="transfer-card owner-only"><h2>Importar JSON o CSV</h2><p>JSON acepta respaldos del editor. CSV importa productos con encabezados como <code>tienda,nombre,precio_usd,categoria,fuente_tipo,fuente_url</code>.</p><input id="importFile" type="file" accept=".json,.csv,application/json,text/csv"><div class="inline"><select id="importMode"><option value="merge">Combinar con lo existente</option><option value="replace">Reemplazar datos manuales</option></select><button id="importButton" class="button" type="button">Importar</button></div></article>
+        <article class="transfer-card owner-only"><h2>Importar JSON o CSV</h2><p>JSON acepta respaldos del editor. Excel: guardá la hoja como CSV UTF-8 antes de importar; .xlsx y .xls no se leen directamente. CSV admite coma o punto y coma, crea tiendas nuevas y permite catálogos completos con encabezados como <code>tienda,nombre,precio_usd,categoria,fuente_tipo,fuente_url</code>.</p><input id="importFile" type="file" accept=".json,.csv,application/json,text/csv"><div class="inline"><select id="importMode"><option value="merge">Combinar con lo existente</option><option value="replace">Reemplazar datos manuales</option></select><button id="importButton" class="button" type="button">Importar</button></div></article>
         <article class="transfer-card owner-only"><h2>Imágenes sin usar</h2><p>Protege imágenes de productos, diseño, carrusel y copias de seguridad.</p><button id="scanOrphans" class="button">Buscar imágenes sin usar</button><div id="orphanList"></div><button id="deleteOrphans" class="button danger" hidden>Eliminar imágenes listadas</button></article>
         <article class="transfer-card contributor-only featured" hidden><span class="eyebrow">APORTE</span><h2>Exportar para enviar</h2><p>Genera un ZIP que contiene únicamente lo que cargaste en este modo. No incluye ni modifica el catálogo oficial.</p><label><span>Tu nombre o identificador *</span><input id="contributorName" maxlength="120" placeholder="Ej.: Pedro"></label><label><span>Mensaje para quien revisa</span><textarea id="contributorNote" rows="3" maxlength="1000" placeholder="Ej.: precios vistos hoy en Instagram"></textarea></label><a id="downloadContribution" class="button primary disabled-link" href="#" aria-disabled="true">Exportar aporte ZIP</a></article>
         <article class="transfer-card contributor-only" hidden><h2>Qué tenés que enviar</h2><p>Mandale a la persona que administra RivFree solamente el ZIP generado arriba. No necesitás GitHub ni pasarle toda la carpeta del proyecto.</p><pre>1. Cargar tiendas/productos
@@ -232,9 +281,13 @@
   </section>
 </main>
 <template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
-<script src="editor.js?v=20260929-studio-sync1"></script>
-<script src="studio-editor.js?v=20260929-studio-sync1"></script>
 <script src="../../matching.js"></script>
-<script src="maintenance.js?v=20260929-studio-sync1"></script>
+<script src="../../catalog.js?v=20261001-v5"></script>
+<script src="catalog-fields.js?v=20261001-studio7"></script>
+<script src="hours-editor.js?v=20261001-studio7"></script>
+<script src="editor.js?v=20261001-studio7"></script>
+<script src="studio-editor.js?v=20261001-studio7"></script>
+<script src="database-panel.js?v=20261001-studio7"></script>
+<script src="maintenance.js?v=20261001-studio7"></script>
 </body>
 </html>

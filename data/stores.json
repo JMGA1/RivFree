@@ -17,10 +17,10 @@
   },
   "Sineriz": {
     "nombre_completo": "Siñeriz Shopping",
-    "direccion": "Av. Sarandí 338, Rivera, Uruguay",
+    "direccion": "Sepé 51, Rivera, Uruguay",
     "telefono": "+598 4624 1000",
     "email": null,
-    "horario": "Todos los días de 9:00 a 20:00 (verificar en el local)",
+    "horario": "Todos los días de 10:00 a 20:00 · Siñeriz Shopping, Sepé 51",
     "sitio_web": "https://www.sineriz.com.uy/",
     "redes": {
       "instagram": "https://www.instagram.com/sinerizfreeshop/"
@@ -28,24 +28,124 @@
     "nota": null,
     "catalogo_online": true,
     "color": "#A42435",
-    "color_texto": "#FFFFFF"
+    "color_texto": "#FFFFFF",
+    "weekly_hours": {
+      "0": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ],
+      "1": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ],
+      "2": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ],
+      "3": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ],
+      "4": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ],
+      "5": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ],
+      "6": [
+        [
+          "10:00",
+          "20:00"
+        ]
+      ]
+    },
+    "source": "https://www.sineriz.com.uy/contato-conosco/",
+    "verified_at": "2026-09-30",
+    "timezone": "America/Montevideo",
+    "description": {
+      "es": "Siñeriz cuenta con dos locales en Rivera: el free shop del centro, en Sarandí 338, y Siñeriz Shopping, en Sepé 51, inaugurado en agosto de 2012. Esta ficha muestra los datos del shopping. La sucursal del centro tiene otros horarios y teléfono.",
+      "pt-BR": "A Siñeriz tem duas lojas em Rivera: o free shop do centro, na Sarandí 338, e o Siñeriz Shopping, na Sepé 51, inaugurado em agosto de 2012. Esta ficha apresenta os dados do shopping. A loja do centro tem outros horários e telefone."
+    }
   },
   "Barão Free Shop": {
     "nombre_completo": "Barão Free Shop",
-    "direccion": "Agraciada esq. Paysandú, Rivera, Uruguay",
+    "direccion": "Agraciada 397 / Paysandú 1071, Rivera, Uruguay",
     "telefono": "+598 4623 9211",
-    "email": null,
+    "email": "barao.e.voce@adinet.com.uy",
     "horario": "Lun a vie 7:00–18:00, sáb 7:00–18:00, dom 8:00–12:00",
     "sitio_web": "https://www.baraofreeshop.com.br/",
     "redes": {
       "instagram": "https://www.instagram.com/baraofreeshop/",
       "facebook": "https://www.facebook.com/baraofshop/",
-      "telegram": "https://t.me/baraofreeshop"
+      "telegram": "https://t.me/baraofreeshop",
+      "whatsapp": "https://wa.me/5555981187666"
     },
     "nota": null,
     "catalogo_online": true,
     "color": "#176A3A",
-    "color_texto": "#FFFFFF"
+    "color_texto": "#FFFFFF",
+    "weekly_hours": {
+      "0": [
+        [
+          "08:00",
+          "12:00"
+        ]
+      ],
+      "1": [
+        [
+          "07:00",
+          "18:00"
+        ]
+      ],
+      "2": [
+        [
+          "07:00",
+          "18:00"
+        ]
+      ],
+      "3": [
+        [
+          "07:00",
+          "18:00"
+        ]
+      ],
+      "4": [
+        [
+          "07:00",
+          "18:00"
+        ]
+      ],
+      "5": [
+        [
+          "07:00",
+          "18:00"
+        ]
+      ],
+      "6": [
+        [
+          "07:00",
+          "18:00"
+        ]
+      ]
+    },
+    "source": "https://www.baraofreeshop.com.br/contato",
+    "verified_at": "2026-09-30",
+    "timezone": "America/Montevideo",
+    "whatsapp_source": "https://www.baraofreeshop.com.br/contato"
   },
   "Yury's Free Shop": {
     "nombre_completo": "Yury's Free Shop",
@@ -56,12 +156,14 @@
     "sitio_web": "https://www.yurysfreeshop.com/",
     "redes": {
       "instagram": "https://www.instagram.com/yurysfreeshop/",
-      "facebook": "https://www.facebook.com/yurysfreeshop"
+      "facebook": "https://www.facebook.com/yurysfreeshop",
+      "whatsapp": "https://wa.me/59894553222"
     },
     "nota": null,
     "catalogo_online": true,
     "color": "#184B9C",
-    "color_texto": "#FFFFFF"
+    "color_texto": "#FFFFFF",
+    "whatsapp_source": "https://www.yurysfreeshop.com/contato"
   },
   "Neutral": {
     "nombre_completo": "Neutral Free Shop",
@@ -110,6 +212,57 @@
     "nota": "Catálogo online disponible; los precios y la disponibilidad pueden cambiar sin aviso.",
     "catalogo_online": true,
     "color": "#151515",
-    "color_texto": "#F5D477"
+    "color_texto": "#F5D477",
+    "weekly_hours": {
+      "0": [
+        [
+          "08:30",
+          "12:30"
+        ]
+      ],
+      "1": [
+        [
+          "07:30",
+          "18:00"
+        ]
+      ],
+      "2": [
+        [
+          "07:30",
+          "18:00"
+        ]
+      ],
+      "3": [
+        [
+          "07:30",
+          "18:00"
+        ]
+      ],
+      "4": [
+        [
+          "07:30",
+          "18:00"
+        ]
+      ],
+      "5": [
+        [
+          "07:30",
+          "18:00"
+        ]
+      ],
+      "6": [
+        [
+          "07:30",
+          "18:00"
+        ]
+      ]
+    },
+    "source": "https://mantrafreeshop.com/Eletr%C3%B4nicos-c31413558",
+    "verified_at": "2026-09-30",
+    "timezone": "America/Montevideo",
+    "description": {
+      "es": "Mantra ofrece un catálogo de cosméticos, fragancias, electrónica, electrodomésticos, bebidas, alimentos y vestimenta. Su presentación institucional destaca la experiencia de su equipo en el sector free shop y la atención familiar.",
+      "pt-BR": "A Mantra oferece cosméticos, fragrâncias, eletrônicos, eletrodomésticos, bebidas, alimentos e vestuário. Sua apresentação institucional destaca a experiência da equipe no setor de free shops e o atendimento familiar."
+    }
   }
 }

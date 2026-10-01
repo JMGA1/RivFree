@@ -1,0 +1,39 @@
+=== ES ===
+BORRADOR EDITABLE — completar y revisar antes de publicar.
+Última actualización: [COMPLETAR FECHA]
+
+1. Responsable y contacto
+[COMPLETAR nombre del responsable, domicilio y correo de contacto].
+
+2. Información que usa RivFree
+El catálogo y la comparación de precios pueden consultarse sin aceptar análisis. Las preferencias de idioma, tema, lista de compras e historial de búsquedas se guardan en este navegador. No se exige crear una cuenta para estas funciones.
+
+Si aceptás el análisis, podemos cargar Google Analytics 4, Microsoft Clarity cuando se configure su identificador y Cloudflare Web Analytics. Se usan para comprender visitas e interacciones. No se activan antes de tu aceptación. Clarity puede registrar interacciones con la interfaz; las áreas personales señaladas por RivFree se enmascaran.
+[COMPLETAR finalidad, fundamento aplicable, datos del alojamiento, destinatarios, transferencias, conservación y medidas de protección].
+
+3. Tus opciones
+Podés rechazar o cambiar tu decisión en “Preferencias de cookies”, al pie de la página. La decisión se guarda durante 180 días. Al retirar el consentimiento se detiene la carga de análisis y se eliminan las cookies de análisis accesibles de este sitio. No se borran retroactivamente los datos ya recibidos por los proveedores.
+[COMPLETAR procedimiento y contacto para solicitudes de acceso, rectificación o eliminación y demás derechos aplicables].
+
+4. Enlaces externos
+Las tiendas, Google Maps, WhatsApp y redes sociales tienen sus propias políticas. Al abrir esos enlaces salís de RivFree.
+
+=== PT ===
+RASCUNHO EDITÁVEL — completar e revisar antes de publicar.
+Última atualização: [COMPLETAR DATA]
+
+1. Responsável e contato
+[COMPLETAR nome do responsável, endereço e e-mail].
+
+2. Informações usadas pelo RivFree
+O catálogo e a comparação de preços podem ser consultados sem aceitar análise. Idioma, tema, lista de compras e histórico de buscas são salvos neste navegador. Essas funções não exigem uma conta.
+
+Se você aceitar a análise, podemos carregar Google Analytics 4, Microsoft Clarity quando seu identificador estiver configurado e Cloudflare Web Analytics para entender visitas e interações. Eles não são ativados antes da aceitação. O Clarity pode registrar interações com a interface; as áreas pessoais indicadas pelo RivFree são mascaradas.
+[COMPLETAR finalidade, fundamento aplicável, dados da hospedagem, destinatários, transferências, retenção e medidas de proteção].
+
+3. Suas opções
+Você pode recusar ou mudar sua decisão em “Preferências de cookies”, no rodapé. A decisão é salva por 180 dias. Ao retirar o consentimento, a análise para de carregar e os cookies de análise acessíveis deste site são removidos. Isso não apaga retroativamente os dados já recebidos pelos provedores.
+[COMPLETAR procedimento e contato para pedidos de acesso, correção ou exclusão e outros direitos aplicáveis].
+
+4. Links externos
+Lojas, Google Maps, WhatsApp e redes sociais têm suas próprias políticas. Ao abrir esses links, você sai do RivFree.

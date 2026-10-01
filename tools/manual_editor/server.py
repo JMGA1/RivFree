@@ -52,7 +52,7 @@ MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = secrets.token_urlsafe(32)
-STUDIO_BUILD = '20260929-studio-sync1'
+STUDIO_BUILD = '20261001-studio7'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -255,6 +255,9 @@ def load_manual_products() -> dict:
 
 
 
+SOCIAL_NETWORKS = ("instagram", "facebook", "tiktok", "whatsapp", "youtube", "x", "telegram")
+SOCIAL_LABELS = {"instagram": "Instagram", "facebook": "Facebook", "tiktok": "TikTok", "whatsapp": "WhatsApp", "youtube": "YouTube", "x": "X", "telegram": "Telegram"}
+
 def default_site_config() -> dict:
     return {
         "version": "studio-1", "actualizado": None,
@@ -265,9 +268,13 @@ def default_site_config() -> dict:
             "dark": {"background": "#101B2B", "surface": "#19283C", "text": "#F1F5FB", "primary": "#AD233C", "accent": "#E94E67", "highlight": "#FFB5B9", "background_image": "", "background_overlay": 0},
         },
         "notice": {"enabled": True, "dismissible": True, "title_es": "Antes de tu visita.", "title_pt": "Antes da sua visita.", "text_es": "La web refleja catálogos online, no el stock físico completo de cada tienda.", "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."},
-        "homepage": {"order": ["hero", "benefits", "discover", "popular", "catalog"], "visible": {"hero": True, "benefits": True, "discover": True, "popular": True, "catalog": True}},
+        "homepage": {"order": ["hero", "benefits", "discover", "popular", "recommended", "most"], "visible": {"hero": True, "benefits": True, "discover": True, "popular": True, "recommended": True, "most": True}},
         "carousel": {"visible_count": 5, "autoplay": True, "autoplay_seconds": 6, "transition": "smooth", "transition_ms": 500},
         "seo": {"title_es": "RivFree — Comparador de precios de free shops", "title_pt": "RivFree — Comparador de preços de free shops", "description_es": "Compará precios de free shops de Rivera y Santana do Livramento.", "description_pt": "Compare preços de free shops de Rivera e Santana do Livramento.", "social_image": "social-card.png"},
+        "top_notice": {"enabled": True, "title_es": "RivFree es un comparador de precios.", "title_pt": "O RivFree é um comparador de preços.", "text_es": "No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.", "text_pt": "Não vendemos produtos nem somos afiliados às lojas: cada compra é feita diretamente com o free shop.", "short_es": "Solo comparamos precios: no vendemos ni estamos afiliados a las tiendas.", "short_pt": "Só comparamos preços: não vendemos nem somos afiliados às lojas."},
+        "social": {"show_without_link": True, **{k: {"url": "", "visible": k in ("instagram", "facebook", "tiktok", "whatsapp")} for k in SOCIAL_NETWORKS}},
+        "nav": {"stores": True, "offers": True, "exchange": True, "list": True},
+        "offers": {"tiers": [20, 40, 60]},
         "footer": {"title_es": "RivFree · Comparador independiente", "title_pt": "RivFree · Comparador independente", "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.", "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.", "show_privacy": True},
     }
 
@@ -307,12 +314,29 @@ def normalize_site_config(raw: dict) -> dict:
     font = text(appearance.get("font"), 30); density = text(appearance.get("density"), 30); shadow = text(appearance.get("shadow"), 30)
     notice = raw.get("notice") if isinstance(raw.get("notice"), dict) else {}
     homepage = raw.get("homepage") if isinstance(raw.get("homepage"), dict) else {}; visible = homepage.get("visible") if isinstance(homepage.get("visible"), dict) else {}
-    allowed_sections = ["hero", "benefits", "discover", "popular", "catalog"]
+    allowed_sections = ["hero", "benefits", "discover", "popular", "recommended", "most"]
     order = [x for x in (homepage.get("order") or []) if x in allowed_sections]
     order += [x for x in allowed_sections if x not in order]
     carousel = raw.get("carousel") if isinstance(raw.get("carousel"), dict) else {}
     seo = raw.get("seo") if isinstance(raw.get("seo"), dict) else {}
     footer = raw.get("footer") if isinstance(raw.get("footer"), dict) else {}
+    top = raw.get("top_notice") if isinstance(raw.get("top_notice"), dict) else {}
+    social = raw.get("social") if isinstance(raw.get("social"), dict) else {}
+    nav = raw.get("nav") if isinstance(raw.get("nav"), dict) else {}
+    offers = raw.get("offers") if isinstance(raw.get("offers"), dict) else {}
+    def network(key):
+        item = social.get(key) if isinstance(social.get(key), dict) else {}
+        default = base["social"][key]
+        try:
+            url = safe_url(item.get("url")) or ""
+        except ValueError:
+            raise ValueError(f"Enlace de {SOCIAL_LABELS[key]} inválido: usá una dirección que empiece con https://") from None
+        return {"url": url, "visible": bool(item.get("visible", default["visible"]))}
+    tiers = []
+    for value in offers.get("tiers") if isinstance(offers.get("tiers"), list) else []:
+        number = safe_int(value, 0, 0, 1000)
+        if 5 <= number <= 95 and number not in tiers: tiers.append(number)
+    tiers = sorted(tiers)[:4] or [20, 40, 60]
     return {
         "version": new_version("studio"), "actualizado": now_iso(),
         "branding": {"site_name": text(branding.get("site_name") or "RivFree", 60), "tagline_es": text(branding.get("tagline_es"), 180), "tagline_pt": text(branding.get("tagline_pt"), 180)},
@@ -321,12 +345,22 @@ def normalize_site_config(raw: dict) -> dict:
         "homepage": {"order": order, "visible": {k: bool(visible.get(k, True)) for k in allowed_sections}},
         "carousel": {"visible_count": safe_int(carousel.get("visible_count"), 5, 1, 10), "autoplay": bool(carousel.get("autoplay", True)), "autoplay_seconds": safe_int(carousel.get("autoplay_seconds"), 6, 3, 30), "transition": text(carousel.get("transition"), 20) if text(carousel.get("transition"), 20) in {"smooth","static"} else "smooth", "transition_ms": safe_int(carousel.get("transition_ms"), 500, 200, 1200)},
         "seo": {"title_es": text(seo.get("title_es"), 160), "title_pt": text(seo.get("title_pt"), 160), "description_es": text(seo.get("description_es"), 320), "description_pt": text(seo.get("description_pt"), 320), "social_image": safe_asset_or_url(seo.get("social_image")) or "social-card.png"},
+        "top_notice": {"enabled": bool(top.get("enabled", True)), **{f"{field}_{lang}": text(top.get(f"{field}_{lang}"), limit) for field, limit in (("title", 120), ("text", 400), ("short", 200)) for lang in ("es", "pt")}},
+        "social": {"show_without_link": bool(social.get("show_without_link", True)), **{key: network(key) for key in SOCIAL_NETWORKS}},
+        "nav": {key: bool(nav.get(key, True)) for key in ("stores", "offers", "exchange", "list")},
+        "offers": {"tiers": tiers},
         "footer": {"title_es": text(footer.get("title_es"), 160), "title_pt": text(footer.get("title_pt"), 160), "text_es": text(footer.get("text_es"), 1000), "text_pt": text(footer.get("text_pt"), 1000), "show_privacy": bool(footer.get("show_privacy", True))},
     }
 
 def load_site_config() -> dict:
     value = read_json(SITE_CONFIG_PATH, default_site_config())
-    return value if isinstance(value, dict) else default_site_config()
+    if not isinstance(value, dict):
+        return default_site_config()
+    base = default_site_config()
+    for key in ("top_notice", "social", "nav", "offers"):  # options added in v6
+        if not isinstance(value.get(key), dict):
+            value[key] = base[key]
+    return value
 
 def normalize_campaign(raw: dict, index=0) -> dict:
     if not isinstance(raw, dict): raise ValueError("Banner inválido")
@@ -383,6 +417,76 @@ def save_site_config(payload: dict) -> dict:
     with LOCK:
         check_revision(payload); backup_current(); config=normalize_site_config(payload.get("config") or {}); atomic_write_json(SITE_CONFIG_PATH,config); return state_payload()
 
+# ── Studio → Base de datos (PostgreSQL) ─────────────────────────────────────
+# The connection (with its password) is kept only on this computer, in .rivfree-local/ (never published).
+_POSTGRES_MODULE = None
+
+
+def postgres():
+    global _POSTGRES_MODULE
+    if _POSTGRES_MODULE is None:
+        import importlib.util
+        path = Path(__file__).resolve().parents[1] / "postgres_sync.py"
+        spec = importlib.util.spec_from_file_location("rivfree_postgres_sync", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        _POSTGRES_MODULE = module
+    return _POSTGRES_MODULE
+
+
+def _db_owner():
+    if EDITOR_MODE != "owner":
+        raise ValueError("Solo el editor principal puede configurar la base de datos")
+
+
+def db_state(payload: dict | None = None) -> dict:
+    _db_owner()
+    pg = postgres()
+    url = pg.load_saved_url(PROJECT_ROOT)
+    try:
+        import pg8000  # noqa: F401
+        has_driver = True
+    except ImportError:
+        has_driver = False
+    return {"configured": bool(url), "masked": pg.mask_url(url) if url else "", "driver": has_driver}
+
+
+def db_test(payload: dict) -> dict:
+    _db_owner()
+    pg = postgres()
+    url = text(payload.get("url"), 2000) or pg.load_saved_url(PROJECT_ROOT)
+    if not url:
+        raise ValueError("Pegá la dirección de conexión de tu base.")
+    return {**db_state(), "stats": pg.run_with_connection(url, pg.stats, timeout=25)}
+
+
+def db_save(payload: dict) -> dict:
+    _db_owner()
+    pg = postgres()
+    url = text(payload.get("url"), 2000)
+    pg.parse_database_url(url)
+    result = pg.run_with_connection(url, pg.stats, timeout=25)  # only connections that work are saved
+    pg.save_url(url, PROJECT_ROOT)
+    return {**db_state(), "stats": result}
+
+
+def db_sync(payload: dict) -> dict:
+    _db_owner()
+    pg = postgres()
+    url = pg.load_saved_url(PROJECT_ROOT)
+    if not url:
+        raise ValueError("Primero guardá la conexión con tu base.")
+    with LOCK:  # a consistent copy of the files while they are read
+        summary = pg.run_with_connection(url, lambda con: pg.sync(con, PROJECT_ROOT, "studio"), timeout=180)
+    return {**db_state(), "summary": summary, "stats": pg.run_with_connection(url, pg.stats, timeout=25)}
+
+
+def db_forget(payload: dict) -> dict:
+    _db_owner()
+    postgres().forget_url(PROJECT_ROOT)
+    return db_state()
+
+
 def save_highlights(payload: dict) -> dict:
     if EDITOR_MODE != "owner": raise ValueError("Solo el editor principal puede cambiar el carrusel")
     with LOCK:
@@ -405,6 +509,70 @@ def load_reference_stores() -> dict:
         owner_stores = {}
     return {**base, **owner_stores}
 
+def normalize_profile(payload, current):
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+    fields = ('description','specialties','timezone','weekly_hours','hours_exceptions','google','photos','source','verified_at','ubicacion')
+    result = {key: current[key] for key in fields if key in current}
+    result.update({key: payload[key] for key in fields if key in payload})
+    if 'description' in result:
+        value=result['description']
+        if not isinstance(value,dict): raise ValueError('Descripción de tienda inválida')
+        result['description']={lang:text(value.get(lang),6000) for lang in ('es','pt-BR')}
+    if 'specialties' in result:
+        if not isinstance(result['specialties'],list): raise ValueError('Especialidades inválidas')
+        result['specialties']=[text(v,120) for v in result['specialties'][:30] if text(v,120)]
+    if result.get('timezone') and result['timezone'] not in {'America/Montevideo','America/Sao_Paulo','America/Asuncion','America/Argentina/Buenos_Aires','UTC'}:
+        try: ZoneInfo(result['timezone'])
+        except (ZoneInfoNotFoundError, ValueError, TypeError): raise ValueError('Zona horaria inválida')
+    def hours(value, exceptions=False):
+        if not isinstance(value,dict): raise ValueError('Horarios inválidos')
+        for day, intervals in value.items():
+            if exceptions:
+                try: datetime.strptime(day,'%Y-%m-%d')
+                except ValueError: raise ValueError('Fecha de excepción inválida')
+            elif str(day) not in list('0123456'): raise ValueError('Día de semana inválido')
+            if not isinstance(intervals,list) or len(intervals)>8: raise ValueError('Intervalos de horario inválidos')
+            for pair in intervals:
+                if not isinstance(pair,list) or len(pair)!=2 or not all(isinstance(t,str) and re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d',t) for t in pair) or pair[0]>=pair[1]:
+                    raise ValueError('Usá intervalos HH:MM-HH:MM dentro del mismo día; vacío significa cerrado')
+            for previous, current in zip(intervals, intervals[1:]):
+                if current[0] < previous[1]:
+                    raise ValueError('Los turnos se superponen o están desordenados')
+        return value
+    for key in ('weekly_hours','hours_exceptions'):
+        if key in result and result[key] is not None: result[key]=hours(result[key],key=='hours_exceptions')
+    if 'google' in result:
+        g=result['google']
+        if not isinstance(g,dict): raise ValueError('Datos de Google inválidos')
+        rating=number_or_none(g.get('rating'),'Evaluación de Google');count=number_or_none(g.get('count'),'Cantidad de evaluaciones')
+        if rating is not None and not 0<=rating<=5: raise ValueError('La evaluación debe estar entre 0 y 5')
+        if count is not None and (count<0 or not count.is_integer()): raise ValueError('La cantidad debe ser un entero positivo')
+        result['google']={'rating':rating,'count':int(count) if count is not None else None,'url':safe_url(g.get('url'))}
+    if 'ubicacion' in result:
+        point=result['ubicacion']
+        if point in (None,'',{}):
+            result['ubicacion']=None
+        else:
+            if not isinstance(point,dict): raise ValueError('Ubicación inválida')
+            def coordinate(value, label):
+                if value in (None, ''): return None
+                if isinstance(value, bool): raise ValueError(f'{label} inválida')
+                try: number=float(value)
+                except (TypeError, ValueError): raise ValueError(f'{label} debe ser un número')
+                if not math.isfinite(number): raise ValueError(f'{label} fuera de rango')
+                return number
+            lat=coordinate(point.get('lat'),'Latitud');lng=coordinate(point.get('lng'),'Longitud')
+            if lat is None or lng is None: raise ValueError('Completá latitud y longitud, o dejá ambas vacías')
+            if not (-90<=lat<=90 and -180<=lng<=180) or (lat==0 and lng==0): raise ValueError('Coordenadas fuera de rango')
+            result['ubicacion']={'lat':round(lat,7),'lng':round(lng,7)}
+    if 'photos' in result:
+        if not isinstance(result['photos'],list) or len(result['photos'])>30: raise ValueError('Máximo 30 fotos por tienda')
+        result['photos']=[{'url':safe_image(p.get('url')),'caption':text(p.get('caption'),300),'attribution':text(p.get('attribution'),500)} for p in result['photos'] if isinstance(p,dict)]
+    if 'source' in result: result['source']=safe_url(result['source'])
+    if 'verified_at' in result: result['verified_at']=text(result['verified_at'],40)
+    return result
+
+
 def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, dict]:
     if not isinstance(payload, dict):
         raise ValueError("Tienda inválida")
@@ -423,6 +591,7 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
             else:
                 networks.pop(key, None)
     info = {
+        **current,
         "nombre_completo": text(payload.get("nombre_completo") or name, 180),
         "direccion": nullable_text(payload.get("direccion"), 300),
         "telefono": nullable_text(payload.get("telefono"), 80),
@@ -432,10 +601,13 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
         "redes": networks,
         "nota": nullable_text(payload.get("nota"), 1000),
         "catalogo_online": bool(payload.get("catalogo_online", current.get("catalogo_online", False))),
+        # Studio → Tiendas: hide this store's product photos on the public site (the files are not touched).
+        "ocultar_fotos": payload.get("ocultar_fotos", current.get("ocultar_fotos", False)) is True,
         "color": safe_color(payload.get("color") or current.get("color") or "#B42335"),
         "color_texto": safe_color(payload.get("color_texto") or current.get("color_texto") or "#FFFFFF", "#FFFFFF"),
         "manual": True,
     }
+    info.update(normalize_profile(payload, current))
     return name, info
 
 
@@ -481,6 +653,12 @@ def normalize_product(payload: dict, existing: dict | None = None, known_stores:
         "creado": created,
         "actualizado_manual": now_iso(),
     }
+    result['marca'] = text(payload.get('marca', current.get('marca')), 120)
+    result['descripcion'] = text(payload.get('descripcion', current.get('descripcion')), 6000)
+    specs = payload.get('especificaciones', current.get('especificaciones', {}))
+    if not isinstance(specs, dict) or len(specs)>60:
+        raise ValueError('Especificaciones: usá un objeto de hasta 60 campos')
+    result['especificaciones'] = {text(k,100):text(v,500) for k,v in specs.items() if text(k,100)}
     return result
 
 
@@ -728,22 +906,27 @@ def import_data(payload: dict) -> dict:
         current_products = [] if mode == "replace" else list(load_manual_products()["productos"])
         by_id = {p.get("id"): p for p in current_products if p.get("id")}
         normalized_products = [] if mode == "replace" else current_products
-        for item in products_in:
+        positions = {p.get("id"):i for i,p in enumerate(normalized_products)}
+        for row_number, item in enumerate(products_in, 2):
             if not isinstance(item, dict):
                 continue
             store_name = text(item.get("tienda"), 120)
             if store_name and store_name not in known:
                 auto_name, auto_info = normalize_store({"nombre": store_name, "color": "#B42335"})
                 current_stores[auto_name] = auto_info; known.add(auto_name)
-            existing = by_id.get(item.get("id"))
-            normalized = normalize_product(item, existing, known)
-            if mode == "replace":
-                normalized_products.append(normalized)
-            elif existing:
-                idx = next(i for i,p in enumerate(normalized_products) if p.get("id") == normalized["id"])
-                normalized_products[idx] = normalized
+            item = dict(item)
+            if not re.fullmatch(r'manual-[A-Za-z0-9_-]+',str(item.get('id',''))):
+                identity = str(item.get('id') or item.get('url') or item.get('nombre') or '').strip()
+                item['id'] = 'manual-import-' + hashlib.sha256((store_name+'|'+identity).encode()).hexdigest()[:24]
+            existing = by_id.get(item.get('id'))
+            try: normalized = normalize_product(item, existing, known)
+            except ValueError as error: raise ValueError(f'Fila {row_number}: {error}') from error
+            identifier=normalized['id']
+            if identifier in positions: normalized_products[positions[identifier]]=normalized
             else:
+                positions[identifier]=len(normalized_products)
                 normalized_products.append(normalized)
+            by_id[identifier]=normalized
         backup_current()
         stamp = now_iso()
         stores_doc = {"version": new_version("stores"), "actualizado": stamp, "tiendas": current_stores}
@@ -1168,8 +1351,9 @@ class Handler(SimpleHTTPRequestHandler):
         relative = '/'.join(parts)
         public_data = {'stores.json','manual-stores.json','manual-products.json','products.json','meta.json','exchange.json','highlights.json','popular.json','site-config.json','price-history.json'}
         allowed = (not relative or relative=='index.html' or
-            (len(parts)==1 and (Path(relative).suffix in {'.js','.css'} or relative in {'privacy.html','manifest.webmanifest','social-card.png','robots.txt','sitemap.xml'})) or
+            (len(parts)==1 and (Path(relative).suffix in {'.js','.css'} or relative in {'privacy.html','cookies.html','terms.html','manifest.webmanifest','social-card.png','robots.txt','sitemap.xml'})) or
             (parts[:2]==('tools','manual_editor') and (len(parts)==2 or (len(parts)==3 and Path(relative).suffix in {'.html','.css','.js'}))) or
+            (len(parts)==2 and parts[0]=='politicas' and parts[1] in {'privacidad.txt','cookies.txt','terminos.txt'}) or
             (len(parts)==2 and parts[0]=='data' and parts[1] in public_data) or
             (len(parts)==3 and parts[0]=='data' and parts[1] in {'products','price-history'} and Path(relative).suffix=='.json') or
             (parts and parts[0] in {'assets','icons'} and Path(relative).suffix.lower() in {'.png','.jpg','.jpeg','.webp','.gif','.svg','.ico'}))
@@ -1213,6 +1397,13 @@ class Handler(SimpleHTTPRequestHandler):
         if parsed.path.startswith("/api/manual/"):
             if not self._authorized():
                 return self._error(403, "Sesión de editor inválida. Volvé a abrir Abrir-editor-manual.bat")
+            if parsed.path == "/api/manual/catalog":
+                query=text(parse_qs(parsed.query).get('q',[''])[0],120).casefold()
+                if len(query)<2: return self._json({'products':[]})
+                doc=read_json(DATA_DIR / 'products.json',{})
+                products=doc.get('productos',[]) if isinstance(doc,dict) else doc
+                found=[p for p in products if isinstance(p,dict) and all(term in (str(p.get('nombre',''))+' '+str(p.get('tienda',''))).casefold() for term in query.split())][:50]
+                return self._json({'products':found})
             if parsed.path == "/api/manual/state":
                 return self._json(state_payload())
             if parsed.path == "/api/manual/export":
@@ -1267,6 +1458,11 @@ class Handler(SimpleHTTPRequestHandler):
                 "/api/manual/apply-contribution": apply_contribution,
                 "/api/manual/reset-contribution": reset_contribution,
                 "/api/manual/save-site-config": save_site_config,
+                "/api/manual/db-state": db_state,
+                "/api/manual/db-test": db_test,
+                "/api/manual/db-save": db_save,
+                "/api/manual/db-sync": db_sync,
+                "/api/manual/db-forget": db_forget,
                 "/api/manual/save-highlights": save_highlights,
             }
             action = actions.get(parsed.path)

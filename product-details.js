@@ -1,7 +1,13 @@
 // A store offer is distinct from a general favorite (which uses the lowest price).
 const offerByFavoriteKey=new Map();
 function offerFavoriteKey(offer){return 'offer:'+JSON.stringify([offer.tienda,canonicalProductUrl(offer.url)||offer.nombre]);}
-function indexFavoriteOffers(){offerByFavoriteKey.clear();for(const group of PRODUCT_GROUPS)for(const offer of group.offers)offerByFavoriteKey.set(offerFavoriteKey(offer),offer);}
+// Built on first use: computing a key for every offer cost ~2 s on slow phones at startup.
+let offerIndexCatalog=null;
+function indexFavoriteOffers(){offerIndexCatalog=null;offerByFavoriteKey.clear();}
+function favoriteOffer(key){
+ if(offerIndexCatalog!==PRODUCT_GROUPS){offerByFavoriteKey.clear();for(const group of PRODUCT_GROUPS)for(const offer of group.offers)offerByFavoriteKey.set(offerFavoriteKey(offer),offer);offerIndexCatalog=PRODUCT_GROUPS;}
+ return offerByFavoriteKey.get(key);
+}
 function offerFavoriteControls(offer){
  const key=offerFavoriteKey(offer),box=document.createElement('div');box.className='offer-favorite-controls';
  const heart=document.createElement('button');heart.type='button';heart.className='favorite-button heart-button';

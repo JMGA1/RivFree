@@ -1,0 +1,130 @@
+/* v5 · Store directory: app icons, sorting and map */
+.rf-app-icon{--app-bg:#5b6577;--app-fg:#fff;--app-glyph:url(icons/ui/globe.svg);position:relative;flex-shrink:0;width:34px;height:34px;border-radius:10px;background:var(--app-bg);box-shadow:inset 0 0 0 1px rgb(0 0 0 / 6%);display:inline-block}
+.rf-app-icon::before{content:"";position:absolute;inset:7px;background:var(--app-fg);-webkit-mask:var(--app-glyph) center/contain no-repeat;mask:var(--app-glyph) center/contain no-repeat}
+.rf-app-whatsapp{--app-bg:#25D366;--app-glyph:url(icons/social/whatsapp.svg)}
+.rf-app-instagram{--app-bg:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);--app-glyph:url(icons/social/instagram.svg)}
+.rf-app-facebook{--app-bg:#0866FF;--app-glyph:url(icons/social/facebook.svg)}
+.rf-app-telegram{--app-bg:#26A5E4;--app-glyph:url(icons/social/telegram.svg)}
+.rf-app-tiktok{--app-bg:#010101;--app-glyph:url(icons/social/tiktok.svg);box-shadow:inset 0 0 0 1px rgb(255 255 255 / 14%)}
+.rf-app-youtube{--app-bg:#FF0000;--app-glyph:url(icons/social/youtube.svg)}
+.rf-app-x{--app-bg:#000;--app-glyph:url(icons/social/x.svg);box-shadow:inset 0 0 0 1px rgb(255 255 255 / 14%)}
+.rf-app-maps{--app-bg:#fff;--app-fg:#EA4335;--app-glyph:url(icons/social/googlemaps.svg);box-shadow:inset 0 0 0 1px #dadce0}
+.rf-app-maps::before{inset:6px}
+.rf-app-web{--app-bg:var(--rf-red,#ad233c);--app-glyph:url(icons/ui/globe.svg)}
+.rf-app-phone{--app-bg:color-mix(in srgb,var(--ink,#172337) 9%,transparent);--app-fg:var(--ink,#172337);--app-glyph:url(icons/ui/phone.svg)}
+.rf-app-mail{--app-bg:color-mix(in srgb,var(--ink,#172337) 9%,transparent);--app-fg:var(--ink,#172337);--app-glyph:url(icons/ui/mail.svg)}
+.rf-contact-links{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.rf-page .rf-contact,.rf-contact{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:4px 14px 4px 5px;border:1px solid var(--line,#dce2ea);border-radius:13px;background:var(--surface,#fff);color:var(--ink,#172337);font-size:13.5px;font-weight:650;text-decoration:none;line-height:1.2;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}
+.rf-contact:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--ink,#172337) 28%,transparent);box-shadow:0 6px 16px rgb(20 36 59 / 10%)}
+.rf-contact:focus-visible{outline:3px solid var(--teal,#ad233c);outline-offset:2px}
+.rf-contact-label{white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.rf-contact{transition:none}.rf-contact:hover{transform:none}}
+
+.rf-ui-icon{display:inline-block;width:18px;height:18px;flex-shrink:0;background:currentColor;-webkit-mask:var(--ui-glyph) center/contain no-repeat;mask:var(--ui-glyph) center/contain no-repeat}
+.rf-ui-map{--ui-glyph:url(icons/ui/map.svg)}.rf-ui-pin{--ui-glyph:url(icons/ui/pin.svg)}.rf-ui-route{--ui-glyph:url(icons/ui/route.svg)}
+
+.rf-store-tools{display:grid;gap:14px;margin:22px 0 10px}
+.rf-store-tools-row{display:flex;gap:12px;align-items:stretch}
+.rf-store-tools .rf-store-search{margin:0;flex:1;min-width:0}
+.rf-map-toggle{display:inline-flex;align-items:center;gap:9px;padding:0 20px;border:0;border-radius:14px;background:var(--rf-navy,#141820);color:#fff;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 6px 18px rgb(20 24 32 / 18%)}
+.rf-map-toggle:hover{background:color-mix(in srgb,var(--rf-navy,#141820) 82%,var(--rf-red,#ad233c))}
+:root[data-theme=dark] .rf-map-toggle{background:#24364f;box-shadow:inset 0 0 0 1px #3c5372}
+.rf-map-toggle[aria-expanded=true]{background:var(--rf-red,#ad233c)}
+.rf-map-toggle:focus-visible,.rf-sort-chip:focus-visible{outline:3px solid var(--teal,#ad233c);outline-offset:3px}
+.rf-store-sort{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.rf-store-sort-label{font-size:13px;font-weight:700;color:var(--muted,#586577);margin-right:2px}
+.rf-sort-chip{padding:8px 14px;border:1px solid var(--line,#dce2ea);border-radius:999px;background:var(--surface,#fff);color:var(--ink,#172337);font:inherit;font-size:13.5px;font-weight:650;cursor:pointer}
+.rf-sort-chip:hover{border-color:var(--teal,#ad233c)}
+.rf-sort-chip[aria-pressed=true]{background:var(--rf-red,#ad233c);border-color:var(--rf-red,#ad233c);color:#fff}
+.rf-store-count{margin:6px 0 12px}
+
+.rf-store-map-panel{margin:6px 0 18px;padding:10px;border:1px solid var(--line,#dce2ea);border-radius:18px;background:var(--surface,#fff);box-shadow:var(--rf-card-shadow,0 8px 26px rgb(31 28 35 / 8%))}
+.rf-map-canvas{height:min(440px,58vh);border-radius:12px;overflow:hidden;background:var(--paper-dim,#e9edf2);isolation:isolate}
+.rf-map-single{height:260px;margin:18px 0 12px}
+.rf-map-status{display:grid;place-items:center;height:100%;margin:0;padding:20px;text-align:center;color:var(--muted,#586577)}
+.rf-map-note{margin:10px 6px 2px;font-size:13px;color:var(--muted,#586577);line-height:1.6}
+.rf-map-note a{color:inherit;font-weight:650}
+.rf-map-marker{background:none;border:0}
+.rf-map-pin{position:absolute;left:0;top:0;width:0;height:0;cursor:pointer}
+.rf-map-drop{position:absolute;left:-16px;top:-39px;width:32px;height:32px;box-sizing:border-box;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--store-bg,#ad233c);border:2.5px solid #fff;box-shadow:-2px 3px 10px rgb(0 0 0 / 35%);display:grid;place-items:center;transition:transform .15s ease}
+.rf-map-initial{transform:rotate(45deg);color:var(--store-fg,#fff);font:800 11px/1 var(--font-sans,system-ui,sans-serif);letter-spacing:-.02em}
+.rf-map-pin[data-store=dfa] .rf-map-drop{border-color:var(--store-border,#154f96)}
+.rf-map-pin-label{position:absolute;left:0;top:-46px;transform:translate(-50%,-100%);padding:5px 10px;border-radius:999px;background:var(--store-bg,#ad233c);color:var(--store-fg,#fff);border:1.5px solid var(--store-border,#fff);font:700 12px/1.1 var(--font-sans,system-ui,sans-serif);white-space:nowrap;box-shadow:0 4px 12px rgb(0 0 0 / 25%);opacity:0;pointer-events:none;transition:opacity .15s ease}
+.rf-map-labels .rf-map-pin-label,.leaflet-marker-icon:hover .rf-map-pin-label,.leaflet-marker-icon:focus .rf-map-pin-label{opacity:1}
+.leaflet-marker-icon:hover .rf-map-drop,.leaflet-marker-icon:focus .rf-map-drop{transform:rotate(-45deg) scale(1.12)}
+.leaflet-marker-icon:focus{outline:none}
+.leaflet-marker-icon:focus-visible .rf-map-drop{outline:3px solid #fff;outline-offset:2px}
+.rf-map-legend{display:flex;flex-wrap:wrap;gap:8px;margin:12px 4px 0}
+.rf-map-legend:empty{display:none}
+.rf-map-legend .rf-map-chip{cursor:pointer;max-width:none}
+.rf-map-legend .card-store-label{max-width:none;overflow:visible;text-overflow:clip}
+@media (prefers-reduced-motion:reduce){.rf-map-drop,.rf-map-pin-label{transition:none}}
+.rf-map-canvas .leaflet-popup-content-wrapper,.rf-map-canvas .leaflet-popup-tip{background:var(--surface,#fff);color:var(--ink,#172337);box-shadow:0 10px 30px rgb(0 0 0 / 22%)}
+.rf-map-canvas .leaflet-popup-content-wrapper{border-radius:16px}
+.rf-map-canvas .leaflet-popup-content{margin:16px 18px 14px}
+.rf-map-popup{font:14px/1.45 var(--font-sans,system-ui,sans-serif);color:var(--ink,#172337)}
+.rf-map-popup strong{display:block;font-size:15.5px;margin-bottom:4px;padding-right:14px}
+.leaflet-popup-content .rf-map-popup p{margin:4px 0}
+.leaflet-popup-content .rf-map-popup .rf-open,.leaflet-popup-content .rf-map-popup .rf-muted{display:inline-block;font-size:12px;padding:4px 9px;border-radius:20px}
+.leaflet-popup-content .rf-map-popup .rf-muted{background:color-mix(in srgb,var(--ink,#172337) 8%,transparent)}
+.rf-map-address{color:var(--muted,#586577);font-size:13px}
+.rf-map-actions{display:flex;gap:8px;margin-top:12px}
+.rf-map-action{flex:1;display:inline-flex;justify-content:center;padding:9px 10px;border-radius:10px;border:1px solid var(--line,#dce2ea);background:var(--surface,#fff);color:var(--ink,#172337)!important;font:inherit;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer}
+.rf-map-action.primary{background:var(--rf-red,#ad233c);border-color:var(--rf-red,#ad233c);color:#fff!important}
+.rf-map-canvas .leaflet-container a.leaflet-popup-close-button,.rf-map-canvas a.leaflet-popup-close-button{color:var(--muted,#586577)}
+.leaflet-container{font-family:var(--font-sans,system-ui,sans-serif)}
+.leaflet-container a.leaflet-popup-close-button{width:28px;height:28px;font-size:20px}
+:root[data-theme=dark] .rf-map-canvas .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.7)}
+:root[data-theme=dark] .rf-map-canvas .leaflet-bar a{background:#19283c;color:#f1f5fb;border-color:#34465d}
+:root[data-theme=dark] .rf-map-canvas .leaflet-control-attribution{background:rgb(25 40 60 / 85%);color:#bdc8d8}
+:root[data-theme=dark] .rf-map-canvas .leaflet-control-attribution a{color:#ffb5c0}
+
+.rf-store-card.rf-store-card-v5{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;min-width:0;gap:20px 28px;align-items:end;padding:26px 28px 24px 32px;overflow:hidden}
+.rf-store-card-v5::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--store-bg,var(--teal,#ad233c));box-shadow:inset -1px 0 0 var(--store-border,transparent)}
+.rf-store-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.rf-store-titles{min-width:0}
+.rf-store-card-v5 h2{margin:0 0 4px;font-size:clamp(20px,2.4vw,24px)}
+.rf-store-card-v5 h2 a{text-decoration:none;color:inherit}
+.rf-store-card-v5 h2 a:hover{text-decoration:underline;text-underline-offset:3px}
+.rf-store-card-v5 .rf-specialty{margin:0}
+.rf-page .rf-store-rating{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:12px;background:color-mix(in srgb,#f5b800 13%,var(--surface,#fff));border:1px solid color-mix(in srgb,#f5b800 35%,transparent);font-size:13px;font-weight:650;text-decoration:none;white-space:nowrap}
+.rf-store-address{display:flex;gap:8px;align-items:flex-start;margin:14px 0 8px!important;line-height:1.5}
+.rf-store-address .rf-ui-icon{margin-top:2px;color:var(--teal,#ad233c)}
+.rf-store-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:13.5px}
+.rf-store-meta .rf-muted{padding:5px 10px;border-radius:20px;background:color-mix(in srgb,var(--ink,#172337) 7%,transparent);opacity:1;color:var(--muted,#586577);font-size:13px;font-weight:600}
+.rf-store-items{font-weight:700;color:var(--ink,#172337)}
+.rf-store-items::before{content:"·";margin-right:12px;color:var(--muted,#586577)}
+.rf-store-card-v5 .rf-hours{margin:12px 0 0}
+.rf-store-card-v5 .rf-store-actions{display:flex;flex-direction:column;gap:10px}
+.rf-page .rf-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#fff;background:var(--rf-red,#ad233c);border:1px solid var(--rf-red,#ad233c);font-weight:700;text-decoration:none}
+.rf-page .rf-button:hover{filter:brightness(1.07)}
+.rf-page .rf-button.rf-button-ghost{background:transparent;color:var(--ink,#172337);border-color:var(--line,#dce2ea)}
+.rf-page .rf-button.rf-button-ghost:hover{border-color:var(--teal,#ad233c);filter:none}
+.rf-page .rf-button-ghost .rf-ui-icon{color:var(--teal,#ad233c)}
+.rf-route-link{margin-top:4px}
+.rf-store-page-map{margin-top:6px}
+:root[data-theme=dark] .rf-page .rf-button:not(.rf-button-ghost){color:#fff}
+
+@media(max-width:760px){
+ .rf-store-card.rf-store-card-v5{grid-template-columns:minmax(0,1fr);padding:20px 18px 18px 22px}
+ .rf-store-body{min-width:0}
+ .rf-page .rf-store-rating{white-space:normal;align-self:flex-start}
+ .rf-store-items::before{content:none}
+ .rf-store-head{flex-direction:column;gap:10px}
+ .rf-store-card-v5 .rf-store-actions{flex-direction:row;flex-wrap:wrap}
+ .rf-store-card-v5 .rf-store-actions .rf-button{flex:1 1 140px}
+ .rf-store-tools-row{flex-direction:column}
+ .rf-map-toggle{justify-content:center;min-height:48px}
+}
+@media(max-width:500px){
+ .rf-contact-links{gap:8px}
+ .rf-store-card-v5 .rf-contact{padding:4px;min-height:0;border-radius:12px}
+ .rf-store-card-v5 .rf-contact-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ .rf-store-card-v5 .rf-app-icon{width:38px;height:38px}
+ .rf-store-sort{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .rf-store-sort-label{grid-column:1/-1}
+ .rf-sort-chip{padding:9px 8px;font-size:12.5px}
+ .rf-map-canvas:not(.rf-map-single){height:62vh}
+ .rf-map-single{height:220px}
+}
+:root[data-theme=dark] .rf-specialty{color:#ff9aaa}

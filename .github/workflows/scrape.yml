@@ -55,6 +55,7 @@ jobs:
           python -m pip install --require-hashes --only-binary=:all: -r requirements.txt -r requirements-security.txt
       - run: npm ci --ignore-scripts
       - run: python -m pip_audit -r requirements.txt --disable-pip --no-deps
+      - run: python -m pip_audit -r requirements-db.txt --disable-pip --no-deps
       - run: npm audit --audit-level=low
       - run: python -m unittest discover -s tests -v
       - run: npm test && npm run test:ui
@@ -206,6 +207,17 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '24'
+      # PostgreSQL is optional: with the DATABASE_URL secret, the daily update also copies the catalog to the database.
+      - name: Copiar catálogo a PostgreSQL (opcional, necesita el secreto DATABASE_URL)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        shell: bash
+        run: |
+          if [ -z "$DATABASE_URL" ]; then echo "Sin el secreto DATABASE_URL: no se copia a PostgreSQL."; exit 0; fi
+          python -m pip install --require-hashes --only-binary=:all: -r requirements-db.txt
+          python tools/postgres_sync.py
       - run: |
           python scrapers/publish_data.py
           python scrapers/update_exchange.py

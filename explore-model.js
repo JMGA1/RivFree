@@ -1,0 +1,40 @@
+/* Pure discovery helpers shared by the browser and tests. */
+(function(root){
+ // Memoized: the category index normalizes every product name for each family.
+ const normalizedCache=new Map();
+ const normalize=s=>{const key=String(s||'');let v=normalizedCache.get(key);if(v===undefined){v=key.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();if(normalizedCache.size>120000)normalizedCache.clear();normalizedCache.set(key,v);}return v;};
+ function history(entries,query,now=Date.now()){
+  const cleaned=(Array.isArray(entries)?entries:[]).filter(e=>e&&typeof e.query==='string'&&Number.isFinite(e.last)).map(e=>({query:e.query.trim().slice(0,120),last:e.last})).filter(e=>e.query);
+  if(typeof query==='string'&&query.trim())cleaned.unshift({query:query.trim().replace(/\s+/g,' ').slice(0,120),last:now});
+  const seen=new Set();return cleaned.sort((a,b)=>b.last-a.last).filter(e=>{const k=normalize(e.query);if(seen.has(k))return false;seen.add(k);return true;}).slice(0,20);
+ }
+ function whatsapp(info){try{const u=new URL(info?.redes?.whatsapp||'');if(u.protocol!=='https:')return null;if(u.hostname==='wa.me'&&/^\/\d{8,15}\/?$/.test(u.pathname))return u;if(['api.whatsapp.com','web.whatsapp.com'].includes(u.hostname)&&u.pathname==='/send'&&/^\d{8,15}$/.test(u.searchParams.get('phone')||''))return u;}catch{}return null;}
+
+ // Category is a hard boundary; brand only ranks eligible products.
+ function related(group,groups,limit=8){
+  const categories=g=>new Set(g.offers.map(o=>o.categoryId).filter(c=>c&&c!=='otros'));
+  const source=categories(group);if(!source.size)return [];
+  const compatible=g=>{const cats=categories(g);return cats.size>0&&[...cats].every(c=>source.has(c)||(['electronica','informatica'].includes(c)&&[...source].every(x=>['electronica','informatica'].includes(x))));};
+  const brand=g=>{const raw=g.offers.find(o=>o.marca)?.marca;if(raw)return normalize(raw);const n=normalize(g.name);if([...categories(g)].every(c=>['electronica','informatica'].includes(c))&&/\b(apple|iphone|ipad|airpods|macbook|imac)\b/.test(n))return 'apple';return n.match(/\b(dior|chanel|samsung|jbl|sony|lancome|versace|bacardi|absolut|lego|xiaomi)\b/)?.[1]||'';};
+  const preferred=brand(group);return groups.filter(g=>g.key!==group.key&&normalize(g.name)!==normalize(group.name)&&compatible(g)).map((g,i)=>({g,i,score:preferred&&brand(g)===preferred?1:0})).sort((a,b)=>b.score-a.score||a.i-b.i).slice(0,limit).map(x=>x.g);
+ }
+ const families=[
+  ['phones','Celulares','Celulares',/\b(iphone|smartphone|celular|galaxy\s+[asz]|redmi|poco\s+[xfmc])\b/,[['iPhone','iphone'],['Samsung Galaxy','galaxy'],['Xiaomi / Redmi','xiaomi|redmi|poco'],['Motorola','motorola|moto\\s+[ge]']],[['iPhone 16','iphone\\s*16'],['iPhone 15','iphone\\s*15'],['128 GB','128\\s*gb'],['256 GB','256\\s*gb'],['512 GB','512\\s*gb']]],
+  ['tech','Electrónica y audio','Eletrônicos e áudio',/\b(jbl|sony|bose|parlante|caixa de som|auricular|fone|headphone|tv|televisor|smartwatch|apple watch|camera|gopro|drone|echo|chromecast|fire tv|videogame|playstation|xbox|nintendo)\b/,[['JBL','jbl'],['Sony','sony'],['Samsung','samsung'],['Bose','bose'],['Apple','apple|airpods']],[['Parlantes / Caixas de som','parlante|caixa de som|speaker|boombox|flip|charge'],['Auriculares / Fones','auricular|fone|headphone|airpods'],['TV y Smart TV','\\b(tv|televisor|televisao)\\b'],['Smartwatch','smartwatch|apple watch|galaxy watch'],['Cámaras / Câmeras','camera|gopro'],['Streaming','chromecast|fire tv|apple tv|echo']]],
+  ['computers','Informática y notebooks','Informática e notebooks',/\b(notebook|laptop|macbook|ipad|tablet|computador|monitor|mouse|teclado|keyboard|ssd|impressora|impresora|router)\b/,[['Apple','apple|macbook|ipad'],['Lenovo','lenovo'],['HP','\\bhp\\b'],['Dell','dell'],['Asus','asus'],['Logitech','logitech']],[['Notebooks','notebook|laptop|macbook'],['Tablets','tablet|ipad'],['Monitores','monitor'],['Mouse y teclados','mouse|teclado|keyboard'],['Almacenamiento / Armazenamento','ssd|pendrive|disco|memoria'],['Impresoras / Impressoras','impresora|impressora']]],
+  ['gaming','Consolas y gaming','Consoles e games',/\b(playstation|ps5|ps4|xbox|nintendo|videogame|gaming|gamer|joystick)\b/,[['PlayStation','playstation|ps5|ps4'],['Xbox','xbox'],['Nintendo','nintendo']],[['PlayStation 5','playstation\\s*5|ps5'],['Nintendo Switch','switch'],['Xbox Series','xbox\\s*series'],['Controles','control|joystick|gamepad'],['Accesorios / Acessórios','headset|cadeira|silla|teclado|mouse']]],
+  ['apple','Productos Apple','Produtos Apple',/\b(apple|iphone|ipad|macbook|airpods|imac)\b/,[['iPhone','iphone'],['iPad','ipad'],['MacBook','macbook'],['AirPods','airpods'],['Apple Watch','apple watch']],[['128 GB','128\\s*gb'],['256 GB','256\\s*gb'],['512 GB','512\\s*gb'],['1 TB','1\\s*tb']]],
+  ['perfumes','Perfumes','Perfumes',null,[['Dior','dior'],['Chanel','chanel'],['Lancôme','lancome'],['Carolina Herrera','carolina herrera'],['Versace','versace'],['Lattafa','lattafa'],['Armaf','armaf']],[['Eau de parfum','\\bedp\\b|eau de parfum'],['Eau de toilette','\\bedt\\b|eau de toilette'],['Elixir / Parfum','elixir|\\bparfum\\b'],['Sets y cofres','cofre|\\bset\\b|\\bkit\\b'],['100 ml','100\\s*ml'],['50 ml','50\\s*ml']],'perfumes'],
+  ['drinks','Bebidas','Bebidas',null,[['Johnnie Walker','johnnie|johnny'],['Jack Daniel’s','jack daniel'],['Chivas','chivas'],['Absolut','absolut'],['Bacardi','bacardi'],['Red Bull','red\\s*bull']],[['Whisky','whisky|whiskey|uisque'],['Vinos / Vinhos','vino|vinho|wine'],['Vodka','vodka'],['Gin','\\bgin\\b|\\bgim\\b'],['Energéticas / Energéticos','energet|red\\s*bull|monster'],['Espumantes','espumante|champagne']],'bebidas'],
+  ['beauty','Belleza y cuidado personal','Beleza e cuidados pessoais',null,[['L’Oréal','oreal'],['Clinique','clinique'],['Lancôme','lancome'],['Nivea','nivea'],['Olaplex','olaplex']],[['Skincare','serum|crem|facial|skincare'],['Maquillaje / Maquiagem','maqui|labial|batom|mascara'],['Cabello / Cabelo','shampoo|champu|cabelo|cabello|condicionador'],['Protección solar','solar|sunscreen|\\bspf\\b']],'cosmetica'],
+  ['food','Chocolates y alimentos','Chocolates e alimentos',null,[['Lindt','lindt'],['Milka','milka'],['Ferrero','ferrero'],['Toblerone','toblerone'],['Lindor','lindor']],[['Chocolates','chocolat'],['Galletas / Biscoitos','galleta|biscoito|cookie'],['Café','cafe|coffee'],['Aceites / Azeites','aceite|azeite']],'alimentos'],
+  ['home','Hogar y electrodomésticos','Casa e eletrodomésticos',/\b(aspirador|cafetera|cafeteira|liquidificador|licuadora|air fryer|fritadeira|ar condicionado|aire acondicionado|refrigerador|heladera|microondas|cozinha|cocina|panela|olla)\b/,[['Philips','philips'],['Oster','oster'],['Electrolux','electrolux'],['Midea','midea']],[['Cafeteras / Cafeteiras','cafetera|cafeteira'],['Climatización','ar condicionado|aire acondicionado|aquecedor|calefactor'],['Aspiradoras','aspirador'],['Cocina / Cozinha','cocina|cozinha|panela|olla|fritadeira|air fryer']]],
+ ];
+ const taxonomy=families.map(([id,es,pt,pattern,brands,types,category])=>{
+  const match=p=>{const name=normalize(p.nombre);if(['phones','tech','computers','gaming','apple'].includes(id)&&p.categoryId&& !['electronica','informatica','relojes','otros'].includes(p.categoryId))return false;if(id==='phones'&&/\b(capa|case|cover|funda|carcasa|pelicula|protector|carregador|cargador)\b/.test(name))return false;if(category)return p.categoryId===category;if(id==='home'&&['hogar','electrodomesticos'].includes(p.categoryId))return true;if(id==='computers'&&p.categoryId==='informatica')return true;if(id==='tech'&&p.categoryId==='electronica')return true;return pattern.test(name);};
+  const child=(items,kind)=>items.map(([label,source],i)=>{const regex=new RegExp(source,'i');return {id:id+'-'+kind+'-'+i,label,match:p=>match(p)&&regex.test(normalize(p.nombre))};});
+  return {id,es,pt,match,brands:child(brands,'brand'),types:child(types,'type')};
+ });
+ root.RivFreeExploreModel={history,whatsapp,taxonomy,normalize,related};
+ if(typeof module!=='undefined')module.exports=root.RivFreeExploreModel;
+})(typeof window!=='undefined'?window:globalThis);

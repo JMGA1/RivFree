@@ -13,8 +13,62 @@ const categories = {
  accesorios:['Bolsos y accesorios','Bolsas e acessórios'], juguetes:['Juguetes e infantil','Brinquedos e infantil'],
  relojes:['Relojes','Relógios'], optica:['Óptica','Óptica'], deportes:['Deportes','Esportes'], herramientas:['Herramientas','Ferramentas'], otros:['Otros','Outros']
 };
+// Several stores publish brand or campaign slugs instead of real categories
+// (e.g. "showroom", "copia-de-roxy", "clarins"). These rules recover the real
+// category from the slug first and, as a last resort, from the product name.
+const brandSlugs=[
+ ['cosmetica',/\b(clarins|guerlain|shiseido|pupa|wetwild|wet n wild|mavala|medicube|kerasys|bathebody|byphasse|garnier|avene|joico|tigi|talika|maxfactor|geske|tangle|ardell|australiangold|bananaboat|banila|truss|betterelite|physician|crescina|stravie|keune|klorane|sebastian|nudestix|pele|fillerina|johnfrieda|sporgelle|revlon|victoria|naturalhoney|stendhal|loreal|sla|maquiagem|maquillaje|pelenudestix|variospele|labial|unhas)\b/],
+ ['ropa',/\b(vestuario|santabarbara|northsails|ivory|roxy|quiksilver|uspoloassn|polo assn|kolling|kristo belga|kristobelga|calvin|wellness)\b/],
+ ['accesorios',/\b(zenit|zippo|escolar|mochilas?|karl|lagerfeld)\b/],
+ ['hogar',/\b(stanley|showroom|plantas?|jardim|cestas|supla|tapetes|capachos|almofadas|mantas|quadros|retratos|moveis|mesa|cama|bathroom|panelas|talheres|lincolns|paraconservar|copos|tacas|canecas|linhazen|miuruguay|disney|natal)\b/],
+ ['electrodomesticos',/\b(aquecedores|adegas|refrigeradores|ventiladores|aspirador)\b/],
+ ['electronica',/\b(televisores|tv|caixas de som|som automotivo|automotivo|alexa|amazon|smart tv box|soud bar|sound bar|drones|smartwatches)\b/],
+ ['alimentos',/\b(condimentos|conservas|salgados|balas|chas|cafes|sucos|vidalight|vidanomar|temperos|molhos|massas|cha cafe|naturalhoney comida)\b/],
+ ['bebidas',/\b(conhaque|cognac)\b/],
+ ['juguetes',/\b(inflaveis|pelucias|baby|fisher ?price|playdoh|princesas|jurassic|barbie|cars|mariobros|superherois|transformers|pollypocket|stitch|starwars|para divertir|autos a bateria)\b/],
+ ['deportes',/\b(everlast|tenisepaddel|raquetes|head)\b/]
+];
+const nameRules=[
+ ['perfumes',/\b(edp|edt|edc|eau de|parfum|perfume|colonia|cologne|body splash)\b/],
+ ['bebidas',/\b(vinho|vino|wine|whisky|whiskey|vodka|gin|gim|licor|brandy|conhaque|cognac|tequila|cerveja|cerveza|espumante|champagne|aperitivo|vermouth)\b/],
+ ['optica',/\b(oculos de sol|anteojos|gafas de sol|lentes de sol|oculos para leitura)\b/],
+ ['relojes',/\b(relogio|reloj)\b/],
+ ['cosmetica',/\b(shampoo|champu|condicionador|acondicionador|conditioner|creme|crema|cream|serum|batom|labial|lipstick|mascara de cilios|rimel|base liquida|foundation|blush|primer|corretivo|eyeliner|delineador|sombra|paleta de sombras|esmalte|vernis|hidratante|protetor solar|bloqueador|locao|locion|lotion|body mist|sabonete|jabon|gel de bano|desodorante|maquiagem|maquillaje|tonico|toner|esfoliante|capilar|cabelo|cabello|skin|pinceis|brochas|esponja)\b/],
+ ['alimentos',/\b(chocolate|chocolatte|bombom|bombon|bombitas|bala|balas|caramelo|candy|alfajor|galleta|galletitas|biscoito|cookie|cafe|cha|azeite|aceite|tempero|condimento|molho|salsa|pimenta|pimentas|sardinas?|sardinhas?|atum|atun|conserva|mel|doce de leite|dulce de leche|mermelada|geleia|snack|amendoim|castanhas?|vinagre|spaghetti|fideos)\b/],
+ ['electronica',/\b(smart tv|televisor|tv box|caixa de som|parlante|soundbar|boombox|fone|auricular|headphone|alexa|echo dot|echo show|kindle|fire tv|drone|camera|smartwatch|power bank|carregador|cargador|receptor|alto falante|subwoofer|projetor|proyector|tablet)\b/],
+ ['electrodomesticos',/\b(aspirador|aspiradora|ar condicionado|aire acondicionado|aquecedor|calefactor|ventilador|air fryer|fritadeira|freidora|liquidificador|licuadora|cafeteira|cafetera|chaleira|jarra eletrica|forno eletrico|microondas|adega|refrigerador|batedeira)\b/],
+ ['deportes',/\b(raquete|raqueta|pelotas?|padel|paddle|saco de box|guante p box|luva de box|halter|mancuerna|yoga|ioga|pilates|caneleira|bandas elasticas|corda para pular)\b/],
+ ['ropa',/\b(musculosa|palazzo|regata|pollera|blusa|cardigan|tricot|calcado|calzado|sapato|zapato|panti|thong|roupa interior|ropa interior|camisa|camiseta|t shirt|remera|jaqueta|campera|moletom|buzo|sweater|calca|pantalon|short|bermuda|vestido|saia|meias?|tenis|zapatilla|sandalia|chinelos?|chinelas?|botas?|bone|gorra|cueca|sutia|bikini|biquini|pijama|jogger|legging|top|blusao|colete|saida de banho|saidoa)\b/],
+ ['accesorios',/\b(mochila|bolsa|bolso|malas?|valija|carteira|billetera|cinto|necessaire|estojo|lancheira|isqueiro|chaveiro|guarda chuva|paraguas|caderno|cuaderno|lapices|lapis|planner)\b/],
+ ['juguetes',/\b(brinquedo|juguete|boneca|muneca|pelucia|peluche|lego|barbie|funko|hot wheels|fisher price|play doh|quebra cabeca|rompecabezas|puzzle|inflavel|inflable|carrinho)\b/],
+ ['herramientas',/\b(ferramentas?|herramientas?|furadeira|taladro|parafusadeira|serra|lijadora|alicate|martelo|martillo|chaves allen)\b/],
+ ['hogar',/\b(copo|copos|vaso|taca|tacas|caneca|xicara|taza|prato|plato|panela|olla|frigideira|sarten|talheres?|faca|facas|cuchillo|tabua|toalha|toalla|almofada|almohada|manta|tapete|capacho|quadro|cuadro|porta retrato|luminaria|abajur|vela|decorativ[ao]|arvore de natal|guirlanda|enfeite|natalin[ao]|planta artificial|cesto|cesta|canasta|organizador|cadeira|silla|banqueta|espelho|espejo|termo|garrafa termica|cuia|bombilla|supla|porta plato|hortensia|flor)\b/]
+];
+function categoryFromName(name){
+ const n=' '+norm(name).replace(/[^a-z0-9]+/g,' ')+' ';
+ for(const [id,rule] of nameRules)if(rule.test(n))return id;
+ return null;
+}
 function category(raw, name='') {
- const s=norm(raw).replace(/[-_]/g,' ');
+ const n=norm(name).replace(/[^a-z0-9]+/g,' ');
+ let result=categoryFromSlug(raw,name);
+ if(result==='otros'){
+  const slug=norm(raw).replace(/[-_%]/g,' ').trim();
+  const fromSlug=()=>{for(const [id,rule] of brandSlugs)if(rule.test(slug))return id;return null;};
+  if(/\b(edp|edt|edc|eau de (?:parfum|toilette|cologne)|parfum|perfume|body splash)\b/.test(n))result='perfumes';
+  // "copia-de-x" slugs are recycled store sections: trust the product name first.
+  else if(/^copia\b/.test(slug))result=categoryFromName(name)||fromSlug()||'otros';
+  else result=fromSlug()||categoryFromName(name)||'otros';
+ }
+ // Some feeds file hair care under toys or makeup under perfumery.
+ if(result==='juguetes'&&/\b\d+(?:[.,]\d+)?\s*(ml|oz)\b/.test(n.replace(/(\d) (\d)/g,'$1.$2')))return 'cosmetica';
+ if(result==='juguetes'&&/\b(shampoo|champu|conditioner|acondicionador|condicionador|mascarilla|keratina|alisado|straightening|tratamiento capilar|hair|cabelo|cabello)\b/.test(n))return 'cosmetica';
+ if(result==='perfumes'&&!/\b(edp|edt|edc|eau|parfum|perfume|colonia|cologne|elixir|splash|mist|intense|vapo|spray|ml)\b/.test(n)&&/\b(bb cream|blush|primer|shadow|sombra|batom|labial|lipstick|mascara|rimel|base|corretivo|po compacto|polvo|delineador|eyeliner|esmalte)\b/.test(n))return 'cosmetica';
+ return result;
+}
+function categoryFromSlug(raw, name='') {
+ const s=norm(raw).replace(/[-_%]/g,' ').replace(/\b(copia|copia de|c3 b3pia|cópia)\b/g,' ').replace(/\s+/g,' ').trim();
+ if(Object.hasOwn(categories,s)) return s;
  if(/cosmet|cabelo|olaplex|maquill|maquiag|cuidado|skincare/.test(s)) return 'cosmetica';
  if(/perfum/.test(s)) {
   if(/beleza/.test(s) && /crem|shampoo|champu|locion|locao|batom|labial|mascara|maqui|desodor|sabon|jabon|serum/.test(norm(name))) return 'cosmetica';
@@ -235,6 +289,9 @@ function prepareCatalog(data) {
   return product;
  });
  const products=dedupeProductsPreferComplete(mapped);
+ // Brands are detected here (inside the catalog worker) so the page never pays for it.
+ const brandIndexer=typeof RivFreeCategoryIndex!=='undefined'?RivFreeCategoryIndex:(typeof require==='function'?(()=>{try{return require('./category-index.js');}catch{return null;}})():null);
+ if(brandIndexer){const index=brandIndexer.build(products);for(const product of products){const brand=index.brandOf(product);if(brand){product.brandKey=brand.key;product.brandLabel=brand.label;}}}
  const groups=groupProducts(products);
  // Las claves de grupo cambiaron con el nuevo motor: se conserva la equivalencia para migrar favoritos.
  const legacyKeys={};

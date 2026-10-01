@@ -15,6 +15,11 @@ UPDATE_PATHS = ['tests/test_studio_editor.py', 'scrapers/requirements.txt', 'sec
                 'Instalar-dependencias-Studio.bat', 'Instalar-dependencias-Studio.sh',
                 'STUDIO-MEJORAS-2026-09-27.md']
 
+UPDATE_PATHS += ['experience.js', 'experience.css', 'explore.js', 'explore.css',
+                 'explore-model.js', 'product-content.js', 'search-api-config.js',
+                 'data/stores.json', 'privacy.html', 'tests/studio-v3.test.cjs',
+                 'tests/test_studio_v3.py', 'CAMBIOS-STUDIO-V3.md']
+
 
 def redact(value):
     value = re.sub(r'://[^/@\s]+@', '://***@', str(value))
@@ -183,3 +188,15 @@ def orphans(s, payload):
             for key in requested: candidates[key].unlink()
             return {'deleted': len(requested)}
         return {'files': [{'path': key, 'bytes': p.stat().st_size} for key, p in sorted(candidates.items())]}
+
+
+# Editable public documents and measurement settings travel with an owner publication.
+PUBLISH_PATHS += ['politicas', 'tracking-config.js', 'privacy-config.js']
+UPDATE_PATHS += ['consent.js', 'consent.css', 'ui-updates.js', 'ui-updates.css', 'legal.js', 'cookies.html', 'terms.html', 'icons/flag-br.svg', 'icons/flag-uy.svg', 'CAMBIOS-V4.md', 'tools/build_seo.cjs', 'analytics.js', 'tests/privacy.test.cjs', 'tests/test_studio_v4.py']
+
+# v5: store map (Leaflet), app icons, category index and discount tiers.
+UPDATE_PATHS += ['category-index.js', 'store-directory.js', 'store-directory.css', 'leaflet.js', 'leaflet.css', 'LICENSE-leaflet.txt', 'icons/social', 'icons/ui', 'tests/v5-improvements.test.cjs', 'tests/test_studio_v5.py', 'CAMBIOS-V5.md', 'nav-bar.js', 'product-details.js', 'LICENSE-lucide.txt', 'icons/flag-ar.svg']
+# v6: social networks, results bar, Mi lista with photos
+UPDATE_PATHS += ['tests/v6-improvements.test.cjs', 'tests/test_studio_v6.py', 'CAMBIOS-V6.md']
+# v6.1: store filter, hidden photos per store, optional PostgreSQL copy
+UPDATE_PATHS += ['postgres', 'tools/postgres_sync.py', 'requirements-db.in', 'requirements-db.txt', 'POSTGRESQL-LEEME.md', 'tests/v61-improvements.test.cjs', 'tests/test_postgres.py', 'README.md']

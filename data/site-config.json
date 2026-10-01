@@ -77,5 +77,58 @@
     "text_es": "No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.",
     "text_pt": "Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.",
     "show_privacy": true
+  },
+  "top_notice": {
+    "enabled": true,
+    "title_es": "RivFree es un comparador de precios.",
+    "title_pt": "O RivFree é um comparador de preços.",
+    "text_es": "No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.",
+    "text_pt": "Não vendemos produtos nem somos afiliados às lojas: cada compra é feita diretamente com o free shop.",
+    "short_es": "Solo comparamos precios: no vendemos ni estamos afiliados a las tiendas.",
+    "short_pt": "Só comparamos preços: não vendemos nem somos afiliados às lojas."
+  },
+  "social": {
+    "show_without_link": true,
+    "instagram": {
+      "url": "",
+      "visible": true
+    },
+    "facebook": {
+      "url": "",
+      "visible": true
+    },
+    "tiktok": {
+      "url": "",
+      "visible": true
+    },
+    "whatsapp": {
+      "url": "",
+      "visible": true
+    },
+    "youtube": {
+      "url": "",
+      "visible": false
+    },
+    "x": {
+      "url": "",
+      "visible": false
+    },
+    "telegram": {
+      "url": "",
+      "visible": false
+    }
+  },
+  "nav": {
+    "stores": true,
+    "offers": true,
+    "exchange": true,
+    "list": true
+  },
+  "offers": {
+    "tiers": [
+      20,
+      40,
+      60
+    ]
   }
 }

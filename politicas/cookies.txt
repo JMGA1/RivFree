@@ -1,0 +1,27 @@
+=== ES ===
+BORRADOR EDITABLE — completar y revisar antes de publicar.
+Última actualización: [COMPLETAR FECHA]
+
+Almacenamiento local
+RivFree guarda la decisión de cookies (rivfree-cookie-choice-v4, 180 días), preferencias, búsquedas recientes y lista de compras en este navegador. La caché del catálogo ayuda a cargar la página. Este almacenamiento permite las funciones que usás y no se comparte automáticamente como un perfil de usuario.
+
+Análisis opcional
+Solo se cargan los proveedores configurados si elegís “Aceptar análisis”. Google Analytics 4 puede crear cookies _ga y _ga_*. Microsoft Clarity, cuando se configure, puede crear _clck y _clsk. Cloudflare Web Analytics también se carga únicamente después de aceptar. Los plazos efectivos y otras cookies dependen de la configuración de cada proveedor.
+[COMPLETAR inventario de cookies verificado en el dominio publicado, finalidades, proveedores y plazos].
+
+Rechazar y cambiar tu elección
+“Rechazar” mantiene el catálogo disponible sin cargar esos servicios. Podés volver a elegir desde el pie de página. Retirar el consentimiento recarga la página para detener los servicios ya iniciados. También podés borrar los datos del sitio en tu navegador; eso puede borrar tus preferencias e historial.
+
+=== PT ===
+RASCUNHO EDITÁVEL — completar e revisar antes de publicar.
+Última atualização: [COMPLETAR DATA]
+
+Armazenamento local
+O RivFree salva a escolha de cookies (rivfree-cookie-choice-v4, 180 dias), preferências, buscas recentes e lista de compras neste navegador. O cache do catálogo ajuda a carregar a página. Esse armazenamento permite as funções usadas e não é compartilhado automaticamente como um perfil de usuário.
+
+Análise opcional
+Os provedores configurados só são carregados se você escolher “Aceitar análise”. O Google Analytics 4 pode criar cookies _ga e _ga_*. O Microsoft Clarity, quando configurado, pode criar _clck e _clsk. O Cloudflare Web Analytics também só é carregado após a aceitação. Os prazos efetivos e outros cookies dependem da configuração de cada provedor.
+[COMPLETAR inventário de cookies verificado no domínio publicado, finalidades, provedores e prazos].
+
+Recusar e alterar sua escolha
+“Recusar” mantém o catálogo disponível sem carregar esses serviços. Você pode escolher novamente pelo rodapé. Retirar o consentimento recarrega a página para interromper os serviços já iniciados. Também é possível apagar os dados do site pelo navegador; isso pode apagar preferências e histórico.

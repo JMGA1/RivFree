@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.clarity.ms; connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
 <meta name="referrer" content="no-referrer">
 <!-- Cookieless traffic metrics; no Google Analytics tag. -->
 <meta charset="UTF-8">
@@ -21,6 +21,11 @@
 <meta name="twitter:image" content="https://jmga1.github.io/RivFree/social-card.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="experience.css?v=20260930-6">
+<link rel="stylesheet" href="explore.css?v=20260930-6">
+<link rel="stylesheet" href="ui-updates.css?v=20261001-v61">
+<link rel="stylesheet" href="store-directory.css?v=20261001-v61">
+<link rel="stylesheet" href="consent.css?v=20260930-v4">
 </head>
 <body>
 <dialog id="importListDialog" class="import-list-dialog" aria-labelledby="importListTitle">
@@ -36,6 +41,7 @@
 </dialog>
 
 
+<aside class="rf-disclaimer" id="siteDisclaimer" aria-label="Aviso importante"><div class="rf-disclaimer-inner"><span class="rf-disclaimer-icon" aria-hidden="true">i</span><p><strong class="rf-d-long">RivFree es un comparador de precios.</strong> <span class="rf-d-long">No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.</span><span class="rf-d-short"><strong>Solo comparamos precios:</strong> no vendemos ni estamos afiliados a las tiendas.</span></p><button type="button" class="rf-disclaimer-close" id="siteDisclaimerClose" aria-label="Cerrar aviso" title="Cerrar aviso">×</button></div></aside>
 <div class="topbar">
   <div class="topbar-inner">
     <a class="brand brand-link" href="./" aria-label="Volver al inicio y recargar">
@@ -53,6 +59,7 @@
       </div>
     </a>
     <form class="field search-field" id="searchForm" role="search">
+      <div class="rf-social rf-social-header" id="headerSocial" aria-label="Redes sociales de RivFree"></div>
       <label for="search">Buscar producto</label>
       <div class="search-row">
         <input type="search" id="search" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
@@ -72,14 +79,14 @@
         <option value="es">ES</option><option value="pt-BR" selected>PT</option>
       </select>
       <button class="theme-toggle theme-mode" id="themeToggle" type="button" aria-pressed="false"><span class="theme-mode-icon" aria-hidden="true"></span><span class="theme-mode-label">Modo oscuro</span></button>
-      <button id="headerShoppingList" class="header-list" type="button"><span aria-hidden="true">♡</span> <span>Mi lista</span></button>
+      <button id="headerShoppingList" class="header-list" type="button" hidden><span aria-hidden="true">♡</span> <span>Mi lista</span></button>
       
     </div>
   </div>
 </div>
 
 
-<nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><button id="navOffers" type="button">Ofertas</button><a href="#discoverProducts">Por descubrir</a><a href="#popularProducts">Más consultados</a></nav>
+<nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><!-- Íconos de la barra: Lucide (lucide.dev, licencia ISC, ver LICENSE-lucide.txt). --><div class="rf-nav-quick" id="navQuick"><a class="rf-nav-item" id="navStores" href="#/tiendas"><svg class="rf-nav-icon rf-icon-store" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg><span class="rf-nav-label">Tiendas</span></a><button class="rf-nav-item" id="navOffers" type="button"><svg class="rf-nav-icon rf-icon-offers" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/></svg><span class="rf-nav-label">Ofertas</span></button><button class="rf-nav-item rf-nav-rate" id="navExchange" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="navExchangePanel"><svg class="rf-nav-icon rf-icon-rate" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg><span class="rf-nav-label"><span class="rf-nav-rate-title">Dólar hoy</span> <strong id="navExchangeValue">…</strong></span></button><button class="rf-nav-item" id="navList" type="button"><svg class="rf-nav-icon rf-icon-list" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span class="rf-nav-label">Mi lista</span><span class="rf-nav-count" id="navListCount" hidden>0</span></button></div></nav>
 <main>
 <section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel"></section>
 <div class="shopping-benefits" id="shoppingBenefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
@@ -117,6 +124,7 @@
       </div>
 
       <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Ocultar productos sin precio</label>
+      <button type="button" class="rf-adv-toggle" id="advancedToggle" aria-expanded="false" aria-controls="advancedFilters"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg><span>Filtros avanzados</span><span class="rf-adv-count" id="advancedCount" hidden></span></button>
       <details class="advanced-filters" id="advancedFilters">
         <summary>
           <span class="filter-summary-icon" aria-hidden="true"></span>
@@ -136,8 +144,11 @@
             <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
           </div>
 
-          <div class="stores-field" id="storesField">
-            <!-- checkboxes de tiendas se llenan por JS -->
+          <div class="field stores-filter">
+            <p class="stores-filter-title" id="storesFilterTitle"><b>Tiendas</b> <span>Tocá una o varias para ver solo sus productos. Sin elegir, se muestran todas.</span></p>
+            <div class="stores-field" id="storesField" role="group" aria-labelledby="storesFilterTitle">
+              <!-- checkboxes de tiendas se llenan por JS: ninguna marcada = todas las tiendas -->
+            </div>
           </div>
 
           <div class="filter-actions">
@@ -148,16 +159,20 @@
     </div>
   </div>
 </div>
-<div class="catalog-toolbar"><div><div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div><details class="catalog-details"><summary>Detalles del catálogo</summary><p id="resultsDetails"></p></details></div>          <div class="field sort-field">
-            <label for="orden">Ordenar por</label>
+<div class="catalog-toolbar rf-results-bar">
+  <div class="rf-results-info"><div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div><details class="catalog-details"><summary title="Detalles del catálogo" aria-label="Detalles del catálogo">i</summary><p id="resultsDetails"></p></details></div>
+  <div class="offer-tiers" id="offerTiers" role="group" aria-label="Filtrar ofertas por descuento" hidden><span class="offer-tiers-title">Descuento</span><button type="button" class="offer-tier" data-discount="0" aria-pressed="true"><span class="offer-tier-main">Todas</span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-1" data-discount="20" aria-pressed="false"><span class="offer-tier-main"><b>20%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-2" data-discount="40" aria-pressed="false"><span class="offer-tier-main"><b>40%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-3" data-discount="60" aria-pressed="false"><span class="offer-tier-main"><b>60%</b> <span>o más</span></span><span class="offer-tier-count"></span></button></div>
+  <div class="rf-results-actions">
+    <label class="rf-fav-toggle" title="Mostrar solo favoritos"><input type="checkbox" id="favoritesOnly"><svg class="rf-ui-svg rf-heart-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span>Favoritos</span></label>
+    <div class="field sort-field"><label for="orden"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg><span>Ordenar</span></label>
             <select id="orden">
-              <option value="caida">Mayor caída de precio</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
+              <option value="caida">Mayor caída de precio</option><option value="descuento">Mayor descuento</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
               <option value="precio_asc">Precio: menor a mayor</option>
               <option value="precio_desc">Precio: mayor a menor</option>
               <option value="nombre_asc" selected>Nombre: A-Z</option>
             </select>
-          </div>
-
+    </div>
+  </div>
 </div>
 
 <aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
@@ -172,13 +187,11 @@
 
 <div id="priceError" role="alert" hidden></div>
 <div id="loadError" role="alert" hidden><p id="loadErrorText"></p><button type="button" id="retryLoad" class="clear-btn">Reintentar</button></div>
-<section class="planning-tools" aria-label="Favoritos y conversión">
-<label><input type="checkbox" id="favoritesOnly"> <span>Solo favoritos</span></label>
+<section class="planning-tools" aria-label="Favoritos y conversión" hidden>
 <button type="button" id="openShoppingList"><span>Mi lista</span> <span id="listCount" class="list-count">0</span></button>
 <label class="reference-currency-label"><span>Moneda de referencia</span><select id="referenceCurrency" aria-label="Moneda de referencia"><option value="USD">USD</option><option value="BRL" selected>BRL · Real</option><option value="UYU">UYU · Peso uruguayo</option><option value="ARS">ARS · Peso argentino</option></select></label><details class="exchange-details"><summary><strong id="exchangePreview">USD → BRL</strong> <span>· Cotización</span></summary><label><span id="exchangePair">USD → BRL</span> <input id="exchangeRate" type="number" min="0.01" step="0.01" placeholder="Cotización" aria-label="Reales por dólar"></label>
-<p id="exchangeNote"></p><button id="automaticExchange" type="button">Usar cotización automática</button></details><p id="connectionNote" hidden>Sin conexión: catálogo guardado / Sem conexão: catálogo salvo.</p>
-</section>
-<dialog id="shoppingDialog" aria-labelledby="shoppingTitle"><div class="shopping-header"><div><span class="eyebrow">RIVFREE · TU RECORRIDO</span><h2 id="shoppingTitle">Mi lista</h2></div><button type="button" id="closeShoppingList" aria-label="Cerrar">✕</button></div><div id="shoppingRoute"></div><div id="shoppingList"></div><div class="share-list"><button id="shareShoppingList" type="button">Compartir lista</button><p id="shareHint">Abrí tu lista en el celular con un enlace. No necesitás una cuenta.</p><input id="sharedListLink" readonly hidden aria-label="Enlace de la lista"></div></dialog>
+<p id="exchangeNote"></p><button id="automaticExchange" type="button">Usar cotización automática</button></details></section>
+<p id="connectionNote" class="rf-connection-note" hidden>Sin conexión: catálogo guardado / Sem conexão: catálogo salvo.</p>
 <div class="grid" id="grid"></div>
 <div class="load-more-wrap" id="loadMoreWrap" hidden>
   <button class="load-more-btn" id="loadMore" type="button">Mostrar más productos</button>
@@ -188,6 +201,8 @@
 </div>
 </section>
 
+<!-- Outside #catalogSection: the list must open from any page, even when the catalog is hidden. -->
+<dialog id="shoppingDialog" class="rf-list-dialog" aria-labelledby="shoppingTitle"><div class="shopping-header"><div class="rf-list-heading"><span class="rf-list-heart"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg></span><div><h2 id="shoppingTitle">Mi lista</h2><p id="shoppingSummary" class="rf-list-summary"></p></div></div><button type="button" id="closeShoppingList" aria-label="Cerrar">✕</button></div><div id="shoppingRoute" class="rf-list-route"></div><div id="shoppingList"></div><div class="share-list"><button id="shareShoppingList" type="button"><svg class="rf-list-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg><span>Compartir lista</span></button><p id="shareHint">Abrila en otro celular con un enlace, sin crear cuenta.</p><input id="sharedListLink" readonly hidden aria-label="Enlace de la lista"></div></dialog>
 <dialog id="productDialog" aria-labelledby="productPreviewTitle"><div class="dialog-header"><h2 id="productPreviewTitle"></h2><button class="dialog-close" id="productPreviewClose" type="button" aria-label="Cerrar / Fechar">×</button></div><div id="productPreviewContent"></div></dialog>
 <dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
   <div class="dialog-header">
@@ -224,23 +239,31 @@
 <footer>
   <strong>RivFree · Comparador independiente</strong><br>
   <span class="studio-footer-text">No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.</span>
-  <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html">Política de Privacidad y Cookies</a></div>
+  <div class="rf-social rf-social-footer" id="footerSocial" aria-label="Redes sociales de RivFree"></div>
+  <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html" hidden>Privacidad</a></div>
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="site-config.js?v=20260928-seo3" defer></script>
+<script src="site-config.js?v=20261001-v61" defer></script>
 <script src="privacy-config.js?v=20260925-ux1" defer></script>
-<script src="analytics.js?v=20260925-ux1" defer></script>
+<script src="tracking-config.js?v=20260930-v4" defer></script>
+<script src="consent.js?v=20260930-v4" defer></script>
 <script src="matching.js?v=20260928-seo3" defer></script>
-<script src="catalog.js?v=20260928-seo3" defer></script>
-<script src="catalog-cache.js?v=20260928-seo3" defer></script>
-<script src="features.js?v=20260928-seo3" defer></script>
+<script src="catalog.js?v=20261001-v61" defer></script>
+<script src="catalog-cache.js?v=20261001-v61" defer></script>
+<script src="features.js?v=20261001-v61" defer></script>
 <script src="shared-list-codec.js?v=20260925-share2" defer></script>
-<script src="shopping.js?v=20260928-seo3" defer></script>
-<script src="storefront.js?v=20260928-seo3" defer></script>
-<script src="product-details.js?v=20260925-core1" defer></script>
-<script src="app.js?v=20260928-seo3" defer></script>
-<!-- Cloudflare Web Analytics -->
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"c7ffd1476a25414983f7c03faf7e0ace"}'></script>
-<!-- End Cloudflare Web Analytics -->
+<script src="shopping.js?v=20261001-v61" defer></script>
+<script src="storefront.js?v=20261001-v61" defer></script>
+<script src="product-details.js?v=20261001-v61" defer></script>
+<script src="app.js?v=20261001-v61" defer></script>
+<script src="product-content.js?v=20260930" defer></script>
+<script src="search-api-config.js" defer></script>
+<script src="store-directory.js?v=20261001-v61" defer></script>
+<script src="experience.js?v=20261001-v61" defer></script>
+<script src="explore-model.js?v=20261001-v5" defer></script>
+<script src="category-index.js?v=20261001-v61" defer></script>
+<script src="explore.js?v=20261001-v61" defer></script>
+<script src="nav-bar.js?v=20261001-v61" defer></script>
+<script src="ui-updates.js?v=20261001-v61" defer></script>
 </body></html>

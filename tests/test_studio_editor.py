@@ -71,8 +71,9 @@ class StudioEditorTests(unittest.TestCase):
 
     def test_studio_html_uses_versioned_assets_and_new_controls(self):
         html=(Path(server.__file__).with_name('index.html')).read_text(encoding='utf-8')
-        self.assertIn('editor.css?v=20260929-studio-sync1',html)
-        self.assertIn('studio-editor.js?v=20260929-studio-sync1',html)
+        # Assets must carry a version so browsers pick up Studio updates (the exact number changes per release).
+        self.assertRegex(html,r'editor\.css\?v=\d{8}-studio\d+')
+        self.assertRegex(html,r'studio-editor\.js\?v=\d{8}-studio\d+')
         self.assertIn('id="healthKpis"',html)
         self.assertIn('id="restoreNativeTheme"',html)
         self.assertIn('id="appearanceEditTheme"',html)
