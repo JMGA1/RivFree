@@ -1,271 +1,209 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.clarity.ms; connect-src 'self' https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
-<meta name="referrer" content="no-referrer">
-<!-- Cookieless traffic metrics; no Google Analytics tag. -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RivFree — Comparador de preços de free shops</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="styles.css?v=20260928-seo3">
-<meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
-<meta name="theme-color" content="#B42335">
-<meta property="og:type" content="website">
-<meta property="og:title" content="RivFree — Compará free shops de Rivera y Santana do Livramento">
-<meta property="og:description" content="Encontrá precios, compará tiendas y armá tu lista para recorrer Rivera y Santana do Livramento.">
-<meta property="og:image" content="https://jmga1.github.io/RivFree/social-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RivFree — Compará free shops de Rivera y Santana do Livramento">
-<meta name="twitter:description" content="Compará precios y guardá tu lista de favoritos.">
-<meta name="twitter:image" content="https://jmga1.github.io/RivFree/social-card.png">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="experience.css?v=20260930-6">
-<link rel="stylesheet" href="explore.css?v=20260930-6">
-<link rel="stylesheet" href="ui-updates.css?v=20261001-v71">
-<link rel="stylesheet" href="store-directory.css?v=20261001-v71">
-<link rel="stylesheet" href="mobile.css?v=20261001-v71">
-<link rel="stylesheet" href="consent.css?v=20260930-v4">
-</head>
-<body>
-<dialog id="importListDialog" class="import-list-dialog" aria-labelledby="importListTitle">
-  <div class="import-list-icon" aria-hidden="true">♡</div>
-  <span class="eyebrow">RIVFREE · LISTA COMPARTIDA</span>
-  <h2 id="importListTitle">¿Importar esta lista?</h2>
-  <p id="importMessage"></p>
-  <p id="importResolveStatus" class="import-resolve-status" hidden></p>
-  <div class="import-list-actions">
-    <button id="importShoppingList" type="button">Importar lista</button>
-    <button id="dismissImport" type="button">Ahora no</button>
-  </div>
-</dialog>
+/* RivFree routes: static hosting compatible, no server rewrite required. */
+(() => {
+ const $=id=>document.getElementById(id);
+ const txt=(es,pt)=>words(pt||es,es);
+ const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
+ const link=(label,url)=>{const a=el('a',label);a.href=safeHttpUrl(url)||'#';a.target='_blank';a.rel='noopener noreferrer';return a;};
+ const button=(label,fn)=>{const b=el('button',label,'rf-button');b.type='button';b.onclick=fn;return b;};
+ const routeURL=(type,id='')=>'#/'+type+(id?'/'+encodeURIComponent(id):'');
+ const navigate=(type,id)=>{location.hash=routeURL(type,id);};
+ const main=document.querySelector('main');
+ main.prepend($('loadError'));
+ const page=el('section',null,'rf-page');page.id='detailPage';page.hidden=true;main.prepend(page);
+ const nav=document.querySelector('.category-shortcuts');
+ const menu=el('details',null,'rf-category-menu');const summary=el('summary');summary.innerHTML='<svg class="rf-nav-icon rf-icon-categories" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>';const summaryLabel=el('span',txt('Categorías','Categorias'),'rf-nav-label');summary.append(summaryLabel);menu.append(summary);
+ const options=el('div',null,'rf-category-options');
+ nav.querySelectorAll('[data-category-shortcut]').forEach(b=>options.append(b));
+ for(const [key,labels] of Object.entries(Catalog.categories))if(!options.querySelector(`[data-category-shortcut="${key}"]`)){
+  const b=button(labels[LANG==='es'?0:1],()=>selectCampaignCategory(key));b.dataset.categoryShortcut=key;options.append(b);
+ }
+ menu.append(options);nav.prepend(menu);
+ // Tiendas lives in the centred quick-access group (#navQuick); older markup still gets a plain link.
+ let stores=$('navStores');if(!stores){stores=el('a');stores.append(el('span',txt('Tiendas','Lojas'),'rf-nav-label'));stores.href=routeURL('tiendas');nav.insertBefore(stores,menu.nextSibling);}
+ const storesLabel=stores.querySelector('.rf-nav-label')||stores;
+ options.addEventListener('click',e=>{if(e.target.closest('button')){menu.open=false;history.replaceState(null,'',location.pathname+location.search+'#/buscar');render();}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.open){menu.open=false;summary.focus();}});
+ document.addEventListener('click',e=>{if(!e.composedPath().includes(menu))menu.open=false;});
+ $('openStoreDirectory').hidden=true;
+ $('catalogStart').querySelector('h2').textContent=txt('Resultados de búsqueda','Resultados da busca');
+ $('catalogStart').querySelector('p').textContent=txt('Compará productos y precios entre tiendas.','Compare produtos e preços entre lojas.');
+ const oldRender=render;
+ render=function(...args){oldRender(...args);syncView();};
+ const oldSearch=runSearch;
+ runSearch=async function(){history.replaceState(null,'',location.pathname+location.search+'#/buscar');await oldSearch();syncView();};
+ const oldCategory=selectCampaignCategory;
+ selectCampaignCategory=function(category,options){history.replaceState(null,'',location.pathname+location.search+'#/buscar');oldCategory(category,options);syncView();};
+ const oldCard=createProductCard;
+ createProductCard=function(g){const card=oldCard(g);for(const n of card.querySelectorAll('.card-img,.card-name,.card-action,.card-cta')){
+  n.dataset.action='preview';n.removeAttribute('aria-haspopup');n.removeAttribute('target');
+  if(n.tagName==='A')n.href=routeURL('producto',g.key);
+  if(n.matches('.card-action,.card-cta'))n.textContent=txt('Ver producto y precios →','Ver produto e preços →');
+ }if(new Set(g.offers.map(o=>o.tienda)).size>1){card.querySelector(':scope > .heart-button')?.remove();card.querySelector('.card-utility-row .quantity-control')?.remove();}return card;};
+ openProductPreview=data=>{navigate('producto',data.key);};
+ openStoreInfo=name=>navigate('tienda',name);
+ $('searchForm').addEventListener('submit',()=>{history.replaceState(null,'',location.pathname+location.search+'#/buscar');syncView();});
+ const oldDiscovery=renderDiscoverProducts;
+ renderDiscoverProducts=function(){
+  oldDiscovery();
+  $('discoverTitle').textContent=txt('Por descubrir','Para descobrir');
+  $('discoverTitle').nextElementSibling.textContent=txt('Una selección aleatoria para explorar el catálogo.','Uma seleção aleatória para explorar o catálogo.');
+  $('discoverPrevious').hidden=$('discoverNext').hidden=false;
+ };
+ function catalogVisible(){const type=location.hash.split('/')[1];if(['producto','tiendas','tienda'].includes(type))return false;return type==='buscar'||!!ACTIVE_SEARCH.trim()||selectedCategories().length>0||$('soloOfertas').checked||$('favoritesOnly').checked;}
+ window.RivFreeCatalogVisible=catalogVisible;
+ function syncView(){
+  const type=location.hash.split('/')[1];const detail=['producto','tiendas','tienda'].includes(type);
+  if(['tiendas','tienda'].includes(type))stores.setAttribute('aria-current','page');else stores.removeAttribute('aria-current');
+  document.body.classList.toggle('rf-detail-mode',detail);page.hidden=!detail;
+  const results=!detail&&(type==='buscar'||!!ACTIVE_SEARCH.trim()||selectedCategories().length>0||$('soloOfertas').checked||$('favoritesOnly').checked);
+  $('catalogSection').hidden=!results;
+  $('catalogStart').querySelector('h2').textContent=txt('Resultados de búsqueda','Resultados da busca');
+  $('catalogStart').querySelector('p').textContent=txt('Compará productos y precios entre tiendas.','Compare produtos e preços entre lojas.');
+  if(results)document.title=txt('Buscar productos','Buscar produtos')+' | RivFree';
+  $('popularProducts').hidden=detail||results||window.RIVFREE_SITE_CONFIG?.homepage?.visible?.popular===false;
+  window.RivFreeExplore?.syncVisibility(detail,results);
+  for(const id of ['heroCampaign','shoppingBenefits','discoverProducts'])$(id).classList.toggle('rf-hidden',detail||results);
+ }
+ function heading(title,subtitle){page.replaceChildren();const back=el('a',txt('← Volver a explorar','← Voltar a explorar'));back.href='#/';page.append(back,el('p','RIVFREE · RIVERA / LIVRAMENTO','eyebrow'),el('h1',title));if(subtitle)page.append(el('p',subtitle,'rf-muted'));document.title=title+' | RivFree';}
+ function status(info,now=new Date()){
+  if(!info.weekly_hours)return {text:txt('Horario por confirmar','Horário a confirmar'),open:false};
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:info.timezone||'America/Montevideo',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now).map(p=>[p.type,p.value]));
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],day=days.indexOf(parts.weekday),minute=+parts.hour*60 + +parts.minute;
+  const mins=s=>{const [h,m]=s.split(':').map(Number);return h*60+m;};
+  const spans=info.hours_exceptions?.[new Intl.DateTimeFormat('en-CA',{timeZone:info.timezone||'America/Montevideo',year:'numeric',month:'2-digit',day:'2-digit'}).format(now)]??info.weekly_hours[day]??[];
+  const open=spans.some(([a,b])=>minute>=mins(a)&&minute<mins(b));
+  return {text:open?txt('● Abierto · según horario','● Aberto · conforme horário'):txt('Cerrado · según horario','Fechado · conforme horário'),open};
+ }
+ window.RivFreeHours=status;
+ function storeExtras(info,box){
+  const s=status(info);const badge=el('span',s.text,s.open?'rf-open':'rf-muted');badge.dataset.hoursStore=Object.keys(STORE_INFO).find(k=>STORE_INFO[k]===info)||'';box.append(badge);
+  if(info.weekly_hours){
+   const details=el('details',null,'rf-hours');details.open=box.classList.contains('rf-panel');details.append(el('summary',txt('Horarios de atención','Horários de atendimento')));
+   const list=el('dl',null,'rf-hours-list'),days=LANG==='es'?['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado']:['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+   for(const day of [1,2,3,4,5,6,0]){const spans=info.weekly_hours[day]||[];list.append(el('dt',days[day]),el('dd',spans.length?spans.map(pair=>pair.join('–')).join(' · '):txt('Cerrado','Fechado')));}
+   details.append(list);for(const [date,spans]of Object.entries(info.hours_exceptions||{}).sort(([a],[b])=>a.localeCompare(b)))details.append(el('p',date+': '+(spans.length?spans.map(pair=>pair.join('–')).join(' · '):txt('Cerrado','Fechado'))));box.append(details);
+  }else box.append(el('p',info.horario||txt('Consultá horarios en sus canales oficiales.','Consulte os horários nos canais oficiais.')));
+  if(info.google?.rating!=null&&info.google?.url){const review=link(Number(info.google.rating).toLocaleString(LANG==='es'?'es-UY':'pt-BR')+' / 5'+(info.google.count!=null?' · '+Number(info.google.count).toLocaleString(LANG==='es'?'es-UY':'pt-BR')+' '+txt('evaluaciones en Google','avaliações no Google'):' · Google'),info.google.url);review.className='rf-review';const star=el('span','★','rf-review-star');star.setAttribute('aria-hidden','true');review.prepend(star);box.append(review);}
+  else box.append(el('p',txt('Google: evaluaciones aún no disponibles.','Google: avaliações ainda não disponíveis.'),'rf-muted'));
+ }
+ // Category counts per store, computed once per catalog (the directory asked for them on every keystroke).
+ function storeCategoryCounts(name){if(storeCategoryCounts.catalog!==ALL_PRODUCTS){storeCategoryCounts.catalog=ALL_PRODUCTS;storeCategoryCounts.value=new Map();for(const p of ALL_PRODUCTS){let m=storeCategoryCounts.value.get(p.tienda);if(!m)storeCategoryCounts.value.set(p.tienda,m=new Map());m.set(p.categoryId,(m.get(p.categoryId)||0)+1);}}return storeCategoryCounts.value.get(name)||new Map();}
+ function specialities(name){const info=STORE_INFO[name]||{};if(info.specialties?.length)return info.specialties.join(' · ');const counts=storeCategoryCounts(name);return [...counts].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id])=>Catalog.categories[id]?.[LANG==='es'?0:1]).filter(Boolean).join(' · ')||txt('Catálogo variado','Catálogo variado');}
+ function contacts(info,name){const box=el('div',null,'rf-links');if(info.sitio_web)box.append(link(txt('Web oficial','Site oficial'),info.sitio_web));for(const [label,url]of Object.entries(info.redes||{}))if(safeHttpUrl(url))box.append(link(label,url));if(info.direccion)box.append(link('Google Maps ↗',info.google?.url||mapUrl(name,info.direccion)));return box;}
+ function directory(){
+  heading(txt('Tiendas para tu próximo recorrido','Lojas para sua próxima visita'),txt('Conocé los free shops, sus horarios y cómo contactarlos.','Conheça os free shops, seus horários e contatos.'));
+  if(window.RivFreeStores){window.RivFreeStores.renderDirectory(page,{storeExtras,specialities,navigate});return;}
+  const list=el('div',null,'rf-store-list');page.append(list);
+  for(const name of [...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p=>p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b))){const info=STORE_INFO[name]||{},card=el('article',null,'rf-store-card'),body=el('div');body.append(el('h2',info.nombre_completo||name),el('p',specialities(name),'rf-specialty'),el('p',info.direccion||txt('Dirección por confirmar','Endereço a confirmar')));storeExtras(info,body);body.append(contacts(info,name));card.append(body,button(txt('Más detalles →','Mais detalhes →'),()=>navigate('tienda',name)));list.append(card);}
+ }
+ function storePage(name){const info=STORE_INFO[name];if(!info){heading(txt('Tienda no encontrada','Loja não encontrada'));return;}
+  heading(info.nombre_completo||name,specialities(name));const panel=el('article',null,'rf-panel');panel.append(el('h2',txt('Conocé la tienda','Conheça a loja')),el('p',info.description?.[LANG]||info.nota||txt('La trayectoria de esta tienda todavía no está documentada en RivFree.','A história desta loja ainda não está documentada no RivFree.')));storeExtras(info,panel);panel.append(el('p',info.direccion,'rf-store-address-line'));
+  if(window.RivFreeStores){panel.append(window.RivFreeStores.contactLinks(info,name));const mapWrap=el('div',null,'rf-store-page-map');if(window.RivFreeStores.storeMap(mapWrap,name))panel.append(mapWrap);}
+  else{if(info.telefono){const a=el('a',info.telefono);a.href='tel:'+info.telefono.replace(/[^+0-9]/g,'');panel.append(a);}if(info.email){const a=el('a',info.email);a.href='mailto:'+info.email;panel.append(a);}panel.append(contacts(info,name));}
+  panel.append(el('h2',txt('Fotos del local','Fotos da loja')));
+  if(info.photos?.length){const photos=el('div',null,'rf-photos');for(const photo of info.photos){if(!safeImageUrl(photo.url))continue;const figure=el('figure'),img=el('img');img.src=photo.url;img.alt=photo.caption||name;img.loading='lazy';figure.append(img,el('figcaption',photo.attribution||''));photos.append(figure);}panel.append(photos);}else{panel.append(el('p',txt('Todavía no hay fotos disponibles en RivFree. Podés ver las publicadas en Google Maps.','Ainda não há fotos disponíveis no RivFree. Veja as publicadas no Google Maps.')),link(txt('Ver local en Google Maps','Ver loja no Google Maps'),info.google?.url||mapUrl(name,info.direccion||'')));}
+  if(info.source)panel.append(link(txt('Fuente de horarios e información','Fonte de horários e informações'),info.source));page.append(panel);
+ }
+ function productPage(key){
+  const group=PRODUCT_GROUPS.find(g=>g.key===key);if(!group){heading(loadingCatalog?txt('Cargando producto…','Carregando produto…'):txt('Producto no encontrado','Produto não encontrado'));return;}
+  if(!new URLSearchParams(location.search).has('studio-preview'))recordProductConsult(group.key);heading(readableProductName(group.name),txt('Compará el mismo producto entre free shops.','Compare o mesmo produto entre free shops.'));
+  if(!new URLSearchParams(location.search).has('studio-preview')&&ACTIVE_SEARCH.trim()){const token=group.key+'|'+ACTIVE_SEARCH.trim();if(productPage.lastSearch!==token){productPage.lastSearch=token;if(window.RIVFREE_SEARCH_API)fetch(window.RIVFREE_SEARCH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:group.offers[0].url})}).catch(()=>{});}}
+  const layout=el('div',null,'rf-product-layout'),visual=el('div',null,'rf-product-visual'),src=safeImageUrl(group.offers.find(o=>safeImageUrl(o.imagen))?.imagen);
+  if(src){const img=el('img');img.src=src;img.alt=group.name;img.onerror=()=>addImagePlaceholder(visual);visual.append(img);}else addImagePlaceholder(visual);
+  const offersBox=el('div'),toolbar=el('div',null,'rf-offer-toolbar'),select=el('select'),filter=el('select');
+  for(const [value,label]of [['asc',txt('Menor precio','Menor preço')],['desc',txt('Mayor precio','Maior preço')],['alpha',txt('Tiendas A–Z','Lojas A–Z')],['new',txt('Más nuevos','Mais recentes')]]){const o=el('option',label);o.value=value;select.append(o);}select.setAttribute('aria-label',txt('Ordenar ofertas','Ordenar ofertas'));
+  filter.append(el('option',txt('Todas las tiendas','Todas as lojas')));filter.firstChild.value='';for(const s of new Set(group.offers.map(o=>o.tienda))){const option=el('option',s);option.value=s;filter.append(option);}filter.setAttribute('aria-label',txt('Filtrar por tienda','Filtrar por loja'));
+  toolbar.append(filter,select);const list=el('div',null,'rf-offers');offersBox.append(toolbar,list);layout.append(visual,offersBox);page.append(layout);
+  function draw(){let offers=group.offers.filter(o=>!filter.value||o.tienda===filter.value);offers.sort((a,b)=>{if(select.value==='alpha')return a.tienda.localeCompare(b.tienda);if(select.value==='new')return (Date.parse(b.creado||b.primera_deteccion)||0)-(Date.parse(a.creado||a.primera_deteccion)||0);if(!hasPrice(a)||!hasPrice(b))return Number(hasPrice(b))-Number(hasPrice(a));return (select.value==='desc'?-1:1)*(a.precio_usd-b.precio_usd);});list.replaceChildren();
+   const priced=group.offers.filter(hasPrice),best=priced.length>1?Math.min(...priced.map(o=>o.precio_usd)):null;
+   for(const offer of offers)list.append(offerCard(offer,best));}
+  // One store offer: store chip, price (with the neighbouring currencies), list controls and the two actions.
+  function offerCard(offer,best){
+   const row=el('article',null,'rf-offer');const isBest=best!==null&&hasPrice(offer)&&offer.precio_usd===best;row.classList.toggle('is-best',isBest);
+   const head=el('div',null,'rf-offer-head');
+   const store=el('button',null,'card-store rf-offer-store');store.type='button';store.dataset.store=storeKey(offer.tienda);applyStoreVisual(store,offer.tienda);
+   store.append(el('span',offer.tienda));store.title=txt('Ver la tienda','Ver a loja')+': '+offer.tienda;store.onclick=()=>navigate('tienda',offer.tienda);head.append(store);
+   if(isBest)head.append(el('span',txt('Mejor precio','Melhor preço'),'rf-offer-best'));
+   const price=el('div',null,'rf-offer-price');
+   if(hasPrice(offer)){
+    const main=el('div',null,'rf-offer-main');
+    main.append(el('span','USD','rf-offer-cur'),el('strong',new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(offer.precio_usd),'rf-offer-amount'));
+    const off=typeof discountOf==='function'?discountOf(offer):0;
+    if(off){main.append(el('s','USD '+new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(offer.precio_original_usd),'rf-offer-old'),el('span','−'+off+'%','rf-offer-off'));}
+    price.append(main);
+    const converted=window.RivFreeRates?.convert(offer.precio_usd)||[];
+    if(converted.length){
+     const box=el('div',null,'rf-offer-conv');box.setAttribute('role','group');box.setAttribute('aria-label',txt('Precio aproximado en otras monedas','Preço aproximado em outras moedas'));
+     for(const item of converted){const chip=el('button',null,'rf-offer-conv-chip');chip.type='button';chip.append(el('span','≈ '+item.text));chip.title=item.name+' · '+txt('mostrar los precios en esta moneda','mostrar os preços nesta moeda');chip.setAttribute('aria-pressed',String(item.active));chip.onclick=()=>{window.RivFreeRates.choose(item.code);draw();list.querySelector(`.rf-offer-conv-chip[aria-pressed=true]`)?.focus({preventScroll:true});};box.append(chip);}
+     price.append(box);
+    }
+   }else price.append(el('strong',txt('Sin precio publicado','Sem preço publicado'),'rf-offer-amount rf-offer-noprice'));
+   row.append(head,price);appendSourceNotes(row,[offer],false);
+   const foot=el('div',null,'rf-offer-foot');foot.append(offerFavoriteControls(offer));
+   const actions=el('div',null,'rf-offer-actions');
+   const url=safeHttpUrl(offer.url);
+   if(url){const shop=el('a',null,'rf-offer-shop');shop.href=url;shop.target='_blank';shop.rel='noopener noreferrer';shop.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';shop.prepend(el('span',txt('Ver en la tienda','Ver na loja')));shop.setAttribute('aria-label',txt('Ver en la tienda','Ver na loja')+': '+offer.tienda);actions.append(shop);}
+   window.RivFreeExplore?.appendWhatsApp(actions,offer);
+   // Stores without a confirmed WhatsApp: no grey button, the store link uses the space.
+   actions.querySelector('button.rf-whatsapp:disabled')?.remove();
+   if(actions.childElementCount)foot.append(actions);
+   row.append(foot);return row;
+  }
+  select.onchange=filter.onchange=draw;draw();
+  const detail=el('section',null,'rf-panel');detail.append(el('h2',txt('Descripción y especificaciones','Descrição e especificações')));
+  const offer=group.offers.find(o=>o.descripcion)||group.offers[0],editorial=(window.RIVFREE_PRODUCT_CONTENT||[]).find(x=>x.matches(group.name));
+  detail.append(el('p',offer.descripcion||editorial?.description[LANG]||txt('Consultá la publicación oficial para confirmar las características y la variante exacta de este producto.','Consulte a publicação oficial para confirmar as características e a variante exata deste produto.')));
+  const parsed={};const capacity=group.name.match(/\b\d+(?:[.,]\d+)?\s*(?:ml|gb|tb|litros?|kg)\b/i);if(capacity)parsed[txt('Contenido / capacidad indicada','Conteúdo / capacidade indicada')]=capacity[0];const concentration=group.name.match(/\b(EDP|EDT|parfum|elixir)\b/i);if(concentration&&offer.categoryId==='perfumes')parsed[txt('Tipo indicado','Tipo indicado')]=concentration[0];
+  const specs=el('dl',null,'rf-specs');for(const [label,value]of [[txt('Producto','Produto'),group.name],[txt('Categoría','Categoria'),Catalog.categories[offer.categoryId]?.[LANG==='es'?0:1]],...Object.entries({...parsed,...(offer.especificaciones||editorial?.specs||{})})])if(value){specs.append(el('dt',label),el('dd',String(value)));}detail.append(specs);if(editorial?.source)detail.append(link(txt('Especificaciones oficiales','Especificações oficiais'),editorial.source));page.append(detail);
+  const related=window.RivFreeExploreModel?.related(group,PRODUCT_GROUPS)||[];
+  page.append(el('h2',txt('Productos relacionados','Produtos relacionados')));const grid=el('div',null,'rf-related grid');grid.addEventListener('click',handleProductClick);grid.append(...related.map(g=>createProductCard({...g,visibleOffers:g.offers})));page.append(grid);
+ }
+ async function route(){syncView();let type,id;try{[,type,id]=location.hash.split('/');id=decodeURIComponent(id||'');}catch{heading(txt('Enlace inválido','Link inválido'));return;}
+  if(type==='tiendas'||type==='tienda'){if(!Object.keys(STORE_INFO).length){heading(txt('Cargando tiendas…','Carregando lojas…'));try{STORE_INFO=await loadStoreInfoFiles();}catch{}}type==='tiendas'?directory():storePage(id);}
+  else if(type==='producto')productPage(id);
+  else if(type==='buscar')render();
+  window.scrollTo(0,0);
+ }
+ window.addEventListener('hashchange',route);window.addEventListener('rivfree:catalog-ready',route);
+ $('languageToggle').addEventListener('change',()=>{summaryLabel.textContent=txt('Categorías','Categorias');storesLabel.textContent=txt('Tiendas','Lojas');route();});
+ setInterval(()=>{page.querySelectorAll('[data-hours-store]').forEach(b=>{const s=status(STORE_INFO[b.dataset.hoursStore]||{});b.textContent=s.text;b.className=s.open?'rf-open':'rf-muted';});},60000);
 
-
-<aside class="rf-disclaimer" id="siteDisclaimer" aria-label="Aviso importante"><div class="rf-disclaimer-inner"><span class="rf-disclaimer-icon" aria-hidden="true">i</span><p><strong class="rf-d-long">RivFree es un comparador de precios.</strong> <span class="rf-d-long">No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.</span><span class="rf-d-short"><strong>Solo comparamos precios:</strong> no vendemos ni estamos afiliados a las tiendas.</span></p><button type="button" class="rf-disclaimer-close" id="siteDisclaimerClose" aria-label="Cerrar aviso" title="Cerrar aviso">×</button></div></aside>
-<div class="topbar">
-  <div class="topbar-inner">
-    <a class="brand brand-link" href="./" aria-label="Volver al inicio y recargar">
-      <div class="brand-lockup">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path class="brand-bag-solid" d="M10.5 18.5h27L35.2 40H12.8L10.5 18.5Z"/>
-            <path class="brand-handle-bold" d="M17.5 19v-2.5a6.5 6.5 0 0 1 13 0V19"/>
-          </svg>
-        </span>
-        <div>
-          <h1>Riv<span class="brand-name-free">Free</span></h1>
-          <p>Explorá y compará los free shops de Rivera y Santana do Livramento</p>
-        </div>
-      </div>
-    </a>
-    <form class="field search-field" id="searchForm" role="search">
-      <div class="rf-social rf-social-header" id="headerSocial" aria-label="Redes sociales de RivFree"></div>
-      <label for="search">Buscar producto</label>
-      <div class="search-row">
-        <input type="search" id="search" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
-        <button class="search-button" id="searchButton" type="submit">
-          <svg class="search-button-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Buscar</span>
-        </button>
-      </div>
-      <div id="searchSuggestions" class="search-suggestions" role="listbox" aria-label="Sugerencias de productos" hidden></div><p class="search-help">Escribí tu búsqueda completa y presioná Enter.</p>
-      <div class="search-status" id="searchStatus" role="status" aria-live="polite">
-        <span class="spinner" aria-hidden="true"></span>
-        <span>Buscando productos…</span>
-      </div>
-    </form>
-    <div class="header-actions">
-      <button id="openStoreDirectory" class="theme-toggle" type="button">Free shops</button>
-      <select id="languageToggle" class="theme-toggle" aria-label="Cambiar idioma">
-        <option value="es">ES</option><option value="pt-BR" selected>PT</option>
-      </select>
-      <button class="theme-toggle theme-mode" id="themeToggle" type="button" aria-pressed="false"><span class="theme-mode-icon" aria-hidden="true"></span><span class="theme-mode-label">Modo oscuro</span></button>
-      <button id="headerShoppingList" class="header-list" type="button" hidden><span aria-hidden="true">♡</span> <span>Mi lista</span></button>
-      
-    </div>
-  </div>
-</div>
-
-
-<nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><!-- Íconos de la barra: Lucide (lucide.dev, licencia ISC, ver LICENSE-lucide.txt). --><div class="rf-nav-quick" id="navQuick"><a class="rf-nav-item" id="navStores" href="#/tiendas"><svg class="rf-nav-icon rf-icon-store" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg><span class="rf-nav-label">Tiendas</span></a><button class="rf-nav-item" id="navOffers" type="button"><svg class="rf-nav-icon rf-icon-offers" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/></svg><span class="rf-nav-label">Ofertas</span></button><button class="rf-nav-item rf-nav-rate" id="navExchange" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="navExchangePanel"><svg class="rf-nav-icon rf-icon-rate" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg><span class="rf-nav-label"><span class="rf-nav-rate-title">Dólar hoy</span> <strong id="navExchangeValue">…</strong></span></button><button class="rf-nav-item" id="navList" type="button"><svg class="rf-nav-icon rf-icon-list" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span class="rf-nav-label">Mi lista</span><span class="rf-nav-count" id="navListCount" hidden>0</span></button></div></nav>
-<main>
-<section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel"></section>
-<div class="shopping-benefits" id="shoppingBenefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
-<section class="popular-section" id="discoverProducts" aria-labelledby="discoverTitle">
- <div class="section-heading"><div><span class="eyebrow">RIVERA · SANTANA DO LIVRAMENTO</span><h2 id="discoverTitle">Por descubrir</h2><p>Una selección aleatoria para inspirar tu próxima compra.</p></div></div>
- <div class="discovery-carousel">
-  <button id="discoverPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="discoverGrid">‹</button>
-  <div id="discoverGrid" class="popular-rail" tabindex="0" role="region" aria-label="Por descubrir"></div>
-  <button id="discoverNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="discoverGrid">›</button>
- </div>
-</section>
-<section class="popular-section" id="popularProducts" aria-labelledby="popularTitle">
- <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div></div>
- <div class="discovery-carousel">
-  <button id="popularPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="popularGrid" disabled>‹</button>
-  <div id="popularGrid" class="popular-rail" tabindex="0" role="region" aria-label="Más consultados"></div>
-  <button id="popularNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="popularGrid" disabled>›</button>
- </div>
-</section>
-<section id="catalogSection" class="catalog-section">
-<div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Explorá todas las tiendas y encontrá tu próximo favorito.</p></div><div class="catalog-status"><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
-<div class="controls">
-  <div class="controls-card search-hero">
-
-
-    <div class="quick-filter-row">
-      <div class="field category-quick-filter">
-        <label for="categorySearch">Categoría</label>
-        <div class="category-picker">
-          <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Escribí o seleccioná una categoría">
-          <button id="clearCategory" class="category-clear" type="button" aria-label="Limpiar categoría" hidden>Limpiar</button>
-          <div id="categoryOptions" role="listbox" aria-multiselectable="true" hidden></div>
-        </div>
-        <div id="categoryChips" class="category-chips" aria-label="Categorías seleccionadas"></div><select id="categoria" multiple hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
-      </div>
-
-      <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Ocultar productos sin precio</label>
-      <button type="button" class="rf-adv-toggle" id="advancedToggle" aria-expanded="false" aria-controls="advancedFilters"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg><span>Filtros avanzados</span><span class="rf-adv-count" id="advancedCount" hidden></span></button>
-      <details class="advanced-filters" id="advancedFilters">
-        <summary>
-          <span class="filter-summary-icon" aria-hidden="true"></span>
-          <span>Filtros avanzados</span>
-          <span class="filter-summary-note">Precio, ofertas y tiendas</span>
-        </summary>
-        <div class="advanced-grid">
-          <div class="field">
-            <label>Precio USD</label>
-            <div class="price-range">
-              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="minPrice" placeholder="min" min="0" step="0.01" inputmode="decimal" aria-label="Precio mínimo en dólares"></div>
-              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="maxPrice" placeholder="max" min="0" step="0.01" inputmode="decimal" aria-label="Precio máximo en dólares"></div>
-            </div>
-          </div>
-
-          <div class="field toggle-oferta">
-            <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
-          </div>
-
-          <div class="field stores-filter">
-            <p class="stores-filter-title" id="storesFilterTitle"><b>Tiendas</b> <span>Tocá una o varias para ver solo sus productos. Sin elegir, se muestran todas.</span></p>
-            <div class="stores-field" id="storesField" role="group" aria-labelledby="storesFilterTitle">
-              <!-- checkboxes de tiendas se llenan por JS: ninguna marcada = todas las tiendas -->
-            </div>
-          </div>
-
-          <div class="filter-actions">
-            <button class="clear-btn" id="clearFilters" type="button">Limpiar filtros</button>
-          </div>
-        </div>
-      </details>
-    </div>
-  </div>
-</div>
-<div class="catalog-toolbar rf-results-bar">
-  <div class="rf-results-info"><div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div><details class="catalog-details"><summary title="Detalles del catálogo" aria-label="Detalles del catálogo">i</summary><p id="resultsDetails"></p></details></div>
-  <div class="offer-tiers" id="offerTiers" role="group" aria-label="Filtrar ofertas por descuento" hidden><span class="offer-tiers-title">Descuento</span><button type="button" class="offer-tier" data-discount="0" aria-pressed="true"><span class="offer-tier-main">Todas</span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-1" data-discount="20" aria-pressed="false"><span class="offer-tier-main"><b>20%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-2" data-discount="40" aria-pressed="false"><span class="offer-tier-main"><b>40%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-3" data-discount="60" aria-pressed="false"><span class="offer-tier-main"><b>60%</b> <span>o más</span></span><span class="offer-tier-count"></span></button></div>
-  <div class="rf-results-actions">
-    <label class="rf-fav-toggle" title="Mostrar solo favoritos"><input type="checkbox" id="favoritesOnly"><svg class="rf-ui-svg rf-heart-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span>Favoritos</span></label>
-    <div class="field sort-field"><label for="orden"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg><span>Ordenar</span></label>
-            <select id="orden">
-              <option value="caida">Mayor caída de precio</option><option value="descuento">Mayor descuento</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
-              <option value="precio_asc">Precio: menor a mayor</option>
-              <option value="precio_desc">Precio: mayor a menor</option>
-              <option value="nombre_asc" selected>Nombre: A-Z</option>
-            </select>
-    </div>
-  </div>
-</div>
-
-<aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
-  <div class="stock-notice-inner">
-    <span class="stock-notice-icon" aria-hidden="true">i</span>
-    <div class="stock-notice-text">
-      <strong>Antes de tu visita.</strong> La web refleja catálogos online, no el stock físico completo de cada tienda.
-    </div>
-    <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
-  </div>
-</aside>
-
-<div id="priceError" role="alert" hidden></div>
-<div id="loadError" role="alert" hidden><p id="loadErrorText"></p><button type="button" id="retryLoad" class="clear-btn">Reintentar</button></div>
-<section class="planning-tools" aria-label="Favoritos y conversión" hidden>
-<button type="button" id="openShoppingList"><span>Mi lista</span> <span id="listCount" class="list-count">0</span></button>
-<label class="reference-currency-label"><span>Moneda de referencia</span><select id="referenceCurrency" aria-label="Moneda de referencia"><option value="USD">USD</option><option value="BRL" selected>BRL · Real</option><option value="UYU">UYU · Peso uruguayo</option><option value="ARS">ARS · Peso argentino</option></select></label><details class="exchange-details"><summary><strong id="exchangePreview">USD → BRL</strong> <span>· Cotización</span></summary><label><span id="exchangePair">USD → BRL</span> <input id="exchangeRate" type="number" min="0.01" step="0.01" placeholder="Cotización" aria-label="Reales por dólar"></label>
-<p id="exchangeNote"></p><button id="automaticExchange" type="button">Usar cotización automática</button></details></section>
-<p id="connectionNote" class="rf-connection-note" hidden>Sin conexión: catálogo guardado / Sem conexão: catálogo salvo.</p>
-<div class="grid" id="grid"></div>
-<div class="load-more-wrap" id="loadMoreWrap" hidden>
-  <button class="load-more-btn" id="loadMore" type="button">Mostrar más productos</button>
-</div>
-<div class="empty-state" id="emptyState" style="display:none;">
-  No se encontraron productos con esos filtros.<br>Probá ampliar la búsqueda.
-</div>
-</section>
-
-<!-- Outside #catalogSection: the list must open from any page, even when the catalog is hidden. -->
-<dialog id="shoppingDialog" class="rf-list-dialog" aria-labelledby="shoppingTitle"><div class="shopping-header"><div class="rf-list-heading"><span class="rf-list-heart"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg></span><div><h2 id="shoppingTitle">Mi lista</h2><p id="shoppingSummary" class="rf-list-summary"></p></div></div><button type="button" id="closeShoppingList" aria-label="Cerrar">✕</button></div><div id="shoppingRoute" class="rf-list-route"></div><div id="shoppingList"></div><div class="share-list"><button id="shareShoppingList" type="button"><svg class="rf-list-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg><span>Compartir lista</span></button><p id="shareHint">Abrila en otro celular con un enlace, sin crear cuenta.</p><input id="sharedListLink" readonly hidden aria-label="Enlace de la lista"></div></dialog>
-<dialog id="productDialog" aria-labelledby="productPreviewTitle"><div class="dialog-header"><h2 id="productPreviewTitle"></h2><button class="dialog-close" id="productPreviewClose" type="button" aria-label="Cerrar / Fechar">×</button></div><div id="productPreviewContent"></div></dialog>
-<dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
-  <div class="dialog-header">
-    <div>
-      <h2 id="dialogTitle">Comparar precios</h2>
-      <p class="dialog-subtitle" id="dialogSubtitle"></p>
-    </div>
-    <button class="dialog-close" id="dialogClose" type="button" aria-label="Cerrar">×</button>
-  </div>
-  <div class="comparison-list" id="comparisonList"></div>
-</dialog>
-
-<dialog id="storeDirectoryDialog" aria-labelledby="storeDirectoryTitle">
-  <div class="shopping-header"><div><span class="eyebrow">RIVFREE · RIVERA Y SANTANA DO LIVRAMENTO</span><h2 id="storeDirectoryTitle">Guía de free shops</h2></div><button id="closeStoreDirectory" type="button" aria-label="Cerrar">✕</button></div>
-  <p class="directory-intro">Consultá las tiendas registradas en RivFree. Confirmá horarios y datos de contacto en los canales oficiales antes de tu visita.</p>
-  <p id="storeDirectoryStatus" role="status"></p><button id="retryStoreDirectory" type="button" hidden>Reintentar</button>
-  <div id="storeDirectoryList" class="store-directory-grid"></div>
-</dialog>
-<dialog class="comparison-dialog" id="storeDialog" aria-labelledby="storeDialogTitle">
-  <div class="dialog-header">
-    <div>
-      <h2 id="storeDialogTitle">Información de la tienda</h2>
-      <p class="dialog-subtitle">Datos de contacto y enlaces oficiales</p>
-    </div>
-    <button class="dialog-close" id="storeDialogClose" type="button" aria-label="Cerrar">×</button>
-  </div>
-  <div class="store-info" id="storeInfo"></div>
-</dialog>
-
-</main>
-<button id="backToTop" type="button" hidden aria-label="Volver arriba" title="Volver arriba">↑</button>
-<div id="actionStatus" role="status" aria-live="polite" hidden></div>
-
-<footer>
-  <strong>RivFree · Comparador independiente</strong><br>
-  <span class="studio-footer-text">No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.</span>
-  <div class="rf-social rf-social-footer" id="footerSocial" aria-label="Redes sociales de RivFree"></div>
-  <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html" hidden>Privacidad</a></div>
-</footer>
-
-<dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="site-config.js?v=20261001-v71" defer></script>
-<script src="privacy-config.js?v=20260925-ux1" defer></script>
-<script src="tracking-config.js?v=20260930-v4" defer></script>
-<script src="consent.js?v=20260930-v4" defer></script>
-<script src="matching.js?v=20260928-seo3" defer></script>
-<script src="catalog.js?v=20261001-v71" defer></script>
-<script src="catalog-cache.js?v=20261001-v71" defer></script>
-<script src="features.js?v=20261001-v71" defer></script>
-<script src="shared-list-codec.js?v=20260925-share2" defer></script>
-<script src="shopping.js?v=20261001-v71" defer></script>
-<script src="storefront.js?v=20261001-v71" defer></script>
-<script src="product-details.js?v=20261001-v71" defer></script>
-<script src="app.js?v=20261001-v71" defer></script>
-<script src="product-content.js?v=20260930" defer></script>
-<script src="search-api-config.js" defer></script>
-<script src="store-directory.js?v=20261001-v71" defer></script>
-<script src="experience.js?v=20261001-v71" defer></script>
-<script src="explore-model.js?v=20261001-v5" defer></script>
-<script src="category-index.js?v=20261001-v71" defer></script>
-<script src="explore.js?v=20261001-v71" defer></script>
-<script src="nav-bar.js?v=20261001-v71" defer></script>
-<script src="ui-updates.js?v=20261001-v71" defer></script>
-<script src="mobile-shell.js?v=20261001-v71" defer></script>
-</body></html>
+ let previewEntity=null,previewBaseStores=null;
+ function showStudioEntity(data){
+  if(loadingCatalog)return;
+  if(!previewBaseStores)previewBaseStores={...STORE_INFO};
+  STORE_INFO={...previewBaseStores,...(data.stores||{})};window.RivFreeApplyHiddenPhotos?.();
+  const previousDraft=PRODUCT_GROUPS.findIndex(g=>g.key==='studio-draft');if(previousDraft>=0)PRODUCT_GROUPS.splice(previousDraft,1);
+  const entity=data.entity;
+  if(!entity){if(previewEntity){previewEntity=null;history.replaceState(null,'',location.pathname+location.search);route();}return;}
+  previewEntity=entity;const value=entity.value||{};
+  if(entity.kind==='product'){
+   const draft={...value,id:value.id||'manual-preview',nombre:value.nombre||'Producto sin nombre',tienda:value.tienda||'Tienda por seleccionar',precio_usd:value.precio_usd===''?null:Number(value.precio_usd),manual:true};
+   const prepared=prepareCatalog({productos:[draft]});const group=prepared.groups[0];if(!group)return;group.key='studio-draft';PRODUCT_GROUPS.push(group);
+   history.replaceState(null,'',location.pathname+location.search+'#/producto/studio-draft');syncView();productPage('studio-draft');
+  }else if(entity.kind==='store'){
+   const name=value.nombre||'Tienda sin nombre';STORE_INFO[name]={...value,redes:{instagram:value.instagram,facebook:value.facebook,whatsapp:value.whatsapp,telegram:value.telegram}};
+   window.RivFreeApplyHiddenPhotos?.();
+   history.replaceState(null,'',location.pathname+location.search+'#/tienda/'+encodeURIComponent(name));syncView();storePage(name);
+  }
+  const badge=el('p',entity.kind==='product'?'Vista previa de la publicación que estás editando'+(value.activo===false?' · Oculta al público':''):'Vista previa de la tienda que estás editando','rf-preview-label');page.prepend(badge);
+  const selector=data.field==='productSpecs'?'.rf-specs':data.field==='productDescription'?'.rf-panel':data.field==='productImage'?'.rf-product-visual':data.field?.startsWith('productPrice')?'.rf-offers':/^store(Day|HoursKnown|Exceptions)/.test(data.field||'')?'.rf-hours':data.field?.startsWith('store')?'.rf-panel':'h1';
+  const editing=page.querySelector(selector);editing?.classList.add('rf-editing-target');
+  if(data.field)requestAnimationFrame(()=>editing?.scrollIntoView({block:'nearest',behavior:'instant'}));
+ }
+ if(new URLSearchParams(location.search).has('studio-preview')&&parent!==window){
+  let pending=null;
+  window.addEventListener('message',event=>{
+   if(event.origin!==location.origin||event.source!==parent)return;
+   if(event.data?.type==='rivfree-studio-entity'){pending=event.data;showStudioEntity(pending);}
+   if(event.data?.type==='rivfree-studio-navigate'){
+    const target=event.data.target;
+    if(target==='stores'){navigate('tiendas');return;}
+    if(location.hash.startsWith('#/')){history.replaceState(null,'',location.pathname+location.search);ACTIVE_SEARCH='';$('search').value='';route();}
+    requestAnimationFrame(()=> (target==='top'?window:target==='footer'?document.querySelector('footer'):$(target))?.[target==='top'?'scrollTo':'scrollIntoView']({top:0,block:'start',behavior:'instant'}));
+   }
+  });
+  window.addEventListener('rivfree:catalog-ready',()=>{if(pending)showStudioEntity(pending);});
+ }
+ route();
+})();
