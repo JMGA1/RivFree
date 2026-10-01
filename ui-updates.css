@@ -1,5 +1,7 @@
 /* Public UI scale requested by the owner; the Studio shell keeps its own scale. */
-html{zoom:1.25}
+/* Page scale: 110% (it was 125%). Viewport units below are divided by the same value. */
+:root{--rf-zoom:1.1}
+html{zoom:var(--rf-zoom)}
 :root #storesField .store-filter-chip:has(input:checked){background:var(--store-bg)!important;color:var(--store-fg)!important;border:1px solid var(--store-border)!important;box-shadow:0 2px 5px #0002!important}
 :root #storesField .store-filter-chip:has(input:checked) .store-filter-name{color:var(--store-fg)!important}
 :root #storesField .store-filter-chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
@@ -7,7 +9,7 @@ html{zoom:1.25}
 .rf-hours-list{display:grid;grid-template-columns: minmax(75px,auto) 1fr;gap:7px 14px;line-height:1.5}
 .rf-hours-list dt{font-weight:600}.rf-hours-list dd{margin:0}.rf-hours-list .today{color:var(--accent);font-weight:700}
 .rf-review{display:inline-flex;align-items:center;gap:6px}.rf-review-star{color:#f5b800;font-size:20px;line-height:1;text-shadow:0 1px 1px #0003}
-@media(max-width:850px){.rf-related{grid-template-columns:repeat(2,minmax(0,1fr))}.category-shortcuts{flex-wrap:wrap}.rf-category-mega{max-width:calc(100vw / 1.25 - 24px)}}
+@media(max-width:850px){.rf-related{grid-template-columns:repeat(2,minmax(0,1fr))}.category-shortcuts{flex-wrap:wrap}.rf-category-mega{max-width:calc(100vw / var(--rf-zoom) - 24px)}}
 @media(max-width:500px){.rf-store-card{padding:16px}.rf-related{grid-template-columns:1fr}.rf-hours-list{gap:6px 10px}}
 
 footer .footer-actions .privacy-policy-link{display:none!important}
@@ -88,7 +90,7 @@ footer .footer-actions .privacy-policy-link{display:none!important}
 .rf-nav-count{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#e5294b;color:#fff;font-size:11px;font-weight:800;display:inline-grid;place-items:center;box-shadow:0 0 0 2px #1b304a}
 body.rf-detail-mode .category-shortcuts #navStores[aria-current=page],.category-shortcuts .rf-nav-item[aria-current=page]{background:rgb(255 255 255 / 12%);color:#fff}
 
-.rf-rate-panel{position:absolute;z-index:60;top:calc(100% + 4px);left:50%;transform:translateX(-50%);max-width:calc(100vw / 1.25 - 16px);width:300px;padding:14px;background:linear-gradient(180deg,#1b3150,#15263f);border:1px solid #3c5372;border-radius:14px;box-shadow:0 18px 40px rgb(5 12 24 / 45%),0 2px 6px rgb(5 12 24 / 30%);color:#fff;animation:rf-lang-in .14s ease-out}
+.rf-rate-panel{position:absolute;z-index:60;top:calc(100% + 4px);left:50%;transform:translateX(-50%);max-width:calc(100vw / var(--rf-zoom) - 16px);width:300px;padding:14px;background:linear-gradient(180deg,#1b3150,#15263f);border:1px solid #3c5372;border-radius:14px;box-shadow:0 18px 40px rgb(5 12 24 / 45%),0 2px 6px rgb(5 12 24 / 30%);color:#fff;animation:rf-lang-in .14s ease-out}
 .rf-nav-quick{position:relative}
 .category-shortcuts .rf-nav-item[hidden]{display:none!important}
 .rf-rate-head{display:flex;flex-direction:column;gap:2px;padding:2px 4px 10px}
@@ -250,8 +252,8 @@ body.rf-detail-mode .category-shortcuts #navStores[aria-current=page],.category-
 :root[data-theme=dark] #storesField .store-filter-all[aria-pressed=true]{background:#f1f5fb!important;color:#172337!important;border-color:#f1f5fb!important}
 
 /* v6 · "Mi lista": photos, compact rows, icon actions */
-/* The public page is zoomed 125%: viewport units must be divided by the zoom to fit on screen. */
-#shoppingDialog.rf-list-dialog{width:min(720px,calc(100% - 24px));max-height:calc(88dvh / 1.25);padding:0;border-radius:20px;overflow:hidden;display:none;flex-direction:column}
+/* The public page is zoomed (--rf-zoom): viewport units must be divided by the zoom to fit on screen. */
+#shoppingDialog.rf-list-dialog{width:min(720px,calc(100% - 24px));max-height:calc(88dvh / var(--rf-zoom));padding:0;border-radius:20px;overflow:hidden;display:none;flex-direction:column}
 #shoppingDialog.rf-list-dialog[open]{display:flex}
 .rf-list-dialog .shopping-header{position:sticky;top:0;z-index:2;padding:18px 20px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
 .rf-list-heading{display:flex;align-items:center;gap:12px;min-width:0}

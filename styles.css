@@ -1452,9 +1452,10 @@ body[data-density="airy"] .card-body{padding:18px!important} body[data-density="
 
 .seo-brand-title{margin:0}
 /* A compact introduction aligned with the campaign card. */
-.seo-home-heading{box-sizing:border-box;width:calc(100% - 32px);max-width:1200px;margin:16px auto 12px;padding:20px 24px 16px;text-align:center;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;}
-.seo-home-heading h1{max-width:1000px;margin:0 auto;font-family:var(--font-sans);font-size:clamp(1.25rem,2.1vw,1.8rem);font-weight:700;line-height:1.25;letter-spacing:-.025em;text-wrap:balance;}
-.seo-home-heading p{max-width:740px;margin:8px auto 8px;color:var(--muted);font-size:13px;line-height:1.5;text-wrap:balance;}
+/* SEO text: placed by tools/build_seo.cjs just above the footer. Visible and readable (Google indexes it), but discreet. */
+.seo-home-heading{box-sizing:border-box;width:calc(100% - 32px);max-width:1200px;margin:28px auto 0;padding:18px 8px 6px;text-align:center;color:var(--muted);border-top:1px solid var(--line);}
+.seo-home-heading h1{max-width:1000px;margin:0 auto;font-family:var(--font-sans);font-size:15px;font-weight:700;line-height:1.35;letter-spacing:0;color:var(--ink);text-wrap:balance;}
+.seo-home-heading p{max-width:740px;margin:4px auto 4px;color:var(--muted);font-size:12.5px;line-height:1.5;text-wrap:balance;}
 .seo-home-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 10px;font-size:12px;line-height:1.4;}
 .seo-home-links a{display:inline-flex;align-items:center;min-height:36px;color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--muted);}
 :root[data-theme="dark"] .seo-home-links a{color:#ffb5c3;}
@@ -1462,5 +1463,5 @@ body[data-density="airy"] .card-body{padding:18px!important} body[data-density="
 .seo-home-links a:focus-visible{outline:2px solid currentColor;outline-offset:4px;border-radius:4px;}
 .seo-home-links>span{color:var(--muted);}
 
-.seo-home-heading + #heroCampaign:not([hidden]){box-sizing:border-box;width:calc(100% - 32px);max-width:1200px;margin:0 auto;border-radius:16px!important;overflow:hidden;border:1px solid var(--line);}
-@media(max-width:650px){.seo-home-heading{margin-top:12px;padding:16px 14px 10px;}.seo-home-heading h1{font-size:1.2rem;}.seo-home-heading p{font-size:12px;margin-top:6px;}.seo-home-links{font-size:11px;gap:0 8px;}.seo-home-links a{min-height:40px;}}
+html[data-seo-home] main>#heroCampaign:not([hidden]){box-sizing:border-box;margin-top:16px!important;width:calc(100% - 32px);max-width:1200px;margin:0 auto;border-radius:16px!important;overflow:hidden;border:1px solid var(--line);}
+@media(max-width:650px){.seo-home-heading h1{font-size:13.5px;}.seo-home-heading p{font-size:11.5px;}.seo-home-links{font-size:11px;gap:0 8px;}.seo-home-links a{min-height:40px;}}

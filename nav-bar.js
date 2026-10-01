@@ -43,6 +43,10 @@
   panel.replaceChildren();
   panel.setAttribute('aria-label',t('Cotización del día','Cotação do dia'));
   const head=el('div',null,'rf-rate-head');head.append(el('strong',t('Cotización del día','Cotação do dia')),el('span',t('1 dólar estadounidense (USD)','1 dólar americano (USD)'),'rf-rate-sub'));panel.append(head);
+  panel.append(...rateBlock(code=>choose(code)));
+ }
+ // Currency rows plus the source note; the phone menu (mobile-shell.js) shows the same block in its drawer.
+ function rateBlock(onPick){
   const list=el('div',null,'rf-rate-list');list.setAttribute('role','group');list.setAttribute('aria-label',t('Mostrar precios también en','Mostrar preços também em'));
   const current=typeof referenceCurrency!=='undefined'?referenceCurrency:'BRL';let newest='';
   for(const [code,meta] of Object.entries(CURRENCIES)){
@@ -52,14 +56,17 @@
    else{const icon=el('span','$','rf-rate-usd');icon.setAttribute('aria-hidden','true');row.append(icon);}
    const text=el('span',null,'rf-rate-name');text.append(el('strong',code==='USD'?'USD':code),el('small',meta[LANG==='es'?'es':'pt']));row.append(text);
    row.append(el('span',code==='USD'?t('sin conversión','sem conversão'):money(code,info.rate)+(info.manual?' *':''),'rf-rate-value'));
-   row.addEventListener('click',()=>choose(code));list.append(row);
+   row.addEventListener('click',()=>onPick(code));list.append(row);
   }
-  panel.append(list);
   const note=el('p',null,'rf-rate-note');
   const source=rateFor(shownCurrency());
   note.textContent=t('Los precios de las tiendas están en dólares. Elegí una moneda para ver también el equivalente aproximado.','Os preços das lojas estão em dólares. Escolha uma moeda para ver também o equivalente aproximado.')+(newest?' '+t('Actualizada: ','Atualizada: ')+formatDate(newest)+(source?.source?' · '+source.source:''):'')+(Object.keys(CURRENCIES).some(c=>rateFor(c)?.manual)?' · * '+t('tasa manual','taxa manual'):'');
-  panel.append(note);
+  return [list,note];
  }
+ window.RivFreeRates={
+  label:()=>{const code=shownCurrency(),info=rateFor(code);return info?money(code,info.rate):'—';},
+  render(target,after){target.replaceChildren(...rateBlock(code=>{const select=$('referenceCurrency');if(select&&select.value!==code){select.value=code;select.dispatchEvent(new Event('change',{bubbles:true}));}after?.(code);}));}
+ };
  function choose(code){const select=$('referenceCurrency');if(select&&select.value!==code){select.value=code;select.dispatchEvent(new Event('change',{bubbles:true}));}close();}
  function open(){drawPanel();panel.style.left=matchMedia('(max-width:650px)').matches?'':(button.offsetLeft+button.offsetWidth/2)+'px';panel.hidden=false;button.setAttribute('aria-expanded','true');button.classList.add('open');(panel.querySelector('[aria-pressed=true]')||panel.querySelector('button'))?.focus({preventScroll:true});}
  function close(focus=false){if(panel.hidden)return;panel.hidden=true;button.setAttribute('aria-expanded','false');button.classList.remove('open');if(focus)button.focus({preventScroll:true});}

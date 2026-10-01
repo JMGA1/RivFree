@@ -200,3 +200,5 @@ UPDATE_PATHS += ['category-index.js', 'store-directory.js', 'store-directory.css
 UPDATE_PATHS += ['tests/v6-improvements.test.cjs', 'tests/test_studio_v6.py', 'CAMBIOS-V6.md']
 # v6.1: store filter, hidden photos per store, optional PostgreSQL copy
 UPDATE_PATHS += ['postgres', 'tools/postgres_sync.py', 'requirements-db.in', 'requirements-db.txt', 'POSTGRESQL-LEEME.md', 'tests/v61-improvements.test.cjs', 'tests/test_postgres.py', 'README.md']
+# v7: phone layout (compact bar and side menu), 110% scale, SEO text above the footer
+UPDATE_PATHS += ['mobile.css', 'mobile-shell.js', 'tests/v7-mobile.test.cjs', 'tests/seo.test.cjs', 'tests/seo-runtime.test.cjs', 'CAMBIOS-V7.md']

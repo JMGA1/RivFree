@@ -3,7 +3,7 @@ const {JSDOM}=require('jsdom');
 const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f),'utf8');
 // Use a real DOM and the complete production site-config script, including async apply.
 for(const lang of ['es','pt-BR'])for(const preference of [null,'es','pt-BR'])test(`metadata respects ${lang} page with preference ${preference}`,async()=>{
- const html=read('index.html').replace('<html lang="pt-BR">',`<html lang="${lang}" data-seo-home="${lang}">`).replace('<main>','<main><section class="seo-home-heading"><h1>SEO heading</h1></section>');
+ const html=read('index.html').replace('<html lang="pt-BR">',`<html lang="${lang}" data-seo-home="${lang}">`).replace('<footer>','<section class="seo-home-heading"><h1>SEO heading</h1></section><footer>');
  const dom=new JSDOM(html,{url:'https://example.test/'+(lang==='es'?'index-es.html':''),runScripts:'outside-only'}),w=dom.window;
  try{
   if(preference)w.localStorage.setItem('rivfree-language',preference);
@@ -13,7 +13,8 @@ for(const lang of ['es','pt-BR'])for(const preference of [null,'es','pt-BR'])tes
   assert.equal(w.document.querySelector('meta[name="description"]').content,config.seo['description_'+suffix]);
   assert.equal(w.document.querySelector('meta[property="og:title"]').content,config.seo['title_'+suffix]);
   assert.equal(w.document.querySelector('meta[name="twitter:title"]').content,config.seo['title_'+suffix]);
-  assert.equal(w.document.querySelector('main').firstElementChild.className,'seo-home-heading');
+  // The SEO text sits right above the footer; reordering the home sections must not move it.
+  assert.equal(w.document.querySelector('footer').previousElementSibling.className,'seo-home-heading');
  }finally{w.close();}
 });
 test('privacy draft is noindex',()=>assert.match(read('privacy.html'),/name="robots" content="noindex,follow"/));

@@ -159,7 +159,8 @@
   a.className='rf-whatsapp';a.setAttribute('aria-label',url?label:text('WhatsApp no informado: ','WhatsApp não informado: ')+offer.tienda);a.title=url?label:text('Esta tienda aún no tiene WhatsApp confirmado','Esta loja ainda não tem WhatsApp confirmado');
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const p=document.createElementNS(svg.namespaceURI,'path');p.setAttribute('d','M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.6-4.7a8.5 8.5 0 1 1 15.9-4.3Z M8 7.5c.5 4 2.5 6 6.5 7l1.5-2-2.5-1-1 1c-1.5-.7-2.3-1.5-3-3l1-1L9 6.5Z');svg.append(p);a.append(svg,node('span','WhatsApp'));actions.append(a);
  }
- window.RivFreeExplore={syncVisibility,appendWhatsApp,facets:()=>facets,facetCounts:()=>facetCounts,activateFacet,brandIndex:()=>brandIndex};
+ // families/ready/build are used by the phone menu (mobile-shell.js) to list categories, brands and types.
+ window.RivFreeExplore={syncVisibility,appendWhatsApp,facets:()=>facets,facetCounts:()=>facetCounts,activateFacet,brandIndex:()=>brandIndex,families:()=>families,ready:()=>facetsReady(),build:()=>buildFacets(),label:f=>facetLabel(f)};
  window.addEventListener('rivfree:catalog-ready',()=>{renderPopularProducts();if(new URL(location.href).searchParams.has('facet'))render();});
  window.addEventListener('hashchange',()=>{hidePanel();renderPopularProducts();});
  $('languageToggle').addEventListener('change',()=>{drawCategories();renderPopularProducts();});
