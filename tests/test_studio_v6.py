@@ -62,5 +62,15 @@ class SiteOptionsV6Tests(unittest.TestCase):
             self.assertIn(path, scope)
 
 
+class LightPaletteTests(unittest.TestCase):
+    def test_untouched_light_background_moves_to_the_new_default(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'site-config.json'
+            for customized, expected in ((False, '#E8ECF2'), (True, '#F5F6F8')):
+                path.write_text(json.dumps({'appearance': {'colors_customized': customized, 'light': {'background': '#F5F6F8'}}}), encoding='utf-8')
+                with mock.patch.object(server, 'SITE_CONFIG_PATH', path):
+                    self.assertEqual(server.load_site_config()['appearance']['light']['background'], expected)
+
+
 if __name__ == '__main__':
     unittest.main()

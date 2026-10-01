@@ -52,7 +52,7 @@ MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = secrets.token_urlsafe(32)
-STUDIO_BUILD = '20261001-studio7'
+STUDIO_BUILD = '20261001-studio8'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -264,7 +264,7 @@ def default_site_config() -> dict:
         "branding": {"site_name": "RivFree", "tagline_es": "Explorá y compará los free shops de Rivera y Santana do Livramento", "tagline_pt": "Explore e compare os free shops de Rivera e Santana do Livramento"},
         "appearance": {
             "font": "system-modern", "density": "comfortable", "radius": 12, "shadow": "soft", "colors_customized": False,
-            "light": {"background": "#F5F6F8", "surface": "#FFFFFF", "text": "#172337", "primary": "#AD233C", "accent": "#E94E67", "highlight": "#FFB5B9", "background_image": "", "background_overlay": 0},
+            "light": {"background": "#E8ECF2", "surface": "#FFFFFF", "text": "#172337", "primary": "#AD233C", "accent": "#E94E67", "highlight": "#FFB5B9", "background_image": "", "background_overlay": 0},
             "dark": {"background": "#101B2B", "surface": "#19283C", "text": "#F1F5FB", "primary": "#AD233C", "accent": "#E94E67", "highlight": "#FFB5B9", "background_image": "", "background_overlay": 0},
         },
         "notice": {"enabled": True, "dismissible": True, "title_es": "Antes de tu visita.", "title_pt": "Antes da sua visita.", "text_es": "La web refleja catálogos online, no el stock físico completo de cada tienda.", "text_pt": "A web reflete catálogos online, não o estoque físico completo de cada loja."},
@@ -360,6 +360,11 @@ def load_site_config() -> dict:
     for key in ("top_notice", "social", "nav", "offers"):  # options added in v6
         if not isinstance(value.get(key), dict):
             value[key] = base[key]
+    # v7.1: the native light background is darker for contrast. Untouched palettes follow the new default.
+    appearance = value.get("appearance") if isinstance(value.get("appearance"), dict) else None
+    light = appearance.get("light") if appearance and isinstance(appearance.get("light"), dict) else None
+    if light and not appearance.get("colors_customized") and str(light.get("background", "")).upper() == "#F5F6F8":
+        light["background"] = "#E8ECF2"
     return value
 
 def normalize_campaign(raw: dict, index=0) -> dict:

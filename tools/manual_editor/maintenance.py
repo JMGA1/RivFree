@@ -202,3 +202,5 @@ UPDATE_PATHS += ['tests/v6-improvements.test.cjs', 'tests/test_studio_v6.py', 'C
 UPDATE_PATHS += ['postgres', 'tools/postgres_sync.py', 'requirements-db.in', 'requirements-db.txt', 'POSTGRESQL-LEEME.md', 'tests/v61-improvements.test.cjs', 'tests/test_postgres.py', 'README.md']
 # v7: phone layout (compact bar and side menu), 110% scale, SEO text above the footer
 UPDATE_PATHS += ['mobile.css', 'mobile-shell.js', 'tests/v7-mobile.test.cjs', 'tests/seo.test.cjs', 'tests/seo-runtime.test.cjs', 'CAMBIOS-V7.md']
+# v7.1: product page offers, light theme contrast
+UPDATE_PATHS += ['tests/v71-product.test.cjs']

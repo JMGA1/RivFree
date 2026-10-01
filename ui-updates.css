@@ -358,3 +358,66 @@ a.rf-social-link:focus-visible{outline:2px solid #ffb5c0;outline-offset:2px}
 .rf-social-footer .rf-app-icon::before{inset:7px}
 @media(max-width:980px){.rf-social-header{display:none!important}}
 @media (prefers-reduced-motion:reduce){.rf-social-link{transition:none}}
+
+/* v7.1 · Store offers on the product page: store chip, price in USD and neighbouring currencies, two clear actions */
+#detailPage .rf-offers{gap:12px}
+#detailPage .rf-offer{display:flex!important;flex-direction:column;align-items:stretch;gap:12px;padding:16px 18px!important;border:1px solid var(--line)!important;border-radius:16px!important;background:var(--surface)!important;color:var(--ink)}
+#detailPage .rf-offer.is-best{border-color:#2b9a63!important;box-shadow:inset 0 0 0 1px #2b9a63,var(--shadow-card,0 6px 16px rgba(16,24,40,.06))!important}
+.rf-offer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0}
+#detailPage .rf-offer-store{display:inline-flex;align-items:center;max-width:100%;min-height:30px;padding:5px 12px!important;border:1px solid var(--store-border,var(--line))!important;border-radius:999px!important;background:var(--store-bg,var(--paper-dim))!important;color:var(--store-fg,var(--ink))!important;font:inherit;font-size:12.5px!important;font-weight:800!important;letter-spacing:.01em!important;cursor:pointer;box-shadow:0 1px 3px #0002}
+#detailPage .rf-offer-store span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#detailPage .rf-offer-store:hover{filter:brightness(1.06)}
+#detailPage .rf-offer-store:focus-visible{outline:3px solid color-mix(in srgb,var(--store-bg,#ad233c) 45%,transparent);outline-offset:2px}
+.rf-offer-best{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#e3f6ec;color:#17643a;font-size:11.5px;font-weight:800;white-space:nowrap}
+.rf-offer-best::before{content:"✓";font-weight:900}
+.rf-offer-price{display:grid;gap:8px}
+.rf-offer-main{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.rf-offer-cur{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.04em}
+.rf-offer-amount{font-size:28px;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+.rf-offer-noprice{font-size:17px;color:var(--muted)}
+.rf-offer-old{font-size:13px;color:var(--muted)}
+.rf-offer-off{padding:2px 7px;border-radius:999px;background:#fdecef;color:#a3203a;font-size:11.5px;font-weight:800}
+.rf-offer-conv{display:flex;flex-wrap:wrap;gap:6px}
+.rf-offer-conv-chip{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface-muted,#f6f8fb);color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.rf-offer-conv-chip[aria-pressed=true]{border-color:color-mix(in srgb,var(--rf-red,#ad233c) 45%,transparent);background:color-mix(in srgb,var(--rf-red,#ad233c) 9%,var(--surface));color:var(--ink)}
+.rf-offer-conv-chip:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent)}
+.rf-offer-conv-chip:focus-visible{outline:3px solid color-mix(in srgb,var(--rf-red,#ad233c) 45%,transparent);outline-offset:2px}
+.rf-offer-foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 12px;padding-top:12px;border-top:1px dashed var(--line)}
+#detailPage .rf-offer-foot .offer-favorite-controls{flex:0 0 auto;gap:6px}
+#detailPage .rf-offer-actions{display:flex;flex:1 1 300px;justify-content:flex-end;gap:8px;margin:0}
+.rf-offer-shop,#detailPage .rf-offer-actions .rf-whatsapp{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1 1 0;max-width:220px;min-height:42px;padding:0 16px;border-radius:11px;font:inherit;font-size:14px;font-weight:800;text-decoration:none;white-space:nowrap;transition:filter .15s ease,transform .15s ease}
+.rf-offer-shop{background:var(--ink);color:var(--surface)!important;border:1px solid var(--ink)}
+.rf-offer-shop svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#detailPage .rf-offer-actions .rf-whatsapp{background:#1faa59;border:1px solid #1faa59;color:#fff!important}
+#detailPage .rf-offer-actions .rf-whatsapp svg{width:19px;height:19px}
+.rf-offer-shop:hover,#detailPage .rf-offer-actions .rf-whatsapp:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.rf-offer-shop:focus-visible,#detailPage .rf-offer-actions .rf-whatsapp:focus-visible{outline:3px solid color-mix(in srgb,var(--ink) 35%,transparent);outline-offset:2px}
+:root[data-theme=dark] .rf-offer-best{background:#173d2b;color:#a8f0c6}
+:root[data-theme=dark] .rf-offer-off{background:#46202c;color:#ffc2cd}
+:root[data-theme=dark] #detailPage .rf-offer.is-best{border-color:#3fbf80!important;box-shadow:inset 0 0 0 1px #3fbf80!important}
+@media (prefers-reduced-motion:reduce){.rf-offer-shop,#detailPage .rf-offer-actions .rf-whatsapp{transition:none}}
+@media(max-width:650px){
+ #detailPage .rf-offer{padding:14px!important}
+ .rf-offer-amount{font-size:24px}
+ .rf-offer-conv{gap:5px}
+ .rf-offer-conv-chip{min-height:28px;padding:0 8px;font-size:11.5px}
+ #detailPage .rf-offer-actions{flex-basis:100%}
+ .rf-offer-shop,#detailPage .rf-offer-actions .rf-whatsapp{max-width:none;padding:0 10px;font-size:13.5px}
+}
+
+/* v7.1 · Light theme with real contrast: soft grey page, white cards with borders, grey photo boxes.
+   Product photos with a white background melt into the grey box (multiply), so cards never blend into the page.
+   Studio's custom colours (Diseño → colores personalizados) still win when they are enabled. */
+:root:not([data-theme="dark"]){--paper:#e8ecf2;--paper-dim:#dde3eb;--surface:#ffffff;--surface-muted:#f3f5f8;--line:#d2d9e3;--muted:#566275;--shadow-card:0 1px 2px rgba(16,24,40,.06),0 6px 16px rgba(16,24,40,.06)}
+:root:not([data-theme="dark"]) body{background-color:var(--paper)}
+:root:not([data-theme="dark"]) .card{background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--shadow-card)!important}
+:root:not([data-theme="dark"]) .card:hover{border-color:#bcc6d4!important;box-shadow:0 2px 4px rgba(16,24,40,.07),0 12px 26px rgba(16,24,40,.11)!important}
+:root:not([data-theme="dark"]) .card-image-stage{background:#f1f3f7!important;box-shadow:none!important;border:0!important}
+:root:not([data-theme="dark"]) .card-image-stage img,:root:not([data-theme="dark"]) .rf-product-visual img,:root:not([data-theme="dark"]) .rf-list-thumb img{mix-blend-mode:multiply}
+:root:not([data-theme="dark"]) .rf-list-thumb{background:#f1f3f7}
+:root:not([data-theme="dark"]) .popular-section{background:transparent!important;box-shadow:none!important;border:0!important}
+:root:not([data-theme="dark"]) :is(.controls-card,#catalogSection .rf-results-bar,.rf-panel,.rf-store-card,.shopping-benefits,#detailPage .rf-offer,.rf-offer-toolbar select){border:1px solid var(--line)!important;box-shadow:var(--shadow-card)!important}
+:root:not([data-theme="dark"]) .rf-product-visual{background:#f1f3f7;border:1px solid var(--line)}
+:root:not([data-theme="dark"]) .popular-section .section-heading p,:root:not([data-theme="dark"]) .card-price-secondary{color:var(--muted)}
+:root:not([data-theme="dark"]) #detailPage .rf-offer.is-best{border-color:#2b9a63!important;box-shadow:inset 0 0 0 1px #2b9a63,var(--shadow-card)!important}
+.rf-product-visual .noimg{color:#5b6577}

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261001-studio7';
+  const BUILD = '20261001-studio8';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -18,7 +18,7 @@
   const STUDIO_TABS = new Set(['appearance', 'carousel', 'page', 'products', 'stores']);
 
   const NATIVE_PALETTE = {
-    light:{background:'#F5F6F8',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'},
+    light:{background:'#E8ECF2',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'},
     dark:{background:'#101B2B',surface:'#19283C',text:'#F1F5FB',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'}
   };
 
@@ -43,7 +43,7 @@
   const PRESETS = {
     rivfree: {
       font: 'system-modern', density: 'comfortable', shadow: 'soft', radius: 12,
-      light: {background:'#F5F6F8',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'},
+      light: {background:'#E8ECF2',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'},
       dark: {background:'#101B2B',surface:'#19283C',text:'#F1F5FB',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'}
     },
     clean: {
@@ -135,7 +135,7 @@
     val('siteRadius', a.radius ?? 12); if ($('radiusValue')) $('radiusValue').textContent = `${a.radius ?? 12}px`;
     for (const [prefix,palette] of [['light',light],['dark',dark]]) {
       const defaults = prefix === 'light'
-        ? {Background:'#F5F6F8',Surface:'#FFFFFF',Text:'#172337',Primary:'#AD233C',Accent:'#E94E67',Highlight:'#FFB5B9'}
+        ? {Background:'#E8ECF2',Surface:'#FFFFFF',Text:'#172337',Primary:'#AD233C',Accent:'#E94E67',Highlight:'#FFB5B9'}
         : {Background:'#101B2B',Surface:'#19283C',Text:'#F1F5FB',Primary:'#AD233C',Accent:'#E94E67',Highlight:'#FFB5B9'};
       for (const key of ['Background','Surface','Text','Primary','Accent','Highlight']) {
         val(prefix+key, palette[key.toLowerCase()] || defaults[key]);
@@ -163,7 +163,7 @@
     });
     for (const prefix of ['light','dark']) {
       workingConfig.appearance[prefix] = {
-        background:getColor(prefix+'Background', prefix==='light'?'#F5F6F8':'#101B2B'),
+        background:getColor(prefix+'Background', prefix==='light'?'#E8ECF2':'#101B2B'),
         surface:getColor(prefix+'Surface', prefix==='light'?'#FFFFFF':'#19283C'),
         text:getColor(prefix+'Text', prefix==='light'?'#172337':'#F1F5FB'),
         primary:getColor(prefix+'Primary', '#AD233C'),

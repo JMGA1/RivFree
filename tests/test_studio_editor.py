@@ -63,7 +63,7 @@ class StudioEditorTests(unittest.TestCase):
     def test_native_palette_is_default_until_user_customizes_colors(self):
         config=server.default_site_config()
         self.assertFalse(config['appearance']['colors_customized'])
-        self.assertEqual(config['appearance']['light']['background'],'#F5F6F8')
+        self.assertEqual(config['appearance']['light']['background'],'#E8ECF2')
         self.assertEqual(config['appearance']['dark']['background'],'#101B2B')
         config['appearance']['colors_customized']=True
         normalized=server.normalize_site_config(config)

@@ -1,3 +1,27 @@
+# RivFree v7.1 · ficha de producto y modo claro
+
+## Precios por tienda (ficha del producto)
+
+- La tienda aparece como una **etiqueta chica con su color**, igual que en las tarjetas. Antes era una barra roja de lado a lado. Tocándola se abre la ficha de la tienda.
+- La tienda más barata lleva **✓ Mejor precio** y un borde verde.
+- El precio en dólares se ve grande. Si hay oferta, aparece también el precio anterior tachado y el porcentaje.
+- Debajo del precio se ve el **equivalente en reales, pesos uruguayos y pesos argentinos**. Tocando una moneda, todo el sitio pasa a mostrar esa como referencia.
+- **Ver en la tienda** es ahora un botón, junto a **WhatsApp** (verde). Si la tienda no tiene WhatsApp confirmado, no aparece el botón gris: el de la tienda ocupa ese lugar.
+- Favoritos y cantidad quedan a la izquierda, sobre una línea separadora.
+- En el celular los dos botones van lado a lado, a todo el ancho.
+
+## Modo claro con contraste
+
+- El fondo de la página pasó de casi blanco a un **gris azulado suave**, y las tarjetas son blancas con borde y sombra.
+- La foto de cada producto va sobre un **recuadro gris claro**. Las fotos con fondo blanco se funden con ese gris, así se distingue la tarjeta del fondo.
+- Lo mismo vale para la ficha del producto y para Mi lista.
+- Filtros, barra de resultados, paneles y tarjetas de tiendas tienen borde y sombra.
+- Las secciones del inicio ya no tienen un recuadro propio: las tarjetas se apoyan directo sobre el fondo gris.
+- El modo oscuro no cambió.
+- Studio usa el nuevo fondo como color nativo. Si nunca personalizaste los colores, el cambio se aplica solo. Si los personalizaste en **Diseño**, se mantienen los tuyos.
+
+---
+
 # RivFree v7 · versión para celular
 
 ## Celular
