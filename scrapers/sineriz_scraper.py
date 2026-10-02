@@ -14,6 +14,7 @@ from utils import (
     extract_image_url,
     finalize_scrape,
     get_soup,
+    explicit_empty_catalog,
 )
 
 LAST_RUN_STATUS = {}
@@ -122,7 +123,7 @@ def _scrape_category_with_status(slug, page=None):
         if soup is None:
             return [], "categoría sin respuesta"
         products = _parse_products_from_soup(soup, slug)
-        return products, None if products else "categoría sin productos legibles"
+        return products, None if products or explicit_empty_catalog(soup) else "categoría sin productos legibles"
 
     fragments = []
     signatures = set()
@@ -161,6 +162,8 @@ def _scrape_category_with_status(slug, page=None):
                 if re.search(r"/produtos/[^/]+/[^/]+/?$", a.get("href", ""))
             }))
             if not signature:
+                if explicit_empty_catalog(fragment):
+                    break
                 raise RuntimeError("sin productos legibles")
             if signature in signatures:
                 raise RuntimeError("página repetida")
@@ -197,6 +200,8 @@ def _scrape_category_with_status(slug, page=None):
         except Exception:
             pass
 
+    if not fragments and partial_error is None and explicit_empty_catalog(fragment):
+        return [], None
     if not fragments:
         return [], partial_error or "categoría sin productos legibles"
 

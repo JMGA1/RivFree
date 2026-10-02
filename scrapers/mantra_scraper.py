@@ -383,9 +383,10 @@ def _extract_detail_soup(soup, url, category):
     para considerar que estamos en una ficha: exigimos selectores propios de
     Ecwid y limitamos el precio al bloque principal del producto.
     """
-    title = soup.select_one(
-        ".product-details__product-title, .ecwid-productBrowser-head"
-    )
+    # Ecwid leaves an empty legacy heading before the real product title.
+    title = next((node for node in soup.select(
+        '.product-details__product-title, .ecwid-productBrowser-head'
+    ) if node.get_text(' ', strip=True)), None)
     if title is None:
         return None
 
@@ -435,6 +436,7 @@ def _extract_detail_soup(soup, url, category):
 async def _extract_detail(page, product):
     from bs4 import BeautifulSoup
     await _goto(page, product["url"], retries=3, timeout_ms=DETAIL_TIMEOUT_MS)
+    await page.wait_for_selector('.product-details__product-title, .ecwid-productBrowser-price', state='visible', timeout=15000)
     await page.wait_for_timeout(800)
     detail = _extract_detail_soup(
         BeautifulSoup(await page.content(), "html.parser"),
@@ -455,6 +457,8 @@ async def _extract_detail(page, product):
         product["precio_fuente"] = "ficha"
     if not product.get("imagen") and detail.get("imagen"):
         product["imagen"] = detail["imagen"]
+    if product.get('precio_usd') is None:
+        product['precio_fuente'] = 'sin_precio_publicado'
     return product
 
 
@@ -554,6 +558,7 @@ async def _run_async():
         "fichas_consultadas": recovery["visited"],
         "precios_recuperados": recovery["recovered"],
         "fichas_fallidas": len(recovery["failed"]),
+        "fichas_sin_precio_publicado": sum(p.get('precio_fuente') == 'sin_precio_publicado' for p in products),
         "fichas_no_visitadas": len(recovery["not_attempted"]),
         "http_429": recovery["rate_limited"],
         "productos_frescos": len(merged) - metrics["productos_anteriores"],

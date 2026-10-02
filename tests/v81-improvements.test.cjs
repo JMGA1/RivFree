@@ -39,8 +39,8 @@ test('catalog cache: the version changes only when there are corrections',()=>{
  assert.equal(correctionsSuffix(corrections),'|fix:c1');
  const cache=read('catalog-cache.js');
  assert.match(cache,/fetchOptionalJson\('data\/product-corrections\.json',null\)/);
- assert.match(cache,/new Worker\('catalog-worker\.js\?v=20261002-v81'\)/);
- assert.match(read('catalog-worker.js'),/'catalog\.js\?v=20261002-v81','catalog-cache\.js\?v=20261002-v81'/);
+ assert.match(cache,/new Worker\('catalog-worker\.js\?v=20261002-v84'\)/);
+ assert.match(read('catalog-worker.js'),/'catalog\.js\?v=20261002-v84','catalog-cache\.js\?v=20261002-v84'/);
  assert.equal(imageThumbUrl('assets/manual/fachada-1.webp'),'assets/manual/fachada-1-thumb.webp');
  assert.equal(imageThumbUrl('https://x.test/a.webp'),'https://x.test/a.webp');
 });

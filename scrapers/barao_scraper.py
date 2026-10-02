@@ -16,6 +16,7 @@ from utils import (
     finalize_scrape,
     get_soup,
     navigate,
+    explicit_empty_catalog,
 )
 
 LAST_RUN_STATUS = {}
@@ -29,6 +30,7 @@ RESERVED_PATHS = {
     "inicio", "o-barao", "seguranca-e-saude-no-trabalho", "saude-no-trabalho",
     "responsabilidadesocial", "responsabilidade-social", "blog-barao",
     "politica-de-privacidade", "politica-privacidade", "termos", "termos-de-uso",
+    "docedeleitebarao",  # Brand story page; the product category is copia-de-doce-de-leite-1.
 }
 
 CATEGORY_LABELS = {
@@ -356,7 +358,11 @@ def scrape_category(slug, page):
     products = {}
     signatures = set()
     try:
-        navigate(page, url, 'a[href*="/product-page/"]')
+        from bs4 import BeautifulSoup
+        navigate(page, url, 'a[href*="/product-page/"], [data-hook="empty-gallery-title"]')
+        if not page.locator('a[href*="/product-page/"]').count() and explicit_empty_catalog(BeautifulSoup(page.content(), 'html.parser')):
+            LAST_RUN_STATUS.setdefault('categorias_vacias', []).append(slug)
+            return []
         for page_no in range(1, 301):
             try:
                 loaded = _expand_current_page(page)
@@ -402,6 +408,7 @@ def scrape_category(slug, page):
                     return list(products.values())
                 raise
     except Exception as exc:
+        LAST_RUN_STATUS.setdefault('categorias_fallidas', []).append({'categoria': slug, 'error': str(exc)[:300]})
         LAST_RUN_STATUS.update(
             partial=True,
             warning="Barão: categorías fallidas; se conservan productos anteriores",
@@ -558,6 +565,13 @@ def run():
         "prices_listing": listing_prices,
         "prices_recovered": recovered,
         "prices_pending": pending,
+        "metrics": {
+            "precios_desde_listado": listing_prices,
+            "precios_recuperados": recovered,
+            "categorias_vacias": LAST_RUN_STATUS.get('categorias_vacias', []),
+            "categorias_fallidas": len(LAST_RUN_STATUS.get('categorias_fallidas', [])),
+            "detalle_categorias_fallidas": LAST_RUN_STATUS.get('categorias_fallidas', []),
+        },
     })
 
     out_dir = Path(__file__).parent.parent / "data"

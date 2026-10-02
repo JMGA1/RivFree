@@ -622,6 +622,18 @@ def finalize_scrape(products, key, out_dir, status):
     return products
 
 
+def explicit_empty_catalog(soup):
+    """Only a store's explicit empty-state component confirms an empty category."""
+    marker = soup.select_one('[data-hook="empty-gallery-title"], .c-placeholder__title')
+    if marker is None or marker.find_parent(attrs={'hidden': True}):
+        return False
+    text = ' '.join(marker.get_text(' ', strip=True).split()).casefold()
+    return any(message in text for message in (
+        'não temos nenhum produto', 'no tenemos productos',
+        'we don’t have any products', "we don't have any products", 'nenhum produto foi encontrado',
+    ))
+
+
 def navigate(page, url, selector=None, attempts=3):
     """Retry real navigation/render failures; HTTP errors are not valid pages."""
     for attempt in range(attempts):

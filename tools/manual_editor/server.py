@@ -57,7 +57,7 @@ SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = secrets.token_urlsafe(32)
 SESSION_EXPIRED = "Esta pestaña quedó de una sesión anterior de Studio. Cerrala y abrí Studio de nuevo con Abrir-RivFree-Studio (cada vez que se abre, la clave cambia)."
-STUDIO_BUILD = '20261002-studio11'
+STUDIO_BUILD = '20261002-studio12'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -939,7 +939,19 @@ def catalog_item(key: str, product: dict | None, correction: dict | None) -> dic
             "nombre": product.get("nombre"), "categoria": product.get("categoria"),
             "precio_usd": product.get("precio_usd"), "precio_original_usd": product.get("precio_original_usd"),
             "en_oferta": bool(product.get("en_oferta")), "imagen": product.get("imagen"),
-            "missing": not product, "correction": correction}
+            "missing": not product, "correction": correction,
+            "correction_revision": correction_revision(product, correction)}
+
+
+def correction_revision(product, correction):
+    # Include the observed offer: a scraper price change also invalidates the form.
+    raw = json.dumps([product or {}, correction], sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(raw.encode('utf-8')).hexdigest()[:24]
+
+
+def check_correction_revision(payload, product, correction):
+    if payload.get('correction_revision') != correction_revision(product, correction):
+        raise RuntimeError('Este producto cambió desde que lo abriste. Tus cambios siguen en el formulario. Volvé a buscar el producto y compará los datos antes de guardar.')
 
 
 def search_catalog(payload: dict) -> dict:
@@ -1037,6 +1049,7 @@ def save_correction(payload: dict) -> dict:
             raise ValueError("Ese producto ya no está en el catálogo de la tienda. Podés quitar la corrección.")
         correction = normalize_correction(payload.get("correction") or {}, product)
         doc = load_corrections()
+        check_correction_revision(payload, product, doc['correcciones'].get(key))
         backup_current()
         if correction:
             correction["actualizado"] = now_iso()
@@ -1055,6 +1068,8 @@ def delete_correction(payload: dict) -> dict:
         doc = load_corrections()
         if key not in doc["correcciones"]:
             raise ValueError("Ese producto no tiene correcciones")
+        product = scraped_catalog()["by_key"].get(key)
+        check_correction_revision(payload, product, doc['correcciones'].get(key))
         backup_current()
         doc["correcciones"].pop(key)
         write_corrections(doc)
@@ -1683,7 +1698,7 @@ class Handler(SimpleHTTPRequestHandler):
         if '\\' in path or '%' in path or any(p.startswith('.') for p in parts):
             self.send_error(404, 'No encontrado'); return None
         relative = '/'.join(parts)
-        public_data = {'stores.json','manual-stores.json','manual-products.json','products.json','meta.json','exchange.json','highlights.json','popular.json','site-config.json','price-history.json'}
+        public_data = {'stores.json','manual-stores.json','manual-products.json','products.json','meta.json','exchange.json','highlights.json','popular.json','site-config.json','price-history.json','product-corrections.json'}
         allowed = (not relative or relative=='index.html' or
             (len(parts)==1 and (Path(relative).suffix in {'.js','.css'} or relative in {'privacy.html','cookies.html','terms.html','manifest.webmanifest','social-card.png','robots.txt','sitemap.xml'})) or
             (parts[:2]==('tools','manual_editor') and (len(parts)==2 or (len(parts)==3 and Path(relative).suffix in {'.html','.css','.js'}))) or
@@ -1734,9 +1749,13 @@ class Handler(SimpleHTTPRequestHandler):
             if parsed.path == "/api/manual/catalog":
                 query=text(parse_qs(parsed.query).get('q',[''])[0],120).casefold()
                 if len(query)<2: return self._json({'products':[]})
-                doc=read_json(DATA_DIR / 'products.json',{})
-                products=doc.get('productos',[]) if isinstance(doc,dict) else doc
-                found=[p for p in products if isinstance(p,dict) and all(term in (str(p.get('nombre',''))+' '+str(p.get('tienda',''))).casefold() for term in query.split())][:50]
+                catalog = scraped_catalog()
+                words = fold(query).split()
+                found=[]
+                for product, indexed in zip(catalog['items'], catalog['index']):
+                    if all(term in indexed for term in words):
+                        found.append(product)
+                        if len(found) == 50: break
                 return self._json({'products':found})
             if parsed.path == "/api/manual/state":
                 return self._json(state_payload())

@@ -96,3 +96,31 @@ test('worker catalog errors do not repeat downloads on the main thread',async()=
  e.ctx.Worker=class {postMessage(){queueMicrotask(()=>this.onmessage({data:{error:'network failed'}}));}terminate(){terminated=true;}};
  await assert.rejects(e.ctx.loadCatalog(),/network failed/);assert.equal(e.calls.length,0);assert.equal(terminated,true);
 });
+
+test('valid prepared cache is usable while every network request is pending',async()=>{
+ const prepared={products:[],groups:[],words:[],legacyKeys:{}};
+ const cached={version:'a|manual:empty',scrapedVersion:'a',scrapedData:{productos:[]},manualData:{version:'empty',productos:[]},preparedVersion:'20261001-v51-brands',prepared};
+ const e=env({cached});const pending=[];
+ e.ctx.fetchWithTimeout=()=>new Promise(resolve=>pending.push(resolve));
+ let status;const result=await e.ctx.loadCatalog(s=>status=s);
+ assert.equal(result.prepared,prepared);assert.equal(result.refreshing,true);assert.equal(status,undefined);
+ pending[0]({version:'empty',productos:[]});pending[1]({correcciones:{}});pending[2]({version:'a'});
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(status.changed,false);
+});
+
+test('background changed catalog is saved and announced without replacing the current result',async()=>{
+ const prepared={products:[],groups:[],words:[],legacyKeys:{}};
+ const e=env({cached:{version:'a|manual:empty',scrapedVersion:'a',scrapedData:{productos:[]},manualData:{version:'empty',productos:[]},preparedVersion:'20261001-v51-brands',prepared},meta:{version:'b'},catalog:{productos:[{nombre:'new'}]}});
+ let status;const result=await e.ctx.loadCatalog(s=>status=s);
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(result.prepared,prepared);assert.equal(status.changed,true);assert.equal(e.getStored().scrapedVersion,'b');
+});
+
+test('worker survives its cached snapshot until the refresh status arrives',async()=>{
+ const e=env();let worker,terminated=false;
+ e.ctx.Worker=class {constructor(){worker=this;}postMessage(){queueMicrotask(()=>this.onmessage({data:{part:'done',phase:'cached',words:[],data:{}}}));}terminate(){terminated=true;}};
+ let status;const result=await e.ctx.loadCatalog(s=>status=s);
+ assert.equal(result.refreshing,true);assert.equal(terminated,false);
+ worker.onmessage({data:{part:'refresh',changed:true,offline:false}});
+ assert.equal(terminated,true);assert.equal(status.changed,true);
+});

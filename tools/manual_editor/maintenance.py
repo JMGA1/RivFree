@@ -21,6 +21,13 @@ UPDATE_PATHS += ['experience.js', 'experience.css', 'explore.js', 'explore.css',
                  'data/stores.json', 'privacy.html', 'tests/studio-v3.test.cjs',
                  'tests/test_studio_v3.py', 'CAMBIOS-STUDIO-V3.md']
 
+UPDATE_PATHS += ['scrapers/barao_scraper.py', 'scrapers/mantra_scraper.py',
+                 'scrapers/neutral_scraper.py', 'scrapers/sineriz_scraper.py',
+                 'scrapers/yurys_scraper.py', 'scrapers/utils.py',
+                 'tests/test_studio_v81.py', 'tests/v81-improvements.test.cjs',
+                 'tests/test_v84_audit.py', 'tests/v84-loading.test.cjs',
+                 'CAMBIOS-V84.md']
+
 
 def redact(value):
     value = re.sub(r'://[^/@\s]+@', '://***@', str(value))

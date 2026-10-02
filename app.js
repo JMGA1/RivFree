@@ -201,13 +201,19 @@ function decorateStoreChip(element,storeName,before=null){
  img.onerror=()=>{img.remove();element.classList.remove('has-logo');};
  if(before)before.before(img);else element.prepend(img);return element;
 }
+function savedStoreInfo(){
+ try{const value=JSON.parse(localStorage.getItem('rivfree-store-directory')||'{}');return value&&typeof value==='object'&&!Array.isArray(value)?value:{};}catch{return {};}
+}
+function cachedStoreInfo(){const saved=savedStoreInfo();return {...saved.base,...saved.manual};}
 async function loadStoreInfoFiles(){
+ const saved=savedStoreInfo();
  const [baseValue,manualValue]=await Promise.all([
   fetchWithTimeout('data/stores.json',{cache:'no-store'},8000).catch(()=>null),
   fetchWithTimeout('data/manual-stores.json',{cache:'no-store'},8000).catch(()=>null)
  ]);
- const base=baseValue&&!Array.isArray(baseValue)&&typeof baseValue==='object'?baseValue:{};
- const manual=manualValue?.tiendas&&!Array.isArray(manualValue.tiendas)&&typeof manualValue.tiendas==='object'?manualValue.tiendas:{};
+ const base=baseValue&&!Array.isArray(baseValue)&&typeof baseValue==='object'?baseValue:(saved.base||{});
+ const manual=manualValue?.tiendas&&!Array.isArray(manualValue.tiendas)&&typeof manualValue.tiendas==='object'?manualValue.tiendas:(saved.manual||{});
+ try{localStorage.setItem('rivfree-store-directory',JSON.stringify({base,manual}));}catch{}
  return {...base,...manual};
 }
 // Studio → Tiendas → "Ocultar las fotos de los productos". The photo is kept aside (not deleted), so the Studio
@@ -342,20 +348,42 @@ function priceLabel(value) {
 }
 
 let loadingCatalog=false;
-async function loadData() {
+function catalogRefreshStatus(status){
+ let box=document.getElementById('catalogRefreshStatus');
+ if(!box){box=document.createElement('p');box.id='catalogRefreshStatus';box.setAttribute('role','status');document.getElementById('connectionNote').after(box);}
+ box.replaceChildren();box.hidden=false;
+ if(status.checking)box.textContent=LANG==='pt-BR'?'Catálogo salvo · verificando atualizações…':'Catálogo guardado · verificando actualizaciones…';
+ else if(status.changed){
+  box.append(document.createTextNode(LANG==='pt-BR'?'Há novos dados. ':'Hay nuevos datos. '));
+  const button=document.createElement('button');button.type='button';button.textContent=LANG==='pt-BR'?'Atualizar catálogo':'Actualizar catálogo';
+  button.onclick=()=>{box.hidden=true;loadData(true);};box.append(button);
+ }else if(status.offline)box.textContent=LANG==='pt-BR'?'Sem atualização de rede; usando o catálogo salvo.':'Sin actualización de red; usando el catálogo guardado.';
+ else box.hidden=true;
+}
+async function loadData(forceFresh=false) {
   if(loadingCatalog)return;
   loadingCatalog=true;
   document.getElementById('retryLoad').disabled=true;
   document.getElementById('loadError').hidden=true;
   try {
-    const [loaded, storeInfo, ratesRes] = await Promise.all([
-      loadCatalog(), loadStoreInfoFiles(),
-      // The rate is shown in the navigation bar as soon as it arrives, without waiting for the catalog.
-      fetchWithTimeout('data/exchange.json',{cache:'default'},8000).then(value=>{if(isRate(value)){automaticExchange=mergeExchange(automaticExchange,value);updateExchangeNote();}return value;}).catch(()=>null)
-    ]);
+    STORE_INFO=cachedStoreInfo();
+    // Auxiliary services must never hold an already usable catalog hostage.
+    loadStoreInfoFiles().then(storeInfo=>{
+      STORE_INFO=storeInfo;
+      if(ALL_PRODUCTS.length){
+        const selectedStores=new Set([...document.querySelectorAll('.storeChk:checked')].map(el=>el.value));
+        const selectedCats=new Set(selectedCategories());
+        populateFilters();
+        document.querySelectorAll('.storeChk').forEach(el=>el.checked=selectedStores.has(el.value));
+        [...document.getElementById('categoria').options].forEach(el=>el.selected=selectedCats.has(el.value));
+        window.RivFreeApplyHiddenPhotos();render();
+      }
+    }).catch(()=>{});
+    fetchWithTimeout('data/exchange.json',{cache:'default'},8000).then(value=>{if(isRate(value)){automaticExchange=mergeExchange(automaticExchange,value);updateExchangeNote();if(ALL_PRODUCTS.length)render();}}).catch(()=>{});
+    let refreshStatus=null;
+    const loaded=await loadCatalog(status=>{refreshStatus=status;catalogRefreshStatus(status);},forceFresh!==true);
     const {data,prepared,offline}=loaded;
-    STORE_INFO=storeInfo;
-    if(isRate(ratesRes))automaticExchange=mergeExchange(automaticExchange,ratesRes);
+    if(loaded.refreshing&&!refreshStatus)catalogRefreshStatus({checking:true});
     ALL_PRODUCTS=prepared.products;
     PRODUCT_GROUPS=prepared.groups;
     applyHiddenPhotos();

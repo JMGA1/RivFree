@@ -37,6 +37,18 @@ class Fixture(unittest.TestCase):
     def tearDown(self):
         self.patch.stop(); self.temp.cleanup()
 
+    def correction_payload(self, payload):
+        key = payload['key']
+        product = s.scraped_catalog()['by_key'].get(key)
+        correction = s.load_corrections()['correcciones'].get(key)
+        return {**payload, 'correction_revision': s.correction_revision(product, correction)}
+
+    def save_correction(self, payload):
+        return s.save_correction(self.correction_payload(payload))
+
+    def delete_correction(self, payload):
+        return s.delete_correction(self.correction_payload(payload))
+
     def corrections(self):
         return json.loads((self.root / 'data' / 'product-corrections.json').read_text(encoding='utf-8'))['correcciones']
 
@@ -56,7 +68,7 @@ class CatalogSearchTests(Fixture):
 
     def test_contributors_cannot_search_or_correct(self):
         with patch.object(s, 'EDITOR_MODE', 'contributor'):
-            for call in (lambda: s.search_catalog({'q': 'dior'}), lambda: s.save_correction({'key': 'DFA|https://dfa.test/sauvage', 'correction': {}})):
+            for call in (lambda: s.search_catalog({'q': 'dior'}), lambda: self.save_correction({'key': 'DFA|https://dfa.test/sauvage', 'correction': {}})):
                 with self.assertRaisesRegex(ValueError, 'administrador'):
                     call()
 
@@ -65,7 +77,7 @@ class CorrectionTests(Fixture):
     key = 'DFA|https://dfa.test/sauvage'
 
     def test_only_differences_are_saved_and_the_price_remembers_the_store_price(self):
-        result = s.save_correction({'key': self.key, 'correction': {
+        result = self.save_correction({'key': self.key, 'correction': {
             'nombre': 'Dior Sauvage EDT 100ml', 'categoria': 'perfumes', 'precio_usd': '99,90', 'precio_original_usd': '', 'en_oferta': False}})
         saved = self.corrections()[self.key]
         self.assertNotIn('nombre', saved, 'same name as the store: nothing to correct')
@@ -76,39 +88,39 @@ class CorrectionTests(Fixture):
 
     def test_offer_needs_a_higher_old_price_and_hidden_products_are_kept_as_corrections(self):
         with self.assertRaisesRegex(ValueError, 'precio anterior tiene que ser mayor'):
-            s.save_correction({'key': self.key, 'correction': {'precio_usd': 100, 'precio_original_usd': 90, 'en_oferta': True}})
-        s.save_correction({'key': self.key, 'correction': {'oculto': True, 'nombre': 'Dior Sauvage EDT 100 ml'}})
+            self.save_correction({'key': self.key, 'correction': {'precio_usd': 100, 'precio_original_usd': 90, 'en_oferta': True}})
+        self.save_correction({'key': self.key, 'correction': {'oculto': True, 'nombre': 'Dior Sauvage EDT 100 ml'}})
         self.assertEqual(self.corrections()[self.key], {**self.corrections()[self.key], 'oculto': True, 'nombre': 'Dior Sauvage EDT 100 ml'})
         only = s.search_catalog({'only_corrected': True})
         self.assertEqual([i['key'] for i in only['items']], [self.key])
 
     def test_saving_the_store_data_again_or_reverting_removes_the_correction(self):
-        s.save_correction({'key': self.key, 'correction': {'nombre': 'Otro nombre'}})
-        s.save_correction({'key': self.key, 'correction': {'nombre': 'Dior Sauvage EDT 100ml'}})
+        self.save_correction({'key': self.key, 'correction': {'nombre': 'Otro nombre'}})
+        self.save_correction({'key': self.key, 'correction': {'nombre': 'Dior Sauvage EDT 100ml'}})
         self.assertEqual(self.corrections(), {})
-        s.save_correction({'key': self.key, 'correction': {'categoria': 'cosmetica'}})
-        reverted = s.delete_correction({'key': self.key})
+        self.save_correction({'key': self.key, 'correction': {'categoria': 'cosmetica'}})
+        reverted = self.delete_correction({'key': self.key})
         self.assertIsNone(reverted['item']['correction']); self.assertEqual(self.corrections(), {})
         with self.assertRaisesRegex(ValueError, 'no tiene correcciones'):
-            s.delete_correction({'key': self.key})
+            self.delete_correction({'key': self.key})
 
     def test_products_no_longer_sold_cannot_be_edited_but_can_be_reverted(self):
-        s.save_correction({'key': self.key, 'correction': {'nombre': 'Viejo'}})
+        self.save_correction({'key': self.key, 'correction': {'nombre': 'Viejo'}})
         (self.root / 'data' / 'products.json').write_text(json.dumps({'productos': PRODUCTS[1:]}), encoding='utf-8')
         with self.assertRaisesRegex(ValueError, 'ya no está'):
-            s.save_correction({'key': self.key, 'correction': {'nombre': 'Nuevo'}})
+            self.save_correction({'key': self.key, 'correction': {'nombre': 'Nuevo'}})
         missing = s.search_catalog({'only_corrected': True})['items'][0]
         self.assertTrue(missing['missing'])
-        s.delete_correction({'key': self.key})
+        self.delete_correction({'key': self.key})
 
     def test_bad_values_are_rejected(self):
         for correction, message in (({'categoria': 'Perfumes!'}, 'Categoría'), ({'imagen': 'javascript:alert(1)'}, 'HTTPS'), ({'precio_usd': 'gratis'}, 'número')):
             with self.assertRaisesRegex(ValueError, message):
-                s.save_correction({'key': self.key, 'correction': correction})
+                self.save_correction({'key': self.key, 'correction': correction})
 
     def test_backups_include_corrections_and_restore_them(self):
-        s.save_correction({'key': self.key, 'correction': {'nombre': 'Primera'}})
-        s.save_correction({'key': self.key, 'correction': {'nombre': 'Segunda'}})
+        self.save_correction({'key': self.key, 'correction': {'nombre': 'Primera'}})
+        self.save_correction({'key': self.key, 'correction': {'nombre': 'Segunda'}})
         copies = sorted(p for p in s.BACKUP_DIR.iterdir() if (p / 'product-corrections.json').exists())
         backup = copies[-1].name
         m.backups(s, {'action': 'restore', 'id': backup})

@@ -136,7 +136,7 @@
    if(!ok)return;
   }
   try{
-   const saved=await E.api('/api/manual/save-correction',{key:selected.key,correction});
+   const saved=await E.api('/api/manual/save-correction',{key:selected.key,correction,correction_revision:selected.correction_revision});
    results=results.map(item=>item.key===saved.item.key?saved.item:item);updateCount(saved.corrections_count);
    fill(saved.item);E.notify(saved.message+' Publicá para que se vea en el sitio.');
   }catch(error){E.notify(error.message,true);}
@@ -146,7 +146,7 @@
   const ok=await E.confirmDialog({title:'Volver a los datos de la tienda',message:'Se borra tu corrección de este producto: vuelven el nombre, la categoría, el precio y la foto que publica la tienda.',items:[`${selected.correction.nombre||selected.nombre||selected.key} · ${selected.tienda}`],confirmText:'Volver al original',danger:true});
   if(!ok)return;
   try{
-   const saved=await E.api('/api/manual/delete-correction',{key:selected.key});
+   const saved=await E.api('/api/manual/delete-correction',{key:selected.key,correction_revision:selected.correction_revision});
    if(saved.item.missing&&$('catalogOnlyCorrected').checked){results=results.filter(item=>item.key!==saved.item.key);selected=null;$('catalogFields').hidden=true;$('catalogEmpty').hidden=false;$('catalogBadge').hidden=true;$('catalogFormTitle').textContent='Elegí un producto';renderResults();}
    else{results=results.map(item=>item.key===saved.item.key?saved.item:item);fill(saved.item);}
    updateCount(saved.corrections_count);E.notify(saved.message);

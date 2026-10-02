@@ -89,6 +89,9 @@ def _scrape_category_with_stats(category_id, slug):
     expected_items = None
     failed_pages = []
     signatures = set()
+    seen_urls = set()
+    overlapping_pages = []
+    observations = 0
 
     for page_no in range(1, HARD_SAFETY_CAP + 1):
         url = f"{BASE_URL}/es/products/category/{category_id}"
@@ -112,6 +115,12 @@ def _scrape_category_with_stats(category_id, slug):
 
         found = _extract_products(soup, slug)
         signature = tuple(sorted(x.get("url") for x in found if x.get("url")))
+        page_urls = set(signature)
+        repeated = page_urls & seen_urls
+        if repeated:
+            overlapping_pages.append({'pagina': page_no, 'repetidos': len(repeated)})
+        seen_urls.update(page_urls)
+        observations += len(page_urls)
         if signature and signature in signatures:
             failed_pages.append(page_no)
             print(f"[Neutral] [aviso] {slug} página {page_no}: contenido repetido")
@@ -138,6 +147,9 @@ def _scrape_category_with_stats(category_id, slug):
         "paginas_fallidas": failed_pages,
         "productos_esperados": expected_items,
         "productos_observados": len(unique),
+        "observaciones_listado": observations,
+        "repeticiones_entre_paginas": max(0, observations - len(seen_urls)),
+        "paginas_con_solapamiento": overlapping_pages,
         "cobertura": coverage,
         "parcial": partial,
     }
@@ -195,10 +207,14 @@ def run():
         "productos_esperados": sum(s["productos_esperados"] or 0 for s in category_stats) or None,
         "precios_observados": metrics["precios_disponibles"],
         "precios_recuperados": 0,
+        "detalle_categorias": category_stats,
     })
     warning = None
     if partial_categories:
         warning = f"Neutral parcial: {len(partial_categories)}/{len(category_stats)} categorías con cobertura incompleta"
+        repeated = sum(s['repeticiones_entre_paginas'] for s in category_stats)
+        if repeated:
+            warning += f"; {repeated} productos repetidos entre páginas de la web"
     LAST_RUN_STATUS = {"partial": bool(warning), "warning": warning, "metrics": metrics}
     finalize_scrape(unique, "neutral", Path(__file__).parent.parent / "data", LAST_RUN_STATUS)
     # finalize_scrape puede incorporar cache al detectar una caída grande.

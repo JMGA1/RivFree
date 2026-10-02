@@ -16,6 +16,7 @@ from utils import (
     load_previous_store,
     merge_product_records,
     normalize_wix_image_url,
+    explicit_empty_catalog,
 )
 
 BASE_URL = "https://www.yurysfreeshop.com"
@@ -190,7 +191,7 @@ async def _scrape_category(context, slug):
             consecutive_failures = 0
             try:
                 await page.wait_for_selector(
-                    'a[href*="/product-page/"], [data-hook="product-item-root"]',
+                    'a[href*="/product-page/"], [data-hook="product-item-root"], [data-hook="empty-gallery-title"]',
                     timeout=25000,
                 )
             except Exception:
@@ -202,7 +203,10 @@ async def _scrape_category(context, slug):
             found = extract_wix_products(soup, "Yury's Free Shop", slug, BASE_URL)
 
             if not found:
+                if explicit_empty_catalog(soup):
+                    break
                 if pages_ok:
+                    warnings.append(f'página {page_no}: sin productos ni confirmación de catálogo vacío')
                     break
                 return slug, [], "categoría sin productos legibles"
 
@@ -233,6 +237,8 @@ async def _scrape_category(context, slug):
 
         rows = list(products.values())
         if not rows:
+            if explicit_empty_catalog(soup):
+                return slug, [], None
             return slug, [], "categoría sin productos legibles"
         warning = "; ".join(warnings) if warnings else None
         return slug, rows, warning

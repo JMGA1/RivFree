@@ -76,11 +76,18 @@ async function loadLegacyFullCatalog(meta,cached){
  if(!Array.isArray(scrapedData.productos))throw new Error('Invalid catalog');
  return {scrapedData,scrapedVersion:version,offline:false};
 }
-async function loadCatalogLocally() {
+function preparedSnapshot(cached){
+ if(cached?.preparedVersion!==PREPARED_CATALOG_VERSION||!validPrepared(cached.prepared))return null;
+ const meta=cached.partitioned?cached.scrapedMeta:(cached.scrapedData||cached.data);
+ if(!meta)return null;
+ return {version:cached.version,data:{actualizado:meta.actualizado,resumen:meta.resumen||[],manualActualizado:cached.manualData?.actualizado||null},prepared:cached.prepared,offline:false,refreshing:true};
+}
+async function loadCatalogLocally(onCached) {
  const manualRequest=fetchOptionalJson('data/manual-products.json',null);
  const correctionsRequest=fetchOptionalJson('data/product-corrections.json',null);
  const metaRequest=fetchWithTimeout('data/meta.json',{cache:'no-store'}).then(value=>({value}),error=>({error}));
  let cached;try {cached=await cachedCatalog();}catch{}
+ const snapshot=preparedSnapshot(cached);if(snapshot&&onCached)onCached(snapshot);
  const emptyManual={version:'empty',actualizado:null,productos:[]};
  let manualData=await manualRequest;
  if(!validManualCatalog(manualData))manualData=validManualCatalog(cached?.manualData)?cached.manualData:emptyManual;
@@ -124,29 +131,39 @@ async function loadCatalogLocally() {
  const version=`${scrapedVersion||'unversioned'}|manual:${manualVersion(manualData)}${correctionsSuffix(corrections)}`;
  const reuse=cached?.version===version&&cached.preparedVersion===PREPARED_CATALOG_VERSION&&validPrepared(cached.prepared);
  const prepared=reuse?cached.prepared:prepareCatalog(data);
- if(!reuse||cached?.data){
+ if(!reuse||cached?.data||JSON.stringify(cached?.scrapedMeta)!==JSON.stringify(scrapedMeta)){
   const entry={version,scrapedVersion,manualData,corrections,preparedVersion:PREPARED_CATALOG_VERSION,prepared,partitioned};
   if(partitioned){entry.storeData=storeData;entry.storeVersions=storeVersions;entry.scrapedMeta=scrapedMeta;}
   else entry.scrapedData=scrapedData;
   try {await cachedCatalog(entry);}catch{}
  }
- return {data:{actualizado:data.actualizado,resumen:data.resumen,manualActualizado:manualData.actualizado||null},prepared,offline};
+ return {version,data:{actualizado:data.actualizado,resumen:data.resumen,manualActualizado:manualData.actualizado||null},prepared,offline};
 }
-async function loadCatalog() {
- if(typeof Worker==='undefined')return loadCatalogLocally();
+function loadCatalogWithoutWorker(onRefresh,preferCache=true){
+ return new Promise((resolve,reject)=>{
+  let initial;
+  loadCatalogLocally(preferCache?snapshot=>{initial=snapshot;resolve(snapshot);}:null).then(result=>{
+   if(initial)onRefresh({changed:result.version!==initial.version,offline:result.offline,data:result.data});else resolve(result);
+  },error=>{if(initial)onRefresh({changed:false,offline:true});else reject(error);});
+ });
+}
+async function loadCatalog(onRefresh=()=>{},preferCache=true) {
+ if(typeof Worker==='undefined')return loadCatalogWithoutWorker(onRefresh,preferCache);
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js?v=20261002-v81');
-  const timer=setTimeout(()=>{worker.terminate();reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
+  const worker=new Worker('catalog-worker.js?v=20261002-v84');let delivered=false;
+  const timer=setTimeout(()=>{worker.terminate();if(delivered)onRefresh({changed:false,offline:true});else reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
   const products=[],groups=[],legacyKeys={};
   worker.onmessage=({data})=>{
+   if(data?.part==='refresh'){clearTimeout(timer);worker.terminate();onRefresh(data);return;}
    if(data?.part==='products'){for(const p of data.items)products.push(p);return;}
    if(data?.part==='groups'){for(const g of data.items){g.offers=g.o.map(x=>typeof x==='number'?products[x]:x);delete g.o;groups.push(g);}return;}
    if(data?.part==='legacy'){for(const [key,value] of data.items)legacyKeys[key]=value;return;}
-   clearTimeout(timer);worker.terminate();
-   if(data?.part==='done')resolve({data:data.data,offline:data.offline,prepared:{products,groups,legacyKeys,words:data.words}});
+   if(data?.phase!=='cached'){clearTimeout(timer);worker.terminate();}
+   if(data?.part==='done'){delivered=true;resolve({data:data.data,offline:data.offline,refreshing:data.phase==='cached',prepared:{products,groups,legacyKeys,words:data.words}});}
+   else if(delivered)onRefresh({changed:false,offline:true});
    else data.error?reject(Object.assign(new Error(data.error),{catalogFailure:true})):resolve(data);
   };
-  worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');
- });}catch(error){if(error.catalogFailure)throw error;return loadCatalogLocally();}
+  worker.onerror=()=>{clearTimeout(timer);worker.terminate();if(delivered)onRefresh({changed:false,offline:true});else reject(new Error('Worker failed'));};worker.postMessage({preferCache});
+ });}catch(error){if(error.catalogFailure)throw error;return loadCatalogWithoutWorker(onRefresh,preferCache);}
 }
 if(typeof module!=='undefined') module.exports={fetchWithTimeout,fetchOptionalJson,manualVersion,validManualCatalog,validStoreVersions,storeSignature,catalogFromPartitions,correctionsSuffix};
