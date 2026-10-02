@@ -1,6 +1,6 @@
 {
-  "version": "stores-1790806395140-5e88a855",
-  "actualizado": "2026-09-30T22:13:15.140968+00:00",
+  "version": "stores-1790915475552-d3cb7d42",
+  "actualizado": "2026-10-02T04:31:15.552014+00:00",
   "tiendas": {
     "Barão Free Shop": {
       "nombre_completo": "Barão Free Shop",
@@ -270,7 +270,12 @@
             "17:00"
           ]
         ],
-        "1": [],
+        "1": [
+          [
+            "08:00",
+            "18:00"
+          ]
+        ],
         "2": [
           [
             "08:00",
@@ -314,14 +319,15 @@
       "ubicacion": {
         "lat": -30.8981269,
         "lng": -55.5394789
-      }
+      },
+      "ocultar_fotos": false
     },
     "Oprha Free Shop": {
       "nombre_completo": "Oprha Free Shop",
       "direccion": "Av. Sarandí 305, Rivera, Uruguay",
       "telefono": "46224469",
       "email": null,
-      "horario": "lunes y martes 08:00 - 12-00PM, miercoles a sabado 08:00-18:00. Domingo 08:00-12:00PM",
+      "horario": "lunes y martes 08:00 - 12-00PM - 14:00 - 18:00, miercoles a sabado 08:00-18:00. Domingo 08:00-12:00PM",
       "sitio_web": "https://www.oprhafreeshop.com.br/",
       "redes": {
         "instagram": "https://www.instagram.com/oprhafreeshop/",
@@ -402,7 +408,8 @@
       "ubicacion": {
         "lat": -30.8962439,
         "lng": -55.5371108
-      }
+      },
+      "ocultar_fotos": false
     },
     "Sineriz": {
       "nombre_completo": "Siñeriz Shopping",
@@ -509,7 +516,12 @@
       "timezone": "America/Montevideo",
       "weekly_hours": {
         "0": [],
-        "1": [],
+        "1": [
+          [
+            "07:00",
+            "18:00"
+          ]
+        ],
         "2": [
           [
             "07:00",
@@ -553,7 +565,8 @@
       "ubicacion": {
         "lat": -30.8988464,
         "lng": -55.5405517
-      }
+      },
+      "ocultar_fotos": false
     }
   }
 }
