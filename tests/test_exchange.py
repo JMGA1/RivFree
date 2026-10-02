@@ -52,6 +52,36 @@ class ExchangeTests(unittest.TestCase):
             value,changed=update_exchange(path,opener)
             self.assertTrue(changed);self.assertEqual(value['rates']['UYU']['date'],'2026-09-01')
             self.assertEqual(value['rates']['ARS']['rate'],1400);self.assertEqual(value['usd_brl'],5.2)
+    def test_one_call_for_the_three_rates_and_no_going_back_in_time(self):
+        from scrapers.update_exchange import RATES_URL
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'exchange.json'
+            path.write_text(json.dumps({'usd_brl': 5.18, 'actualizado': '2026-10-01',
+                                        'rates': {'BRL': {'rate': 5.18, 'date': '2026-10-01', 'source': 'Frankfurter'}}}), encoding='utf-8')
+            urls = []
+            def opener(request, timeout=0):
+                urls.append(request.full_url)
+                return FakeResponse([{'date': '2026-07-25', 'base': 'USD', 'quote': 'BRL', 'rate': 5.077},
+                                     {'date': '2026-10-02', 'base': 'USD', 'quote': 'UYU', 'rate': 40.387},
+                                     {'date': '2026-10-02', 'base': 'USD', 'quote': 'ARS', 'rate': 1526.29}])
+            value, changed = update_exchange(path, opener)
+            self.assertEqual(urls, [RATES_URL], 'a single request')
+            self.assertTrue(changed)
+            self.assertEqual((value['rates']['BRL']['rate'], value['usd_brl']), (5.18, 5.18), 'an older answer never replaces a newer rate')
+            self.assertEqual(value['rates']['UYU'], {**value['rates']['UYU'], 'rate': 40.387, 'date': '2026-10-02'})
+            self.assertIn('checked', value['rates']['ARS']); self.assertIn('consultado', value)
+
+    def test_rates_endpoint_failure_falls_back_to_each_currency(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'exchange.json'
+            def opener(request, timeout=0):
+                if 'quotes=' in request.full_url:
+                    raise OSError('down')
+                quote = request.full_url.rsplit('/', 1)[1]
+                return FakeResponse({'date': '2026-10-02', 'base': 'USD', 'quote': quote, 'rate': {'BRL': 5.2, 'UYU': 40.4, 'ARS': 1526}[quote]})
+            value, changed = update_exchange(path, opener)
+            self.assertTrue(changed)
+            self.assertEqual({q: e['rate'] for q, e in value['rates'].items()}, {'BRL': 5.2, 'UYU': 40.4, 'ARS': 1526})
     def test_invalid_response_cannot_replace_valid_rate(self):
         from scrapers.update_exchange import fetch_rate
         for rate in [float('nan'),float('inf'),True,-2]:

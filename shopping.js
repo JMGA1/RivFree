@@ -259,7 +259,9 @@ window.addEventListener('storage',event=>{
 let automaticExchange=null,exchangeRequest=null,exchangeFailed=false;
 function validRateEntry(entry){return entry&&Number.isFinite(entry.rate)&&entry.rate>0&&entry.rate<1000000&&Number.isFinite(Date.parse(entry.date));}
 function isRate(value){return !!value&&((Number.isFinite(value.usd_brl)&&value.usd_brl>0&&value.usd_brl<1000000&&Number.isFinite(Date.parse(value.actualizado)))||['BRL','UYU','ARS'].some(c=>validRateEntry(value.rates?.[c])));}
-function mergeExchange(previous,next){const result={...(previous||{}),...next,rates:{...(previous?.rates||{})}};for(const c of ['BRL','UYU','ARS']){const entry=next.rates?.[c]||(c==='BRL'&&next.usd_brl?{rate:next.usd_brl,date:next.actualizado,source:next.fuente||'Frankfurter'}:null);if(validRateEntry(entry)&&(!validRateEntry(result.rates[c])||entry.date>=result.rates[c].date))result.rates[c]=entry;}return result;}
+// Keep the newest rate per currency: a later day wins; on the same day, the one checked last.
+function newerRate(entry,current){return !validRateEntry(current)||entry.date>current.date||(entry.date===current.date&&String(entry.checked||'')>=String(current.checked||''));}
+function mergeExchange(previous,next){const result={...(previous||{}),...next,rates:{...(previous?.rates||{})}};for(const c of ['BRL','UYU','ARS']){const entry=next.rates?.[c]||(c==='BRL'&&next.usd_brl?{rate:next.usd_brl,date:next.actualizado,source:next.fuente||'Frankfurter'}:null);if(validRateEntry(entry)&&newerRate(entry,result.rates[c]))result.rates[c]=entry;}return result;}
 try{const saved=JSON.parse(localStorage.getItem('rivfree-auto-exchange'));if(isRate(saved))automaticExchange=saved;}catch{}
 async function refreshAutomaticExchange(){
  if(exchangeRequest)return exchangeRequest;
@@ -276,6 +278,37 @@ async function refreshAutomaticExchange(){
  })();
  await exchangeRequest;exchangeRequest=null;
 }
+// Today's dollar straight from Frankfurter (blended central-bank rates that change during the day), at most
+// every 30 minutes, without cookies or referrer. If it can't be reached, data/exchange.json keeps working.
+const LIVE_RATES_URL='https://api.frankfurter.dev/v2/rates?base=USD&quotes=BRL,UYU,ARS',LIVE_RATES_EVERY=30*60*1000;
+function liveRates(list){
+ if(!Array.isArray(list))return null;const rates={},checked=new Date().toISOString();
+ for(const item of list){
+  if(item?.base!=='USD'||!['BRL','UYU','ARS'].includes(item.quote)||!/^\d{4}-\d{2}-\d{2}$/.test(String(item.date||'')))continue;
+  const entry={rate:item.rate,date:item.date,source:'Frankfurter',checked};if(typeof item.rate==='number'&&validRateEntry(entry))rates[item.quote]=entry;
+ }
+ if(!Object.keys(rates).length)return null;
+ return {base:'USD',rates,consultado:checked,...(rates.BRL?{usd_brl:rates.BRL.rate,actualizado:rates.BRL.date,fuente:'Frankfurter'}:{})};
+}
+let liveRatesRequest=null;
+async function refreshLiveRates(force=false){
+ try{if(!force&&Date.now()-(Number(localStorage.getItem('rivfree-live-rates-at'))||0)<LIVE_RATES_EVERY)return false;}catch{}
+ if(liveRatesRequest)return liveRatesRequest;
+ liveRatesRequest=(async()=>{
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
+  try{
+   const response=await fetch(LIVE_RATES_URL,{signal:controller.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',mode:'cors'});
+   if(!response.ok)return false;const next=liveRates(await response.json());if(!next)return false;
+   automaticExchange=mergeExchange(automaticExchange,next);exchangeFailed=false;
+   try{localStorage.setItem('rivfree-auto-exchange',JSON.stringify(automaticExchange));localStorage.setItem('rivfree-live-rates-at',String(Date.now()));}catch{}
+   updateExchangeNote();window.dispatchEvent(new Event('rivfree-rates-updated'));if(ALL_PRODUCTS.length)render();
+   return true;
+  }catch{return false;}finally{clearTimeout(timer);liveRatesRequest=null;}
+ })();
+ return liveRatesRequest;
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshLiveRates();});
+setInterval(()=>{if(document.visibilityState!=='hidden')refreshLiveRates();},LIVE_RATES_EVERY);
 document.getElementById('automaticExchange').onclick=()=>{delete manualRates[referenceCurrency];manualExchange=null;try{localStorage.setItem('rivfree-manual-rates',JSON.stringify(manualRates));localStorage.removeItem('rivfree-exchange');}catch{}updateExchangeNote();render();refreshAutomaticExchange();};
 document.querySelectorAll('[data-category-shortcut]').forEach(button=>button.onclick=()=>{
  document.getElementById('categoria').value=button.dataset.categoryShortcut;syncCategoryInput();render(true);document.getElementById('grid').scrollIntoView({behavior:'smooth',block:'start'});

@@ -364,6 +364,7 @@ async function loadData() {
     SEARCH_WORDS=prepared.words;
     document.getElementById('connectionNote').hidden=!offline;
     updateExchangeNote();
+    refreshLiveRates();
     SEARCH_CACHE.clear();
 
     const updated = data.actualizado ? new Date(data.actualizado) : null;

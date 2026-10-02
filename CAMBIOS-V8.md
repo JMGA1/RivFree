@@ -1,3 +1,30 @@
+# RivFree v8.3 · cotización del día
+
+## Qué pasaba
+
+- **La consulta de una moneda a la vez es poco confiable.** Para cada moneda, RivFree consultaba Frankfurter con la dirección `/v2/rate/USD/…`. Hoy esa consulta devolvió valores de hace meses: BRL del 25 de julio y ARS del 14 de agosto. En cambio, la consulta de las tres monedas juntas (`/v2/rates`) devuelve la cotización del día.
+- **Una respuesta vieja pisaba a una nueva.** El robot aceptaba cualquier respuesta, aunque fuera más vieja que la guardada.
+- **Una sola actualización por día.** La cotización cambiaba solo cuando el robot publicaba, una vez al día. Hasta ese momento se veía la del día anterior.
+- **Tasas manuales trabadas en el navegador.** Una tasa escrita a mano en una versión anterior quedaba guardada para siempre y tapaba la real. Ese campo ya no está a la vista, así que no había forma de quitarla.
+
+## Qué cambió
+
+- **El robot hace una sola consulta** con las tres monedas (`/v2/rates?base=USD&quotes=BRL,UYU,ARS`). Si falla, prueba moneda por moneda. **Nunca reemplaza una cotización por otra de una fecha anterior.**
+- **El navegador del visitante consulta Frankfurter directamente**, como máximo cada 30 minutos, y también al volver a la pestaña. Así «Dólar hoy» se actualiza durante el día sin esperar al robot. La consulta no lleva cookies ni datos personales. Si Frankfurter no responde, se usa la cotización publicada.
+- **Si hay dos cotizaciones, gana la más nueva**: primero la fecha más reciente y, dentro del mismo día, la última consulta.
+- **Una tasa escrita a mano dura solo el día en que se escribió.** Las viejas se borran al abrir la página.
+- **La política de privacidad** menciona la consulta a Frankfurter (en español y portugués).
+
+## Verificación
+
+- Pasan:
+  - 162 pruebas JavaScript;
+  - todas las pruebas Python, incluidas las nuevas de la cotización;
+  - la prueba de interfaz.
+- Probado en Chromium con la política de seguridad real: la consulta a Frankfurter está permitida y la barra pasa de R$ 5,18 a R$ 5,20.
+
+---
+
 # RivFree v8.2 · fotos de cada tienda, logos y ofertas más claras
 
 ## Ficha del producto: la foto de cada tienda
