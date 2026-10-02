@@ -6,7 +6,8 @@ let studioCampaignState=null;
 function campaignCount(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.visible_count);return Number.isInteger(n)?Math.max(1,Math.min(10,n)):5;}
 function carouselDelay(){const n=Number(window.RIVFREE_SITE_CONFIG?.carousel?.autoplay_seconds);return Math.max(3,Math.min(30,Number.isFinite(n)?n:6))*1000;}
 function carouselTransition(){const c=window.RIVFREE_SITE_CONFIG?.carousel||{};return {mode:c.transition==='static'?'static':'smooth',ms:Math.max(200,Math.min(1200,Number(c.transition_ms)||500))};}
-function campaignColors(c){const mode=document.documentElement.dataset.theme==='dark'?'dark':'light';const colors=c?.colors?.[mode];return colors&&typeof colors==='object'?colors:null;}
+// Only #rrggbb values reach style.setProperty: a hand-edited highlights.json cannot inject url(...) or other CSS.
+function campaignColors(c){const mode=document.documentElement.dataset.theme==='dark'?'dark':'light';const colors=c?.colors?.[mode];if(!colors||typeof colors!=='object')return null;const safe={};for(const key of ['background','accent','text','button','button_text'])if(/^#[0-9a-f]{6}$/i.test(String(colors[key]||'')))safe[key]=colors[key];return Object.keys(safe).length?safe:null;}
 function campaignIsActive(c){const now=Date.now(),start=c?.starts_at?Date.parse(c.starts_at):NaN,end=c?.ends_at?Date.parse(c.ends_at):NaN;return c?.enabled!==false&&(!Number.isFinite(start)||now>=start)&&(!Number.isFinite(end)||now<=end);}
 const LAST_CAMPAIGNS_KEY='rivfree-last-campaign-selection';
 const smartCampaignCache=new Map(),campaignImageCache=new Map();

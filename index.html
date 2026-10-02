@@ -23,9 +23,9 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="experience.css?v=20260930-6">
 <link rel="stylesheet" href="explore.css?v=20260930-6">
-<link rel="stylesheet" href="ui-updates.css?v=20261001-v71">
-<link rel="stylesheet" href="store-directory.css?v=20261001-v71">
-<link rel="stylesheet" href="mobile.css?v=20261001-v71">
+<link rel="stylesheet" href="ui-updates.css?v=20261001-v8">
+<link rel="stylesheet" href="store-directory.css?v=20261001-v8">
+<link rel="stylesheet" href="mobile.css?v=20261001-v8">
 <link rel="stylesheet" href="consent.css?v=20260930-v4">
 </head>
 <body>
@@ -117,14 +117,14 @@
       <div class="field category-quick-filter">
         <label for="categorySearch">Categoría</label>
         <div class="category-picker">
-          <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Escribí o seleccioná una categoría">
+          <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Buscá una categoría">
           <button id="clearCategory" class="category-clear" type="button" aria-label="Limpiar categoría" hidden>Limpiar</button>
           <div id="categoryOptions" role="listbox" aria-multiselectable="true" hidden></div>
         </div>
         <div id="categoryChips" class="category-chips" aria-label="Categorías seleccionadas"></div><select id="categoria" multiple hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
       </div>
 
-      <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Ocultar productos sin precio</label>
+      <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Solo con precio</label>
       <button type="button" class="rf-adv-toggle" id="advancedToggle" aria-expanded="false" aria-controls="advancedFilters"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg><span>Filtros avanzados</span><span class="rf-adv-count" id="advancedCount" hidden></span></button>
       <details class="advanced-filters" id="advancedFilters">
         <summary>
@@ -167,7 +167,7 @@
     <label class="rf-fav-toggle" title="Mostrar solo favoritos"><input type="checkbox" id="favoritesOnly"><svg class="rf-ui-svg rf-heart-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span>Favoritos</span></label>
     <div class="field sort-field"><label for="orden"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg><span>Ordenar</span></label>
             <select id="orden">
-              <option value="caida">Mayor caída de precio</option><option value="descuento">Mayor descuento</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
+              <option value="relevancia">Más relevantes</option><option value="caida">Mayor caída de precio</option><option value="descuento">Mayor descuento</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
               <option value="precio_asc">Precio: menor a mayor</option>
               <option value="precio_desc">Precio: mayor a menor</option>
               <option value="nombre_asc" selected>Nombre: A-Z</option>
@@ -245,27 +245,27 @@
 </footer>
 
 <dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="site-config.js?v=20261001-v71" defer></script>
+<script src="site-config.js?v=20261001-v8" defer></script>
 <script src="privacy-config.js?v=20260925-ux1" defer></script>
 <script src="tracking-config.js?v=20260930-v4" defer></script>
 <script src="consent.js?v=20260930-v4" defer></script>
 <script src="matching.js?v=20260928-seo3" defer></script>
-<script src="catalog.js?v=20261001-v71" defer></script>
-<script src="catalog-cache.js?v=20261001-v71" defer></script>
-<script src="features.js?v=20261001-v71" defer></script>
+<script src="catalog.js?v=20261001-v8" defer></script>
+<script src="catalog-cache.js?v=20261001-v8" defer></script>
+<script src="features.js?v=20261001-v8" defer></script>
 <script src="shared-list-codec.js?v=20260925-share2" defer></script>
-<script src="shopping.js?v=20261001-v71" defer></script>
-<script src="storefront.js?v=20261001-v71" defer></script>
-<script src="product-details.js?v=20261001-v71" defer></script>
-<script src="app.js?v=20261001-v71" defer></script>
+<script src="shopping.js?v=20261001-v8" defer></script>
+<script src="storefront.js?v=20261001-v8" defer></script>
+<script src="product-details.js?v=20261001-v8" defer></script>
+<script src="app.js?v=20261001-v8" defer></script>
 <script src="product-content.js?v=20260930" defer></script>
 <script src="search-api-config.js" defer></script>
-<script src="store-directory.js?v=20261001-v71" defer></script>
-<script src="experience.js?v=20261001-v71" defer></script>
+<script src="store-directory.js?v=20261001-v8" defer></script>
+<script src="experience.js?v=20261001-v8" defer></script>
 <script src="explore-model.js?v=20261001-v5" defer></script>
-<script src="category-index.js?v=20261001-v71" defer></script>
-<script src="explore.js?v=20261001-v71" defer></script>
-<script src="nav-bar.js?v=20261001-v71" defer></script>
-<script src="ui-updates.js?v=20261001-v71" defer></script>
-<script src="mobile-shell.js?v=20261001-v71" defer></script>
+<script src="category-index.js?v=20261001-v8" defer></script>
+<script src="explore.js?v=20261001-v8" defer></script>
+<script src="nav-bar.js?v=20261001-v8" defer></script>
+<script src="ui-updates.js?v=20261001-v8" defer></script>
+<script src="mobile-shell.js?v=20261001-v8" defer></script>
 </body></html>

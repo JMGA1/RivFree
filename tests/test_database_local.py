@@ -30,6 +30,13 @@ class LocalDatabaseTest(unittest.TestCase):
                 with self.assertRaises(HTTPError) as error:
                     urlopen(Request(base+'/api/search-selection',data=b'{"url":"https://example.com/product"}',headers={'Origin':'https://wrong.example'}))
                 self.assertEqual(error.exception.code,403)
+                self.assertEqual(urlopen(base+'/').status,200,'the shop page still opens')
+                for path in ['/data/','/icons/']:
+                    with self.assertRaises(HTTPError) as error:urlopen(base+path)
+                    self.assertEqual(error.exception.code,404,'no folder listings')
+                with self.assertRaises(HTTPError) as error:
+                    urlopen(Request(base+'/data/popular.json',headers={'Host':'attacker.example:'+str(server.server_address[1])}))
+                self.assertEqual(error.exception.code,421)
             finally:server.shutdown();server.server_close();worker.join()
 
 if __name__=='__main__':unittest.main()

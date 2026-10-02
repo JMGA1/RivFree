@@ -21,7 +21,19 @@ class Handler(SimpleHTTPRequestHandler):
     def reply(self,code,value,kind='application/json'):
         data=value.encode() if isinstance(value,str) else json.dumps(value).encode()
         self.send_response(code);self.send_header('Content-Type',kind);self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(data)));self.end_headers();self.wfile.write(data)
+    def local_names(self):
+        port=self.server.server_address[1]
+        return {f'127.0.0.1:{port}',f'localhost:{port}'}
+    def trusted_host(self):
+        # Answers only to its own address, so another website can't reach it through DNS tricks.
+        return self.headers.get('Host','') in self.local_names()
+    def list_directory(self,path):
+        self.reply(404,{});return None
+    def do_HEAD(self):
+        if not self.trusted_host():return self.reply(421,{})
+        return super().do_HEAD()
     def do_GET(self):
+        if not self.trusted_host():return self.reply(421,{})
         path=urlsplit(self.path).path
         if path=='/search-api-config.js':return self.reply(200,"window.RIVFREE_SEARCH_API='/api/search-selection';",'text/javascript')
         if path=='/data/popular.json':
@@ -34,7 +46,8 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
     def do_POST(self):
         if self.path!='/api/search-selection':return self.reply(404,{})
-        if self.headers.get('Origin') not in (None,'http://127.0.0.1:8880','http://localhost:8880'):return self.reply(403,{})
+        if not self.trusted_host():return self.reply(421,{})
+        if self.headers.get('Origin') not in (None,*('http://'+name for name in self.local_names())):return self.reply(403,{})
         try:
             length=int(self.headers.get('Content-Length',0))
             if not 0<length<=4096:return self.reply(413,{})

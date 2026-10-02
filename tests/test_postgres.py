@@ -40,6 +40,13 @@ class ConnectionStringTests(unittest.TestCase):
             with self.assertRaisesRegex(pg.DatabaseProblem, text):
                 pg.parse_database_url(bad)
 
+    def test_internet_databases_never_connect_without_encryption(self):
+        for mode in ('disable', 'allow', 'prefer'):
+            with self.assertRaisesRegex(pg.DatabaseProblem, 'cifrada'):
+                pg.parse_database_url(f'postgresql://a:b@db.example.com/x?sslmode={mode}')
+        self.assertEqual(pg.parse_database_url('postgresql://a:b@localhost/x?sslmode=prefer')['sslmode'], 'prefer', 'local servers may skip TLS')
+        self.assertIn('sslrootcert', str(pg.explain(ssl.SSLCertVerificationError('certificate verify failed'))))
+
     def test_password_is_never_shown(self):
         masked = pg.mask_url('postgresql://manu:SuperSecreta@db.example.com:5432/rivfree?sslmode=require')
         self.assertNotIn('SuperSecreta', masked)
@@ -50,7 +57,7 @@ class ConnectionStringTests(unittest.TestCase):
         self.assertIs(pg.ssl_context(info('disable')), False)
         self.assertIsNone(pg.ssl_context(info('prefer')))
         required = pg.ssl_context(info('require'))
-        self.assertEqual((required.verify_mode, required.check_hostname), (ssl.CERT_NONE, False))
+        self.assertEqual((required.verify_mode, required.check_hostname), (ssl.CERT_REQUIRED, True), 'require also verifies the server')
         strict = pg.ssl_context(info('verify-full'))
         self.assertEqual((strict.verify_mode, strict.check_hostname), (ssl.CERT_REQUIRED, True))
 
@@ -155,6 +162,20 @@ class StudioDatabaseTests(unittest.TestCase):
         self.assertTrue(server.normalize_store({'nombre': 'DFA', 'ocultar_fotos': True})[1]['ocultar_fotos'])
         self.assertFalse(server.normalize_store({'nombre': 'DFA', 'ocultar_fotos': 'sí'})[1]['ocultar_fotos'])
         self.assertTrue(server.normalize_store({'nombre': 'DFA'}, {'ocultar_fotos': True})[1]['ocultar_fotos'], 'kept when not sent')
+
+
+class CertificateFileTests(unittest.TestCase):
+    def test_github_uses_the_certificate_secret_and_a_wrong_path_is_explained(self):
+        with tempfile.TemporaryDirectory() as folder:
+            ca = Path(folder) / 'ca.pem'; ca.write_text('x')
+            info = pg.parse_database_url('postgresql://u:p@db.example.com/x?sslmode=require&sslrootcert=C:/RivFree-db/ca.pem')
+            with mock.patch.dict(os.environ, {'PGSSLROOTCERT': str(ca)}), mock.patch.object(pg.ssl, 'create_default_context') as create:
+                pg.ssl_context(info)
+            create.assert_called_once_with(cafile=str(ca))
+            with mock.patch.dict(os.environ, {}, clear=False):
+                os.environ.pop('PGSSLROOTCERT', None)
+                with self.assertRaisesRegex(pg.DatabaseProblem, 'No encontré el certificado'):
+                    pg.ssl_context(info)
 
 
 @unittest.skipUnless(os.environ.get('RIVFREE_TEST_DATABASE_URL'), 'set RIVFREE_TEST_DATABASE_URL to test against a real PostgreSQL')

@@ -24,6 +24,8 @@ import os
 from pathlib import Path
 import re
 import shutil
+import errno
+import traceback
 import threading
 import time
 from datetime import datetime, timezone
@@ -52,7 +54,8 @@ MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = secrets.token_urlsafe(32)
-STUDIO_BUILD = '20261001-studio8'
+SESSION_EXPIRED = "Esta pestaña quedó de una sesión anterior de Studio. Cerrala y abrí Studio de nuevo con Abrir-RivFree-Studio (cada vez que se abre, la clave cambia)."
+STUDIO_BUILD = '20261001-studio9'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -120,10 +123,53 @@ def atomic_write_json(path: Path, value) -> None:
             if not history or history[-1].get('precio_usd') != price:
                 history.append({'fecha': now_iso(), 'precio_usd': price})
             product['historial_precios'] = history
+    if path == PRODUCTS_PATH and isinstance(value, dict):
+        keep_private_fields(value)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(path)
+
+
+# Internal notes and contributor names stay on this computer (.rivfree-local is ignored by git
+# and never served); the public catalog in data/ only carries what visitors may see.
+PRIVATE_PRODUCT_FIELDS = ("nota_manual", "aportado_por", "aporte_id")
+
+
+def private_notes_path() -> Path:
+    return PROJECT_ROOT / ".rivfree-local" / "product-notes.json"
+
+
+def load_private_notes() -> dict:
+    value = read_json(private_notes_path(), {})
+    return {k: v for k, v in value.items() if isinstance(v, dict)} if isinstance(value, dict) else {}
+
+
+def keep_private_fields(doc: dict) -> None:
+    notes = load_private_notes()
+    before = json.dumps(notes, sort_keys=True)
+    for product in doc.get("productos", []):
+        if not isinstance(product, dict) or not product.get("id"):
+            continue
+        entry = dict(notes.get(product["id"], {}))
+        for field in PRIVATE_PRODUCT_FIELDS:
+            if field in product:
+                value = product.pop(field)
+                if value: entry[field] = value
+                else: entry.pop(field, None)
+        if entry: notes[product["id"]] = entry
+        else: notes.pop(product["id"], None)
+    if json.dumps(notes, sort_keys=True) != before:
+        target = guarded_path(private_notes_path())
+        target.parent.mkdir(parents=True, exist_ok=True)
+        tmp = target.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(notes, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        tmp.replace(target)
+
+
+def with_private_fields(products: list) -> list:
+    notes = load_private_notes()
+    return [{**notes.get(p.get("id"), {}), **p} if isinstance(p, dict) else p for p in products]
 
 
 def ensure_files() -> None:
@@ -215,7 +261,20 @@ def safe_color(value, fallback="#B42335") -> str:
     return value if re.fullmatch(r"#[0-9A-Fa-f]{6}", value) else fallback
 
 
+def decimal_text(value: str) -> str:
+    """'29,90', '1.299,90', '1,299.90' or 'USD 29,90' → '29.90' / '1299.90'."""
+    raw = re.sub(r"^(?:US\$|U\$S|USD|\$)", "", re.sub(r"[\s\u00a0]", "", value), flags=re.I)
+    if "," in raw and "." in raw:
+        decimal = "," if raw.rfind(",") > raw.rfind(".") else "."
+        raw = raw.replace("." if decimal == "," else ",", "").replace(decimal, ".")
+    elif "," in raw:
+        raw = raw.replace(",", ".") if raw.count(",") == 1 else raw.replace(",", "")
+    return raw
+
+
 def number_or_none(value, field_name: str):
+    if isinstance(value, str):
+        value = decimal_text(value)
     if value in (None, ""):
         return None
     try:
@@ -251,6 +310,8 @@ def load_manual_products() -> dict:
     value.setdefault("actualizado", None)
     if not isinstance(value.get("productos"), list):
         value["productos"] = []
+    if EDITOR_MODE == "owner":
+        value["productos"] = with_private_fields(value["productos"])
     return value
 
 
@@ -578,6 +639,27 @@ def normalize_profile(payload, current):
     return result
 
 
+def safe_email(value):
+    """A plain address only: «x@y.com?bcc=…» would add hidden recipients to the visitor's e-mail."""
+    value = nullable_text(value, 160)
+    if value and not re.fullmatch(r"[^@\s?&#/]+@[^@\s?&#/]+\.[^@\s?&#/]+", value):
+        raise ValueError("Email inválido: escribí solo la dirección, por ejemplo ventas@tienda.com")
+    return value
+
+
+def whatsapp_url(value):
+    """'+598 99 123 456' or '099 123 456' (Uruguayan mobile) → https://wa.me/59899123456; links pass through."""
+    raw = text(value, 200)
+    if not re.fullmatch(r"\+?[\d\s().-]{7,}", raw):
+        return raw
+    digits = re.sub(r"\D", "", raw)
+    if not raw.startswith("+") and digits.startswith("0") and len(digits) == 9:
+        digits = "598" + digits[1:]
+    if not 10 <= len(digits) <= 15:
+        raise ValueError("WhatsApp: escribí el número con código de país, por ejemplo +598 99 123 456")
+    return "https://wa.me/" + digits
+
+
 def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, dict]:
     if not isinstance(payload, dict):
         raise ValueError("Tienda inválida")
@@ -590,7 +672,7 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
     for key in ("instagram", "facebook", "whatsapp", "telegram"):
         raw = payload.get(key, previous_networks.get(key))
         if raw is not None:
-            url = safe_url(raw)
+            url = safe_url(whatsapp_url(raw) if key == "whatsapp" else raw)
             if url:
                 networks[key] = url
             else:
@@ -600,7 +682,7 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
         "nombre_completo": text(payload.get("nombre_completo") or name, 180),
         "direccion": nullable_text(payload.get("direccion"), 300),
         "telefono": nullable_text(payload.get("telefono"), 80),
-        "email": nullable_text(payload.get("email"), 160),
+        "email": safe_email(payload.get("email")),
         "horario": nullable_text(payload.get("horario"), 300),
         "sitio_web": safe_url(payload.get("sitio_web")),
         "redes": networks,
@@ -1134,6 +1216,37 @@ def _duplicate_reason(product: dict, existing_products: list[dict]) -> str | Non
     return None
 
 
+TRUSTED_SOURCE_HOSTS = ("instagram.com", "facebook.com", "fb.com", "wa.me", "whatsapp.com", "t.me", "tiktok.com", "youtube.com")
+
+
+def _link_host(value: str) -> str:
+    try:
+        return (urlparse(value).hostname or "").lower().removeprefix("www.")
+    except ValueError:
+        return ""
+
+
+def _contribution_links(info: dict) -> list:
+    values = [("Sitio web", info.get("sitio_web")), ("Email", info.get("email"))]
+    redes = info.get("redes") if isinstance(info.get("redes"), dict) else {}
+    values += [(key.capitalize(), redes.get(key)) for key in ("instagram", "facebook", "whatsapp", "telegram")]
+    return [{"label": label, "url": text(value, 600), "host": _link_host(text(value, 600)) or text(value, 120)} for label, value in values if isinstance(value, str) and value.strip()]
+
+
+def _unexpected_link(links: list, store_info: dict) -> str:
+    """A product link outside the store's own site and the usual social networks deserves a look before importing."""
+    site = _link_host(store_info.get("sitio_web") or "") if isinstance(store_info, dict) else ""
+    for link in links:
+        host = link["host"]
+        if not host:
+            continue
+        own = site and (host == site or host.endswith("." + site))
+        social = any(host == h or host.endswith("." + h) for h in TRUSTED_SOURCE_HOSTS)
+        if not own and not social:
+            return f"Revisá el enlace: lleva a {host}" + (f", no a {site}" if site else "")
+    return ""
+
+
 def preview_contribution(payload: dict) -> dict:
     if EDITOR_MODE != "owner":
         raise ValueError("Solo el editor principal puede revisar aportes")
@@ -1149,27 +1262,37 @@ def preview_contribution(payload: dict) -> dict:
         if not clean:
             continue
         exists = clean in current_stores
+        info = info if isinstance(info, dict) else {}
         stores_preview.append({
             "name": clean,
             "status": "existing" if exists else "new",
             "selected": not exists,
-            "color": safe_color((info or {}).get("color") if isinstance(info, dict) else None),
+            "color": safe_color(info.get("color")),
+            # Every link the package would publish, shown as text so the owner can spot a fake site.
+            "links": _contribution_links(info),
         })
     products_preview = []
     for item in manifest.get("products") or []:
         if not isinstance(item, dict):
             continue
         reason = _duplicate_reason(item, current_products)
+        store_name = text(item.get("tienda"), 120)
+        store_info = current_stores.get(store_name) or (stores_in.get(store_name) if isinstance(stores_in.get(store_name), dict) else {}) or {}
+        links = [(label, text(item.get(key), 600)) for key, label in (("url", "Publicación"), ("fuente_url", "Fuente"), ("imagen", "Imagen"))]
+        links = [{"label": label, "url": value, "host": _link_host(value)} for label, value in links if value]
+        warning = _unexpected_link(links[:2], store_info)
         products_preview.append({
             "id": text(item.get("id"), 100) or "sin-id",
             "name": text(item.get("nombre"), 300) or "Producto sin nombre",
-            "store": text(item.get("tienda"), 120),
+            "store": store_name,
             "category": text(item.get("categoria"), 120) or "otros",
             "price": item.get("precio_usd"),
             "source": text(item.get("fuente_tipo"), 30) or "manual",
-            "status": "possible_duplicate" if reason else "new",
-            "reason": reason,
-            "selected": not bool(reason),
+            "status": "possible_duplicate" if reason else ("check_link" if warning else "new"),
+            "reason": reason or warning,
+            "links": links,
+            # Products pointing somewhere unexpected stay unticked: the owner has to look and decide.
+            "selected": not bool(reason or warning),
         })
     preview_id = "preview-" + uuid.uuid4().hex
     CONTRIBUTION_PREVIEWS[preview_id] = {"manifest": manifest, "assets": assets, "created": time.time()}
@@ -1401,7 +1524,7 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path.startswith("/api/manual/"):
             if not self._authorized():
-                return self._error(403, "Sesión de editor inválida. Volvé a abrir Abrir-editor-manual.bat")
+                return self._error(403, SESSION_EXPIRED)
             if parsed.path == "/api/manual/catalog":
                 query=text(parse_qs(parsed.query).get('q',[''])[0],120).casefold()
                 if len(query)<2: return self._json({'products':[]})
@@ -1440,7 +1563,7 @@ class Handler(SimpleHTTPRequestHandler):
         if not parsed.path.startswith("/api/manual/"):
             return self._error(404, "Ruta no encontrada")
         if not self._authorized():
-            return self._error(403, "Sesión de editor inválida")
+            return self._error(403, SESSION_EXPIRED)
         origin = self.headers.get("Origin")
         if origin:
             host = urlparse(origin).hostname
@@ -1479,7 +1602,10 @@ class Handler(SimpleHTTPRequestHandler):
         except (ValueError, json.JSONDecodeError) as exc:
             return self._error(400, exc)
         except Exception as exc:
-            return self._error(500, "Error interno. No se pudo completar la operación.")
+            # Keep the details in the Studio window (without tokens or passwords) to diagnose it later.
+            print("[editor] Error interno en " + maintenance.redact(self.path.split("?")[0]) + ": " +
+                  maintenance.redact("".join(traceback.format_exception(type(exc), exc, exc.__traceback__))[-4000:]), file=sys.stderr, flush=True)
+            return self._error(500, "Error interno: no se pudo completar la operación. El detalle quedó en la ventana de Studio; tus datos guardados no cambiaron.")
 
 
 def main():
@@ -1491,7 +1617,15 @@ def main():
     global EDITOR_MODE
     EDITOR_MODE = args.mode
     ensure_files()
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    try:
+        server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    except OSError as exc:
+        if exc.errno in (errno.EADDRINUSE, 10048):
+            print(f"\nEl puerto {args.port} ya está en uso: Studio probablemente ya está abierto.\n"
+                  "Buscá su ventana o pestaña del navegador. Si no la encontrás, cerrá las ventanas de Studio y volvé a abrirlo.\n"
+                  f"También podés usar otro puerto, por ejemplo: --port {args.port + 1}", file=sys.stderr)
+            raise SystemExit(1)
+        raise
     url = f"http://127.0.0.1:{args.port}/tools/manual_editor/?mode={EDITOR_MODE}#token={SESSION_TOKEN}"
     print("\nRivFree · " + ("Cargador colaborador" if EDITOR_MODE == "contributor" else "Studio"))
     print(f"Proyecto: {PROJECT_ROOT}")

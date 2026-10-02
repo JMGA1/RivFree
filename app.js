@@ -16,7 +16,7 @@ const translations = {
  'Ahora no':'Agora não',
  'No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.':'Não realizamos vendas nem somos afiliados às lojas. Os preços e a disponibilidade são indicativos e podem mudar. Consulte as informações atualizadas na publicação oficial de cada loja.',
 
- 'Ocultar productos sin precio':'Ocultar produtos sem preço',
+ 'Solo con precio':'Só com preço',
  'Por descubrir':'Por descobrir','Una selección aleatoria para inspirar tu próxima compra.':'Uma seleção aleatória para inspirar sua próxima compra.',
  'Otra selección':'Outra seleção','Pausar carrusel':'Pausar carrossel',
  'Explorá y compará los free shops de Rivera y Santana do Livramento':'Explore e compare os free shops de Rivera e Santana do Livramento',
@@ -56,7 +56,7 @@ const translations = {
 "Del computador al celular, con un enlace.":"Do computador ao celular, com um link.",
 "SIN REGISTRO · SIN COMPLICACIONES":"SEM CADASTRO · SEM COMPLICAÇÕES",
 "Todas las categorías":"Todas as categorias",
-"Mayor caída de precio":"Maior queda de preço","Recién agregados":"Recém-adicionados","Compartir":"Compartilhar","Moneda de referencia":"Moeda de referência","Quitar categoría":"Remover categoria","Instalar RivFree":"Instalar RivFree","Sugerencias de productos":"Sugestões de produtos","Categorías seleccionadas":"Categorias selecionadas","UYU · Peso uruguayo":"UYU · Peso uruguaio",
+"Mayor caída de precio":"Maior queda de preço","Más relevantes":"Mais relevantes","Recién agregados":"Recém-adicionados","Compartir":"Compartilhar","Moneda de referencia":"Moeda de referência","Quitar categoría":"Remover categoria","Instalar RivFree":"Instalar RivFree","Sugerencias de productos":"Sugestões de produtos","Categorías seleccionadas":"Categorias selecionadas","UYU · Peso uruguayo":"UYU · Peso uruguaio",
 "Chocolates y alimentos":"Chocolates e alimentos",
 "Cuidado personal":"Cuidados pessoais",
 "· Cotización":"· Cotação",
@@ -72,7 +72,7 @@ const translations = {
  'Explorá y compará los free shops de Rivera':'Explore e compare os free shops de Rivera',
  'Disponibilidad orientativa':'Disponibilidade indicativa',
  'La cantidad de productos publicada aquí no refleja el stock real. En las tiendas físicas suele haber más productos disponibles que los mostrados en sus catálogos web.':'A quantidade de produtos publicada aqui não reflete o estoque real. Nas lojas físicas costuma haver mais produtos disponíveis do que nos catálogos on-line.',
- 'Escribí o seleccioná una categoría':'Digite ou selecione uma categoria',
+ 'Buscá una categoría':'Busque uma categoria',
  'Sin categorías coincidentes':'Nenhuma categoria correspondente',
  'Precio mínimo en dólares':'Preço mínimo em dólares',
  'Precio máximo en dólares':'Preço máximo em dólares',
@@ -523,7 +523,8 @@ function getFiltered() {
     if (!Number.isFinite(bPrice)) return -1;
     return bPrice - aPrice;
   });
-  else if (orden === 'nombre_asc') {
+  else if (orden === 'relevancia' && searchTokens.length) groups=byRelevance(groups);
+  else if (orden === 'nombre_asc' || orden === 'relevancia') {
     groups.sort((a,b)=>nameRank(a)-nameRank(b));
     const priced=[],unavailable=[];
     for(const group of groups)(Number.isFinite(lowestPrice(group))?priced:unavailable).push(group);
@@ -533,6 +534,24 @@ function getFiltered() {
   if(getFiltered.cache.size>=8)getFiltered.cache.delete(getFiltered.cache.keys().next().value);
   getFiltered.cache.set(cacheKey,groups);
   return groups;
+}
+
+// Search results: names that start with or contain the typed words first, then items sold
+// in more stores; items without a price and approximate matches go last.
+function byRelevance(groups){
+  const terms=Catalog.norm(ACTIVE_SEARCH).replace(/[^a-z0-9]+/g,' ').trim().split(' ').filter(Boolean);
+  const phrase=' '+terms.join(' ');
+  const score=new Map();
+  for(const group of groups){
+    const name=' '+Catalog.norm(group.name).replace(/[^a-z0-9]+/g,' ').trim()+' ';
+    let value=name.startsWith(phrase+' ')||name.startsWith(phrase)?60:name.includes(phrase)?35:0;
+    for(const word of terms)value+=name.includes(' '+word+' ')?12:name.includes(' '+word)?8:name.includes(word)?3:0;
+    value+=Math.min(new Set(group.visibleOffers.map(o=>o.tienda)).size,4)*3;
+    if(!Number.isFinite(group.lowestVisiblePrice))value-=40;
+    if(group.approximate)value-=20;
+    score.set(group,value);
+  }
+  return groups.sort((a,b)=>score.get(b)-score.get(a)||nameRank(a)-nameRank(b));
 }
 
 // Alphabetical position of every group, computed once per catalog (sorting 30k names
@@ -570,9 +589,11 @@ function render(resetLimit = false, appendOnly = false) {
     total + group.visibleOffers.filter(hasPrice).length, 0);
   const unavailable = offersShown - pricedShown;
   const shownText = items.length > visibleItems.length ? ` · mostrando ${visibleItems.length}` : '';
-  meta.textContent = tr(`${items.length.toLocaleString(LANG)} producto${items.length === 1 ? '' : 's'}`);
+  // Thousands always grouped ("4.665", like "34.497"); Spanish would otherwise skip 4-digit numbers.
+  const count = n => n.toLocaleString(LANG, {useGrouping: 'always'});
+  meta.textContent = tr(`${count(items.length)} producto${items.length === 1 ? '' : 's'}`);
   meta.title = shownText ? tr(shownText.replace(/^ · /,'')) : '';
-  document.getElementById('resultsDetails').textContent = tr(`${pricedShown} precios disponibles · ${unavailable} sin precio · ${ALL_PRODUCTS.length} publicaciones totales`) + (shownText ? ' ·' + tr(shownText.replace(/^ ·/,'')) : '');
+  document.getElementById('resultsDetails').textContent = tr(`${count(pricedShown)} precios disponibles · ${count(unavailable)} sin precio · ${count(ALL_PRODUCTS.length)} publicaciones totales`) + (shownText ? ' ·' + tr(shownText.replace(/^ ·/,'')) : '');
 
   if (items.length === 0) {
     grid.innerHTML = '';
@@ -660,6 +681,10 @@ async function runSearch() {
   await waitForPaint();
 
   ACTIVE_SEARCH = document.getElementById('search').value.trim();
+  // The default order follows the search: best matches while searching, A-Z otherwise.
+  const sort = document.getElementById('orden');
+  if (ACTIVE_SEARCH && sort.value === 'nombre_asc') sort.value = 'relevancia';
+  else if (!ACTIVE_SEARCH && sort.value === 'relevancia') sort.value = 'nombre_asc';
   render(true);
 
   status.classList.remove('visible');
@@ -677,10 +702,15 @@ async function runSearch() {
   const resultsAnchor = grid?.children?.length
     ? grid
     : (emptyState && getComputedStyle(emptyState).display !== 'none' ? emptyState : meta);
-  if (resultsAnchor && typeof resultsAnchor.scrollIntoView === 'function') {
+  // Land on the results bar (count and order), just below the sticky header.
+  const anchor = resultsAnchor === grid ? (document.querySelector('.rf-results-bar') || grid) : resultsAnchor;
+  if (anchor && typeof anchor.scrollIntoView === 'function') {
     const reduceMotion = typeof window.matchMedia === 'function'
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    resultsAnchor.scrollIntoView({
+    const header = document.querySelector('.topbar');
+    const covered = header && /sticky|fixed/.test(getComputedStyle(header).position) ? header.getBoundingClientRect().height : 0;
+    anchor.style.scrollMarginTop = Math.round(covered + 8) + 'px';
+    anchor.scrollIntoView({
       behavior: reduceMotion ? 'auto' : 'smooth',
       block: 'start'
     });
@@ -806,8 +836,8 @@ function createProductCard(group) {
   favorite.dataset.action='favorite';favorite.setAttribute('aria-pressed',String(favorites.has(group.key)));
   favorite.textContent=favorites.has(group.key)?'♥':'♡';
   favorite.classList.add('heart-button');
-  favorite.setAttribute('aria-label',tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar')+': '+displayName);
-  favorite.title=tr(favorites.has(group.key)?'★ Guardado':'☆ Guardar');
+  favorite.title=favorites.has(group.key)?words('Remover da Minha lista','Quitar de Mi lista'):words('Salvar na Minha lista','Guardar en Mi lista');
+  favorite.setAttribute('aria-label',favorite.title+': '+displayName);
   const historyButton=document.createElement('button');historyButton.type='button';historyButton.className='favorite-button';historyButton.dataset.action='history';historyButton.textContent=LANG==='pt-BR'?'Histórico':'Historial';
   const shareButton=document.createElement('button');shareButton.type='button';shareButton.className='favorite-button';shareButton.dataset.action='share';shareButton.textContent=tr('Compartir');utilityRow.append(historyButton,shareButton);
   if(favorites.has(group.key))utilityRow.append(quantityControl(group.key,()=>{}));
@@ -873,8 +903,8 @@ function createProductCard(group) {
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     link.textContent = product.fuente_tipo==='instagram' && safeHttpUrl(product.fuente_url)===productUrl
-      ? tr('Ver publicación ↗') : tr(`Ver en ${product.tienda} ↗`);
-    link.setAttribute('aria-label', `Ver ${product.nombre} en ${product.tienda}`);
+      ? tr('Ver publicación ↗') : words(`Ver na ${product.tienda} ↗`,`Ver en ${product.tienda} ↗`);
+    link.setAttribute('aria-label', words(`Ver ${product.nombre} na ${product.tienda}`,`Ver ${product.nombre} en ${product.tienda}`));
     card.appendChild(link);
   }
   return card;

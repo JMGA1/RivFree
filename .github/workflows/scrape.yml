@@ -213,9 +213,12 @@ jobs:
         continue-on-error: true
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_CA_CERT: ${{ secrets.DATABASE_CA_CERT }}
         shell: bash
         run: |
           if [ -z "$DATABASE_URL" ]; then echo "Sin el secreto DATABASE_URL: no se copia a PostgreSQL."; exit 0; fi
+          # Providers with their own certificate (Aiven): the ca.pem content travels in DATABASE_CA_CERT.
+          if [ -n "$DATABASE_CA_CERT" ]; then printf '%s\n' "$DATABASE_CA_CERT" > "$RUNNER_TEMP/db-ca.pem"; export PGSSLROOTCERT="$RUNNER_TEMP/db-ca.pem"; fi
           python -m pip install --require-hashes --only-binary=:all: -r requirements-db.txt
           python tools/postgres_sync.py
       - run: |

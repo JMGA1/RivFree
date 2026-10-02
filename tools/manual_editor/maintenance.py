@@ -93,7 +93,7 @@ def snapshot(s, include_update=False):
     ahead = git(s, 'log', '--oneline', '@{upstream}..HEAD')
     return {'review': digest.hexdigest(), 'branch': branch, 'status': status, 'diff': diff,
             'outgoing': ahead, 'upstream': upstream, 'scope': scope,
-            'note': 'Se agregan los archivos del alcance indicado y se publican TODOS los commits locales pendientes de esta rama. Los otros archivos sin commit no se agregan.'}
+            'note': 'Se agregan los archivos del alcance indicado y se publican TODOS los commits locales pendientes de esta rama. Antes de subir se traen los cambios nuevos de GitHub (por ejemplo, los precios del robot). Los otros archivos sin commit no se agregan.'}
 
 
 def publish(s, payload):
@@ -117,6 +117,18 @@ def publish(s, payload):
                 raise
         remote = git(s, 'config', '--get', 'branch.' + current['branch'] + '.remote').strip()
         destination = git(s, 'config', '--get', 'branch.' + current['branch'] + '.merge').strip()
+        # GitHub usually has newer price data from the daily robot: bring it in first (a merge,
+        # so nothing already published is rewritten) and only then push.
+        output.append(git(s, 'fetch', remote, destination))
+        try:
+            output.append(git(s, 'merge', '--no-edit', 'FETCH_HEAD'))
+        except ValueError:
+            try:
+                git(s, 'merge', '--abort')
+            except ValueError:
+                pass
+            raise ValueError('GitHub tiene cambios en los mismos archivos que editaste y no se pudieron combinar solos. '
+                             'No se publicó nada y tu commit local se conserva. Resolvé el conflicto con Git (o GitHub Desktop) y volvé a publicar.')
         output.append(git(s, 'push', remote, 'HEAD:' + destination))
         return {'output': '\n'.join(output), 'published': True,
                 'message': 'Push completado. GitHub Actions debe terminar para que la web muestre los cambios.'}
@@ -204,3 +216,5 @@ UPDATE_PATHS += ['postgres', 'tools/postgres_sync.py', 'requirements-db.in', 're
 UPDATE_PATHS += ['mobile.css', 'mobile-shell.js', 'tests/v7-mobile.test.cjs', 'tests/seo.test.cjs', 'tests/seo-runtime.test.cjs', 'CAMBIOS-V7.md']
 # v7.1: product page offers, light theme contrast
 UPDATE_PATHS += ['tests/v71-product.test.cjs']
+# v8: relevance search, store shortcuts, Mi lista, private notes, CSP on static pages, Studio publish/prices/hours
+UPDATE_PATHS += ['privacy.css', 'database/serve.py', 'tests/test_database_local.py', 'tests/v8-improvements.test.cjs', 'tests/test_studio_v8.py', 'CAMBIOS-V8.md']

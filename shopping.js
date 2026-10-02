@@ -79,8 +79,15 @@ function renderShoppingList(){
   const icon=document.createElement('span');icon.className='rf-list-empty-icon';icon.textContent='♡';
   const title=document.createElement('strong');title.textContent=words('Sua lista está vazia','Tu lista está vacía');
   const text=document.createElement('p');text.textContent=words('Toque no ♡ de um produto para salvá-lo aqui.','Tocá el ♡ de un producto para guardarlo acá.');
-  empty.append(icon,title,text);container.append(empty);
+  const go=document.createElement('div');go.className='rf-list-empty-actions';
+  const offers=document.createElement('button');offers.type='button';offers.className='rf-list-go primary';offers.textContent=words('Ver ofertas','Ver ofertas');
+  offers.onclick=()=>{document.getElementById('shoppingDialog').close();document.getElementById('navOffers')?.click();};
+  const search=document.createElement('button');search.type='button';search.className='rf-list-go';search.textContent=words('Buscar produtos','Buscar productos');
+  search.onclick=()=>{document.getElementById('shoppingDialog').close();const phone=document.getElementById('mobileSearchButton');if(phone&&phone.offsetParent&&!document.body.classList.contains('rf-m-search-open'))phone.click();else document.getElementById('search').focus();};
+  go.append(offers,search);
+  empty.append(icon,title,text,go);container.append(empty);
  }
+ const share=document.querySelector('#shoppingDialog .share-list');if(share)share.hidden=!favorites.size;
  renderShoppingRoute([...byStore.keys()]);
  for(const [store,items] of byStore){
   const section=document.createElement('section');section.className='shopping-store';
@@ -100,7 +107,9 @@ function renderShoppingList(){
    if(priced){const parts=splitPrice(cents/100);const main=document.createElement('strong');main.textContent=parts.usd;amount.append(main);if(parts.ref){const ref=document.createElement('small');ref.textContent=parts.ref;amount.append(ref);}}else amount.textContent='—';
    const checkLabel=document.createElement('label');checkLabel.className='purchased-control';checkLabel.title=words('Marcar como comprado','Marcar como comprado');
    const check=document.createElement('input');check.type='checkbox';check.checked=purchasedKeys.has(key);check.dataset.purchasedKey=key;check.setAttribute('aria-label',words('Comprado','Comprado')+': '+name.textContent);
-   const tick=document.createElement('span');tick.className='rf-list-check';tick.append(listIcon('check'));checkLabel.append(check,tick);
+   const tick=document.createElement('span');tick.className='rf-list-check';tick.append(listIcon('check'));
+   const caption=document.createElement('small');caption.className='rf-list-check-label';caption.textContent=words('Comprado','Comprado');caption.setAttribute('aria-hidden','true');
+   checkLabel.append(check,tick,caption);
    check.onchange=()=>{if(check.checked)purchasedKeys.add(key);else purchasedKeys.delete(key);persistShopping();renderShoppingList();for(const next of container.querySelectorAll('[data-purchased-key]'))if(next.dataset.purchasedKey===key)next.focus({preventScroll:true});};
    const remove=document.createElement('button');remove.type='button';remove.className='remove-item';remove.append(listIcon('trash'));remove.title=words('Remover','Quitar');remove.setAttribute('aria-label',`${remove.title}: ${name.textContent}`);
    remove.onclick=()=>{toggleFavorite(key);renderShoppingList();};
@@ -177,9 +186,17 @@ function buildSharedFavoriteIndex(){
  return index;
 }
 function resolveCompactSharedList(){
- if(!pendingShopping||pendingShopping.version!==2||!PRODUCT_GROUPS.length)return false;
- const index=buildSharedFavoriteIndex(),resolved=new Map();let missing=0;
- for(const [id,qty] of pendingShopping.items){const key=index.get(id);if(key)resolved.set(key,qty);else missing++;}
+ if(!pendingShopping||pendingShopping.resolved||!PRODUCT_GROUPS.length)return false;
+ const resolved=new Map();let missing=0;
+ if(pendingShopping.version===1){
+  // Old-format links carry raw keys: keep only products that exist in the catalog, so a crafted link
+  // cannot plant arbitrary text in the visitor's list.
+  const groups=new Set(PRODUCT_GROUPS.map(g=>g.key));
+  for(const [key,qty] of pendingShopping.items){if(groups.has(key)||(String(key).startsWith('offer:')&&favoriteOffer(key)))resolved.set(key,qty);else missing++;}
+ }else{
+  const index=buildSharedFavoriteIndex();
+  for(const [id,qty] of pendingShopping.items){const key=index.get(id);if(key)resolved.set(key,qty);else missing++;}
+ }
  pendingShopping.resolved=resolved;pendingShopping.missing=missing;
  const status=document.getElementById('importResolveStatus');
  if(missing){status.hidden=false;status.textContent=words(`${resolved.size} itens encontrados; ${missing} não estão mais no catálogo atual.`,`${resolved.size} productos encontrados; ${missing} ya no están en el catálogo actual.`);}
@@ -190,7 +207,7 @@ function resolveCompactSharedList(){
 }
 function decodeLegacySharedList(){
  const incoming=SharedListCodec.decodeLegacy(location.hash);
- return incoming?{version:1,resolved:incoming,count:incoming.size,missing:0}:null;
+ return incoming?{version:1,items:incoming,resolved:null,count:incoming.size,missing:0}:null;
 }
 function decodeCompactSharedList(){
  const incoming=SharedListCodec.decodeCompact(location.hash);
@@ -211,7 +228,7 @@ function inspectSharedList(){
 }
 function importPendingShopping(){
  if(!pendingShopping)return;
- if(pendingShopping.version===2&&!pendingShopping.resolved){
+ if(!pendingShopping.resolved){
   if(!resolveCompactSharedList()){
    pendingImportRequested=true;
    const button=document.getElementById('importShoppingList');button.disabled=true;button.textContent=words('Preparando catálogo…','Preparando catálogo…');

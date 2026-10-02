@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261001-studio8';
+  const BUILD = '20261001-studio9';
   window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const fragment = new URLSearchParams(location.hash.slice(1));
@@ -85,13 +85,19 @@
   }
 
   async function api(path, payload={}) {
-    const response = await fetch(path, {
-      method: 'POST',
-      headers: apiHeaders,
-      body: JSON.stringify({...payload, revision: state.revision})
-    });
-    const data = await response.json().catch(() => ({error:'Respuesta inválida'}));
-    if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+    let response;
+    try {
+      response = await fetch(path, {
+        method: 'POST',
+        headers: apiHeaders,
+        body: JSON.stringify({...payload, revision: state.revision})
+      });
+    } catch {
+      // The Studio window (the black console) was closed or the computer went to sleep.
+      throw new Error('No hay conexión con Studio. Si cerraste su ventana, abrí Studio de nuevo; tus cambios guardados no se pierden.');
+    }
+    const data = await response.json().catch(() => ({error:'Studio respondió algo inesperado. Recargá la página e intentá de nuevo.'}));
+    if (!response.ok) throw new Error(data.error || `Studio no pudo completar la operación (error ${response.status}).`);
     return data;
   }
 
@@ -316,8 +322,16 @@
     const result=await api('/api/manual/upload-image',{filename:file.name,data:base64}); $('productImage').value=result.path; return result.path;
   }
 
+  // Prices accept "29,90", "29.90", "1.299,90" or "USD 29,90"; returns '' when empty and null when not a number.
+  function decimalValue(raw) {
+    let value=String(raw??'').trim().replace(/[\s\u00a0]/g,'').replace(/^(?:US\$|U\$S|USD|\$)/i,'');
+    if(!value)return '';
+    if(value.includes(',')&&value.includes('.')){const decimal=value.lastIndexOf(',')>value.lastIndexOf('.')?',':'.';value=value.split(decimal===','?'.':',').join('').replace(decimal,'.');}
+    else if(value.includes(','))value=(value.match(/,/g).length===1)?value.replace(',','.'):value.replace(/,/g,'');
+    return /^\d+(?:\.\d+)?$/.test(value)?value:null;
+  }
   function productPayload() {
-    return {...window.RivFreeCatalogFields.product(),id:$('productId').value,tienda:$('productStore').value,nombre:$('productName').value,categoria:$('productCategory').value,precio_usd:$('productPrice').value,precio_original_usd:$('productOldPrice').value,en_oferta:$('productOffer').checked,activo:$('productActive').checked,fuente_tipo:$('productSource').value,fuente_url:$('productSourceUrl').value,url:$('productUrl').value,imagen:$('productImage').value,nota_manual:$('productNote').value};
+    return {...window.RivFreeCatalogFields.product(),id:$('productId').value,tienda:$('productStore').value,nombre:$('productName').value,categoria:$('productCategory').value,precio_usd:decimalValue($('productPrice').value)??'',precio_original_usd:decimalValue($('productOldPrice').value)??'',en_oferta:$('productOffer').checked,activo:$('productActive').checked,fuente_tipo:$('productSource').value,fuente_url:$('productSourceUrl').value,url:$('productUrl').value,imagen:$('productImage').value,nota_manual:$('productNote').value};
   }
 
   $('productForm').addEventListener('submit', async event => {
@@ -326,6 +340,17 @@
     if(!$('productStore').value)return setFieldError($('productStore'),'Seleccioná una tienda.');
     for(const id of ['productSourceUrl','productUrl'])if(!validHttpUrl($(id),true))return setFieldError($(id),'Usá una URL que empiece con https:// sin credenciales');
     const imageValue=$('productImage').value.trim(); if(imageValue && !imageValue.startsWith('assets/') && !imageValue.startsWith('contributor-assets/') && !validHttpUrl($('productImage'),false))return setFieldError($('productImage'),'Usá una URL HTTPS o una imagen subida desde el editor.');
+    const price=decimalValue($('productPrice').value),oldPrice=decimalValue($('productOldPrice').value);
+    if(price===null)return setFieldError($('productPrice'),'Escribí solo el número, por ejemplo 29,90.');
+    if(oldPrice===null)return setFieldError($('productOldPrice'),'Escribí solo el número, por ejemplo 39,90.');
+    if($('productOffer').checked&&price!==''&&oldPrice!==''&&Number(oldPrice)<=Number(price))return setFieldError($('productOldPrice'),'Para mostrar la oferta, el precio anterior tiene que ser mayor que el precio actual.');
+    // A big jump is usually a typo (29 instead of 290): ask before saving.
+    const before=state.products.find(p=>p.id===$('productId').value)?.precio_usd;
+    if(price!==''&&Number(before)>0&&Math.abs(Number(price)-before)/before>0.5){
+      const change=Math.round((Number(price)-before)/before*100);
+      const ok=await confirmDialog({title:'¿El precio es correcto?',message:`El precio cambia de USD ${Number(before).toFixed(2)} a USD ${Number(price).toFixed(2)} (${change>0?'+':''}${change}%). Revisá que no falte o sobre un número.`,confirmText:'Sí, guardar'});
+      if(!ok)return $('productPrice').focus();
+    }
     try {
       if ($('productImageFile').files[0]) await uploadSelectedImage();
       const saved=await api('/api/manual/save-product',{product:productPayload()}); applyState(saved); editProduct(saved.saved_id||$('productId').value);
@@ -345,9 +370,13 @@
     const ids=[...selectedProductIds]; if(!ids.length)return;
     const names=state.products.filter(p=>ids.includes(p.id)).map(p=>`${p.nombre} · ${p.tienda}`);
     if(action==='delete'){const ok=await confirmDialog({title:`Eliminar ${ids.length} publicaciones`,message:'Se eliminarán únicamente estas publicaciones manuales.',items:names,confirmText:'Eliminar seleccionadas',danger:true});if(!ok)return;}
+    if(action==='hide'){const ok=await confirmDialog({title:`Ocultar ${ids.length} publicaciones`,message:'Dejan de verse en el sitio después de publicar. Podés volver a mostrarlas con «Mostrar».',items:names,confirmText:'Ocultar'});if(!ok)return;}
     try{const saved=await api('/api/manual/bulk-products',{ids,action,...extra});selectedProductIds.clear();applyState(saved);renderProducts();notify(`Acción aplicada a ${saved.bulk_summary?.count||ids.length} publicaciones.`);}catch(e){notify(e.message,true);}
   }
   $('bulkHideProducts')?.addEventListener('click',()=>runBulkProductAction('hide'));
+  $('bulkShowProducts')?.addEventListener('click',()=>runBulkProductAction('show'));
+  // The bulk category list offers the same categories as the product form.
+  if($('bulkCategory')&&$('productCategory')){const first=$('bulkCategory').options[0];$('bulkCategory').replaceChildren(first,...[...$('productCategory').options].map(o=>new Option(o.textContent,o.value)));}
   $('bulkDeleteProducts')?.addEventListener('click',()=>runBulkProductAction('delete'));
   $('bulkClearProducts')?.addEventListener('click',()=>{selectedProductIds.clear();renderProducts();});
   $('bulkCategory')?.addEventListener('change',()=>{const category=$('bulkCategory').value;if(!category)return;runBulkProductAction('category',{category}).finally(()=>{$('bulkCategory').value='';});});
@@ -387,7 +416,10 @@
   function resetStore(){$('storeForm').reset();window.RivFreeCatalogFields.fillStore({});$('storeOriginalName').value='';$('storeColor').value='#B42335';$('storeTextColor').value='#FFFFFF';$('storeFormEyebrow').textContent='NUEVA TIENDA';$('storeFormTitle').textContent='Agregar free shop';$('storeKindBadge').textContent='Manual';$('deleteStore').disabled=true;highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
   function editStore(name){const info=state.stores[name]||{};window.RivFreeCatalogFields.fillStore(info);$('storeOriginalName').value=name;$('storeName').value=name;$('storeFullName').value=info.nombre_completo||name;$('storeColor').value=/^#[0-9a-f]{6}$/i.test(info.color||'')?info.color:'#B42335';$('storeTextColor').value=/^#[0-9a-f]{6}$/i.test(info.color_texto||'')?info.color_texto:'#FFFFFF';$('storeAddress').value=info.direccion||'';$('storePhone').value=info.telefono||'';$('storeEmail').value=info.email||'';$('storeHours').value=info.horario||'';$('storeWebsite').value=(info.sitio_web||'').replace(/^http:/,'https:');$('storeInstagram').value=(info.redes?.instagram||'').replace(/^http:/,'https:');$('storeFacebook').value=(info.redes?.facebook||'').replace(/^http:/,'https:');$('storeWhatsapp').value=info.redes?.whatsapp||'';$('storeTelegram').value=(info.redes?.telegram||'').replace(/^http:/,'https:');$('storeCatalogOnline').checked=!!info.catalogo_online;$('storeHidePhotos').checked=info.ocultar_fotos===true;$('storeNote').value=info.nota||'';$('storeFormEyebrow').textContent=state.manual_stores[name]?'EDITANDO CONFIGURACIÓN':(state.mode==='contributor'?'COPIAR/PROPONER DATOS':'SOBRESCRIBIR TIENDA BASE');$('storeFormTitle').textContent=name;$('storeKindBadge').textContent=state.manual_stores[name]?'Manual':'Referencia';$('deleteStore').disabled=!state.manual_stores[name];highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
   function storePayload(){return {...window.RivFreeCatalogFields.store(),nombre:$('storeName').value,nombre_completo:$('storeFullName').value,color:$('storeColor').value,color_texto:$('storeTextColor').value,direccion:$('storeAddress').value,telefono:$('storePhone').value,email:$('storeEmail').value,horario:$('storeHours').value,sitio_web:$('storeWebsite').value,instagram:$('storeInstagram').value,facebook:$('storeFacebook').value,whatsapp:$('storeWhatsapp').value,telegram:$('storeTelegram').value,catalogo_online:$('storeCatalogOnline').checked,ocultar_fotos:$('storeHidePhotos').checked,nota:$('storeNote').value};}
-  $('storeForm').addEventListener('submit',async event=>{event.preventDefault();clearFieldErrors($('storeForm'));if(!$('storeName').value.trim())return setFieldError($('storeName'),'El nombre de la tienda es obligatorio.');for(const id of ['storeWebsite','storeInstagram','storeFacebook','storeWhatsapp','storeTelegram'])if(!validHttpUrl($(id),true))return setFieldError($(id),'Usá una URL https:// sin credenciales');try{const saved=await api('/api/manual/save-store',{original_name:$('storeOriginalName').value,store:storePayload()});applyState(saved);editStore($('storeName').value.trim());notify(state.mode==='contributor'?'Tienda guardada en tu aporte.':'Tienda guardada. Ya aparecerá en filtros y tarjetas cuando tenga productos.');}catch(e){notify(e.message,true);}});
+  // A phone number becomes its wa.me link ("099 123 456" is taken as a Uruguayan mobile).
+  function whatsappLink(raw){const value=String(raw||'').trim();if(!/^\+?[\d\s().-]{7,}$/.test(value))return value;let digits=value.replace(/\D/g,'');if(!value.startsWith('+')&&digits.startsWith('0')&&digits.length===9)digits='598'+digits.slice(1);return digits.length>=10&&digits.length<=15?'https://wa.me/'+digits:value;}
+  $('storeWhatsapp')?.addEventListener('change',()=>{const el=$('storeWhatsapp');el.value=whatsappLink(el.value);});
+  $('storeForm').addEventListener('submit',async event=>{event.preventDefault();clearFieldErrors($('storeForm'));$('storeWhatsapp').value=whatsappLink($('storeWhatsapp').value);if(/^\+?[\d\s().-]{7,}$/.test($('storeWhatsapp').value))return setFieldError($('storeWhatsapp'),'Escribí el número con código de país, por ejemplo +598 99 123 456.');if(!$('storeName').value.trim())return setFieldError($('storeName'),'El nombre de la tienda es obligatorio.');for(const id of ['storeWebsite','storeInstagram','storeFacebook','storeWhatsapp','storeTelegram'])if(!validHttpUrl($(id),true))return setFieldError($(id),'Usá una URL https:// sin credenciales');try{const saved=await api('/api/manual/save-store',{original_name:$('storeOriginalName').value,store:storePayload()});applyState(saved);editStore($('storeName').value.trim());notify(state.mode==='contributor'?'Tienda guardada en tu aporte.':'Tienda guardada. Ya aparecerá en filtros y tarjetas cuando tenga productos.');}catch(e){notify(e.message,true);}});
   $('newStore').onclick=()=>{resetStore();$('storeName').focus();};
   $('deleteStore').onclick=async()=>{const name=$('storeOriginalName').value;if(!name)return;const relatedProducts=state.products.filter(p=>p.tienda===name),isBase=!!state.base_stores[name];let deleteProducts=false;if(relatedProducts.length&&!isBase){const ok=await confirmDialog({title:`Eliminar ${name}`,message:`La tienda tiene ${relatedProducts.length} publicaciones manuales. Para eliminar la tienda también deben eliminarse.`,items:relatedProducts.map(p=>p.nombre),confirmText:'Eliminar tienda y publicaciones',danger:true});if(!ok)return;deleteProducts=true;}else{const ok=await confirmDialog({title:isBase?'Quitar configuración manual':'Eliminar tienda',message:isBase?'Se volverán a usar los datos de la tienda base.':'La tienda manual será eliminada.',items:[name],confirmText:isBase?'Quitar configuración':'Eliminar tienda',danger:true});if(!ok)return;}try{const saved=await api('/api/manual/delete-store',{name,delete_products:deleteProducts});applyState(saved);resetStore();notify(isBase?'Configuración eliminada; se usa nuevamente la referencia.':'Tienda eliminada.');}catch(e){notify(e.message,true);}};
   $('storeSearch').addEventListener('input',renderStores);
@@ -410,7 +442,7 @@
 
   function statusBadge(status, reason='') {
     const span=document.createElement('span'); span.className='review-status '+status;
-    span.textContent=status==='new'?'Nuevo':'Revisar duplicado'; if(reason) span.title=reason; return span;
+    span.textContent=status==='new'?'Nuevo':status==='check_link'?'Revisar enlace':'Revisar duplicado'; if(reason) span.title=reason; return span;
   }
 
   function renderContributionPreview(data) {
@@ -427,20 +459,26 @@
     if(!data.stores.length){const empty=$('emptyTemplate').content.cloneNode(true);stores.append(empty);} else for(const item of data.stores){
       const row=document.createElement('label');row.className='review-item';row.dataset.search=String(item.name||'').toLowerCase();
       const box=contributionCheckbox('store',item.name,!!item.selected,item.status==='new');
-      const body=document.createElement('span');const title=document.createElement('strong');title.textContent=item.name;const meta=document.createElement('small');meta.textContent=item.status==='existing'?'Ya existe: dejala desmarcada salvo que quieras actualizar sus datos.':'Tienda nueva';body.append(title,meta);
+      const body=document.createElement('span');const title=document.createElement('strong');title.textContent=item.name;const meta=document.createElement('small');meta.textContent=item.status==='existing'?'Ya existe: dejala desmarcada salvo que quieras actualizar sus datos.':'Tienda nueva';body.append(title,meta,contributionLinks(item.links));
       row.append(box,body,statusBadge(item.status==='existing'?'possible_duplicate':'new',item.status==='existing'?'La tienda ya existe':''));stores.append(row);
     }
     const products=$('previewProducts'); products.replaceChildren();
     if(!data.products.length){products.append($('emptyTemplate').content.cloneNode(true));} else for(const item of data.products){
       const row=document.createElement('label');row.className='review-item';row.dataset.search=`${item.name||''} ${item.store||''} ${item.category||''}`.toLowerCase();
       const recommended=item.status==='new'; const box=contributionCheckbox('product',item.id,!!item.selected,recommended);
-      const body=document.createElement('span');const title=document.createElement('strong');title.textContent=item.name;const meta=document.createElement('small');meta.textContent=`${item.store||'Sin tienda'} · ${item.category||'otros'} · ${money(item.price)}`;body.append(title,meta);if(item.reason){const reason=document.createElement('em');reason.textContent=item.reason;body.append(reason);}
+      const body=document.createElement('span');const title=document.createElement('strong');title.textContent=item.name;const meta=document.createElement('small');meta.textContent=`${item.store||'Sin tienda'} · ${item.category||'otros'} · ${money(item.price)}`;body.append(title,meta,contributionLinks(item.links));if(item.reason){const reason=document.createElement('em');reason.textContent=item.reason;body.append(reason);}
       row.append(box,body,statusBadge(item.status,item.reason));products.append(row);
     }
     updateSelectionSummary();
     $('contributionPreview').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
+  // Links from a contribution are shown as plain text (never clickable) so a fake site is easy to spot.
+  function contributionLinks(links){
+    const box=document.createElement('span');box.className='review-links';
+    for(const link of links||[]){const row=document.createElement('code');row.textContent=`${link.label}: ${link.host||link.url}`;row.title=link.url;box.append(row);}
+    return box;
+  }
   function selectedContribution(kind) {
     return [...document.querySelectorAll(`[data-contribution-kind="${kind}"]:checked`)].map(el=>el.dataset.key);
   }

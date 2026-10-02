@@ -43,7 +43,8 @@ function syncFiltersURL(){
  const url=new URL(location.href),p=url.searchParams;
  const fields={q:ACTIVE_SEARCH,min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,sort:document.getElementById('orden').value};
  p.delete('category');for(const category of selectedCategories())p.append('category',category);
- for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value==='nombre_asc'))p.set(key,value);else p.delete(key);}
+ const defaultSort=ACTIVE_SEARCH?'relevancia':'nombre_asc';
+ for(const [key,value] of Object.entries(fields)){if(value && !(key==='sort'&&value===defaultSort))p.set(key,value);else p.delete(key);}
  for(const [key,id] of [['sale','soloOfertas'],['favorites','favoritesOnly'],['priced','hideUnavailable']]){if(document.getElementById(id).checked)p.set(key,'1');else p.delete(key);}
  if(document.getElementById('soloOfertas').checked&&MIN_DISCOUNT)p.set('discount',String(MIN_DISCOUNT));else p.delete('discount');
  const stores=[...document.querySelectorAll('.storeChk')];p.delete('store');p.delete('stores');
@@ -55,7 +56,7 @@ function restoreFilters(){
  const p=new URL(location.href).searchParams;
  for(const option of document.getElementById('categoria').options)option.selected=!!option.value&&p.getAll('category').includes(option.value);
  ACTIVE_SEARCH=p.get('q')||'';document.getElementById('search').value=ACTIVE_SEARCH;
- for(const [key,id,fallback] of [['sort','orden','nombre_asc'],['min','minPrice',''],['max','maxPrice','']]){
+ for(const [key,id,fallback] of [['sort','orden',ACTIVE_SEARCH?'relevancia':'nombre_asc'],['min','minPrice',''],['max','maxPrice','']]){
   const el=document.getElementById(id),value=p.get(key)||fallback;
   if(el.tagName==='SELECT')el.value=[...el.options].some(o=>o.value===value)?value:fallback;
   else el.value=value!==''&&Number.isFinite(Number(value))&&Number(value)>=0?value:'';

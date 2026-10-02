@@ -1,5 +1,6 @@
 """Build Pages from an explicit public inventory, excluding symlinks and private files."""
 from pathlib import Path
+import json
 import shutil
 import subprocess
 
@@ -7,6 +8,18 @@ ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / '_site'
 DATA = ['products.json','meta.json','stores.json','manual-products.json','manual-stores.json',
         'exchange.json','price-history.json','highlights.json','popular.json','site-config.json']
+
+PRIVATE_FIELDS = ('nota_manual', 'aportado_por', 'aporte_id')
+
+def public_manual_products(path):
+    """Visitors get visible products only, without internal notes or contributor names."""
+    if not path.exists(): return
+    doc = json.loads(path.read_text(encoding='utf-8'))
+    items = doc.get('productos') if isinstance(doc, dict) else None
+    if not isinstance(items, list): return
+    doc['productos'] = [{k: v for k, v in item.items() if k not in PRIVATE_FIELDS}
+                        for item in items if isinstance(item, dict) and item.get('activo') is not False]
+    path.write_text(json.dumps(doc, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
 
 def build():
     if DEST.exists(): shutil.rmtree(DEST)
@@ -25,7 +38,7 @@ def build():
             raise ValueError('Private or linked public file: ' + str(rel))
         target = DEST/rel;target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(path,target)
-
+    public_manual_products(DEST/'data'/'manual-products.json')
     subprocess.run(['node', str(ROOT/'tools/build_seo.cjs'), str(DEST)], check=True)
 
 if __name__ == '__main__': build()

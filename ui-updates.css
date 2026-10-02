@@ -421,3 +421,21 @@ a.rf-social-link:focus-visible{outline:2px solid #ffb5c0;outline-offset:2px}
 :root:not([data-theme="dark"]) .popular-section .section-heading p,:root:not([data-theme="dark"]) .card-price-secondary{color:var(--muted)}
 :root:not([data-theme="dark"]) #detailPage .rf-offer.is-best{border-color:#2b9a63!important;box-shadow:inset 0 0 0 1px #2b9a63,var(--shadow-card)!important}
 .rf-product-visual .noimg{color:#5b6577}
+
+/* v8: Mi lista, product price gap and store shortcuts */
+.rf-list-dialog .purchased-control{width:auto;min-width:48px;height:auto;min-height:44px;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.rf-list-check-label{font-size:10px;font-weight:700;line-height:1;color:var(--muted)}
+.purchased-control input:checked~.rf-list-check-label{color:#17643a}
+.rf-list-dialog .remove-item{width:40px;height:40px}
+.rf-list-empty-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
+.rf-list-go{min-height:44px;padding:0 18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer}
+.rf-list-go.primary{border-color:var(--rf-red,#ad233c);background:var(--rf-red,#ad233c);color:#fff}
+.rf-offer-gap{display:block;margin-top:4px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.rf-store-shortcuts{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 18px}
+.rf-store-shortcuts:empty{display:none}
+.rf-store-go{min-height:44px;padding:0 18px;border:0;border-radius:12px;background:var(--rf-navy,#13213b);color:#fff;font:inherit;font-weight:800;cursor:pointer}
+.rf-store-go-offers{background:var(--rf-red,#ad233c)}
+:root[data-theme=dark] .rf-store-go{background:#e9eef7;color:#13213b}
+:root[data-theme=dark] .rf-store-go-offers{background:#ff9bae;color:#2a0b12}
+:root[data-theme=dark] .purchased-control input:checked~.rf-list-check-label{color:#a8f0c6}
+.offer-tier-count:empty{display:none}

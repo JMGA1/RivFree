@@ -154,4 +154,22 @@ body.rf-m-drawer-open{overflow:hidden}
  #detailPage h1{font-size:23px!important;letter-spacing:-.4px!important;margin:10px 0 6px!important}
  #detailPage .rf-product-visual{min-height:0!important;height:210px;padding:14px!important;border-radius:18px!important}
  #detailPage .rf-product-visual img{height:180px!important}
+ /* v8: room for "Mostrar más", readable store chips, bigger tap targets, all discount tiers in view */
+ .load-more-wrap{margin:16px 12px 28px!important;padding:0!important}
+ .load-more-wrap .load-more-btn{width:100%;min-height:46px}
+ #grid .card-stores .card-store{font-size:10.5px!important;padding:4px 8px!important}
+ #grid .card .heart-button{width:40px!important;height:40px!important;top:4px!important;right:4px!important}
+ #catalogSection .offer-tiers{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px!important;overflow:visible!important}
+ #catalogSection .offer-tiers .offer-tiers-title{display:none!important}
+ #catalogSection .offer-tiers .offer-tier{min-width:0!important;height:auto!important;min-height:46px;padding:4px 2px!important;flex-direction:column!important;justify-content:center;gap:2px!important;font-size:13px!important}
+ #catalogSection .offer-tiers .offer-tier-count{font-size:10.5px!important;padding:1px 6px!important}
+ #catalogSection .offer-tiers .offer-tier-main span{display:none}
+ .rf-store-shortcuts .rf-store-go{flex:1 1 140px}
+ /* Jumps to the results stop below the sticky bar (and the open search field) */
+ #catalogStart,#grid,.rf-results-bar,.empty-state{scroll-margin-top:72px!important}
+ body.rf-m-search-open :is(#catalogStart,#grid,.rf-results-bar,.empty-state){scroll-margin-top:136px!important}
+ /* Catalog details (i): full width inside the results bar instead of running off the screen */
+ #catalogSection .rf-results-bar{position:relative}
+ #catalogSection .rf-results-info .catalog-details{position:static}
+ #catalogSection .rf-results-info .catalog-details>p{left:10px!important;right:10px!important;top:52px!important;width:auto!important;max-width:none!important}
 }

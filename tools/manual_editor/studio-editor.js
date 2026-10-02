@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261001-studio8';
+  const BUILD = '20261001-studio9';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -255,7 +255,7 @@
     });
   }
 
-  function campaignDefaults() { const theme='rose'; return {id:'',poolGroup:'general',theme,layout:'split',enabled:true,sponsored:false,eyebrow:{es:'','pt-BR':''},title:{es:'Nuevo banner','pt-BR':'Novo banner'},description:{es:'','pt-BR':''},cta:{es:'Explorar','pt-BR':'Explorar'},category:'',href:'',image:'',starts_at:'',ends_at:'',colors:{light:campaignPalette(theme,'light'),dark:campaignPalette(theme,'dark')}}; }
+  function campaignDefaults() { const theme='rose'; return {id:'',poolGroup:'general',theme,layout:'split',enabled:true,sponsored:false,eyebrow:{es:'','pt-BR':''},title:{es:'Nuevo banner','pt-BR':''},description:{es:'','pt-BR':''},cta:{es:'Explorar','pt-BR':''},category:'',href:'',image:'',starts_at:'',ends_at:'',colors:{light:campaignPalette(theme,'light'),dark:campaignPalette(theme,'dark')}}; }
   function campaignById(id) { return workingHero.find(c=>c.id===id); }
   function campaignScheduleState(c, now=new Date()) {
     if (c.enabled===false) return {key:'inactive',label:'Inactivo'};
@@ -638,7 +638,7 @@
     const recover=document.createElement('button');recover.type='button';recover.className='button primary';recover.textContent='Recuperar borrador';
     const discard=document.createElement('button');discard.type='button';discard.className='button';discard.textContent='Descartar';
     recover.onclick=()=>{workingConfig=clone(draft.config||workingConfig);workingHero=clone(draft.hero||workingHero);dirtySections=new Set(draft.dirtySections||[]);heroDirty=!!draft.heroDirty;fillAll();updateDirtyUI();bar.remove();E.notify('Borrador recuperado. Revisá los cambios antes de guardar.');};
-    discard.onclick=()=>{localStorage.removeItem(DRAFT_KEY);bar.remove();}; bar.append(recover,discard); document.body.append(bar);
+    discard.onclick=async()=>{if(!await confirmDiscard('este borrador',true))return;localStorage.removeItem(DRAFT_KEY);bar.remove();}; bar.append(recover,discard); document.body.append(bar);
   }
 
   function stateEvent(event) {
@@ -684,10 +684,21 @@
     readCarouselSettings(); markDirty('carousel'); sendPreview();
   });
   $('campaignAutoContrast')?.addEventListener('click',()=>{const mode=previewTheme==='dark'?'dark':'light',prefix='campaign'+(mode==='light'?'Light':'Dark');const button=$(prefix+'Button'),text=$(prefix+'ButtonText');if(!button||!text)return;text.value=autoTextColor(button.value);text.dispatchEvent(new Event('input',{bubbles:true}));syncAllHexInputs();updateCampaignContrast();});
-  $('discardAppearance')?.addEventListener('click',()=>discardConfigSection('appearance'));
-  $('discardPage')?.addEventListener('click',()=>discardConfigSection('page'));
-  $('discardCarousel')?.addEventListener('click',()=>discardCarouselChanges());
-  $('discardCampaign')?.addEventListener('click',()=>discardSelectedCampaign());
+  // Discarding loses work: ask first, but only when there is something to lose.
+  async function confirmDiscard(what,changed){
+    if(!changed)return true;
+    return E.confirmDialog?E.confirmDialog({title:'Descartar cambios',message:`Se pierden los cambios sin guardar de ${what}. Esto no se puede deshacer.`,confirmText:'Descartar',danger:true}):confirm(`¿Descartar los cambios de ${what}?`);
+  }
+  // Banner destination: suggest the catalog categories (same list as the product form).
+  if($('campaignCategory')&&$('productCategory')&&!$('campaignCategoryList')){
+    const list=document.createElement('datalist');list.id='campaignCategoryList';
+    for(const option of $('productCategory').options){const item=document.createElement('option');item.value=option.value;item.label=option.textContent;list.append(item);}
+    $('campaignCategory').after(list);$('campaignCategory').setAttribute('list','campaignCategoryList');$('campaignCategory').placeholder='Elegí o escribí: perfumes, bebidas…';
+  }
+  $('discardAppearance')?.addEventListener('click',async()=>{if(await confirmDiscard('Diseño',dirtySections.has('appearance')))discardConfigSection('appearance');});
+  $('discardPage')?.addEventListener('click',async()=>{if(await confirmDiscard('Página',dirtySections.has('page')))discardConfigSection('page');});
+  $('discardCarousel')?.addEventListener('click',async()=>{if(await confirmDiscard('las opciones del carrusel',dirtySections.has('carousel')))discardCarouselChanges();});
+  $('discardCampaign')?.addEventListener('click',async()=>{if(await confirmDiscard('este banner',true))discardSelectedCampaign();});
   $('restoreNativeTheme')?.addEventListener('click',()=>{
     ensureConfig();
     workingConfig.appearance=workingConfig.appearance||{};

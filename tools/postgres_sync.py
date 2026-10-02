@@ -58,6 +58,9 @@ def parse_database_url(url: str) -> dict:
     sslmode = query.get("sslmode") or ("disable" if host in LOCAL_HOSTS else "require")
     if sslmode not in SSL_MODES:
         raise DatabaseProblem(f"sslmode «{sslmode}» no es válido. Usá require o verify-full.")
+    # A database on the internet is always reached encrypted: the password must never travel in clear text.
+    if host not in LOCAL_HOSTS and sslmode in ("disable", "allow", "prefer"):
+        raise DatabaseProblem("Para una base en internet la conexión tiene que ser cifrada: usá sslmode=require (la dirección que da tu proveedor ya lo trae).")
     return {
         "host": host, "port": port, "user": user,
         "password": unquote(parts.password) if parts.password is not None else None,
@@ -79,20 +82,25 @@ def mask_url(url: str) -> str:
 
 
 def ssl_context(info: dict):
-    """pg8000: False = no SSL, None = try SSL and fall back (prefer/allow), a context = SSL required."""
+    """pg8000: False = no SSL, None = try SSL and fall back (local prefer/allow only), a context = SSL required.
+
+    Unlike libpq, "require" also checks the server certificate and its name: without that check anyone on the
+    network path (public Wi-Fi, a hostile router) could pose as the database and read the password.
+    Providers with their own certificate authority (e.g. Aiven) add &sslrootcert=<path to ca.pem>."""
     mode = info["sslmode"]
     if mode == "disable":
         return False
     if mode in ("prefer", "allow"):
         return None
-    if mode in ("verify-ca", "verify-full") or info.get("sslrootcert"):
-        context = ssl.create_default_context(cafile=info.get("sslrootcert") or None)
-        context.check_hostname = mode == "verify-full"
-        return context
-    # require: encrypted, without checking the certificate (same as libpq).
-    context = ssl.create_default_context()
-    context.check_hostname = False
-    context.verify_mode = ssl.CERT_NONE
+    cafile = info.get("sslrootcert") or None
+    # GitHub Actions can't read the ca.pem path saved on your computer: the workflow writes the
+    # DATABASE_CA_CERT secret to a file and passes it in PGSSLROOTCERT.
+    if (not cafile or not Path(cafile).is_file()) and os.environ.get("PGSSLROOTCERT"):
+        cafile = os.environ["PGSSLROOTCERT"]
+    if cafile and not Path(cafile).is_file():
+        raise DatabaseProblem(f"No encontré el certificado {cafile}. Revisá la ruta que pusiste en &sslrootcert= (con barras /).")
+    context = ssl.create_default_context(cafile=cafile)
+    context.check_hostname = mode != "verify-ca"
     return context
 
 
@@ -120,6 +128,9 @@ def explain(error: Exception) -> DatabaseProblem:
     if code in known:
         return DatabaseProblem(known[code])
     text = message.lower()
+    if isinstance(error, ssl.SSLCertVerificationError) or "certificate verify failed" in text:
+        return DatabaseProblem("No se pudo verificar el certificado del servidor. Si usás Aiven, descargá su «CA certificate» y agregá "
+                               "&sslrootcert=C:/ruta/ca.pem al final de la dirección. Con Neon no hace falta.")
     if isinstance(error, ssl.SSLError) or "ssl" in text or "certificate" in text:
         return DatabaseProblem("Falló la conexión segura (SSL). Usá la dirección que da tu proveedor, con sslmode=require.")
     if isinstance(error, (socket.timeout, TimeoutError)) or "timed out" in text:
@@ -158,14 +169,13 @@ def load_saved_url(root: Path = ROOT) -> str:
 def save_url(url: str, root: Path = ROOT) -> None:
     parse_database_url(url)
     target = local_file(root)
-    target.parent.mkdir(exist_ok=True)
+    target.parent.mkdir(mode=0o700, exist_ok=True)
     (target.parent / ".gitignore").write_text("*\n", encoding="utf-8")
     temporary = target.with_suffix(".tmp")
-    temporary.write_text(json.dumps({"url": url.strip(), "saved_at": now_iso()}, ensure_ascii=False), encoding="utf-8")
-    try:
-        os.chmod(temporary, 0o600)
-    except OSError:
-        pass
+    # Created private from the start (no window where other users of the computer could read the password).
+    fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        handle.write(json.dumps({"url": url.strip(), "saved_at": now_iso()}, ensure_ascii=False))
     temporary.replace(target)
 
 

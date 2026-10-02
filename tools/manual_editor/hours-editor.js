@@ -21,7 +21,39 @@
   const box=document.createElement('fieldset');box.id='hoursDay'+day;box.className='hours-day';
   box.innerHTML=`<legend>${days[day]}</legend><label class="check"><input id="hoursClosed${day}" type="checkbox"><span>Cerrado este día</span></label><div class="hours-turns"></div><button type="button" class="button hours-add">+ Agregar turno</button>`;
   label.replaceWith(box);box.append(old);$('hoursClosed'+day).onchange=()=>{if(!$('hoursClosed'+day).checked&&!box.querySelector('.hours-turn'))turn(day);serialize(day);};
-  box.querySelector('.hours-add').onclick=()=>{turn(day,['14:00','18:00']);serialize(day);};
+  box.querySelector('.hours-add').onclick=()=>{turn(day,nextTurn(day));serialize(day);};
+  const copy=document.createElement('button');copy.type='button';copy.className='button hours-copy-toggle';copy.textContent='Copiar a otros días';
+  copy.setAttribute('aria-expanded','false');const panel=copyPanel(day);
+  copy.onclick=()=>{panel.hidden=!panel.hidden;copy.setAttribute('aria-expanded',String(!panel.hidden));};
+  box.querySelector('.hours-add').after(copy,panel);
+ }
+ // The week reads Monday → Sunday, like the public store page.
+ $('hoursDay6').after($('hoursDay0'));
+ const minutes=value=>{const [h,m]=String(value||'').split(':').map(Number);return Number.isFinite(h)&&Number.isFinite(m)?h*60+m:null;};
+ const clock=total=>String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');
+ // A new shift starts one hour after the previous one closes (14:00–18:00 when the day is empty).
+ function nextTurn(day){
+  const closes=[...$('hoursDay'+day).querySelectorAll('.hours-turn')].map(row=>minutes(row.querySelectorAll('input')[1]?.value)).filter(v=>v!==null);
+  if(!closes.length)return ['14:00','18:00'];
+  const start=Math.min(Math.max(...closes)+60,22*60);return [clock(start),clock(Math.min(start+240,23*60+59))];
+ }
+ function dayValues(day){return $('hoursClosed'+day).checked?[]:[...$('hoursDay'+day).querySelectorAll('.hours-turn')].map(row=>[...row.querySelectorAll('input')].map(input=>input.value));}
+ function setDay(day,values){
+  const box=$('hoursDay'+day);box.querySelector('.hours-turns').replaceChildren();
+  $('hoursClosed'+day).checked=!values.length;for(const pair of values)turn(day,pair);serialize(day);
+ }
+ // Copy one day's shifts (or "closed") to the days ticked in the small panel.
+ function copyPanel(day){
+  const panel=document.createElement('div');panel.className='hours-copy';panel.hidden=true;
+  const short=['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
+  for(const other of [1,2,3,4,5,6,0]){if(other===day)continue;
+   const label=document.createElement('label');label.className='check';const box=document.createElement('input');box.type='checkbox';box.value=String(other);box.checked=box.defaultChecked=other!==0;
+   const caption=document.createElement('span');caption.textContent=short[other];label.title=days[other];label.append(box,caption);panel.append(label);}
+  const apply=document.createElement('button');apply.type='button';apply.className='button primary';apply.textContent='Copiar';
+  apply.onclick=()=>{const values=dayValues(day),chosen=[...panel.querySelectorAll('input:checked')].map(box=>Number(box.value));
+   for(const other of chosen)setDay(other,values);panel.hidden=true;panel.previousElementSibling?.setAttribute('aria-expanded','false');
+   window.RivFreeEditor?.notify?.(chosen.length?`Horario de ${days[day]} copiado a ${chosen.length} día${chosen.length===1?'':'s'}.`:'Elegí al menos un día.',!chosen.length);};
+  panel.append(apply);return panel;
  }
  const fill=M.fillStore;
  M.fillStore=info=>{fill(info);for(let day=0;day<7;day++){

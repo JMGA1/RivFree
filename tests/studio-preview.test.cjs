@@ -12,7 +12,7 @@ async function editor(t,draft=null){
  if(draft)w.localStorage.setItem('rivfree-studio-draft-v3',draft);
  let state={mode:'owner',site_config:JSON.parse(read('data/site-config.json')),highlights:JSON.parse(read('data/highlights.json')),products:[],health:{},meta:{},revision:'test'};
  w.HTMLElement.prototype.scrollIntoView=()=>{};
- const E=w.RivFreeEditor={getState:()=>state,setExternalDirty(){},notify:(...args)=>notifications.push(args),clearFieldErrors(){},setFieldError(el,text){el.dataset.error=text;},
+ const E=w.RivFreeEditor={getState:()=>state,setExternalDirty(){},confirms:[],async confirmDialog(options){E.confirms.push(options);return true;},notify:(...args)=>notifications.push(args),clearFieldErrors(){},setFieldError(el,text){el.dataset.error=text;},
   applyState(next){state=next;w.dispatchEvent(new w.CustomEvent('rivfree-editor-state',{detail:next}));},
   async api(path,payload){calls.push({path,payload:copy(payload)});return {...state,...(path.endsWith('save-site-config')?{site_config:copy(payload.config)}:{highlights:{hero:copy(payload.hero)}})};}
  };
@@ -133,6 +133,7 @@ test('carousel keeps selected list scroll, custom colors and discard restores sa
  const buttons=d.querySelectorAll('.campaign-list-main');buttons[Math.min(5,buttons.length-1)].click();assert.equal(list.scrollTop,260);
  input('campaignLightButton','#123456');input('campaignLightButtonText','#ffffff');assert.equal(d.getElementById('campaignLightButton').value.toLowerCase(),'#123456');
  const original=JSON.parse(read('data/highlights.json')).hero.find(x=>x.id===d.getElementById('campaignId').value);input('campaignTitleEs','Temporal');d.getElementById('discardCampaign').click();await settle();
+ assert.equal(d.defaultView.RivFreeEditor.confirms.at(-1)?.title,'Descartar cambios','discarding asks first');
  if(original)assert.equal(d.getElementById('campaignTitleEs').value,original.title.es);
 });
 

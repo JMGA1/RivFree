@@ -35,7 +35,7 @@
    box.append(a);
   }
   if(contact&&info.telefono){const a=el('a',null,'rf-contact rf-contact-phone');a.href='tel:'+String(info.telefono).replace(/[^+0-9]/g,'');a.setAttribute('role','listitem');a.append(appIcon('phone'),el('span',info.telefono,'rf-contact-label'));a.setAttribute('aria-label',t('Llamar','Ligar')+' · '+info.telefono);box.append(a);}
-  if(contact&&info.email){const a=el('a',null,'rf-contact rf-contact-mail');a.href='mailto:'+info.email;a.setAttribute('role','listitem');a.append(appIcon('mail'),el('span',info.email,'rf-contact-label'));a.setAttribute('aria-label','Email · '+info.email);box.append(a);}
+  if(contact&&/^[^\s@?&#/]+@[^\s@?&#/]+\.[^\s@?&#/]+$/.test(info.email||'')){const a=el('a',null,'rf-contact rf-contact-mail');a.href='mailto:'+info.email;a.setAttribute('role','listitem');a.append(appIcon('mail'),el('span',info.email,'rf-contact-label'));a.setAttribute('aria-label','Email · '+info.email);box.append(a);}
   if(!box.childElementCount)box.append(el('p',t('Esta tienda todavía no tiene canales confirmados en RivFree.','Esta loja ainda não tem canais confirmados no RivFree.'),'rf-muted'));
   return box;
  }

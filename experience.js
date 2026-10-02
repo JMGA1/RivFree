@@ -38,7 +38,7 @@
   n.dataset.action='preview';n.removeAttribute('aria-haspopup');n.removeAttribute('target');
   if(n.tagName==='A')n.href=routeURL('producto',g.key);
   if(n.matches('.card-action,.card-cta'))n.textContent=txt('Ver producto y precios →','Ver produto e preços →');
- }if(new Set(g.offers.map(o=>o.tienda)).size>1){card.querySelector(':scope > .heart-button')?.remove();card.querySelector('.card-utility-row .quantity-control')?.remove();}return card;};
+ }if(new Set(g.offers.map(o=>o.tienda)).size>1)card.querySelector('.card-utility-row .quantity-control')?.remove();return card;};
  openProductPreview=data=>{navigate('producto',data.key);};
  openStoreInfo=name=>navigate('tienda',name);
  $('searchForm').addEventListener('submit',()=>{history.replaceState(null,'',location.pathname+location.search+'#/buscar');syncView();});
@@ -57,12 +57,42 @@
   document.body.classList.toggle('rf-detail-mode',detail);page.hidden=!detail;
   const results=!detail&&(type==='buscar'||!!ACTIVE_SEARCH.trim()||selectedCategories().length>0||$('soloOfertas').checked||$('favoritesOnly').checked);
   $('catalogSection').hidden=!results;
-  $('catalogStart').querySelector('h2').textContent=txt('Resultados de búsqueda','Resultados da busca');
-  $('catalogStart').querySelector('p').textContent=txt('Compará productos y precios entre tiendas.','Compare produtos e preços entre lojas.');
+  const [title,subtitle]=resultsHeading();
+  $('catalogStart').querySelector('h2').textContent=title;
+  $('catalogStart').querySelector('p').textContent=subtitle;
   if(results)document.title=txt('Buscar productos','Buscar produtos')+' | RivFree';
   $('popularProducts').hidden=detail||results||window.RIVFREE_SITE_CONFIG?.homepage?.visible?.popular===false;
   window.RivFreeExplore?.syncVisibility(detail,results);
   for(const id of ['heroCampaign','shoppingBenefits','discoverProducts'])$(id).classList.toggle('rf-hidden',detail||results);
+ }
+ // Store page: jump to that store's products or offers in the regular results.
+ function storeShortcuts(name){
+  let products=0,offers=0;for(const p of ALL_PRODUCTS)if(p.tienda===name){products++;if(p.en_oferta)offers++;}
+  const box=el('div',null,'rf-store-shortcuts');if(!products)return box;
+  const count=n=>n.toLocaleString(LANG==='es'?'es-UY':'pt-BR');
+  const all=el('button',txt(`Ver sus ${count(products)} productos`,`Ver os ${count(products)} produtos`),'rf-store-go');all.type='button';all.onclick=()=>showStoreProducts(name,false);box.append(all);
+  if(offers){const sale=el('button',txt(`Ver ofertas (${count(offers)})`,`Ver ofertas (${count(offers)})`),'rf-store-go rf-store-go-offers');sale.type='button';sale.onclick=()=>showStoreProducts(name,true);box.append(sale);}
+  return box;
+ }
+ function showStoreProducts(name,offers){
+  ACTIVE_SEARCH='';$('search').value='';$('categoria').value='';syncCategoryInput();
+  document.querySelectorAll('.storeChk').forEach(box=>{box.checked=box.value===name;});
+  $('soloOfertas').checked=offers;MIN_DISCOUNT=0;$('favoritesOnly').checked=false;$('minPrice').value=$('maxPrice').value='';
+  $('orden').value=offers?'descuento':'nombre_asc';
+  // A new history entry (Back returns to the store); render() then writes the filters into it.
+  const url=new URL(location.href);url.searchParams.delete('facet');url.hash='/buscar';history.pushState(null,'',url);
+  route();
+ }
+ function chosenStore(){const boxes=[...document.querySelectorAll('.storeChk:checked')];return boxes.length===1?boxes[0].value:'';}
+ // The results title says what is on screen: a search, the offers or the saved favorites.
+ function resultsHeading(){
+  const query=ACTIVE_SEARCH.trim();
+  if(query)return [txt(`Resultados para “${query}”`,`Resultados para “${query}”`),txt('Compará productos y precios entre tiendas.','Compare produtos e preços entre lojas.')];
+  const store=chosenStore();
+  if(store)return $('soloOfertas').checked?[txt(`Ofertas de ${store}`,`Ofertas da ${store}`),txt('Productos con descuento publicado por la tienda.','Produtos com desconto publicado pela loja.')]:[txt(`Productos de ${store}`,`Produtos da ${store}`),txt('Todo lo que publica esta tienda en RivFree.','Tudo o que esta loja publica no RivFree.')];
+  if($('soloOfertas').checked)return [txt('Ofertas','Ofertas'),txt('Productos con descuento publicado por las tiendas.','Produtos com desconto publicado pelas lojas.')];
+  if($('favoritesOnly').checked)return [txt('Tus favoritos','Seus favoritos'),txt('Los productos que guardaste con ♡.','Os produtos que você salvou com ♡.')];
+  return [txt('Resultados de búsqueda','Resultados da busca'),txt('Compará productos y precios entre tiendas.','Compare produtos e preços entre lojas.')];
  }
  function heading(title,subtitle){page.replaceChildren();const back=el('a',txt('← Volver a explorar','← Voltar a explorar'));back.href='#/';page.append(back,el('p','RIVFREE · RIVERA / LIVRAMENTO','eyebrow'),el('h1',title));if(subtitle)page.append(el('p',subtitle,'rf-muted'));document.title=title+' | RivFree';}
  function status(info,now=new Date()){
@@ -97,16 +127,24 @@
   for(const name of [...new Set([...Object.keys(STORE_INFO),...ALL_PRODUCTS.map(p=>p.tienda)])].filter(Boolean).sort((a,b)=>a.localeCompare(b))){const info=STORE_INFO[name]||{},card=el('article',null,'rf-store-card'),body=el('div');body.append(el('h2',info.nombre_completo||name),el('p',specialities(name),'rf-specialty'),el('p',info.direccion||txt('Dirección por confirmar','Endereço a confirmar')));storeExtras(info,body);body.append(contacts(info,name));card.append(body,button(txt('Más detalles →','Mais detalhes →'),()=>navigate('tienda',name)));list.append(card);}
  }
  function storePage(name){const info=STORE_INFO[name];if(!info){heading(txt('Tienda no encontrada','Loja não encontrada'));return;}
-  heading(info.nombre_completo||name,specialities(name));const panel=el('article',null,'rf-panel');panel.append(el('h2',txt('Conocé la tienda','Conheça a loja')),el('p',info.description?.[LANG]||info.nota||txt('La trayectoria de esta tienda todavía no está documentada en RivFree.','A história desta loja ainda não está documentada no RivFree.')));storeExtras(info,panel);panel.append(el('p',info.direccion,'rf-store-address-line'));
+  heading(info.nombre_completo||name,specialities(name));page.append(storeShortcuts(name));const panel=el('article',null,'rf-panel');panel.append(el('h2',txt('Conocé la tienda','Conheça a loja')),el('p',info.description?.[LANG]||info.nota||txt('La trayectoria de esta tienda todavía no está documentada en RivFree.','A história desta loja ainda não está documentada no RivFree.')));storeExtras(info,panel);panel.append(el('p',info.direccion,'rf-store-address-line'));
   if(window.RivFreeStores){panel.append(window.RivFreeStores.contactLinks(info,name));const mapWrap=el('div',null,'rf-store-page-map');if(window.RivFreeStores.storeMap(mapWrap,name))panel.append(mapWrap);}
-  else{if(info.telefono){const a=el('a',info.telefono);a.href='tel:'+info.telefono.replace(/[^+0-9]/g,'');panel.append(a);}if(info.email){const a=el('a',info.email);a.href='mailto:'+info.email;panel.append(a);}panel.append(contacts(info,name));}
+  else{if(info.telefono){const a=el('a',info.telefono);a.href='tel:'+info.telefono.replace(/[^+0-9]/g,'');panel.append(a);}if(/^[^\s@?&#/]+@[^\s@?&#/]+\.[^\s@?&#/]+$/.test(info.email||'')){const a=el('a',info.email);a.href='mailto:'+info.email;panel.append(a);}panel.append(contacts(info,name));}
   panel.append(el('h2',txt('Fotos del local','Fotos da loja')));
   if(info.photos?.length){const photos=el('div',null,'rf-photos');for(const photo of info.photos){if(!safeImageUrl(photo.url))continue;const figure=el('figure'),img=el('img');img.src=photo.url;img.alt=photo.caption||name;img.loading='lazy';figure.append(img,el('figcaption',photo.attribution||''));photos.append(figure);}panel.append(photos);}else{panel.append(el('p',txt('Todavía no hay fotos disponibles en RivFree. Podés ver las publicadas en Google Maps.','Ainda não há fotos disponíveis no RivFree. Veja as publicadas no Google Maps.')),link(txt('Ver local en Google Maps','Ver loja no Google Maps'),info.google?.url||mapUrl(name,info.direccion||'')));}
   if(info.source)panel.append(link(txt('Fuente de horarios e información','Fonte de horários e informações'),info.source));page.append(panel);
  }
+ // "Desde USD 99.00 en DFA · 3 tiendas": the best price and where, before the list.
+ function productSummary(group){
+  const priced=group.offers.filter(hasPrice).sort((a,b)=>a.precio_usd-b.precio_usd),count=new Set(group.offers.map(o=>o.tienda)).size;
+  if(!priced.length)return txt('Compará el mismo producto entre free shops.','Compare o mesmo produto entre free shops.');
+  const usd='USD '+new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(priced[0].precio_usd);
+  if(count<2)return txt(`${usd} en ${priced[0].tienda}`,`${usd} na ${priced[0].tienda}`);
+  return txt(`Desde ${usd} en ${priced[0].tienda} · ${count} tiendas`,`A partir de ${usd} na ${priced[0].tienda} · ${count} lojas`);
+ }
  function productPage(key){
   const group=PRODUCT_GROUPS.find(g=>g.key===key);if(!group){heading(loadingCatalog?txt('Cargando producto…','Carregando produto…'):txt('Producto no encontrado','Produto não encontrado'));return;}
-  if(!new URLSearchParams(location.search).has('studio-preview'))recordProductConsult(group.key);heading(readableProductName(group.name),txt('Compará el mismo producto entre free shops.','Compare o mesmo produto entre free shops.'));
+  if(!new URLSearchParams(location.search).has('studio-preview'))recordProductConsult(group.key);heading(readableProductName(group.name),productSummary(group));
   if(!new URLSearchParams(location.search).has('studio-preview')&&ACTIVE_SEARCH.trim()){const token=group.key+'|'+ACTIVE_SEARCH.trim();if(productPage.lastSearch!==token){productPage.lastSearch=token;if(window.RIVFREE_SEARCH_API)fetch(window.RIVFREE_SEARCH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:group.offers[0].url})}).catch(()=>{});}}
   const layout=el('div',null,'rf-product-layout'),visual=el('div',null,'rf-product-visual'),src=safeImageUrl(group.offers.find(o=>safeImageUrl(o.imagen))?.imagen);
   if(src){const img=el('img');img.src=src;img.alt=group.name;img.onerror=()=>addImagePlaceholder(visual);visual.append(img);}else addImagePlaceholder(visual);
@@ -131,6 +169,8 @@
     const off=typeof discountOf==='function'?discountOf(offer):0;
     if(off){main.append(el('s','USD '+new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}).format(offer.precio_original_usd),'rf-offer-old'),el('span','−'+off+'%','rf-offer-off'));}
     price.append(main);
+    // How much more than the cheapest store.
+    if(best!==null&&offer.precio_usd>best){const gap=offer.precio_usd-best;price.append(el('span',txt(`USD ${gap.toFixed(2)} más que el mejor precio (+${Math.round(gap/best*100)}%)`,`USD ${gap.toFixed(2)} a mais que o melhor preço (+${Math.round(gap/best*100)}%)`),'rf-offer-gap'));}
     const converted=window.RivFreeRates?.convert(offer.precio_usd)||[];
     if(converted.length){
      const box=el('div',null,'rf-offer-conv');box.setAttribute('role','group');box.setAttribute('aria-label',txt('Precio aproximado en otras monedas','Preço aproximado em outras moedas'));

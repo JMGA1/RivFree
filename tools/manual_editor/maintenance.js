@@ -20,11 +20,19 @@
     try{const r=await E.api('/api/manual/publish',{action:'publish',include_update:$('publishIncludeUpdate').checked,confirm:true,review:review.review,message:$('publishMessage').value});$('publishOutput').textContent=r.message+'\n'+r.output;}
     finally{review=null;$('confirmPublish').hidden=true;}
   });
+  // "20261001-123301-000123" → "1 oct 2026, 12:33:01" and file names in plain words.
+  const FILE_LABELS={'manual-products.json':'Productos','manual-stores.json':'Tiendas','site-config.json':'Diseño y página','highlights.json':'Carrusel'};
+  function fileLabel(name){return FILE_LABELS[name]||name;}
+  function backupLabel(copy){
+    const m=/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/.exec(copy.id||'');
+    const when=m?new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6]).toLocaleString('es-UY',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):copy.id;
+    return when+' · '+(copy.files||[]).map(fileLabel).join(', ');
+  }
   async function listBackups(){
     const data=await E.api('/api/manual/backups',{});$('backupList').replaceChildren();
     if(!data.backups.length)$('backupList').textContent='Todavía no hay copias.';
-    for(const copy of data.backups){const row=document.createElement('p'),b=document.createElement('button');b.className='button';b.textContent='Restaurar '+copy.id;b.onclick=()=>action(b,async()=>{
-      requireSaved();if(!await E.confirmDialog({title:'Restaurar copia',message:'Reemplaza los datos locales guardados. Se crea una copia del estado actual antes de continuar. Después deberás publicar.',items:copy.files,confirmText:'Restaurar',danger:true}))return;
+    for(const copy of data.backups){const row=document.createElement('p'),b=document.createElement('button');b.className='button';const label=backupLabel(copy);b.textContent='Restaurar';row.append(Object.assign(document.createElement('span'),{className:'backup-label',textContent:label}));b.setAttribute('aria-label','Restaurar copia del '+label);b.onclick=()=>action(b,async()=>{
+      requireSaved();if(!await E.confirmDialog({title:'Restaurar copia',message:`Copia del ${label}. Reemplaza los datos locales guardados. Se crea una copia del estado actual antes de continuar. Después deberás publicar.`,items:copy.files.map(fileLabel),confirmText:'Restaurar',danger:true}))return;
       const state=await E.api('/api/manual/backups',{action:'restore',id:copy.id});window.RivFreeStudio?.discardWorking?.();E.applyState(state);await E.load();await listBackups();E.notify('Copia restaurada. Revisá el sitio antes de publicar.');
     });row.append(b);$('backupList').append(row);}
   }
