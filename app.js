@@ -188,6 +188,19 @@ function applyStoreVisual(element,storeName){
  element.style.setProperty('--store-border',contrastingText(color)==='#171419'&&validHexColor(info.color_texto)?info.color_texto:color);
  element.style.setProperty('--store-fg',validHexColor(info.color_texto)?info.color_texto:contrastingText(color));
 }
+// Studio → Tiendas → Logo: a store can show its logo next to its name wherever its tag appears.
+function storeLogo(storeName){
+ const info=STORE_INFO[storeName]||{};
+ return info.etiqueta==='logo'?imageThumbUrl(info.logo)||null:null;
+}
+function decorateStoreChip(element,storeName,before=null){
+ element.querySelector(':scope > .store-logo')?.remove();
+ const src=storeLogo(storeName);element.classList.toggle('has-logo',!!src);
+ if(!src)return element;
+ const img=document.createElement('img');img.className='store-logo';img.src=src;img.alt='';img.decoding='async';img.referrerPolicy='no-referrer';
+ img.onerror=()=>{img.remove();element.classList.remove('has-logo');};
+ if(before)before.before(img);else element.prepend(img);return element;
+}
 async function loadStoreInfoFiles(){
  const [baseValue,manualValue]=await Promise.all([
   fetchWithTimeout('data/stores.json',{cache:'no-store'},8000).catch(()=>null),
@@ -412,8 +425,8 @@ function populateFilters() {
     checkbox.className = 'storeChk';
     checkbox.checked = false;
     const text=document.createElement('span');text.className='store-filter-name';text.textContent=store;
-    // Advanced filters intentionally use store names only: no third-party logos.
-    label.append(checkbox,text);
+    // Logos only when the owner uploads one in Studio and turns it on for that store.
+    label.append(checkbox,text);decorateStoreChip(label,store,text);
     storesField.appendChild(label);
   });
   storesField.querySelectorAll('.storeChk').forEach(el => el.addEventListener('change', () => {
@@ -577,6 +590,7 @@ function render(resetLimit = false, appendOnly = false) {
   if(window.RivFreeCatalogVisible&&!window.RivFreeCatalogVisible()){
     updateOfferTiers();if(render.lastItems){grid.replaceChildren();render.lastItems=null;}return;
   }
+  keepDiscountWithResults();
   const items = getFiltered();
   updateOfferTiers();
   const empty = document.getElementById('emptyState');
@@ -591,7 +605,8 @@ function render(resetLimit = false, appendOnly = false) {
   const shownText = items.length > visibleItems.length ? ` · mostrando ${visibleItems.length}` : '';
   // Thousands always grouped ("4.665", like "34.497"); Spanish would otherwise skip 4-digit numbers.
   const count = n => n.toLocaleString(LANG, {useGrouping: 'always'});
-  meta.textContent = tr(`${count(items.length)} producto${items.length === 1 ? '' : 's'}`);
+  meta.textContent = tr(`${count(items.length)} producto${items.length === 1 ? '' : 's'}`)
+    + (document.getElementById('soloOfertas').checked && MIN_DISCOUNT ? words(` · ${MIN_DISCOUNT}% ou mais`, ` · ${MIN_DISCOUNT}% o más`) : '');
   meta.title = shownText ? tr(shownText.replace(/^ · /,'')) : '';
   document.getElementById('resultsDetails').textContent = tr(`${count(pricedShown)} precios disponibles · ${count(unavailable)} sin precio · ${count(ALL_PRODUCTS.length)} publicaciones totales`) + (shownText ? ' ·' + tr(shownText.replace(/^ ·/,'')) : '');
 
@@ -644,10 +659,25 @@ function syncOfferTierButtons(){
   return true;
 }
 document.addEventListener('rivfree-site-config-applied',()=>{if(syncOfferTierButtons()&&document.getElementById('soloOfertas')?.checked&&PRODUCT_GROUPS.length)render(true);});
+// Searching inside the offers: when the chosen discount has nothing for that search, show every offer
+// instead of an empty page (and say so).
+function keepDiscountWithResults(){
+  if(!document.getElementById('soloOfertas').checked||!MIN_DISCOUNT||!ACTIVE_SEARCH.trim())return;
+  const tier=MIN_DISCOUNT;MIN_DISCOUNT=0;let base;try{base=getFiltered();}finally{MIN_DISCOUNT=tier;}
+  if(base.length&&!base.some(g=>g.visibleOffers.some(o=>discountOf(o)>=tier))){
+    MIN_DISCOUNT=0;
+    announce(words(`Não há ofertas de ${tier}% ou mais para essa busca: mostramos todas as ofertas.`,`No hay ofertas de ${tier}% o más para esa búsqueda: mostramos todas las ofertas.`));
+  }
+}
+// The discount levels belong to the offers view only (never to a regular search).
 function updateOfferTiers(){
   const box=document.getElementById('offerTiers');if(!box)return;
   const active=document.getElementById('soloOfertas').checked;box.hidden=!active;
   document.body.classList.toggle('offers-mode',active);
+  const search=document.getElementById('search');
+  if(search){search.dataset.placeholderEs??=search.getAttribute('placeholder')||'';search.placeholder=active?words('Buscar nas ofertas…','Buscar en ofertas…'):tr(search.dataset.placeholderEs);}
+  const chip=document.getElementById('offersModeChip');
+  if(chip){chip.hidden=!active;chip.querySelector('span').textContent=words('Ofertas','Ofertas');chip.setAttribute('aria-label',words('Sair das ofertas','Salir de ofertas'));}
   if(!active)return;
   const saved=MIN_DISCOUNT;MIN_DISCOUNT=0;let base;try{base=getFiltered();}finally{MIN_DISCOUNT=saved;}
   for(const button of box.querySelectorAll('[data-discount]')){
@@ -663,6 +693,15 @@ document.getElementById('offerTiers')?.addEventListener('click',event=>{
   const button=event.target.closest('[data-discount]');if(!button||button.disabled)return;
   MIN_DISCOUNT=Number(button.dataset.discount)||0;
   if(MIN_DISCOUNT&&document.getElementById('orden').value==='nombre_asc')document.getElementById('orden').value='descuento';
+  render(true);
+  // Clear feedback: the chosen level stays highlighted and the count is announced.
+  button.classList.remove('just-picked');void button.offsetWidth;button.classList.add('just-picked');
+  const found=document.getElementById('resultsMeta').textContent.split(' · ')[0];
+  announce(MIN_DISCOUNT?words(`Ofertas de ${MIN_DISCOUNT}% ou mais: ${found}`,`Ofertas de ${MIN_DISCOUNT}% o más: ${found}`):words(`Todas as ofertas: ${found}`,`Todas las ofertas: ${found}`));
+});
+document.getElementById('offersModeChip')?.addEventListener('click',()=>{
+  document.getElementById('soloOfertas').checked=false;MIN_DISCOUNT=0;
+  const sort=document.getElementById('orden');if(sort.value==='descuento')sort.value=ACTIVE_SEARCH.trim()?'relevancia':'nombre_asc';
   render(true);
 });
 
@@ -732,7 +771,7 @@ function createStoreTag(storeName) {
   applyStoreVisual(button,storeName);
   button.type = 'button';
   const label=document.createElement('span');label.className='card-store-label';label.textContent=storeName;
-  button.appendChild(label);
+  button.appendChild(label);decorateStoreChip(button,storeName);
   button.setAttribute('aria-label', tr(`Ver información de ${storeName}`));
   button.dataset.action='store';button.dataset.storeName=storeName;
   // Handle the store chip at the control itself so the click cannot bubble
@@ -928,7 +967,7 @@ function openComparison(name, offers) {
     store.dataset.store = storeKey(offer.tienda);
     applyStoreVisual(store,offer.tienda);
     store.type = 'button';
-    store.textContent = offer.tienda;
+    store.textContent = offer.tienda;decorateStoreChip(store,offer.tienda);
     store.addEventListener('click', () => openStoreInfo(offer.tienda));
     const offerName = document.createElement('div');
     offerName.className = 'offer-name';

@@ -92,7 +92,7 @@ function renderShoppingList(){
  for(const [store,items] of byStore){
   const section=document.createElement('section');section.className='shopping-store';
   const head=document.createElement('div');head.className='rf-list-store-head';
-  const chip=document.createElement('h3');chip.className='rf-list-store card-store';chip.dataset.store=storeKey(store);applyStoreVisual(chip,store);chip.textContent=store;head.append(chip);
+  const chip=document.createElement('h3');chip.className='rf-list-store card-store';chip.dataset.store=storeKey(store);applyStoreVisual(chip,store);chip.textContent=store;decorateStoreChip(chip,store);head.append(chip);
   if(STORE_INFO[store]?.direccion){const a=document.createElement('a');a.className='rf-list-map';a.href=mapUrl(store,STORE_INFO[store].direccion);a.target='_blank';a.rel='noopener noreferrer';const mapText=document.createElement('span');mapText.textContent=words('Mapa','Mapa');a.append(listIcon('pin'),mapText);a.setAttribute('aria-label',tr('Ver en el mapa')+': '+store);head.append(a);}
   const storeTotal=document.createElement('span');storeTotal.className='rf-list-store-total store-subtotal';storeTotal.textContent=splitPrice(items.reduce((sum,i)=>sum+i.cents,0)/100).usd;head.append(storeTotal);
   section.append(head);

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261002-studio10';
+  const BUILD = '20261002-studio11';
   window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const fragment = new URLSearchParams(location.hash.slice(1));
@@ -404,19 +404,39 @@
     const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
     return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2];
   }
+  const studioImage=url=>url.startsWith('assets/')||url.startsWith('contributor-assets/')?'/'+url:url;
+  const logoThumb=url=>/^assets\/manual\/.+\.webp$/i.test(url)&&!/-thumb\.webp$/i.test(url)?url.replace(/\.webp$/i,'-thumb.webp'):url;
   function updateStorePreview(){
-    const bg=$('storeColor').value,fg=$('storeTextColor').value;
-    document.querySelectorAll('.store-preview-tag').forEach(tag=>{tag.textContent=$('storeName').value.trim()||'Nombre del free shop';tag.style.backgroundColor=bg;tag.style.color=fg;tag.style.borderColor=([1,3,5].map(i=>parseInt(bg.slice(i,i+2),16)).reduce((sum,v,i)=>sum+v*[.299,.587,.114][i],0)/255)>.64?fg:bg;});
+    const bg=$('storeColor').value,fg=$('storeTextColor').value,logo=$('storeLogo').value.trim(),useLogo=$('storeUseLogo').checked&&!!logo;
+    document.querySelectorAll('.store-preview-tag').forEach(tag=>{
+      tag.replaceChildren();tag.classList.toggle('has-logo',useLogo);
+      if(useLogo){const img=document.createElement('img');img.className='store-logo';img.alt='';img.src=studioImage(logoThumb(logo));img.onerror=()=>{img.src=studioImage(logo);img.onerror=()=>img.remove();};tag.append(img);}
+      tag.append($('storeName').value.trim()||'Nombre del free shop');
+      if(useLogo){tag.style.backgroundColor='#fff';tag.style.color='#141820';tag.style.borderColor='#d5dbe4';return;}
+      tag.style.backgroundColor=bg;tag.style.color=fg;tag.style.borderColor=([1,3,5].map(i=>parseInt(bg.slice(i,i+2),16)).reduce((sum,v,i)=>sum+v*[.299,.587,.114][i],0)/255)>.64?fg:bg;});
+    const box=$('storeLogoPreview');if(box){box.replaceChildren();if(logo){const img=document.createElement('img');img.alt='Logo';img.src=studioImage(logo);img.referrerPolicy='no-referrer';img.onerror=()=>{box.replaceChildren(Object.assign(document.createElement('span'),{textContent:'No se pudo cargar el logo'}));};box.append(img);}else box.append(Object.assign(document.createElement('span'),{textContent:'Sin logo'}));}
     $('storeColorValues').textContent=`Fondo: ${bg.toUpperCase()} · Letras: ${fg.toUpperCase()}`;
     const a=storeLuminance(bg),b=storeLuminance(fg),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
     $('storeContrastHint').textContent=ratio>=4.5?'✓ Buen contraste: el nombre se lee con claridad.':'Contraste bajo: probá letras más claras u oscuras para facilitar la lectura.';
     $('storeContrastHint').classList.toggle('low-contrast',ratio<4.5);
   }
-  for(const id of ['storeName','storeColor','storeTextColor'])$(id).addEventListener('input',updateStorePreview);
+  for(const id of ['storeName','storeColor','storeTextColor','storeLogo'])$(id).addEventListener('input',updateStorePreview);
+  $('storeUseLogo').addEventListener('change',updateStorePreview);
+  $('clearStoreLogo').onclick=()=>{$('storeLogo').value='';$('storeUseLogo').checked=false;updateStorePreview();setDirty(true);$('storeForm').dispatchEvent(new Event('input'));};
+  $('storeLogoFile').addEventListener('change',async()=>{
+    const file=$('storeLogoFile').files[0];if(!file)return;
+    try{
+      if(file.size>15*1024*1024)throw new Error('El logo supera los 15 MB.');
+      const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer el logo'));reader.readAsDataURL(file);});
+      const result=await api('/api/manual/upload-image',{filename:file.name,data});
+      $('storeLogo').value=result.path;$('storeUseLogo').checked=true;updateStorePreview();setDirty(true);$('storeForm').dispatchEvent(new Event('input'));
+      notify('Logo listo. Guardá la tienda para usarlo en el sitio.');
+    }catch(error){notify(error.message,true);}finally{$('storeLogoFile').value='';}
+  });
   $('storeAutoText').onclick=()=>{const l=storeLuminance($('storeColor').value);$('storeTextColor').value=(l+.05)/.05>=1.05/(l+.05)?'#000000':'#ffffff';updateStorePreview();setDirty(true);};
   function resetStore(){$('storeForm').reset();window.RivFreeCatalogFields.fillStore({});$('storeOriginalName').value='';$('storeColor').value='#B42335';$('storeTextColor').value='#FFFFFF';$('storeFormEyebrow').textContent='NUEVA TIENDA';$('storeFormTitle').textContent='Agregar free shop';$('storeKindBadge').textContent='Manual';$('deleteStore').disabled=true;highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
-  function editStore(name){const info=state.stores[name]||{};window.RivFreeCatalogFields.fillStore(info);$('storeOriginalName').value=name;$('storeName').value=name;$('storeFullName').value=info.nombre_completo||name;$('storeColor').value=/^#[0-9a-f]{6}$/i.test(info.color||'')?info.color:'#B42335';$('storeTextColor').value=/^#[0-9a-f]{6}$/i.test(info.color_texto||'')?info.color_texto:'#FFFFFF';$('storeAddress').value=info.direccion||'';$('storePhone').value=info.telefono||'';$('storeEmail').value=info.email||'';$('storeHours').value=info.horario||'';$('storeWebsite').value=(info.sitio_web||'').replace(/^http:/,'https:');$('storeInstagram').value=(info.redes?.instagram||'').replace(/^http:/,'https:');$('storeFacebook').value=(info.redes?.facebook||'').replace(/^http:/,'https:');$('storeWhatsapp').value=info.redes?.whatsapp||'';$('storeTelegram').value=(info.redes?.telegram||'').replace(/^http:/,'https:');$('storeCatalogOnline').checked=!!info.catalogo_online;$('storeHidePhotos').checked=info.ocultar_fotos===true;$('storeNote').value=info.nota||'';$('storeFormEyebrow').textContent=state.manual_stores[name]?'EDITANDO CONFIGURACIÓN':(state.mode==='contributor'?'COPIAR/PROPONER DATOS':'SOBRESCRIBIR TIENDA BASE');$('storeFormTitle').textContent=name;$('storeKindBadge').textContent=state.manual_stores[name]?'Manual':'Referencia';$('deleteStore').disabled=!state.manual_stores[name];highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
-  function storePayload(){return {...window.RivFreeCatalogFields.store(),nombre:$('storeName').value,nombre_completo:$('storeFullName').value,color:$('storeColor').value,color_texto:$('storeTextColor').value,direccion:$('storeAddress').value,telefono:$('storePhone').value,email:$('storeEmail').value,horario:$('storeHours').value,sitio_web:$('storeWebsite').value,instagram:$('storeInstagram').value,facebook:$('storeFacebook').value,whatsapp:$('storeWhatsapp').value,telegram:$('storeTelegram').value,catalogo_online:$('storeCatalogOnline').checked,ocultar_fotos:$('storeHidePhotos').checked,nota:$('storeNote').value};}
+  function editStore(name){const info=state.stores[name]||{};window.RivFreeCatalogFields.fillStore(info);$('storeOriginalName').value=name;$('storeName').value=name;$('storeFullName').value=info.nombre_completo||name;$('storeColor').value=/^#[0-9a-f]{6}$/i.test(info.color||'')?info.color:'#B42335';$('storeTextColor').value=/^#[0-9a-f]{6}$/i.test(info.color_texto||'')?info.color_texto:'#FFFFFF';$('storeAddress').value=info.direccion||'';$('storePhone').value=info.telefono||'';$('storeEmail').value=info.email||'';$('storeHours').value=info.horario||'';$('storeWebsite').value=(info.sitio_web||'').replace(/^http:/,'https:');$('storeInstagram').value=(info.redes?.instagram||'').replace(/^http:/,'https:');$('storeFacebook').value=(info.redes?.facebook||'').replace(/^http:/,'https:');$('storeWhatsapp').value=info.redes?.whatsapp||'';$('storeTelegram').value=(info.redes?.telegram||'').replace(/^http:/,'https:');$('storeCatalogOnline').checked=!!info.catalogo_online;$('storeHidePhotos').checked=info.ocultar_fotos===true;$('storeLogo').value=info.logo||'';$('storeUseLogo').checked=info.etiqueta==='logo';updateStorePreview();$('storeNote').value=info.nota||'';$('storeFormEyebrow').textContent=state.manual_stores[name]?'EDITANDO CONFIGURACIÓN':(state.mode==='contributor'?'COPIAR/PROPONER DATOS':'SOBRESCRIBIR TIENDA BASE');$('storeFormTitle').textContent=name;$('storeKindBadge').textContent=state.manual_stores[name]?'Manual':'Referencia';$('deleteStore').disabled=!state.manual_stores[name];highlightSelectedStore();updateStorePreview();setDirty(false);window.dispatchEvent(new Event("rivfree-editor-selection"));}
+  function storePayload(){return {...window.RivFreeCatalogFields.store(),nombre:$('storeName').value,nombre_completo:$('storeFullName').value,color:$('storeColor').value,color_texto:$('storeTextColor').value,direccion:$('storeAddress').value,telefono:$('storePhone').value,email:$('storeEmail').value,horario:$('storeHours').value,sitio_web:$('storeWebsite').value,instagram:$('storeInstagram').value,facebook:$('storeFacebook').value,whatsapp:$('storeWhatsapp').value,telegram:$('storeTelegram').value,catalogo_online:$('storeCatalogOnline').checked,ocultar_fotos:$('storeHidePhotos').checked,logo:$('storeLogo').value.trim(),etiqueta:$('storeUseLogo').checked?'logo':'nombre',nota:$('storeNote').value};}
   // A phone number becomes its wa.me link ("099 123 456" is taken as a Uruguayan mobile).
   function whatsappLink(raw){const value=String(raw||'').trim();if(!/^\+?[\d\s().-]{7,}$/.test(value))return value;let digits=value.replace(/\D/g,'');if(!value.startsWith('+')&&digits.startsWith('0')&&digits.length===9)digits='598'+digits.slice(1);return digits.length>=10&&digits.length<=15?'https://wa.me/'+digits:value;}
   $('storeWhatsapp')?.addEventListener('change',()=>{const el=$('storeWhatsapp');el.value=whatsappLink(el.value);});
