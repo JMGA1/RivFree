@@ -3,7 +3,13 @@ try {const saved=JSON.parse(localStorage.getItem('rivfree-favorites')||'[]');if(
 let referenceCurrency='BRL';
 try{const saved=localStorage.getItem('rivfree-currency');if(['USD','BRL','UYU','ARS'].includes(saved))referenceCurrency=saved;}catch{}
 let exchange={rate:null,actualizado:null},manualExchange=null,manualRates={};
-try{manualRates=JSON.parse(localStorage.getItem('rivfree-manual-rates')||'{}');if(!manualRates||typeof manualRates!=='object')manualRates={};const legacy=JSON.parse(localStorage.getItem('rivfree-exchange'));if(!manualRates.BRL&&legacy?.usd_brl>0)manualRates.BRL={rate:legacy.usd_brl,actualizado:legacy.actualizado};}catch{}
+// A rate typed by hand only lasts the day it was typed: older ones used to hide the real rate for good.
+try{
+ manualRates=JSON.parse(localStorage.getItem('rivfree-manual-rates')||'{}');if(!manualRates||typeof manualRates!=='object'||Array.isArray(manualRates))manualRates={};
+ const today=new Date().toISOString().slice(0,10);
+ for(const [code,entry] of Object.entries(manualRates))if(!(entry?.rate>0)||entry.actualizado!==today)delete manualRates[code];
+ localStorage.setItem('rivfree-manual-rates',JSON.stringify(manualRates));localStorage.removeItem('rivfree-exchange');
+}catch{manualRates={};}
 function validExchange(){return referenceCurrency!=='USD'&&Number.isFinite(exchange.rate)&&exchange.rate>0&&exchange.rate<1000000;}
 function referencePrice(value){return new Intl.NumberFormat(LANG,{style:'currency',currency:referenceCurrency,currencyDisplay:'code'}).format(value*exchange.rate);}
 function updateExchangeNote(){

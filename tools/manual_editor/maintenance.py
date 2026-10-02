@@ -228,3 +228,5 @@ UPDATE_PATHS += ['privacy.css', 'database/serve.py', 'tests/test_database_local.
 UPDATE_PATHS += ['catalog-worker.js', 'catalog-cache.js', 'tests/test_studio_v81.py', 'tests/v81-improvements.test.cjs']
 # v8.2: each store's photo on the product page, optional store logos, discount levels only in Ofertas
 UPDATE_PATHS += ['tests/v82-improvements.test.cjs', 'tests/test_studio_v82.py']
+# v8.3: today's dollar straight from Frankfurter in the browser, safer daily update
+UPDATE_PATHS += ['tests/v83-exchange.test.cjs']
