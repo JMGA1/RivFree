@@ -178,7 +178,12 @@
    const actions=el('div',null,'rf-store-actions');
    const more=el('button',t('Más detalles →','Mais detalhes →'),'rf-button');more.type='button';more.onclick=()=>helpers.navigate('tienda',name);actions.append(more);
    if(coordinates(info)){const onMap=el('button',null,'rf-button rf-button-ghost');onMap.type='button';const icon=el('span',null,'rf-ui-icon rf-ui-pin');icon.setAttribute('aria-hidden','true');onMap.append(icon,t('Ver en el mapa','Ver no mapa'));onMap.onclick=()=>openMap(name);actions.append(onMap);}
-   article.append(body,actions);return article;
+   article.append(body,actions);
+   // Facade photo from Studio, small version, at the start of the card.
+   const cover=(Array.isArray(info.photos)?info.photos:[]).find(photo=>photo&&safeImageUrl(photo.url));
+   if(cover){const link=el('a',null,'rf-store-photo');link.href='#/tienda/'+encodeURIComponent(name);link.tabIndex=-1;link.setAttribute('aria-hidden','true');
+    const img=el('img');img.src=imageThumbUrl(cover.url);img.alt='';img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';link.append(img);article.prepend(link);article.classList.add('has-photo');}
+   return article;
   }
   function draw(){
    list.replaceChildren();let found=0;const query=Catalog.norm(search.value.trim());

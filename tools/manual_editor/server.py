@@ -48,14 +48,16 @@ HIGHLIGHTS_PATH = DATA_DIR / "highlights.json"
 HEALTH_PATH = DATA_DIR / "health.json"
 META_PATH = DATA_DIR / "meta.json"
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
-MAX_IMAGE_BYTES = 6 * 1024 * 1024
+# Uploads are always re-encoded to WebP, so iPhone photos (HEIC/HEIF) are accepted there too.
+UPLOAD_IMAGE_EXTENSIONS = ALLOWED_IMAGE_EXTENSIONS | {".heic", ".heif"}
+MAX_IMAGE_BYTES = 15 * 1024 * 1024
 MAX_BODY_BYTES = 48 * 1024 * 1024
 MAX_CONTRIBUTION_BYTES = 32 * 1024 * 1024
 SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = secrets.token_urlsafe(32)
 SESSION_EXPIRED = "Esta pestaña quedó de una sesión anterior de Studio. Cerrala y abrí Studio de nuevo con Abrir-RivFree-Studio (cada vez que se abre, la clave cambia)."
-STUDIO_BUILD = '20261001-studio9'
+STUDIO_BUILD = '20261002-studio10'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -216,7 +218,7 @@ def backup_current() -> None:
     target.mkdir(parents=True, exist_ok=True)
     paths = [active_products_path(), active_stores_path()]
     if EDITOR_MODE == "owner":
-        paths += [SITE_CONFIG_PATH, HIGHLIGHTS_PATH]
+        paths += [SITE_CONFIG_PATH, HIGHLIGHTS_PATH, corrections_path()]
     for path in paths:
         if path.exists():
             shutil.copy2(path, target / path.name)
@@ -769,6 +771,7 @@ def state_payload() -> dict:
         "site_config": load_site_config() if EDITOR_MODE == "owner" else None,
         "highlights": load_highlights() if EDITOR_MODE == "owner" else None,
         "health": read_json(HEALTH_PATH, {}) if EDITOR_MODE == "owner" else None,
+        "corrections_count": len(load_corrections()["correcciones"]) if EDITOR_MODE == "owner" else 0,
         "meta": read_json(META_PATH, {}) if EDITOR_MODE == "owner" else None,
     }
 
@@ -872,6 +875,189 @@ def delete_product(payload: dict) -> dict:
         return state_payload()
 
 
+# --- Studio → Catálogo: corrections to the products that come from the stores' websites -------------
+# The daily robot rewrites data/products.json, so changes live in data/product-corrections.json, keyed by
+# "store|url". The site, the static pages and the database copy apply them on top of the store data.
+CORRECTION_FIELDS = ("nombre", "categoria", "imagen", "oculto", "precio_usd", "precio_original_usd", "en_oferta", "precio_base", "precio_fijo")
+CATEGORY_RE = re.compile(r"[a-z][a-z0-9-]{1,40}")
+_SCRAPED_CACHE: dict = {"key": None, "items": [], "by_key": {}, "index": []}
+
+
+def corrections_path() -> Path:
+    return DATA_DIR / "product-corrections.json"
+
+
+def load_corrections() -> dict:
+    value = read_json(corrections_path(), {})
+    if not isinstance(value, dict):
+        value = {}
+    value.setdefault("version", "initial")
+    value.setdefault("actualizado", None)
+    if not isinstance(value.get("correcciones"), dict):
+        value["correcciones"] = {}
+    return value
+
+
+def fold(value) -> str:
+    """Accent- and case-insensitive text for searching: 'Perfúme  DIOR' → 'perfume dior'."""
+    value = unicodedata.normalize("NFKD", str(value or "")).encode("ascii", "ignore").decode("ascii").lower()
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", value).split())
+
+
+def scraped_catalog() -> dict:
+    """data/products.json (about 35k products), read once and kept until the file changes."""
+    path = DATA_DIR / "products.json"
+    try:
+        stat = path.stat()
+        key = (str(path), stat.st_mtime_ns, stat.st_size)
+    except OSError:
+        key = (str(path), None, None)
+    if _SCRAPED_CACHE["key"] != key:
+        doc = read_json(path, {})
+        items = [p for p in (doc.get("productos") if isinstance(doc, dict) else None) or []
+                 if isinstance(p, dict) and isinstance(p.get("tienda"), str) and isinstance(p.get("url"), str) and p.get("url")]
+        _SCRAPED_CACHE.update(key=key, items=items,
+                              by_key={f"{p['tienda']}|{p['url']}": p for p in items},
+                              index=[fold(f"{p.get('nombre', '')} {p['tienda']}") for p in items])
+    return _SCRAPED_CACHE
+
+
+def owner_only() -> None:
+    if EDITOR_MODE != "owner":
+        raise ValueError("Esta función solo está disponible para el administrador")
+
+
+def catalog_item(key: str, product: dict | None, correction: dict | None) -> dict:
+    product = product or {}
+    store, _, url = key.partition("|")
+    return {"key": key, "tienda": product.get("tienda", store), "url": product.get("url", url),
+            "nombre": product.get("nombre"), "categoria": product.get("categoria"),
+            "precio_usd": product.get("precio_usd"), "precio_original_usd": product.get("precio_original_usd"),
+            "en_oferta": bool(product.get("en_oferta")), "imagen": product.get("imagen"),
+            "missing": not product, "correction": correction}
+
+
+def search_catalog(payload: dict) -> dict:
+    """Only what was searched: never the whole catalog."""
+    owner_only()
+    query = fold(payload.get("q"))
+    store = text(payload.get("store"), 120)
+    only_corrected = payload.get("only_corrected") is True
+    limit = max(1, min(int(payload.get("limit") or 60), 100))
+    catalog = scraped_catalog()
+    corrections = load_corrections()["correcciones"]
+    stores = sorted({p["tienda"] for p in catalog["items"]})
+    if not query and not store and not only_corrected:
+        return {"items": [], "total": 0, "limit": limit, "stores": stores, "corrections_count": len(corrections),
+                "message": "Escribí qué producto buscás: nombre, marca o parte del enlace."}
+    words = query.split()
+    raw_query = text(payload.get("q"), 2000)
+    matches = []
+    if only_corrected:
+        for key, correction in corrections.items():
+            product = catalog["by_key"].get(key)
+            haystack = fold(f"{(product or {}).get('nombre', '')} {correction.get('nombre', '')} {key}")
+            if store and key.partition("|")[0] != store:
+                continue
+            if all(word in haystack for word in words):
+                matches.append((0, haystack, key, product))
+    else:
+        by_url = raw_query.startswith("http")
+        for position, product in enumerate(catalog["items"]):
+            if store and product["tienda"] != store:
+                continue
+            haystack = catalog["index"][position]
+            if by_url:
+                if raw_query not in product["url"]:
+                    continue
+                rank = 0
+            elif all(word in haystack for word in words):
+                rank = 0 if haystack.startswith(query) else 1 if query in haystack else 2
+            else:
+                continue
+            matches.append((rank, haystack, f"{product['tienda']}|{product['url']}", product))
+    matches.sort(key=lambda item: (item[0], item[1]))
+    items = [catalog_item(key, product, corrections.get(key)) for _, _, key, product in matches[:limit]]
+    message = "" if matches else "No hay productos con esa búsqueda."
+    if len(matches) > limit:
+        message = f"Se muestran {limit} de {len(matches)}. Escribí algo más para afinar la búsqueda."
+    return {"items": items, "total": len(matches), "limit": limit, "stores": stores, "corrections_count": len(corrections), "message": message}
+
+
+def normalize_correction(raw: dict, product: dict) -> dict:
+    """Keep only what differs from the store's data; prices remember the store price they replace."""
+    if not isinstance(raw, dict):
+        raise ValueError("Corrección inválida")
+    result = {}
+    name = text(raw.get("nombre"), 300)
+    if name and name != product.get("nombre"):
+        result["nombre"] = name
+    category = text(raw.get("categoria"), 41)
+    if category:
+        if not CATEGORY_RE.fullmatch(category):
+            raise ValueError("Categoría inválida")
+        result["categoria"] = category
+    image = raw.get("imagen")
+    if image not in (None, "") and image != product.get("imagen"):
+        result["imagen"] = safe_image(image)
+    if raw.get("oculto") is True:
+        result["oculto"] = True
+    if "precio_usd" in raw:
+        price = number_or_none(raw.get("precio_usd"), "Precio")
+        old = number_or_none(raw.get("precio_original_usd"), "Precio anterior")
+        offer = raw.get("en_oferta") is True
+        if offer and (price is None or old is None or old <= price):
+            raise ValueError("Para mostrar la oferta, el precio anterior tiene que ser mayor que el precio actual.")
+        same = (price == product.get("precio_usd") and old == product.get("precio_original_usd")
+                and offer == bool(product.get("en_oferta")) and raw.get("precio_fijo") is not True)
+        if not same:
+            result.update(precio_usd=price, precio_original_usd=old, en_oferta=offer or (price is not None and old is not None and old > price),
+                          precio_base=product.get("precio_usd"), precio_fijo=raw.get("precio_fijo") is True)
+    return result
+
+
+def write_corrections(doc: dict) -> None:
+    doc["version"] = new_version("corrections")
+    doc["actualizado"] = now_iso()
+    doc["correcciones"] = dict(sorted(doc["correcciones"].items()))
+    atomic_write_json(corrections_path(), doc)
+
+
+def save_correction(payload: dict) -> dict:
+    owner_only()
+    key = text(payload.get("key"), 2400)
+    with LOCK:
+        product = scraped_catalog()["by_key"].get(key)
+        if not product:
+            raise ValueError("Ese producto ya no está en el catálogo de la tienda. Podés quitar la corrección.")
+        correction = normalize_correction(payload.get("correction") or {}, product)
+        doc = load_corrections()
+        backup_current()
+        if correction:
+            correction["actualizado"] = now_iso()
+            doc["correcciones"][key] = correction
+        else:
+            doc["correcciones"].pop(key, None)
+        write_corrections(doc)
+        return {"item": catalog_item(key, product, doc["correcciones"].get(key)), "corrections_count": len(doc["correcciones"]),
+                "message": "Corrección guardada." if correction else "Sin cambios respecto de la tienda: se usa el dato original."}
+
+
+def delete_correction(payload: dict) -> dict:
+    owner_only()
+    key = text(payload.get("key"), 2400)
+    with LOCK:
+        doc = load_corrections()
+        if key not in doc["correcciones"]:
+            raise ValueError("Ese producto no tiene correcciones")
+        backup_current()
+        doc["correcciones"].pop(key)
+        write_corrections(doc)
+        product = scraped_catalog()["by_key"].get(key)
+        return {"item": catalog_item(key, product, None), "corrections_count": len(doc["correcciones"]),
+                "message": "Se volvió a los datos de la tienda."}
+
+
 def bulk_products(payload: dict) -> dict:
     """Apply one safe bulk action to manual products only."""
     with LOCK:
@@ -910,17 +1096,32 @@ def bulk_products(payload: dict) -> dict:
         return result
 
 
+HEIF_BRANDS = {b"heic", b"heix", b"hevc", b"hevx", b"heim", b"heis", b"hevm", b"hevs", b"mif1", b"msf1"}
+
+
+def is_heif(content: bytes) -> bool:
+    """iPhone photos: an ISO-BMFF 'ftyp' box with a HEIF brand."""
+    return len(content) > 12 and content[4:8] == b"ftyp" and content[8:12] in HEIF_BRANDS
+
+
 def optimize_image(content: bytes) -> tuple[bytes, bytes]:
     if not content or len(content)>MAX_IMAGE_BYTES:
-        raise ValueError('La imagen debe pesar menos de 6 MB')
+        raise ValueError('La imagen debe pesar menos de 15 MB')
     try:
         from PIL import Image, ImageOps, UnidentifiedImageError
     except ImportError:
         raise ValueError('Falta Pillow. Ejecutá: python -m pip install -r tools/manual_editor/requirements.txt')
+    if is_heif(content):
+        try:
+            from pillow_heif import register_heif_opener
+        except ImportError:
+            raise ValueError('Para fotos del iPhone (HEIC) falta un complemento. Ejecutá Instalar-dependencias-Studio, '
+                             'volvé a abrir Studio y subí la foto otra vez. También podés pasarla a JPG.')
+        register_heif_opener()
     try:
         with Image.open(io.BytesIO(content)) as source:
-            if source.width * source.height > 25_000_000:
-                raise ValueError('La imagen supera 25 megapíxeles')
+            if source.width * source.height > 50_000_000:
+                raise ValueError('La imagen supera 50 megapíxeles')
             if getattr(source, 'is_animated', False):
                 raise ValueError('Usá una imagen estática; no se convierten animaciones')
             source.load()
@@ -938,8 +1139,8 @@ def optimize_image(content: bytes) -> tuple[bytes, bytes]:
 def upload_image(payload: dict) -> dict:
     filename = Path(text(payload.get("filename"), 255)).name
     suffix = Path(filename).suffix.lower()
-    if suffix not in ALLOWED_IMAGE_EXTENSIONS:
-        raise ValueError("Formato de imagen no permitido. Usá JPG, PNG, WEBP o GIF.")
+    if suffix not in UPLOAD_IMAGE_EXTENSIONS:
+        raise ValueError("Formato de imagen no permitido. Usá JPG, PNG, WEBP, GIF o HEIC (fotos del iPhone).")
     raw_data = text(payload.get("data"), MAX_BODY_BYTES)
     if raw_data.startswith("data:"):
         raw_data = raw_data.split(",", 1)[-1]
@@ -948,7 +1149,7 @@ def upload_image(payload: dict) -> dict:
     except Exception as exc:
         raise ValueError("La imagen no se pudo decodificar") from exc
     if not content or len(content) > MAX_IMAGE_BYTES:
-        raise ValueError("La imagen debe pesar menos de 6 MB")
+        raise ValueError("La imagen debe pesar menos de 15 MB")
     optimized, thumbnail_bytes = optimize_image(content)
     digest = hashlib.sha256(optimized).hexdigest()[:16]
     safe_name = re.sub(r'[^A-Za-z0-9._-]+', '-', Path(filename).stem).strip('-._')[:50] or 'imagen'
@@ -1592,6 +1793,9 @@ class Handler(SimpleHTTPRequestHandler):
                 "/api/manual/db-sync": db_sync,
                 "/api/manual/db-forget": db_forget,
                 "/api/manual/save-highlights": save_highlights,
+                "/api/manual/catalog-search": search_catalog,
+                "/api/manual/save-correction": save_correction,
+                "/api/manual/delete-correction": delete_correction,
             }
             action = actions.get(parsed.path)
             if not action:

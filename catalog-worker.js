@@ -1,4 +1,4 @@
-importScripts('matching.js?v=20261001-v5','category-index.js?v=20261001-v51','catalog.js?v=20261001-v51','catalog-cache.js?v=20261001-v52');
+importScripts('matching.js?v=20261001-v5','category-index.js?v=20261001-v51','catalog.js?v=20261002-v81','catalog-cache.js?v=20261002-v81');
 // The prepared catalog travels in parts: one huge message used to freeze the page while it was decoded.
 self.onmessage=async()=>{try{
  const result=await loadCatalogLocally(),prepared=result.prepared,index=new Map(prepared.products.map((p,i)=>[p,i]));

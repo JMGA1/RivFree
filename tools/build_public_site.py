@@ -7,7 +7,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / '_site'
 DATA = ['products.json','meta.json','stores.json','manual-products.json','manual-stores.json',
-        'exchange.json','price-history.json','highlights.json','popular.json','site-config.json']
+        'exchange.json','price-history.json','highlights.json','popular.json','site-config.json',
+        'product-corrections.json']
 
 PRIVATE_FIELDS = ('nota_manual', 'aportado_por', 'aporte_id')
 
@@ -26,7 +27,8 @@ def build():
     DEST.mkdir()
     paths = [p for p in ROOT.iterdir() if p.suffix in {'.html','.css','.js'} or p.name in
              {'manifest.webmanifest','social-card.png','robots.txt','sitemap.xml'}]
-    paths += [ROOT/'data'/name for name in DATA]
+    optional = {'product-corrections.json'}  # created by Studio the first time a store product is corrected
+    paths += [ROOT/'data'/name for name in DATA if name not in optional or (ROOT/'data'/name).exists()]
     for directory in ['icons','assets/manual','data/products','data/price-history','politicas']:
         paths += [p for p in (ROOT/directory).rglob('*') if p.is_file()]
     for path in paths:

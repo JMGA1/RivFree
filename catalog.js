@@ -220,16 +220,51 @@ function dedupeProductsPreferComplete(products) {
   return order.map(key => byKey.get(key));
 }
 
-function mergeCatalogData(scraped, manual) {
+function mergeCatalogData(scraped, manual, corrections) {
   const base = scraped && Array.isArray(scraped.productos) ? scraped : {productos:[]};
   const manualProducts = manual && Array.isArray(manual.productos)
     ? manual.productos.filter(product => product && product.activo !== false).map(product => ({...product, manual:true}))
     : [];
   return {
     ...base,
-    productos:[...(base.productos||[]),...manualProducts],
+    productos:[...applyCorrections(base.productos||[], corrections),...manualProducts],
     manual_actualizado:manual?.actualizado||null
   };
+}
+
+// Studio → Catálogo: corrections to products that come from the stores' websites, kept apart in
+// data/product-corrections.json so the daily update never erases them (and they can be undone).
+function correctionKey(product) { return String(product?.tienda ?? '') + '|' + String(product?.url ?? ''); }
+function validCorrections(value) {
+  return !!value && typeof value === 'object' && !!value.correcciones && typeof value.correcciones === 'object' && !Array.isArray(value.correcciones);
+}
+function applyCorrections(products, corrections) {
+  if (!validCorrections(corrections) || !Object.keys(corrections.correcciones).length) return products;
+  const map = corrections.correcciones, result = [];
+  for (const product of products) {
+    const fix = product && Object.hasOwn(map, correctionKey(product)) ? map[correctionKey(product)] : null;
+    if (!fix || typeof fix !== 'object') { result.push(product); continue; }
+    if (fix.oculto === true) continue;
+    const next = {...product, corregido: true};
+    if (typeof fix.nombre === 'string' && fix.nombre.trim()) next.nombre = fix.nombre.trim().slice(0, 300);
+    if (typeof fix.categoria === 'string' && Object.hasOwn(Catalog.categories, fix.categoria)) { next.categoria = fix.categoria; next.categoria_fija = true; }
+    if (typeof fix.imagen === 'string' && safeImageUrl(fix.imagen)) next.imagen = fix.imagen;
+    // A corrected price lasts while the store keeps the price it had when it was corrected,
+    // unless it was saved as fixed ("Mantener mi precio").
+    const price = fix.precio_usd;
+    const priceOk = price === null || (typeof price === 'number' && Number.isFinite(price) && price >= 0);
+    const stillValid = fix.precio_fijo === true || (fix.precio_base ?? null) === (product.precio_usd ?? null);
+    if (Object.hasOwn(fix, 'precio_usd') && priceOk && stillValid) {
+      const old = fix.precio_original_usd;
+      next.precio_usd = price;
+      next.precio_original_usd = typeof old === 'number' && Number.isFinite(old) && old > 0 ? old : null;
+      next.en_oferta = price !== null && (fix.en_oferta === true || (next.precio_original_usd !== null && next.precio_original_usd > price));
+      next.precio_fuente = 'corregido';
+      delete next.caida_precio;
+    }
+    result.push(next);
+  }
+  return result;
 }
 
 function safeImageUrl(value) {
@@ -238,6 +273,12 @@ function safeImageUrl(value) {
   // Local editor uploads are intentionally constrained to this public folder.
   if (/^assets\/manual\/[A-Za-z0-9._/-]+$/.test(clean) && !clean.includes('..')) return clean;
   return safeHttpUrl(clean);
+}
+
+// Studio uploads keep a small "-thumb.webp" next to each photo: lists and cards load that one.
+function imageThumbUrl(value) {
+  const url=safeImageUrl(value);
+  return url&&/^assets\/manual\/.+\.webp$/i.test(url)&&!/-thumb\.webp$/i.test(url)?url.replace(/\.webp$/i,'-thumb.webp'):url;
 }
 
 function groupProducts(products) {
@@ -283,7 +324,7 @@ function prepareCatalog(data) {
  const mapped=data.productos.filter(p=>p && typeof p.nombre==='string' && typeof p.tienda==='string').map(p=>{
   const product={...p};
   if(!hasPrice(product)) {product.precio_usd=null;product.precio_original_usd=null;product.en_oferta=false;}
-  product.categoryId=Catalog.category(product.categoria,product.nombre);
+  product.categoryId=product.categoria_fija===true&&Object.hasOwn(Catalog.categories,product.categoria)?product.categoria:Catalog.category(product.categoria,product.nombre);
   product.searchIndex=Catalog.search(`${product.nombre} ${product.categoria} ${Catalog.categories[product.categoryId].join(' ')} ${product.tienda}`);
   product.searchCompactFields=[product.nombre,product.categoria,...Catalog.categories[product.categoryId],product.tienda].map(Catalog.compact);
   return product;
@@ -298,4 +339,4 @@ function prepareCatalog(data) {
  for(const g of groups)for(const o of g.offers){const old=Catalog.identity(o);if(!(old in legacyKeys))legacyKeys[old]=g.key;}
  return {products,groups,legacyKeys,words:[...new Set(products.flatMap(p=>p.searchIndex.split(' ')))]};
 }
-if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice,canonicalProductUrl,dedupeProductsPreferComplete,mergeCatalogData,safeImageUrl};
+if(typeof module!=='undefined') module.exports={Catalog,groupProducts,prepareCatalog,hasPrice,canonicalProductUrl,dedupeProductsPreferComplete,mergeCatalogData,safeImageUrl,imageThumbUrl,applyCorrections,correctionKey,validCorrections};

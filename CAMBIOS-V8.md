@@ -1,3 +1,71 @@
+# RivFree v8.1 · fotos de las tiendas y edición de todo el catálogo
+
+## Fotos de las tiendas (también desde el iPhone)
+
+- En **Studio → Tiendas** hay una sección nueva, **Fotos del local**:
+  - **+ Subir fotos** acepta varias a la vez: JPG, PNG, WebP o **HEIC del iPhone**, hasta 15 MB cada una;
+  - Studio las convierte a WebP livianas y les quita los datos de ubicación (GPS) que guarda el celular;
+  - la primera es la **portada**: con **↑ ↓** o **Usar de portada** cambiás el orden;
+  - cada foto puede llevar una descripción («Fachada») y una atribución.
+- En el sitio:
+  - la ficha de la tienda muestra la portada grande, debajo del nombre;
+  - la galería «Fotos del local» carga versiones chicas y, al tocar una, se abre en tamaño completo;
+  - en **Tiendas**, cada tarjeta lleva la foto de la fachada.
+- Las fotos HEIC también sirven para productos y banners.
+
+**Una vez**: ejecutá **Instalar-dependencias-Studio** para sumar el complemento de fotos HEIC (`pillow-heif`). Sin él, Studio te avisa y podés subir la foto en JPG.
+
+## Studio → Catálogo: editar cualquier producto de las tiendas
+
+- Pestaña nueva **Catálogo**:
+  - buscás por nombre, marca o enlace;
+  - podés filtrar por tienda o ver **Solo los que corregí**;
+  - nunca se cargan los 35.000 productos: solo los resultados, hasta 60 por búsqueda.
+- Para cada producto podés corregir:
+  - **nombre** (también sirve para que el mismo producto se compare entre tiendas);
+  - **categoría**;
+  - **precio**, **precio anterior** y **oferta**;
+  - **foto**: un enlace o una subida desde la computadora, HEIC incluido;
+  - **ocultarlo** del sitio.
+- Studio muestra lo que publica la tienda («Original de la tienda: …», «Precio de la tienda hoy: USD …») y tiene **Volver a los datos de la tienda**.
+- **Precios corregidos**:
+  - por defecto, tu precio se usa hasta que la tienda publique otro precio; ahí vuelve automáticamente el de la tienda;
+  - con **Mantener mi precio aunque la tienda lo cambie**, queda fijo.
+- **Las correcciones no se pierden con la actualización diaria**:
+  - se guardan aparte, en `data/product-corrections.json`;
+  - las aplican el sitio, las páginas para Google y la copia en PostgreSQL;
+  - entran en las copias de seguridad de Studio y se publican con **Publicar**.
+- La vista previa en vivo muestra el producto como lo verían los visitantes.
+
+## Archivos
+
+| Archivo | Para qué |
+|---|---|
+| `tools/manual_editor/catalog-editor.js` | Pestaña Catálogo de Studio |
+| `tools/manual_editor/store-photos.js` | Fotos del local en Studio |
+| `data/product-corrections.json` | Correcciones a productos de las tiendas |
+| `tests/v81-improvements.test.cjs`, `tests/test_studio_v81.py` | Pruebas |
+
+También cambiaron:
+
+- `catalog.js`, `catalog-cache.js` y `catalog-worker.js` (aplican las correcciones);
+- `experience.js`, `experience.css` y `store-directory.js` (fotos de la tienda);
+- `tools/build_seo.cjs`, `tools/build_public_site.py` y `tools/postgres_sync.py`;
+- `tools/manual_editor/requirements.txt` (`pillow-heif`).
+
+## Verificación
+
+- Pasan:
+  - 156 pruebas JavaScript;
+  - 172 pruebas Python;
+  - la prueba de interfaz;
+  - la prueba contra un PostgreSQL real.
+- Se probó en Studio:
+  - subir dos fotos HEIC, guardar la tienda y verlas en la ficha y en el listado de tiendas (celular y computadora);
+  - buscar «sauvage dior», corregir nombre y precio, y ver el cambio en el sitio y en las páginas para Google.
+
+---
+
 # RivFree v8 · mejoras de seguridad, búsqueda y Studio
 
 ## Sitio

@@ -24,6 +24,9 @@ async function fetchOptionalJson(url,fallback) {
 }
 function validManualCatalog(value){return value&&Array.isArray(value.productos);}
 function manualVersion(value){return String(value?.version||value?.actualizado||'empty');}
+// Studio corrections to store products; without any, the cache key stays as before.
+function correctionsUsable(value){return !!value&&typeof value==='object'&&!!value.correcciones&&typeof value.correcciones==='object'&&!Array.isArray(value.correcciones);}
+function correctionsSuffix(value){return correctionsUsable(value)&&Object.keys(value.correcciones).length?'|fix:'+String(value.version||value.actualizado||Object.keys(value.correcciones).length):'';}
 function validStoreVersions(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length>0&&Object.values(value).every(v=>typeof v==='string'&&v);}
 function storeSignature(versions){return 'stores:'+Object.entries(versions||{}).sort(([a],[b])=>a.localeCompare(b)).map(([slug,version])=>`${slug}=${version}`).join(';');}
 function catalogFromPartitions(storeData,meta={}){
@@ -33,8 +36,8 @@ function catalogFromPartitions(storeData,meta={}){
   productos:Object.keys(storeData||{}).sort().flatMap(slug=>Array.isArray(storeData[slug])?storeData[slug]:[])
  };
 }
-function combineCatalogData(scraped,manual){
- if(typeof mergeCatalogData==='function')return mergeCatalogData(scraped,manual);
+function combineCatalogData(scraped,manual,corrections){
+ if(typeof mergeCatalogData==='function')return mergeCatalogData(scraped,manual,corrections);
  const base=scraped&&Array.isArray(scraped.productos)?scraped:{productos:[]};
  const manualProducts=validManualCatalog(manual)?manual.productos.filter(p=>p&&p.activo!==false).map(p=>({...p,manual:true})):[];
  return {...base,productos:[...(base.productos||[]),...manualProducts],manual_actualizado:manual?.actualizado||null};
@@ -75,11 +78,14 @@ async function loadLegacyFullCatalog(meta,cached){
 }
 async function loadCatalogLocally() {
  const manualRequest=fetchOptionalJson('data/manual-products.json',null);
+ const correctionsRequest=fetchOptionalJson('data/product-corrections.json',null);
  const metaRequest=fetchWithTimeout('data/meta.json',{cache:'no-store'}).then(value=>({value}),error=>({error}));
  let cached;try {cached=await cachedCatalog();}catch{}
  const emptyManual={version:'empty',actualizado:null,productos:[]};
  let manualData=await manualRequest;
  if(!validManualCatalog(manualData))manualData=validManualCatalog(cached?.manualData)?cached.manualData:emptyManual;
+ let corrections=await correctionsRequest;
+ if(!correctionsUsable(corrections))corrections=correctionsUsable(cached?.corrections)?cached.corrections:null;
 
  let scrapedData,scrapedVersion,offline=false,partitioned=false,storeData=null,storeVersions=null,scrapedMeta=null;
  try {
@@ -114,12 +120,12 @@ async function loadCatalogLocally() {
   }
  }
 
- const data=combineCatalogData(scrapedData,manualData);
- const version=`${scrapedVersion||'unversioned'}|manual:${manualVersion(manualData)}`;
+ const data=combineCatalogData(scrapedData,manualData,corrections);
+ const version=`${scrapedVersion||'unversioned'}|manual:${manualVersion(manualData)}${correctionsSuffix(corrections)}`;
  const reuse=cached?.version===version&&cached.preparedVersion===PREPARED_CATALOG_VERSION&&validPrepared(cached.prepared);
  const prepared=reuse?cached.prepared:prepareCatalog(data);
  if(!reuse||cached?.data){
-  const entry={version,scrapedVersion,manualData,preparedVersion:PREPARED_CATALOG_VERSION,prepared,partitioned};
+  const entry={version,scrapedVersion,manualData,corrections,preparedVersion:PREPARED_CATALOG_VERSION,prepared,partitioned};
   if(partitioned){entry.storeData=storeData;entry.storeVersions=storeVersions;entry.scrapedMeta=scrapedMeta;}
   else entry.scrapedData=scrapedData;
   try {await cachedCatalog(entry);}catch{}
@@ -129,7 +135,7 @@ async function loadCatalogLocally() {
 async function loadCatalog() {
  if(typeof Worker==='undefined')return loadCatalogLocally();
  try {return await new Promise((resolve,reject)=>{
-  const worker=new Worker('catalog-worker.js?v=20261001-v52');
+  const worker=new Worker('catalog-worker.js?v=20261002-v81');
   const timer=setTimeout(()=>{worker.terminate();reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
   const products=[],groups=[],legacyKeys={};
   worker.onmessage=({data})=>{
@@ -143,4 +149,4 @@ async function loadCatalog() {
   worker.onerror=()=>{clearTimeout(timer);worker.terminate();reject(new Error('Worker failed'));};worker.postMessage('load');
  });}catch(error){if(error.catalogFailure)throw error;return loadCatalogLocally();}
 }
-if(typeof module!=='undefined') module.exports={fetchWithTimeout,fetchOptionalJson,manualVersion,validManualCatalog,validStoreVersions,storeSignature,catalogFromPartitions};
+if(typeof module!=='undefined') module.exports={fetchWithTimeout,fetchOptionalJson,manualVersion,validManualCatalog,validStoreVersions,storeSignature,catalogFromPartitions,correctionsSuffix};

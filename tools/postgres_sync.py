@@ -206,12 +206,44 @@ def read_json(path: Path, default):
         return default
 
 
+def apply_corrections(products: list, corrections) -> list:
+    """Studio → Catálogo corrections, same rules as the site (catalog.js applyCorrections)."""
+    fixes = corrections.get("correcciones") if isinstance(corrections, dict) else None
+    if not isinstance(fixes, dict) or not fixes:
+        return products
+    result = []
+    for product in products:
+        fix = fixes.get(f"{product.get('tienda')}|{product.get('url')}") if isinstance(product, dict) else None
+        if not isinstance(fix, dict):
+            result.append(product)
+            continue
+        if fix.get("oculto") is True:
+            continue
+        item = dict(product, corregido=True)
+        if isinstance(fix.get("nombre"), str) and fix["nombre"].strip():
+            item["nombre"] = fix["nombre"].strip()[:300]
+        if isinstance(fix.get("categoria"), str) and fix["categoria"]:
+            item["categoria"] = fix["categoria"]
+        if isinstance(fix.get("imagen"), str) and fix["imagen"]:
+            item["imagen"] = fix["imagen"]
+        price = fix.get("precio_usd")
+        price_ok = price is None or (isinstance(price, (int, float)) and not isinstance(price, bool) and price >= 0)
+        if "precio_usd" in fix and price_ok and (fix.get("precio_fijo") is True or fix.get("precio_base") == product.get("precio_usd")):
+            old = fix.get("precio_original_usd")
+            item["precio_usd"] = price
+            item["precio_original_usd"] = old if isinstance(old, (int, float)) and not isinstance(old, bool) and old > 0 else None
+            item["en_oferta"] = price is not None and (fix.get("en_oferta") is True or (item["precio_original_usd"] or 0) > price)
+        result.append(item)
+    return result
+
+
 def load_catalog(root: Path = ROOT):
     stores = read_json(root / "data" / "stores.json", {})
     manual_stores = read_json(root / "data" / "manual-stores.json", {}).get("tiendas", {})
     stores = {**(stores if isinstance(stores, dict) else {}), **(manual_stores if isinstance(manual_stores, dict) else {})}
     catalog = read_json(root / "data" / "products.json", {})
     products = list(catalog.get("productos", [])) if isinstance(catalog, dict) else []
+    products = apply_corrections(products, read_json(root / "data" / "product-corrections.json", {}))
     manual = read_json(root / "data" / "manual-products.json", {}).get("productos", [])
     products += [dict(p, manual=True) for p in manual if isinstance(p, dict) and p.get("activo", True) is not False]
     updated = catalog.get("actualizado") if isinstance(catalog, dict) else None

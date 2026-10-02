@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261001-studio9';
+  const BUILD = '20261002-studio10';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
@@ -15,7 +15,7 @@
     popular: 'Más consultados por ti', recommended: 'Inspirado en tus búsquedas', most: 'Más buscados'
   };
   const DRAFT_KEY = 'rivfree-studio-draft-v3';
-  const STUDIO_TABS = new Set(['appearance', 'carousel', 'page', 'products', 'stores']);
+  const STUDIO_TABS = new Set(['appearance', 'carousel', 'page', 'products', 'stores', 'catalog']);
 
   const NATIVE_PALETTE = {
     light:{background:'#E8ECF2',surface:'#FFFFFF',text:'#172337',primary:'#AD233C',accent:'#E94E67',highlight:'#FFB5B9'},
@@ -381,7 +381,7 @@
         previewSelectedId=current.id;
       } catch {}
     }
-    let entity=null;try{if(activeTab()==='products')entity={kind:'product',value:E.productPayload()};if(activeTab()==='stores')entity={kind:'store',value:E.storePayload()};}catch(error){if($('previewStatus'))$('previewStatus').textContent=error.message;return;}
+    let entity=null;try{if(activeTab()==='products')entity={kind:'product',value:E.productPayload()};if(activeTab()==='stores')entity={kind:'store',value:E.storePayload()};if(activeTab()==='catalog'){const value=window.RivFreeCatalogEditor?.previewProduct();if(value)entity={kind:'product',value};}}catch(error){if($('previewStatus'))$('previewStatus').textContent=error.message;return;}
     const selected=previewSelectedId?(heroForPreview.find(x=>x.id===previewSelectedId)||null):null;
     if($('previewContext'))$('previewContext').textContent=selected?`Editando: ${selected.title?.[previewLanguage]||selected.title?.es||'Sin título'} · ${campaignScheduleState(selected).label}. ${selected.smartType?'El contenido inteligente se genera desde el catálogo.':'Este banner permanece fijo mientras editás.'}`:'Página completa · la vista previa no publica cambios.';
     if(entity&&$('previewContext'))$('previewContext').textContent=`Editando ${entity.kind==='product'?'producto':'tienda'}: ${entity.value.nombre||'sin nombre'} · borrador en vivo, guardá para aplicar.`;
@@ -728,7 +728,7 @@
   window.addEventListener('rivfree-editor-state',stateEvent);
   window.addEventListener('rivfree-tab-change',syncPreviewVisibility);
   window.addEventListener('rivfree-editor-selection',sendPreview);
-  for(const id of ['productForm','storeForm'])for(const event of ['input','change','focusin'])$(id).addEventListener(event,sendPreview);
+  for(const id of ['productForm','storeForm','catalogForm'])for(const event of ['input','change','focusin'])$(id)?.addEventListener(event,sendPreview);
 
   // Expose active-tab save for Ctrl/Cmd+S in editor.js.
   window.RivFreeStudio = {

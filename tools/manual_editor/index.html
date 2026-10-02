@@ -7,7 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <script src="bootstrap.js"></script>
-<link rel="stylesheet" href="editor.css?v=20261001-studio9">
+<link rel="stylesheet" href="editor.css?v=20261002-studio10">
 </head>
 <body>
 <header class="topbar">
@@ -23,6 +23,7 @@
       <button class="tab owner-only" data-tab="carousel">Carrusel <span id="campaignCount">0</span> <span class="dirty-dot" data-dirty-for="carousel" hidden>●</span></button>
       <button class="tab owner-only" data-tab="page">Página <span class="dirty-dot" data-dirty-for="page" hidden>●</span></button>
       <button class="tab" data-tab="products">Productos <span id="productCount">0</span></button>
+      <button class="tab owner-only" data-tab="catalog">Catálogo <span id="catalogCorrectionCount" class="tab-count" hidden>0</span></button>
       <button class="tab" data-tab="stores">Tiendas <span id="storeCount">0</span></button>
       <button class="tab owner-only" data-tab="collaborations">Colaboraciones <span id="collaborationCount">ZIP</span></button>
       <button class="tab owner-only" data-tab="maintenance">Publicar / copias</button>
@@ -69,10 +70,10 @@
           <div class="theme-editor-grid">
             <fieldset class="theme-editor" data-studio-theme="light"><legend>Modo claro</legend><div class="color-grid">
               <label><span>Fondo</span><input id="lightBackground" type="color"></label><label><span>Tarjetas</span><input id="lightSurface" type="color"></label><label><span>Texto</span><input id="lightText" type="color"></label><label><span>Principal</span><input id="lightPrimary" type="color"></label><label><span>Acento</span><input id="lightAccent" type="color"></label><label><span>Destacado</span><input id="lightHighlight" type="color"></label>
-            </div><label><span>Imagen de fondo</span><input id="lightBgImage" type="text" placeholder="URL o assets/manual/..."></label><label class="file-label"><span>Subir fondo</span><input id="lightBgFile" type="file" accept="image/*"></label><label><span>Oscurecer/aclarar fondo <b id="lightOverlayValue">0%</b></span><input id="lightOverlay" type="range" min="0" max="90"></label></fieldset>
+            </div><label><span>Imagen de fondo</span><input id="lightBgImage" type="text" placeholder="URL o assets/manual/..."></label><label class="file-label"><span>Subir fondo</span><input id="lightBgFile" type="file" accept="image/*,.heic,.heif"></label><label><span>Oscurecer/aclarar fondo <b id="lightOverlayValue">0%</b></span><input id="lightOverlay" type="range" min="0" max="90"></label></fieldset>
             <fieldset class="theme-editor" data-studio-theme="dark"><legend>Modo oscuro</legend><div class="color-grid">
               <label><span>Fondo</span><input id="darkBackground" type="color"></label><label><span>Tarjetas</span><input id="darkSurface" type="color"></label><label><span>Texto</span><input id="darkText" type="color"></label><label><span>Principal</span><input id="darkPrimary" type="color"></label><label><span>Acento</span><input id="darkAccent" type="color"></label><label><span>Destacado</span><input id="darkHighlight" type="color"></label>
-            </div><label><span>Imagen de fondo</span><input id="darkBgImage" type="text" placeholder="URL o assets/manual/..."></label><label class="file-label"><span>Subir fondo</span><input id="darkBgFile" type="file" accept="image/*"></label><label><span>Oscurecer fondo <b id="darkOverlayValue">0%</b></span><input id="darkOverlay" type="range" min="0" max="90"></label></fieldset>
+            </div><label><span>Imagen de fondo</span><input id="darkBgImage" type="text" placeholder="URL o assets/manual/..."></label><label class="file-label"><span>Subir fondo</span><input id="darkBgFile" type="file" accept="image/*,.heic,.heif"></label><label><span>Oscurecer fondo <b id="darkOverlayValue">0%</b></span><input id="darkOverlay" type="range" min="0" max="90"></label></fieldset>
           </div>
         </form>
         <aside class="studio-preview-card"><div class="preview-toolbar"><strong>Vista previa</strong><div><button class="preview-size active" data-preview-width="100%" type="button">PC</button><button class="preview-size" data-preview-width="390px" type="button">Celular</button></div></div><div class="preview-stage"><iframe id="studioPreview" title="Vista previa de RivFree" src="/?studio-preview=1"></iframe></div><p class="form-help">La vista previa usa tu catálogo local. Los cambios no se publican hasta que guardes y hagas push.</p></aside>
@@ -93,7 +94,7 @@
             <div class="campaign-color-actions"><button id="campaignAutoContrast" class="button" type="button">Elegir texto de botón automáticamente</button><span id="campaignContrastHint" class="selection-feedback"></span></div>
           </div>
           <div class="grid2"><label><span>Categoría de destino</span><input id="campaignCategory" placeholder="perfumes, bebidas..."></label><label><span>Link externo opcional</span><input id="campaignHref" type="url" placeholder="https://..."></label><label><span>Inicio programado</span><input id="campaignStart" type="datetime-local"></label><label><span>Fin programado</span><input id="campaignEnd" type="datetime-local"></label></div>
-          <div class="subsection"><h3>Imagen</h3><div class="image-grid"><div id="campaignImagePreview" class="image-preview"><span>Sin imagen</span></div><div><label><span>Imagen / URL</span><input id="campaignImage" type="text"></label><label class="file-label"><span>Subir imagen</span><input id="campaignImageFile" type="file" accept="image/*"></label></div></div></div>
+          <div class="subsection"><h3>Imagen</h3><div class="image-grid"><div id="campaignImagePreview" class="image-preview"><span>Sin imagen</span></div><div><label><span>Imagen / URL</span><input id="campaignImage" type="text"></label><label class="file-label"><span>Subir imagen</span><input id="campaignImageFile" type="file" accept="image/*,.heic,.heif"></label></div></div></div>
           <div class="form-actions"><button class="button primary" type="submit">Aplicar al borrador</button><button id="discardCampaign" class="button" type="button">Descartar cambios del banner</button><button id="duplicateCampaign" class="button" type="button">Duplicar</button><button id="deleteCampaign" class="button danger" type="button">Eliminar</button></div>
         </form>
       </div>
@@ -140,10 +141,50 @@
           </div></div>
           <div class="subsection"><h3>Imagen</h3><div class="image-grid">
             <div id="imagePreview" class="image-preview"><span>Sin imagen</span></div>
-            <div><label><span>URL de imagen</span><input id="productImage" type="text" placeholder="https://… o assets/manual/…"></label><label class="file-label"><span>Subir desde la computadora</span><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><small>Máximo 6 MB. Se guarda en <code>assets/manual/</code>.</small></label><button id="clearImage" class="link-button" type="button">Quitar imagen</button></div>
+            <div><label><span>URL de imagen</span><input id="productImage" type="text" placeholder="https://… o assets/manual/…"></label><label class="file-label"><span>Subir desde la computadora</span><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,.heic,.heif"><small>JPG, PNG, WebP o HEIC del iPhone, hasta 15 MB. Se guarda optimizada en <code>assets/manual/</code>.</small></label><button id="clearImage" class="link-button" type="button">Quitar imagen</button></div>
           </div></div>
           <label><span>Nota interna</span><textarea id="productNote" rows="3" maxlength="1000" placeholder="Solo para tu referencia. No aparece en la tarjeta."></textarea></label>
           <div class="form-actions"><button class="button primary" type="submit">Guardar publicación</button><button id="duplicateProduct" class="button" type="button" disabled>Duplicar</button><button id="duplicateProductStore" class="button" type="button" disabled>Duplicar en otra tienda</button><button id="deleteProduct" class="button danger" type="button" disabled>Eliminar</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel owner-only" data-panel="catalog">
+      <div class="panel-heading"><div><span class="eyebrow">TODOS LOS PRODUCTOS</span><h1>Catálogo de las tiendas</h1><p>Buscá cualquier producto que RivFree trae de las tiendas y corregí lo que esté mal. Solo se muestran los que buscás.</p></div></div>
+      <div class="two-column">
+        <div class="list-pane">
+          <div class="list-tools"><input id="catalogSearch" type="search" placeholder="Nombre, marca o enlace…" aria-label="Buscar en el catálogo" autocomplete="off"><select id="catalogStore" aria-label="Tienda"><option value="">Todas las tiendas</option></select></div>
+          <div class="product-tools"><label class="check"><input id="catalogOnlyCorrected" type="checkbox"><span>Solo los que corregí</span></label></div>
+          <p id="catalogMessage" class="catalog-message" role="status">Escribí qué producto buscás: nombre, marca o parte del enlace.</p>
+          <div id="catalogResults" class="item-list"></div>
+        </div>
+        <form id="catalogForm" class="editor-card" autocomplete="off" novalidate>
+          <div class="form-heading"><div><span class="eyebrow">PRODUCTO DE LA TIENDA</span><h2 id="catalogFormTitle">Elegí un producto</h2></div><span id="catalogBadge" class="badge" hidden>Original</span></div>
+          <div id="catalogEmpty" class="empty-list"><strong>Buscá un producto a la izquierda</strong><span>Tocá un resultado para corregir su nombre, categoría, precio o foto.</span></div>
+          <div id="catalogFields" hidden>
+            <p class="catalog-origin"><span id="catalogStoreName"></span> · <a id="catalogLink" target="_blank" rel="noopener noreferrer">Ver en la tienda ↗</a></p>
+            <div class="grid2">
+              <label class="wide"><span>Nombre</span><input id="catalogName" type="text" maxlength="300"><small id="catalogNameOriginal" class="catalog-original"></small></label>
+              <label><span>Categoría</span><select id="catalogCategory"></select><small id="catalogCategoryOriginal" class="catalog-original"></small></label>
+              <label class="check"><input id="catalogHidden" type="checkbox"><span>Ocultar este producto en RivFree</span></label>
+            </div>
+            <div class="subsection"><h3>Precio</h3>
+              <p id="catalogPriceOriginal" class="catalog-original"></p>
+              <div class="grid2">
+                <label><span>Precio USD</span><input id="catalogPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="29,90"></label>
+                <label><span>Precio anterior USD</span><input id="catalogOldPrice" type="text" inputmode="decimal" autocomplete="off" placeholder="39,90"></label>
+                <label class="check"><input id="catalogOffer" type="checkbox"><span>Marcar como oferta</span></label>
+                <label class="check"><input id="catalogPriceFixed" type="checkbox"><span>Mantener mi precio aunque la tienda lo cambie</span></label>
+              </div>
+              <p class="form-help">Sin «Mantener», tu precio se usa hasta que la tienda publique otro precio; ahí vuelve automáticamente el de la tienda.</p>
+            </div>
+            <div class="subsection"><h3>Foto</h3><div class="image-grid"><div id="catalogImagePreview" class="image-preview"><span>Sin imagen</span></div><div>
+              <label><span>URL de imagen</span><input id="catalogImage" type="text" placeholder="https://… o assets/manual/…"></label>
+              <label class="file-label"><span>Subir desde la computadora</span><input id="catalogImageFile" type="file" accept="image/*,.heic,.heif"><small>JPG, PNG, WebP o HEIC del iPhone, hasta 15 MB.</small></label>
+              <button id="catalogImageReset" class="link-button" type="button">Usar la foto de la tienda</button>
+            </div></div></div>
+            <div class="form-actions"><button class="button primary" type="submit">Guardar corrección</button><button id="catalogRevert" class="button danger" type="button" disabled>Volver a los datos de la tienda</button></div>
+          </div>
         </form>
       </div>
     </section>
@@ -283,11 +324,13 @@ order by c.changed_at;</pre></details>
 <template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
 <script src="../../matching.js"></script>
 <script src="../../catalog.js?v=20261001-v5"></script>
-<script src="catalog-fields.js?v=20261001-studio9"></script>
-<script src="hours-editor.js?v=20261001-studio9"></script>
-<script src="editor.js?v=20261001-studio9"></script>
-<script src="studio-editor.js?v=20261001-studio9"></script>
-<script src="database-panel.js?v=20261001-studio9"></script>
-<script src="maintenance.js?v=20261001-studio9"></script>
+<script src="catalog-fields.js?v=20261002-studio10"></script>
+<script src="hours-editor.js?v=20261002-studio10"></script>
+<script src="editor.js?v=20261002-studio10"></script>
+<script src="studio-editor.js?v=20261002-studio10"></script>
+<script src="database-panel.js?v=20261002-studio10"></script>
+<script src="maintenance.js?v=20261002-studio10"></script>
+<script src="store-photos.js?v=20261002-studio10"></script>
+<script src="catalog-editor.js?v=20261002-studio10"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261001-studio9';
+  const BUILD = '20261002-studio10';
   window.RIVFREE_EDITOR_BUILD = BUILD;
   const params = new URLSearchParams(location.search);
   const fragment = new URLSearchParams(location.hash.slice(1));
@@ -195,6 +195,7 @@
     carousel:['Carrusel','Editá banners y fechas. “Guardar Carrusel” guarda únicamente sus ajustes y campañas.'],
     page:['Página y SEO','Orden, avisos, SEO y footer. “Guardar solo Página” no persiste cambios pendientes de Diseño.'],
     products:['Productos','Usá filtros y selección múltiple para administrar el catálogo manual.'],
+    catalog:['Catálogo','Buscá cualquier producto de las tiendas y corregí nombre, categoría, precio o foto. Las correcciones no se borran con la actualización diaria.'],
     stores:['Tiendas','Las tiendas manuales se mezclan con las automáticas sin modificar data/stores.json.'],
     collaborations:['Colaboraciones','Revisá, buscá y seleccioná aportes antes de incorporarlos. Nada entra automáticamente.'],
     transfer:['Publicar / respaldar','Exportá respaldos o usá Publicar / copias para publicar los cambios guardados.']
@@ -317,7 +318,7 @@
 
   async function uploadSelectedImage() {
     const file=$('productImageFile').files[0]; if(!file) return null;
-    if(file.size>6*1024*1024) throw new Error('La imagen supera los 6 MB.');
+    if(file.size>15*1024*1024) throw new Error('La imagen supera los 15 MB.');
     const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(new Error('No se pudo leer la imagen'));reader.readAsDataURL(file);});
     const result=await api('/api/manual/upload-image',{filename:file.name,data:base64}); $('productImage').value=result.path; return result.path;
   }
@@ -517,7 +518,7 @@
   document.addEventListener('keydown',event=>{
     if(!(event.ctrlKey||event.metaKey)||event.key.toLowerCase()!=='s')return; event.preventDefault(); const tab=document.querySelector('.tab.active')?.dataset.tab;
     if(['appearance','carousel','page'].includes(tab))return window.RivFreeStudio?.saveActive(tab);
-    if(tab==='products')return $('productForm')?.requestSubmit(); if(tab==='stores')return $('storeForm')?.requestSubmit();
+    if(tab==='products')return $('productForm')?.requestSubmit(); if(tab==='stores')return $('storeForm')?.requestSubmit(); if(tab==='catalog')return $('catalogForm')?.requestSubmit();
   });
 
   const maybeClearFieldError=event=>{const el=event.target;if(!el?.classList?.contains('field-invalid'))return;let ok=!!el.value?.trim?.();if(el.type==='url')ok=validHttpUrl(el,true);if(el.id==='productImage'){const v=el.value.trim();ok=!v||v.startsWith('assets/')||v.startsWith('contributor-assets/')||validHttpUrl(el,false);}if(ok){el.classList.remove('field-invalid');el.closest('label')?.querySelector('.field-error')?.remove();}};

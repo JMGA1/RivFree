@@ -6,7 +6,8 @@ from pathlib import Path
 import re
 import subprocess
 
-PUBLISH_PATHS = ['data/manual-products.json', 'data/manual-stores.json', 'data/site-config.json', 'data/highlights.json', 'assets/manual']
+PUBLISH_PATHS = ['data/manual-products.json', 'data/manual-stores.json', 'data/site-config.json', 'data/highlights.json', 'assets/manual',
+                 'data/product-corrections.json']
 
 UPDATE_PATHS = ['tests/test_studio_editor.py', 'scrapers/requirements.txt', 'security-reports', 'catalog.js', '.github/dependabot.yml', '.github/scraper-alerts.cjs', 'tools/ci_data.py', 'tools/build_public_site.py', 'requirements.in', 'requirements-security.in', 'requirements-security.txt', 'tests/test_security.py', 'tests/security.test.cjs', 'SEGURIDAD-2026-09-28.md', 'catalog-worker.js', 'tests/cache.test.cjs', 'tests/test_history_partitions.py', 'RENDIMIENTO-2026-09-27.md', 'site-config.js', 'app.js', 'features.js', 'shopping.js', 'storefront.js', 'index.html', 'styles.css', 'sw.js', 'catalog-cache.js', 'scrapers/catalog_metrics.py', 'scrapers/update_exchange.py', 'tests/test_catalog_metrics.py', 'tests/test_exchange.py', 'tests/visitor-improvements.test.cjs', 'tests/search-filter.test.cjs', 'tests/studio-preview.test.cjs', 'MEJORAS-VISITANTES-2026-09-27.md', 'tools/manual_editor', 'tools/scraper_health_alerts.py',
                 '.github/workflows/scrape.yml', 'scrapers/publish_data.py',
@@ -145,7 +146,7 @@ def backups(s, payload):
         if not re.fullmatch(r'\d{8}-\d{6}-\d{6}', key): raise ValueError('Copia inválida')
         folder = s.BACKUP_DIR / key
         if folder.is_symlink() or not folder.is_dir(): raise ValueError('Copia no encontrada')
-        paths = [s.PRODUCTS_PATH, s.STORES_PATH, s.SITE_CONFIG_PATH, s.HIGHLIGHTS_PATH]
+        paths = [s.PRODUCTS_PATH, s.STORES_PATH, s.SITE_CONFIG_PATH, s.HIGHLIGHTS_PATH, s.corrections_path()]
         documents = []
         for target in paths:
             source = folder / target.name
@@ -155,12 +156,17 @@ def backups(s, payload):
             except (ValueError, OSError): raise ValueError('Copia dañada: ' + target.name)
             if not isinstance(value, dict): raise ValueError('Copia inválida: ' + target.name)
             field = {s.PRODUCTS_PATH: ('productos', list), s.STORES_PATH: ('tiendas', dict),
-                     s.SITE_CONFIG_PATH: ('branding', dict), s.HIGHLIGHTS_PATH: ('hero', list)}[target]
+                     s.SITE_CONFIG_PATH: ('branding', dict), s.HIGHLIGHTS_PATH: ('hero', list),
+                     s.corrections_path(): ('correcciones', dict)}[target]
             if not isinstance(value.get(field[0]), field[1]): raise ValueError('Formato inválido: ' + target.name)
             if target == s.SITE_CONFIG_PATH: value = s.normalize_site_config(value)
             elif target == s.HIGHLIGHTS_PATH: value = {**value, 'hero': [s.normalize_campaign(c,i) for i,c in enumerate(value['hero'])]}
             elif target == s.STORES_PATH: value = {**value, 'tiendas': dict(s.normalize_import_store(k,v) for k,v in value['tiendas'].items())}
             elif target == s.PRODUCTS_PATH: value = {**value, 'productos': [s.normalize_product(p,p) for p in value['productos']]}
+            elif target == s.corrections_path():
+                allowed = set(s.CORRECTION_FIELDS) | {'actualizado'}
+                if any(not isinstance(k, str) or '|' not in k or not isinstance(v, dict) or set(v) - allowed for k, v in value['correcciones'].items()):
+                    raise ValueError('Copia inválida: ' + target.name)
             documents.append((target, value))
         if not documents: raise ValueError('Copia vacía')
         s.backup_current()
@@ -218,3 +224,5 @@ UPDATE_PATHS += ['mobile.css', 'mobile-shell.js', 'tests/v7-mobile.test.cjs', 't
 UPDATE_PATHS += ['tests/v71-product.test.cjs']
 # v8: relevance search, store shortcuts, Mi lista, private notes, CSP on static pages, Studio publish/prices/hours
 UPDATE_PATHS += ['privacy.css', 'database/serve.py', 'tests/test_database_local.py', 'tests/v8-improvements.test.cjs', 'tests/test_studio_v8.py', 'CAMBIOS-V8.md']
+# v8.1: store photos (iPhone HEIC), corrections to store products (Studio → Catálogo)
+UPDATE_PATHS += ['catalog-worker.js', 'catalog-cache.js', 'tests/test_studio_v81.py', 'tests/v81-improvements.test.cjs']

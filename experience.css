@@ -9,3 +9,19 @@
 .rf-preview-label{padding:12px;border:2px dashed var(--teal);background:var(--surface);color:var(--ink);margin-bottom:18px}
 
 .rf-editing-target{outline:2px dashed var(--teal);outline-offset:5px;scroll-margin:18px}
+/* v8.1: store facade (cover) and gallery */
+.rf-store-cover{margin:6px 0 16px;border-radius:18px;overflow:hidden;background:#e9edf3;aspect-ratio:16/7;max-height:360px}
+.rf-store-cover img{display:block;width:100%;height:100%;object-fit:cover}
+.rf-photos{gap:12px;padding-bottom:6px;scroll-snap-type:x mandatory}
+.rf-photos figure{flex:0 0 auto;margin:0;scroll-snap-align:start;max-width:260px}
+.rf-photos a{display:block;border-radius:12px;overflow:hidden}
+.rf-photos img{display:block;width:260px;max-width:none;height:180px;object-fit:cover}
+.rf-photos figcaption{margin-top:6px;font-size:12px;line-height:1.4;color:var(--muted,#5b6577)}
+.rf-store-card.rf-store-card-v5.has-photo{grid-template-columns:180px minmax(0,1fr);grid-template-areas:"photo body" "photo actions";align-items:start}
+.rf-store-card-v5.has-photo .rf-store-photo{grid-area:photo}.rf-store-card-v5.has-photo .rf-store-body{grid-area:body}
+.rf-store-card-v5.has-photo .rf-store-actions{grid-area:actions;flex-direction:row;flex-wrap:wrap;align-self:end}
+.rf-store-photo{display:block;align-self:stretch;border-radius:14px;overflow:hidden;background:#e9edf3;min-height:140px}
+.rf-store-photo img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:650px){.rf-store-cover{aspect-ratio:16/10;max-height:240px;border-radius:14px;margin-bottom:12px}.rf-photos img{width:200px;height:150px}
+ .rf-store-card.rf-store-card-v5.has-photo{grid-template-columns:minmax(0,1fr);grid-template-areas:"photo" "body" "actions"}.rf-store-photo{height:150px;min-height:0}
+ .rf-store-shortcuts .rf-store-go{flex:1 1 100%}}

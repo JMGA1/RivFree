@@ -21,7 +21,7 @@
     finally{review=null;$('confirmPublish').hidden=true;}
   });
   // "20261001-123301-000123" → "1 oct 2026, 12:33:01" and file names in plain words.
-  const FILE_LABELS={'manual-products.json':'Productos','manual-stores.json':'Tiendas','site-config.json':'Diseño y página','highlights.json':'Carrusel'};
+  const FILE_LABELS={'manual-products.json':'Productos','manual-stores.json':'Tiendas','site-config.json':'Diseño y página','highlights.json':'Carrusel','product-corrections.json':'Correcciones del catálogo'};
   function fileLabel(name){return FILE_LABELS[name]||name;}
   function backupLabel(copy){
     const m=/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})/.exec(copy.id||'');

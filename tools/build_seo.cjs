@@ -19,7 +19,9 @@ function build(dest,overrides={}){
  if(!Number.isInteger(pageSize)||pageSize<10||pageSize>200)throw Error('page_size must be 10–200');
  const url=p=>base+p;
  const read=f=>JSON.parse(fs.readFileSync(path.join(ROOT,'data',f),'utf8'));
- const data=mergeCatalogData(read('products.json'),read('manual-products.json'));
+ // Studio → Catálogo corrections (names, categories, prices, hidden products) apply to the static pages too.
+ const corrections=(()=>{try{return read('product-corrections.json');}catch{return null;}})();
+ const data=mergeCatalogData(read('products.json'),read('manual-products.json'),corrections);
  const stores={...read('stores.json'),...(read('manual-stores.json').tiendas||{})};
  // Studio → Tiendas → "Ocultar las fotos": those photos are not published in the static pages either.
  const hiddenPhotos=new Set(Object.entries(stores).filter(([,info])=>info&&info.ocultar_fotos===true).map(([name])=>name));
