@@ -117,7 +117,7 @@ test('static pages carry a Content-Security-Policy and only link to https',()=>{
 test('phone layout: room for "Mostrar más", all discount tiers in one row, results below the sticky bar',()=>{
  const css=read('mobile.css');
  assert.match(css,/\.load-more-wrap\{margin:16px 12px 28px!important/);
- assert.match(css,/#catalogSection \.offer-tiers\{display:grid!important;grid-auto-flow:column/);
+ assert.match(css,/#catalogSection \.offer-tiers:not\(\[hidden\]\)\{display:grid!important;grid-auto-flow:column/);
  assert.match(css,/#grid \.card \.heart-button\{width:40px!important;height:40px!important/);
  assert.match(css,/scroll-margin-top:136px!important/);
 });

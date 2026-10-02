@@ -1,3 +1,54 @@
+# RivFree v8.2 · fotos de cada tienda, logos y ofertas más claras
+
+## Ficha del producto: la foto de cada tienda
+
+- Cada tienda que vende el producto muestra, al lado de su precio:
+  - **su propia foto** del producto;
+  - **el nombre con que la publica**.
+
+  Así se ve si es la misma presentación, como en las páginas que comparan precios.
+- Si una tienda tiene las fotos ocultas (Studio → Tiendas), aparece «Sin foto».
+- En el celular la foto es más chica y queda a la izquierda del precio.
+
+## Logos de las tiendas (Studio, opcional)
+
+- En **Studio → Tiendas** hay una sección nueva, **Logo de la tienda (opcional)**:
+  - podés subir el logo (mejor PNG con fondo transparente; también HEIC) o pegar un enlace;
+  - con **Usar el logo con el nombre en lugar de la etiqueta de color**, esa tienda muestra su logo y su nombre en una etiqueta blanca.
+- El logo aparece en:
+  - las tarjetas de productos;
+  - la ficha del producto;
+  - los filtros de tiendas;
+  - Mi lista;
+  - el mapa;
+  - el listado de tiendas;
+  - el título de la página de la tienda.
+- Mientras no subas un logo y marques la opción, todo sigue como antes, con la etiqueta de color. **No se agregó ningún logo**: queda listo para cuando los subas.
+
+## Ofertas
+
+- **Los botones de descuento (Todas, 20%, 40%, 60%) aparecen solo en Ofertas.** Antes, en el celular, salían también al hacer una búsqueda común.
+- **Buscar dentro de las ofertas**:
+  - con Ofertas abierto, el buscador dice «Buscar en ofertas…»;
+  - los resultados son solo productos en oferta y el título lo indica: «Ofertas: “whisky”»;
+  - si el descuento elegido no tiene resultados para esa búsqueda, se muestran todas las ofertas y la página lo avisa, en lugar de quedar vacía.
+- **Se nota cuál está elegido**:
+  - el botón activo se rellena en rojo («Todas» en azul oscuro), con ✓ y una pequeña animación;
+  - los demás quedan con borde;
+  - los que no tienen productos se ven apagados;
+  - al elegir uno, la página avisa «Ofertas de 40% o más: 416 productos», y la cantidad de resultados dice «· 40% o más».
+- **Etiqueta «Ofertas ✕»** junto a la cantidad de resultados: muestra que estás dentro de ofertas y, tocándola, volvés al catálogo completo.
+
+## Verificación
+
+- Pasan:
+  - 159 pruebas JavaScript;
+  - 175 pruebas Python;
+  - la prueba de interfaz.
+- Revisado en celular y en computadora, en modo claro y oscuro: ficha del producto con fotos por tienda, etiquetas con logo, Studio → Tiendas → Logo, Ofertas con búsqueda y niveles de descuento.
+
+---
+
 # RivFree v8.1 · fotos de las tiendas y edición de todo el catálogo
 
 ## Fotos de las tiendas (también desde el iPhone)

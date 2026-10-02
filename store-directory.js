@@ -152,7 +152,7 @@
    if(missing.length){mapNote.append(t('Ubicación por confirmar: ','Localização a confirmar: '));missing.forEach((n,i)=>{const info=STORE_INFO[n]||{};const url=httpUrl(info.google?.url||(info.direccion&&typeof mapUrl==='function'?mapUrl(n,info.direccion):null));const a=url?external(el('a',info.nombre_completo||n),url):el('span',info.nombre_completo||n);mapNote.append(a);if(i<missing.length-1)mapNote.append(' · ');});}
    else mapNote.textContent=t('Tocá un marcador para ver horarios y cómo llegar.','Toque em um marcador para ver horários e como chegar.');
    if(!mapView){mapLoading||=renderMap(mapBox,allNames,{onOpen:name=>helpers.navigate('tienda',name)});mapView=await mapLoading;mapLoading=null;
-    mapLegend.replaceChildren();if(mapView)for(const n of sortNames(located,'alpha')){const chip=el('button',null,'rf-map-chip card-store');chip.type='button';chip.dataset.store=typeof storeKey==='function'?storeKey(n):'';if(typeof applyStoreVisual==='function')applyStoreVisual(chip,n);chip.append(el('span',n,'card-store-label'));chip.onclick=()=>{mapView.focus(n);};mapLegend.append(chip);}}
+    mapLegend.replaceChildren();if(mapView)for(const n of sortNames(located,'alpha')){const chip=el('button',null,'rf-map-chip card-store');chip.type='button';chip.dataset.store=typeof storeKey==='function'?storeKey(n):'';if(typeof applyStoreVisual==='function')applyStoreVisual(chip,n);chip.append(el('span',n,'card-store-label'));if(typeof decorateStoreChip==='function')decorateStoreChip(chip,n);chip.onclick=()=>{mapView.focus(n);};mapLegend.append(chip);}}
    else mapView.map.invalidateSize();
    mapPanel.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
    if(focus&&mapView)mapView.focus(focus);
@@ -164,6 +164,7 @@
    const article=el('article',null,'rf-store-card rf-store-card-v5');if(typeof applyStoreVisual==='function')applyStoreVisual(article,name);article.dataset.store=typeof storeKey==='function'?storeKey(name):'';
    const head=el('header',null,'rf-store-head');const titles=el('div',null,'rf-store-titles');
    const title=el('h2');const titleLink=el('a',info.nombre_completo||name);titleLink.href='#/tienda/'+encodeURIComponent(name);title.append(titleLink);
+   const logo=typeof storeLogo==='function'?storeLogo(name):null;if(logo){const img=el('img',null,'rf-store-title-logo');img.src=logo;img.alt='';img.decoding='async';img.referrerPolicy='no-referrer';img.onerror=()=>img.remove();titleLink.prepend(img);}
    titles.append(title,el('p',spec,'rf-specialty'));head.append(titles);
    const extras=el('div');helpers.storeExtras(info,extras);
    const review=extras.querySelector('.rf-review');

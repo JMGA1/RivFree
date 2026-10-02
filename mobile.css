@@ -159,7 +159,7 @@ body.rf-m-drawer-open{overflow:hidden}
  .load-more-wrap .load-more-btn{width:100%;min-height:46px}
  #grid .card-stores .card-store{font-size:10.5px!important;padding:4px 8px!important}
  #grid .card .heart-button{width:40px!important;height:40px!important;top:4px!important;right:4px!important}
- #catalogSection .offer-tiers{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px!important;overflow:visible!important}
+ #catalogSection .offer-tiers:not([hidden]){display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px!important;overflow:visible!important}
  #catalogSection .offer-tiers .offer-tiers-title{display:none!important}
  #catalogSection .offer-tiers .offer-tier{min-width:0!important;height:auto!important;min-height:46px;padding:4px 2px!important;flex-direction:column!important;justify-content:center;gap:2px!important;font-size:13px!important}
  #catalogSection .offer-tiers .offer-tier-count{font-size:10.5px!important;padding:1px 6px!important}

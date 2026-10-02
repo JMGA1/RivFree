@@ -57,7 +57,7 @@ SOURCE_TYPES = {"manual", "instagram", "facebook", "whatsapp", "web", "website"}
 LOCK = threading.RLock()
 SESSION_TOKEN = secrets.token_urlsafe(32)
 SESSION_EXPIRED = "Esta pestaña quedó de una sesión anterior de Studio. Cerrala y abrí Studio de nuevo con Abrir-RivFree-Studio (cada vez que se abre, la clave cambia)."
-STUDIO_BUILD = '20261002-studio10'
+STUDIO_BUILD = '20261002-studio11'
 EDITOR_MODE = "owner"
 CONTRIB_DIR = PROJECT_ROOT / ".contributor-work"
 CONTRIB_ASSET_DIR = CONTRIB_DIR / "assets"
@@ -692,10 +692,15 @@ def normalize_store(payload: dict, existing: dict | None = None) -> tuple[str, d
         "catalogo_online": bool(payload.get("catalogo_online", current.get("catalogo_online", False))),
         # Studio → Tiendas: hide this store's product photos on the public site (the files are not touched).
         "ocultar_fotos": payload.get("ocultar_fotos", current.get("ocultar_fotos", False)) is True,
+        # Studio → Tiendas → Logo: "logo" shows the logo with the name on this store's tags; "nombre" keeps the color tag.
+        "logo": safe_image(payload.get("logo")) if "logo" in payload else current.get("logo"),
+        "etiqueta": "logo" if payload.get("etiqueta", current.get("etiqueta")) == "logo" else "nombre",
         "color": safe_color(payload.get("color") or current.get("color") or "#B42335"),
         "color_texto": safe_color(payload.get("color_texto") or current.get("color_texto") or "#FFFFFF", "#FFFFFF"),
         "manual": True,
     }
+    if info["etiqueta"] == "logo" and not info["logo"]:
+        raise ValueError("Para usar el logo en las etiquetas, primero subí el logo de la tienda (o desmarcá la opción).")
     info.update(normalize_profile(payload, current))
     return name, info
 

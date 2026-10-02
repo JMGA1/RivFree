@@ -226,3 +226,5 @@ UPDATE_PATHS += ['tests/v71-product.test.cjs']
 UPDATE_PATHS += ['privacy.css', 'database/serve.py', 'tests/test_database_local.py', 'tests/v8-improvements.test.cjs', 'tests/test_studio_v8.py', 'CAMBIOS-V8.md']
 # v8.1: store photos (iPhone HEIC), corrections to store products (Studio → Catálogo)
 UPDATE_PATHS += ['catalog-worker.js', 'catalog-cache.js', 'tests/test_studio_v81.py', 'tests/v81-improvements.test.cjs']
+# v8.2: each store's photo on the product page, optional store logos, discount levels only in Ofertas
+UPDATE_PATHS += ['tests/v82-improvements.test.cjs', 'tests/test_studio_v82.py']

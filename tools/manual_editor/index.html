@@ -7,7 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <script src="bootstrap.js"></script>
-<link rel="stylesheet" href="editor.css?v=20261002-studio10">
+<link rel="stylesheet" href="editor.css?v=20261002-studio11">
 </head>
 <body>
 <header class="topbar">
@@ -209,6 +209,19 @@
               <p id="storeContrastHint" class="form-help" role="status"></p>
               <button id="storeAutoText" type="button" class="button">Elegir letras legibles automáticamente</button>
             </div>
+            <div class="wide store-logo-box">
+              <strong>Logo de la tienda (opcional)</strong>
+              <p class="form-help">Si lo activás, en las etiquetas de esta tienda (tarjetas, ficha del producto, filtros, Mi lista, mapa y página de la tienda) se ve el logo con el nombre, sobre fondo blanco, en lugar de la etiqueta de color.</p>
+              <div class="store-logo-grid">
+                <div id="storeLogoPreview" class="store-logo-preview"><span>Sin logo</span></div>
+                <div class="store-logo-fields">
+                  <label><span>Logo (enlace o archivo subido)</span><input id="storeLogo" type="text" placeholder="assets/manual/logo-….webp o https://…"></label>
+                  <label class="file-label"><span>Subir logo</span><input id="storeLogoFile" type="file" accept="image/png,image/webp,image/jpeg,image/*,.heic,.heif"><small>Mejor un PNG con fondo transparente. Se muestra a unos 20 px de alto.</small></label>
+                  <button id="clearStoreLogo" class="link-button" type="button">Quitar logo</button>
+                </div>
+              </div>
+              <label class="check"><input id="storeUseLogo" type="checkbox"><span>Usar el logo con el nombre en lugar de la etiqueta de color</span></label>
+            </div>
             <label class="wide"><span>Dirección</span><input id="storeAddress"></label>
             <label><span>Teléfono</span><input id="storePhone"></label>
             <label><span>Email</span><input id="storeEmail" type="email"></label>
@@ -324,13 +337,13 @@ order by c.changed_at;</pre></details>
 <template id="emptyTemplate"><div class="empty-list"><strong>No hay elementos todavía.</strong><span>Usá el botón de arriba para agregar el primero.</span></div></template>
 <script src="../../matching.js"></script>
 <script src="../../catalog.js?v=20261001-v5"></script>
-<script src="catalog-fields.js?v=20261002-studio10"></script>
-<script src="hours-editor.js?v=20261002-studio10"></script>
-<script src="editor.js?v=20261002-studio10"></script>
-<script src="studio-editor.js?v=20261002-studio10"></script>
-<script src="database-panel.js?v=20261002-studio10"></script>
-<script src="maintenance.js?v=20261002-studio10"></script>
-<script src="store-photos.js?v=20261002-studio10"></script>
-<script src="catalog-editor.js?v=20261002-studio10"></script>
+<script src="catalog-fields.js?v=20261002-studio11"></script>
+<script src="hours-editor.js?v=20261002-studio11"></script>
+<script src="editor.js?v=20261002-studio11"></script>
+<script src="studio-editor.js?v=20261002-studio11"></script>
+<script src="database-panel.js?v=20261002-studio11"></script>
+<script src="maintenance.js?v=20261002-studio11"></script>
+<script src="store-photos.js?v=20261002-studio11"></script>
+<script src="catalog-editor.js?v=20261002-studio11"></script>
 </body>
 </html>

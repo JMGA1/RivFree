@@ -860,7 +860,8 @@ body{min-height:100vh;}
 }
 
 
-/* Privacy/branding rule: RivFree never renders third-party store logos in its UI. */
+/* Privacy/branding rule: no logos taken from the stores' websites. The only exception is a logo the owner
+   uploads in Studio → Tiendas → Logo and turns on (.has-logo, see ui-updates.css). */
 .store-filter-chip img,
 .card-store img,
 .offer-store img,

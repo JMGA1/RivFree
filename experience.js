@@ -87,6 +87,7 @@
  // The results title says what is on screen: a search, the offers or the saved favorites.
  function resultsHeading(){
   const query=ACTIVE_SEARCH.trim();
+  if(query&&$('soloOfertas').checked)return [txt(`Ofertas: “${query}”`,`Ofertas: “${query}”`),txt('Buscando solo entre los productos en oferta.','Buscando só entre os produtos em oferta.')];
   if(query)return [txt(`Resultados para “${query}”`,`Resultados para “${query}”`),txt('Compará productos y precios entre tiendas.','Compare produtos e preços entre lojas.')];
   const store=chosenStore();
   if(store)return $('soloOfertas').checked?[txt(`Ofertas de ${store}`,`Ofertas da ${store}`),txt('Productos con descuento publicado por la tienda.','Produtos com desconto publicado pela loja.')]:[txt(`Productos de ${store}`,`Produtos da ${store}`),txt('Todo lo que publica esta tienda en RivFree.','Tudo o que esta loja publica no RivFree.')];
@@ -128,6 +129,7 @@
  }
  function storePage(name){const info=STORE_INFO[name];if(!info){heading(txt('Tienda no encontrada','Loja não encontrada'));return;}
   heading(info.nombre_completo||name,specialities(name));
+  const logo=storeLogo(name);if(logo){const img=el('img',null,'rf-store-title-logo');img.src=logo;img.alt='';img.decoding='async';img.referrerPolicy='no-referrer';img.onerror=()=>img.remove();page.querySelector('h1')?.prepend(img);}
   // Studio → Tiendas → Fotos del local: the first photo is the cover (usually the facade).
   const photos=(Array.isArray(info.photos)?info.photos:[]).filter(photo=>photo&&safeImageUrl(photo.url));
   if(photos.length){const cover=el('figure',null,'rf-store-cover'),img=el('img');img.src=safeImageUrl(photos[0].url);img.alt=photos[0].caption||txt(`Fachada de ${name}`,`Fachada da ${name}`);img.decoding='async';img.referrerPolicy='no-referrer';cover.append(img);page.append(cover);}
@@ -159,12 +161,18 @@
   function draw(){let offers=group.offers.filter(o=>!filter.value||o.tienda===filter.value);offers.sort((a,b)=>{if(select.value==='alpha')return a.tienda.localeCompare(b.tienda);if(select.value==='new')return (Date.parse(b.creado||b.primera_deteccion)||0)-(Date.parse(a.creado||a.primera_deteccion)||0);if(!hasPrice(a)||!hasPrice(b))return Number(hasPrice(b))-Number(hasPrice(a));return (select.value==='desc'?-1:1)*(a.precio_usd-b.precio_usd);});list.replaceChildren();
    const priced=group.offers.filter(hasPrice),best=priced.length>1?Math.min(...priced.map(o=>o.precio_usd)):null;
    for(const offer of offers)list.append(offerCard(offer,best));}
+  function offerPhoto(offer){
+   const box=el('div',null,'rf-offer-photo'),src=safeImageUrl(offer.imagen);box.dataset.empty=txt('Sin foto','Sem foto');
+   if(src){const img=el('img');img.src=src;img.alt=readableProductName(offer.nombre)+' · '+offer.tienda;img.loading='lazy';img.decoding='async';img.referrerPolicy='no-referrer';img.onerror=()=>{img.remove();box.classList.add('is-empty');};box.append(img);}
+   else box.classList.add('is-empty');
+   return box;
+  }
   // One store offer: store chip, price (with the neighbouring currencies), list controls and the two actions.
   function offerCard(offer,best){
    const row=el('article',null,'rf-offer');const isBest=best!==null&&hasPrice(offer)&&offer.precio_usd===best;row.classList.toggle('is-best',isBest);
    const head=el('div',null,'rf-offer-head');
    const store=el('button',null,'card-store rf-offer-store');store.type='button';store.dataset.store=storeKey(offer.tienda);applyStoreVisual(store,offer.tienda);
-   store.append(el('span',offer.tienda));store.title=txt('Ver la tienda','Ver a loja')+': '+offer.tienda;store.onclick=()=>navigate('tienda',offer.tienda);head.append(store);
+   store.append(el('span',offer.tienda));decorateStoreChip(store,offer.tienda);store.title=txt('Ver la tienda','Ver a loja')+': '+offer.tienda;store.onclick=()=>navigate('tienda',offer.tienda);head.append(store);
    if(isBest)head.append(el('span',txt('Mejor precio','Melhor preço'),'rf-offer-best'));
    const price=el('div',null,'rf-offer-price');
    if(hasPrice(offer)){
@@ -182,7 +190,10 @@
      price.append(box);
     }
    }else price.append(el('strong',txt('Sin precio publicado','Sem preço publicado'),'rf-offer-amount rf-offer-noprice'));
-   row.append(head,price);appendSourceNotes(row,[offer],false);
+   // Like a shop window: each store's own photo and name for the product, next to its price.
+   const top=el('div',null,'rf-offer-top'),info=el('div',null,'rf-offer-info');
+   info.append(head,el('p',readableProductName(offer.nombre),'rf-offer-name'),price);appendSourceNotes(info,[offer],false);
+   top.append(offerPhoto(offer),info);row.append(top);
    const foot=el('div',null,'rf-offer-foot');foot.append(offerFavoriteControls(offer));
    const actions=el('div',null,'rf-offer-actions');
    const url=safeHttpUrl(offer.url);

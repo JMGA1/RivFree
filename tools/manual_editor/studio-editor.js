@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const BUILD = '20261002-studio10';
+  const BUILD = '20261002-studio11';
   const E = window.RivFreeEditor;
   if (!E) return;
   window.RIVFREE_STUDIO_JS_BUILD = BUILD;
