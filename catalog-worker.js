@@ -1,271 +1,219 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.clarity.ms; connect-src 'self' https://api.frankfurter.dev https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
-<meta name="referrer" content="no-referrer">
-<!-- Cookieless traffic metrics; no Google Analytics tag. -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RivFree — Comparador de preços de free shops</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="styles.css?v=20261002-v84">
-<meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
-<meta name="theme-color" content="#B42335">
-<meta property="og:type" content="website">
-<meta property="og:title" content="RivFree — Compará free shops de Rivera y Santana do Livramento">
-<meta property="og:description" content="Encontrá precios, compará tiendas y armá tu lista para recorrer Rivera y Santana do Livramento.">
-<meta property="og:image" content="https://jmga1.github.io/RivFree/social-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RivFree — Compará free shops de Rivera y Santana do Livramento">
-<meta name="twitter:description" content="Compará precios y guardá tu lista de favoritos.">
-<meta name="twitter:image" content="https://jmga1.github.io/RivFree/social-card.png">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="experience.css?v=20261002-v84">
-<link rel="stylesheet" href="explore.css?v=20260930-6">
-<link rel="stylesheet" href="ui-updates.css?v=20261002-v84">
-<link rel="stylesheet" href="store-directory.css?v=20261002-v84">
-<link rel="stylesheet" href="mobile.css?v=20261002-v84">
-<link rel="stylesheet" href="consent.css?v=20260930-v4">
-</head>
-<body>
-<dialog id="importListDialog" class="import-list-dialog" aria-labelledby="importListTitle">
-  <div class="import-list-icon" aria-hidden="true">♡</div>
-  <span class="eyebrow">RIVFREE · LISTA COMPARTIDA</span>
-  <h2 id="importListTitle">¿Importar esta lista?</h2>
-  <p id="importMessage"></p>
-  <p id="importResolveStatus" class="import-resolve-status" hidden></p>
-  <div class="import-list-actions">
-    <button id="importShoppingList" type="button">Importar lista</button>
-    <button id="dismissImport" type="button">Ahora no</button>
-  </div>
-</dialog>
+/* Phone layout: one compact bar (menu · RivFree · search · Mi lista) and a side menu with everything else:
+   categories (families, brands and types), offers, stores, today's dollar, language, theme and social links.
+   Icons: Lucide (ISC, see LICENSE-lucide.txt). Desktop keeps its own header; these controls only show on phones. */
+(() => {
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const topbar=document.querySelector('.topbar-inner');
+ if(!topbar||$('mobileMenu'))return;
+ const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
+ const isEs=()=>String($('languageToggle')?.value||document.documentElement.lang||'').startsWith('es');
+ const t=(es,pt)=>isEs()?es:pt;
+ const reduced=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ const ICONS={
+  settings:'<path d="M12.22 2h-.44a2 2 0 0 0-2 1.72l-.12.89a2 2 0 0 1-1.18 1.52l-.2.09a2 2 0 0 1-1.9-.18l-.73-.54a2 2 0 0 0-2.63.38l-.22.38a2 2 0 0 0 .63 2.5l.71.55a2 2 0 0 1 .72 1.76v.22a2 2 0 0 1-.72 1.76l-.71.55a2 2 0 0 0-.63 2.5l.22.38a2 2 0 0 0 2.63.38l.73-.54a2 2 0 0 1 1.9-.18l.2.09a2 2 0 0 1 1.18 1.52l.12.89a2 2 0 0 0 2 1.72h.44a2 2 0 0 0 2-1.72l.12-.89a2 2 0 0 1 1.18-1.52l.2-.09a2 2 0 0 1 1.9.18l.73.54a2 2 0 0 0 2.63-.38l.22-.38a2 2 0 0 0-.63-2.5l-.71-.55a2 2 0 0 1-.72-1.76v-.22a2 2 0 0 1 .72-1.76l.71-.55a2 2 0 0 0 .63-2.5l-.22-.38a2 2 0 0 0-2.63-.38l-.73.54a2 2 0 0 1-1.9.18l-.2-.09a2 2 0 0 1-1.18-1.52l-.12-.89A2 2 0 0 0 12.22 2Z"/><circle cx="12" cy="11" r="3"/>',
+  menu:'<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+  search:'<circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/>',
+  close:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  back:'<path d="m15 18-6-6 6-6"/>',
+  next:'<path d="m9 18 6-6-6-6"/>',
+  heart:'<path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/>',
+  offers:'<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/>',
+  store:'<path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/>',
+  dollar:'<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>',
+  grid:'<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'
+ };
+ function icon(name,cls='rf-m-svg'){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');svg.setAttribute('class',cls);svg.innerHTML=ICONS[name];return svg;}
+ function iconButton(name,cls){const b=el('button',null,'rf-m-icon rf-m-only '+cls);b.type='button';b.append(icon(name));return b;}
 
+ // ── Compact bar ──────────────────────────────────────────────────────────
+ const menuButton=iconButton('menu','rf-m-menu');menuButton.id='mobileMenuButton';
+ menuButton.setAttribute('aria-controls','mobileMenu');menuButton.setAttribute('aria-expanded','false');
+ const searchButton=iconButton('search','rf-m-search');searchButton.id='mobileSearchButton';searchButton.setAttribute('aria-controls','searchForm');
+ const listButton=iconButton('heart','rf-m-list');listButton.id='mobileListButton';
+ const listBadge=el('span',null,'rf-m-count');listBadge.hidden=true;listButton.append(listBadge);
+ const settingsButton=iconButton('settings','rf-m-settings');settingsButton.id='mobileSettingsButton';settingsButton.setAttribute('aria-controls','mobileMenu');settingsButton.setAttribute('aria-expanded','false');
+ const actions=el('div',null,'rf-m-actions');actions.append(searchButton,listButton);
+ topbar.prepend(menuButton);topbar.append(settingsButton,actions);
 
-<aside class="rf-disclaimer" id="siteDisclaimer" aria-label="Aviso importante"><div class="rf-disclaimer-inner"><span class="rf-disclaimer-icon" aria-hidden="true">i</span><p><strong class="rf-d-long">RivFree es un comparador de precios.</strong> <span class="rf-d-long">No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.</span><span class="rf-d-short"><strong>Solo comparamos precios:</strong> no vendemos ni estamos afiliados a las tiendas.</span></p><button type="button" class="rf-disclaimer-close" id="siteDisclaimerClose" aria-label="Cerrar aviso" title="Cerrar aviso">×</button></div></aside>
-<div class="topbar">
-  <div class="topbar-inner">
-    <a class="brand brand-link" href="./" aria-label="Volver al inicio y recargar">
-      <div class="brand-lockup">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path class="brand-bag-solid" d="M10.5 18.5h27L35.2 40H12.8L10.5 18.5Z"/>
-            <path class="brand-handle-bold" d="M17.5 19v-2.5a6.5 6.5 0 0 1 13 0V19"/>
-          </svg>
-        </span>
-        <div>
-          <h1>Riv<span class="brand-name-free">Free</span></h1>
-          <p>Explorá y compará los free shops de Rivera y Santana do Livramento</p>
-        </div>
-      </div>
-    </a>
-    <form class="field search-field" id="searchForm" role="search">
-      <div class="rf-social rf-social-header" id="headerSocial" aria-label="Redes sociales de RivFree"></div>
-      <label for="search">Buscar producto</label>
-      <div class="search-row">
-        <input type="search" id="search" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
-        <button class="search-button" id="searchButton" type="submit">
-          <svg class="search-button-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Buscar</span>
-        </button>
-      </div>
-      <div id="searchSuggestions" class="search-suggestions" role="listbox" aria-label="Sugerencias de productos" hidden></div><p class="search-help">Escribí tu búsqueda completa y presioná Enter.</p>
-      <div class="search-status" id="searchStatus" role="status" aria-live="polite">
-        <span class="spinner" aria-hidden="true"></span>
-        <span>Buscando productos…</span>
-      </div>
-    </form>
-    <div class="header-actions">
-      <button id="openStoreDirectory" class="theme-toggle" type="button">Free shops</button>
-      <select id="languageToggle" class="theme-toggle" aria-label="Cambiar idioma">
-        <option value="es">ES</option><option value="pt-BR" selected>PT</option>
-      </select>
-      <button class="theme-toggle theme-mode" id="themeToggle" type="button" aria-pressed="false"><span class="theme-mode-icon" aria-hidden="true"></span><span class="theme-mode-label">Modo oscuro</span></button>
-      <button id="headerShoppingList" class="header-list" type="button" hidden><span aria-hidden="true">♡</span> <span>Mi lista</span></button>
-      
-    </div>
-  </div>
-</div>
+ // Search opens under the bar. While search results are shown it stays open so the search can be refined;
+ // the button closes it in any case.
+ let searchMode='auto';
+ const searching=()=>typeof ACTIVE_SEARCH!=='undefined'&&!!String(ACTIVE_SEARCH).trim()&&location.hash.startsWith('#/buscar');
+ function syncSearch(focus=false){
+  const open=searchMode==='open'||(searchMode==='auto'&&searching());
+  document.body.classList.toggle('rf-m-search-open',open);
+  searchButton.replaceChildren(icon(open?'close':'search'));
+  searchButton.setAttribute('aria-expanded',String(open));
+  searchButton.setAttribute('aria-label',open?t('Cerrar búsqueda','Fechar busca'):t('Buscar productos','Buscar produtos'));
+  if(open&&focus)$('search')?.focus({preventScroll:true});
+ }
+ searchButton.addEventListener('click',()=>{
+  const open=document.body.classList.contains('rf-m-search-open');
+  searchMode=open?'closed':'open';syncSearch(!open);
+ });
+ $('searchForm')?.addEventListener('submit',()=>{searchMode='auto';$('search')?.blur();setTimeout(()=>syncSearch(),0);});
+ window.addEventListener('hashchange',()=>{searchMode='auto';syncSearch();});
+ // A search runs asynchronously: show the bar again once its results are on screen.
+ if(typeof runSearch==='function'){const prior=runSearch;runSearch=async function(...args){const result=await prior.apply(this,args);syncSearch();return result;};}
 
+ listButton.addEventListener('click',()=>$('openShoppingList')?.click());
+ const listSource=$('listCount');
+ function syncList(){
+  const n=Number(listSource?.textContent)||0;listBadge.textContent=String(n);listBadge.hidden=!n;
+  listButton.setAttribute('aria-label',t('Mi lista','Minha lista')+(n?' · '+n:''));
+  const tile=drawer.querySelector('[data-m="list"] .rf-m-tile-count');if(tile){tile.textContent=String(n);tile.hidden=!n;}
+ }
+ menuButton.setAttribute('aria-label',t('Abrir menú','Abrir menu'));
 
-<nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><!-- Íconos de la barra: Lucide (lucide.dev, licencia ISC, ver LICENSE-lucide.txt). --><div class="rf-nav-quick" id="navQuick"><a class="rf-nav-item" id="navStores" href="#/tiendas"><svg class="rf-nav-icon rf-icon-store" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg><span class="rf-nav-label">Tiendas</span></a><button class="rf-nav-item" id="navOffers" type="button"><svg class="rf-nav-icon rf-icon-offers" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/></svg><span class="rf-nav-label">Ofertas</span></button><button class="rf-nav-item rf-nav-rate" id="navExchange" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="navExchangePanel"><svg class="rf-nav-icon rf-icon-rate" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg><span class="rf-nav-label"><span class="rf-nav-rate-title">Dólar hoy</span> <strong id="navExchangeValue">…</strong></span></button><button class="rf-nav-item" id="navList" type="button"><svg class="rf-nav-icon rf-icon-list" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span class="rf-nav-label">Mi lista</span><span class="rf-nav-count" id="navListCount" hidden>0</span></button></div></nav>
-<main>
-<section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel"></section>
-<div class="shopping-benefits" id="shoppingBenefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
-<section class="popular-section" id="discoverProducts" aria-labelledby="discoverTitle">
- <div class="section-heading"><div><span class="eyebrow">RIVERA · SANTANA DO LIVRAMENTO</span><h2 id="discoverTitle">Por descubrir</h2><p>Una selección aleatoria para inspirar tu próxima compra.</p></div></div>
- <div class="discovery-carousel">
-  <button id="discoverPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="discoverGrid">‹</button>
-  <div id="discoverGrid" class="popular-rail" tabindex="0" role="region" aria-label="Por descubrir"></div>
-  <button id="discoverNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="discoverGrid">›</button>
- </div>
-</section>
-<section class="popular-section" id="popularProducts" aria-labelledby="popularTitle">
- <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div></div>
- <div class="discovery-carousel">
-  <button id="popularPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="popularGrid" disabled>‹</button>
-  <div id="popularGrid" class="popular-rail" tabindex="0" role="region" aria-label="Más consultados"></div>
-  <button id="popularNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="popularGrid" disabled>›</button>
- </div>
-</section>
-<section id="catalogSection" class="catalog-section">
-<div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Explorá todas las tiendas y encontrá tu próximo favorito.</p></div><div class="catalog-status"><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
-<div class="controls">
-  <div class="controls-card search-hero">
+ // ── Side menu ────────────────────────────────────────────────────────────
+ const overlay=el('div',null,'rf-m-overlay');overlay.hidden=true;
+ const drawer=el('aside',null,'rf-m-drawer');drawer.id='mobileMenu';drawer.hidden=true;drawer.tabIndex=-1;
+ drawer.setAttribute('role','dialog');drawer.setAttribute('aria-modal','true');
+ document.body.append(overlay,drawer);
+ let view='main',lastFocus=null,closeTimer=0,pollTimer=0;
 
+ function open(nextView='main'){
+  clearTimeout(closeTimer);clearTimeout(pollTimer);view=nextView;render();
+  lastFocus=document.activeElement;drawer.hidden=false;overlay.hidden=false;
+  requestAnimationFrame(()=>document.body.classList.add('rf-m-drawer-open'));
+  menuButton.setAttribute('aria-expanded',String(view!=='settings'));settingsButton.setAttribute('aria-expanded',String(view==='settings'));
+  drawer.querySelector('.rf-m-close')?.focus({preventScroll:true});
+ }
+ function close(restore=true){
+  if(drawer.hidden)return;
+  document.body.classList.remove('rf-m-drawer-open');menuButton.setAttribute('aria-expanded','false');settingsButton.setAttribute('aria-expanded','false');
+  clearTimeout(pollTimer);
+  closeTimer=setTimeout(()=>{drawer.hidden=true;overlay.hidden=true;},reduced()?0:220);
+  if(restore)lastFocus?.focus?.({preventScroll:true});
+ }
+ function go(action){close(false);setTimeout(action,0);}
+ menuButton.addEventListener('click',()=>drawer.hidden?open():close());
+ settingsButton.addEventListener('click',()=>open('settings'));
+ overlay.addEventListener('click',()=>close());
+ drawer.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(e.key!=='Tab')return;
+  const items=[...drawer.querySelectorAll('button,a[href],input,select')].filter(n=>!n.disabled&&n.offsetParent!==null);
+  if(!items.length)return;const first=items[0],last=items.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ });
 
-    <div class="quick-filter-row">
-      <div class="field category-quick-filter">
-        <label for="categorySearch">Categoría</label>
-        <div class="category-picker">
-          <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Buscá una categoría">
-          <button id="clearCategory" class="category-clear" type="button" aria-label="Limpiar categoría" hidden>Limpiar</button>
-          <div id="categoryOptions" role="listbox" aria-multiselectable="true" hidden></div>
-        </div>
-        <div id="categoryChips" class="category-chips" aria-label="Categorías seleccionadas"></div><select id="categoria" multiple hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
-      </div>
+ function row(label,{iconName,count,next,onClick,pressed}={}){
+  const b=el('button',null,'rf-m-row');b.type='button';
+  if(iconName)b.append(icon(iconName,'rf-m-row-icon'));
+  b.append(el('span',label,'rf-m-row-label'));
+  if(count)b.append(el('span',Number(count).toLocaleString(isEs()?'es-UY':'pt-BR'),'rf-m-row-count'));
+  if(next)b.append(icon('next','rf-m-row-next'));
+  if(pressed!==undefined)b.setAttribute('aria-pressed',String(pressed));
+  b.addEventListener('click',onClick);return b;
+ }
+ function section(title){const box=el('section',null,'rf-m-section');if(title)box.append(el('h3',title,'rf-m-section-title'));return box;}
+ function head(title,back){
+  const bar=el('div',null,'rf-m-head');
+  if(back){const b=el('button',null,'rf-m-back');b.type='button';b.append(icon('back'),el('span',t('Categorías','Categorias')));b.addEventListener('click',()=>{view='main';render();drawer.querySelector('.rf-m-back,.rf-m-close')?.focus();});bar.append(b);}
+  else{const brand=el('span',null,'rf-m-brand');brand.append('Riv',el('span','Free','brand-name-free'));bar.append(brand);if(view!=='settings'){const social=$('footerSocial');if(social&&!social.hidden){const links=el('nav',null,'rf-m-head-social');links.setAttribute('aria-label',t('Redes sociales','Redes sociais'));links.append(...[...social.children].map(n=>n.cloneNode(true)));bar.append(links);}}}
+  const x=el('button',null,'rf-m-close');x.type='button';x.setAttribute('aria-label',t('Cerrar menú','Fechar menu'));x.append(icon('close'));x.addEventListener('click',()=>close());
+  bar.append(x);if(title)drawer.setAttribute('aria-label',title);return bar;
+ }
+ const explore=()=>window.RivFreeExplore;
+ const counts=()=>explore()?.ready?.()?explore().facetCounts():null;
+ const label=f=>explore()?.label?explore().label(f):(isEs()?f.es:f.pt);
 
-      <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Solo con precio</label>
-      <button type="button" class="rf-adv-toggle" id="advancedToggle" aria-expanded="false" aria-controls="advancedFilters"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg><span>Filtros avanzados</span><span class="rf-adv-count" id="advancedCount" hidden></span></button>
-      <details class="advanced-filters" id="advancedFilters">
-        <summary>
-          <span class="filter-summary-icon" aria-hidden="true"></span>
-          <span>Filtros avanzados</span>
-          <span class="filter-summary-note">Precio, ofertas y tiendas</span>
-        </summary>
-        <div class="advanced-grid">
-          <div class="field">
-            <label>Precio USD</label>
-            <div class="price-range">
-              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="minPrice" placeholder="min" min="0" step="0.01" inputmode="decimal" aria-label="Precio mínimo en dólares"></div>
-              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="maxPrice" placeholder="max" min="0" step="0.01" inputmode="decimal" aria-label="Precio máximo en dólares"></div>
-            </div>
-          </div>
+ function renderMain(){
+  drawer.append(head(t('Menú','Menu')));
+  const tiles=el('div',null,'rf-m-tiles');
+  const offersReady=!$('navOffers')?.disabled;
+  for(const [key,name,text,action,disabled] of [
+   ['offers','offers',t('Ofertas','Ofertas'),()=>go(()=>$('navOffers')?.click()),!offersReady],
+   ['stores','store',t('Tiendas','Lojas'),()=>go(()=>{location.hash='#/tiendas';}),false],
+   ['list','heart',t('Mi lista','Minha lista'),()=>go(()=>$('openShoppingList')?.click()),false]]){
+   const b=el('button',null,'rf-m-tile');b.type='button';b.dataset.m=key;b.disabled=disabled;b.append(icon(name,'rf-m-tile-icon'),el('span',text));
+   if(key==='list'){const c=el('span',null,'rf-m-tile-count');c.hidden=true;b.append(c);}
+   b.addEventListener('click',action);tiles.append(b);
+  }
+  drawer.append(tiles);
 
-          <div class="field toggle-oferta">
-            <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
-          </div>
+  const categories=section(t('Categorías','Categorias'));
+  categories.append(row(t('Todas las categorías','Todas as categorias'),{iconName:'grid',onClick:()=>go(()=>selectCampaignCategory(''))}));
+  const families=explore()?.families?.()||[];const c=counts();
+  if(families.length){
+   for(const f of families){const n=c?c.get(f.id)||0:0;if(c&&!n)continue;categories.append(row(label(f),{count:n,next:true,onClick:()=>{view=f.id;render();drawer.querySelector('.rf-m-back')?.focus();}}));}
+  }else if(typeof Catalog!=='undefined'){
+   for(const [id,names] of Object.entries(Catalog.categories))categories.append(row(names[isEs()?0:1],{onClick:()=>go(()=>selectCampaignCategory(id))}));
+  }
+  drawer.append(categories);
 
-          <div class="field stores-filter">
-            <p class="stores-filter-title" id="storesFilterTitle"><b>Tiendas</b> <span>Tocá una o varias para ver solo sus productos. Sin elegir, se muestran todas.</span></p>
-            <div class="stores-field" id="storesField" role="group" aria-labelledby="storesFilterTitle">
-              <!-- checkboxes de tiendas se llenan por JS: ninguna marcada = todas las tiendas -->
-            </div>
-          </div>
+ }
 
-          <div class="filter-actions">
-            <button class="clear-btn" id="clearFilters" type="button">Limpiar filtros</button>
-          </div>
-        </div>
-      </details>
-    </div>
-  </div>
-</div>
-<div class="catalog-toolbar rf-results-bar">
-  <div class="rf-results-info"><div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div><button type="button" id="offersModeChip" class="rf-mode-chip" hidden title="Salir de ofertas"><span>Ofertas</span><b aria-hidden="true">✕</b></button><details class="catalog-details"><summary title="Detalles del catálogo" aria-label="Detalles del catálogo">i</summary><p id="resultsDetails"></p></details></div>
-  <div class="offer-tiers" id="offerTiers" role="group" aria-label="Filtrar ofertas por descuento" hidden><span class="offer-tiers-title">Descuento</span><button type="button" class="offer-tier" data-discount="0" aria-pressed="true"><span class="offer-tier-main">Todas</span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-1" data-discount="20" aria-pressed="false"><span class="offer-tier-main"><b>20%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-2" data-discount="40" aria-pressed="false"><span class="offer-tier-main"><b>40%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-3" data-discount="60" aria-pressed="false"><span class="offer-tier-main"><b>60%</b> <span>o más</span></span><span class="offer-tier-count"></span></button></div>
-  <div class="rf-results-actions">
-    <label class="rf-fav-toggle" title="Mostrar solo favoritos"><input type="checkbox" id="favoritesOnly"><svg class="rf-ui-svg rf-heart-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span>Favoritos</span></label>
-    <div class="field sort-field"><label for="orden"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg><span>Ordenar</span></label>
-            <select id="orden">
-              <option value="relevancia">Más relevantes</option><option value="caida">Mayor caída de precio</option><option value="descuento">Mayor descuento</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
-              <option value="precio_asc">Precio: menor a mayor</option>
-              <option value="precio_desc">Precio: mayor a menor</option>
-              <option value="nombre_asc" selected>Nombre: A-Z</option>
-            </select>
-    </div>
-  </div>
-</div>
+ function renderSettings(){
+  drawer.append(head(t('Configuración','Configurações')));
+  const heading=section();heading.append(el('h2',t('Configuración','Configurações'),'rf-m-family-title'));drawer.append(heading);
+  if(window.RivFreeRates){
+   const rates=section(t('Dólar hoy','Dólar hoje'));rates.classList.add('rf-m-rates');
+   const box=el('div');window.RivFreeRates.render(box,()=>{render();drawer.querySelector('.rf-rate-row[aria-pressed=true]')?.focus();});rates.append(box);drawer.append(rates);
+  }
 
-<aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
-  <div class="stock-notice-inner">
-    <span class="stock-notice-icon" aria-hidden="true">i</span>
-    <div class="stock-notice-text">
-      <strong>Antes de tu visita.</strong> La web refleja catálogos online, no el stock físico completo de cada tienda.
-    </div>
-    <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
-  </div>
-</aside>
+  const prefs=section(t('Preferencias','Preferências'));
+  const lang=el('div',null,'rf-m-segment');lang.setAttribute('role','group');lang.setAttribute('aria-label',t('Idioma','Idioma'));
+  for(const [value,flag,name] of [['es','icons/flag-uy.svg','Español'],['pt-BR','icons/flag-br.svg','Português']]){
+   const b=el('button',null,'rf-m-choice');b.type='button';b.setAttribute('aria-pressed',String((value==='es')===isEs()));
+   const img=el('img',null,'rf-lang-flag');img.src=flag;img.alt='';img.width=22;img.height=16;b.append(img,el('span',name));
+   b.addEventListener('click',()=>{const select=$('languageToggle');if(!select||select.value===value)return;select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));setTimeout(()=>{render();drawer.querySelector('.rf-m-segment [aria-pressed=true]')?.focus();},0);});
+   lang.append(b);
+  }
+  const dark=document.documentElement.dataset.theme==='dark';
+  const theme=el('div',null,'rf-m-segment');theme.setAttribute('role','group');theme.setAttribute('aria-label',t('Tema','Tema'));
+  for(const [mode,iconName,name] of [['light','sun',t('Claro','Claro')],['dark','moon',t('Oscuro','Escuro')]]){
+   const b=el('button',null,'rf-m-choice');b.type='button';b.setAttribute('aria-pressed',String((mode==='dark')===dark));b.append(icon(iconName,'rf-m-choice-icon'),el('span',name));
+   b.addEventListener('click',()=>{if((document.documentElement.dataset.theme==='dark')!==(mode==='dark'))$('themeToggle')?.click();setTimeout(()=>{render();drawer.querySelector('[aria-label="Tema"] [aria-pressed=true]')?.focus();},0);});
+   theme.append(b);
+  }
+  prefs.append(lang,theme);drawer.append(prefs);
 
-<div id="priceError" role="alert" hidden></div>
-<div id="loadError" role="alert" hidden><p id="loadErrorText"></p><button type="button" id="retryLoad" class="clear-btn">Reintentar</button></div>
-<section class="planning-tools" aria-label="Favoritos y conversión" hidden>
-<button type="button" id="openShoppingList"><span>Mi lista</span> <span id="listCount" class="list-count">0</span></button>
-<label class="reference-currency-label"><span>Moneda de referencia</span><select id="referenceCurrency" aria-label="Moneda de referencia"><option value="USD">USD</option><option value="BRL" selected>BRL · Real</option><option value="UYU">UYU · Peso uruguayo</option><option value="ARS">ARS · Peso argentino</option></select></label><details class="exchange-details"><summary><strong id="exchangePreview">USD → BRL</strong> <span>· Cotización</span></summary><label><span id="exchangePair">USD → BRL</span> <input id="exchangeRate" type="number" min="0.01" step="0.01" placeholder="Cotización" aria-label="Reales por dólar"></label>
-<p id="exchangeNote"></p><button id="automaticExchange" type="button">Usar cotización automática</button></details></section>
-<p id="connectionNote" class="rf-connection-note" hidden>Sin conexión: catálogo guardado / Sem conexão: catálogo salvo.</p>
-<div class="grid" id="grid"></div>
-<div class="load-more-wrap" id="loadMoreWrap" hidden>
-  <button class="load-more-btn" id="loadMore" type="button">Mostrar más productos</button>
-</div>
-<div class="empty-state" id="emptyState" style="display:none;">
-  No se encontraron productos con esos filtros.<br>Probá ampliar la búsqueda.
-</div>
-</section>
+ }
 
-<!-- Outside #catalogSection: the list must open from any page, even when the catalog is hidden. -->
-<dialog id="shoppingDialog" class="rf-list-dialog" aria-labelledby="shoppingTitle"><div class="shopping-header"><div class="rf-list-heading"><span class="rf-list-heart"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg></span><div><h2 id="shoppingTitle">Mi lista</h2><p id="shoppingSummary" class="rf-list-summary"></p></div></div><button type="button" id="closeShoppingList" aria-label="Cerrar">✕</button></div><div id="shoppingRoute" class="rf-list-route"></div><div id="shoppingList"></div><div class="share-list"><button id="shareShoppingList" type="button"><svg class="rf-list-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg><span>Compartir lista</span></button><p id="shareHint">Abrila en otro celular con un enlace, sin crear cuenta.</p><input id="sharedListLink" readonly hidden aria-label="Enlace de la lista"></div></dialog>
-<dialog id="productDialog" aria-labelledby="productPreviewTitle"><div class="dialog-header"><h2 id="productPreviewTitle"></h2><button class="dialog-close" id="productPreviewClose" type="button" aria-label="Cerrar / Fechar">×</button></div><div id="productPreviewContent"></div></dialog>
-<dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
-  <div class="dialog-header">
-    <div>
-      <h2 id="dialogTitle">Comparar precios</h2>
-      <p class="dialog-subtitle" id="dialogSubtitle"></p>
-    </div>
-    <button class="dialog-close" id="dialogClose" type="button" aria-label="Cerrar">×</button>
-  </div>
-  <div class="comparison-list" id="comparisonList"></div>
-</dialog>
+ function renderFamily(id){
+  const families=explore()?.families?.()||[];const f=families.find(x=>x.id===id);
+  if(!f){view='main';renderMain();return;}
+  drawer.append(head(label(f),true));
+  const box=section();box.append(el('h2',label(f),'rf-m-family-title'));
+  const c=counts();
+  const all=el('button',null,'rf-m-primary');all.type='button';all.textContent=t('Ver todo','Ver tudo')+(c?' · '+(c.get(f.id)||0).toLocaleString(isEs()?'es-UY':'pt-BR'):'');
+  all.addEventListener('click',()=>go(()=>explore().activateFacet(f)));box.append(all);
+  drawer.append(box);
+  if(!c){
+   box.append(el('p',t('Cargando marcas y tipos…','Carregando marcas e tipos…'),'rf-m-muted'));
+   if(typeof PRODUCT_GROUPS!=='undefined'&&PRODUCT_GROUPS.length)explore()?.build?.();
+   clearTimeout(pollTimer);pollTimer=setTimeout(function wait(){if(view!==id||drawer.hidden)return;if(counts()){render();return;}pollTimer=setTimeout(wait,300);},300);
+   return;
+  }
+  for(const [title,items,limit] of [[t('Marcas','Marcas'),[...(f.brands||[]),...(f.dynamicBrands||[])],14],[t('Tipos','Tipos'),[...(f.types||[]),...(f.dynamicTypes||[])],10]]){
+   const shown=items.filter(x=>(c.get(x.id)||0)>0).sort((a,b)=>c.get(b.id)-c.get(a.id)).slice(0,limit);
+   if(!shown.length)continue;
+   const group=section(title);const chips=el('div',null,'rf-m-chips');
+   for(const item of shown){const b=el('button',null,'rf-m-chip');b.type='button';b.append(el('span',label(item)),el('small',(c.get(item.id)||0).toLocaleString(isEs()?'es-UY':'pt-BR')));b.addEventListener('click',()=>go(()=>explore().activateFacet(item)));chips.append(b);}
+   group.append(chips);drawer.append(group);
+  }
+ }
 
-<dialog id="storeDirectoryDialog" aria-labelledby="storeDirectoryTitle">
-  <div class="shopping-header"><div><span class="eyebrow">RIVFREE · RIVERA Y SANTANA DO LIVRAMENTO</span><h2 id="storeDirectoryTitle">Guía de free shops</h2></div><button id="closeStoreDirectory" type="button" aria-label="Cerrar">✕</button></div>
-  <p class="directory-intro">Consultá las tiendas registradas en RivFree. Confirmá horarios y datos de contacto en los canales oficiales antes de tu visita.</p>
-  <p id="storeDirectoryStatus" role="status"></p><button id="retryStoreDirectory" type="button" hidden>Reintentar</button>
-  <div id="storeDirectoryList" class="store-directory-grid"></div>
-</dialog>
-<dialog class="comparison-dialog" id="storeDialog" aria-labelledby="storeDialogTitle">
-  <div class="dialog-header">
-    <div>
-      <h2 id="storeDialogTitle">Información de la tienda</h2>
-      <p class="dialog-subtitle">Datos de contacto y enlaces oficiales</p>
-    </div>
-    <button class="dialog-close" id="storeDialogClose" type="button" aria-label="Cerrar">×</button>
-  </div>
-  <div class="store-info" id="storeInfo"></div>
-</dialog>
+ function render(){
+  drawer.replaceChildren();
+  if(view==='settings')renderSettings();else if(view==='main')renderMain();else renderFamily(view);
+  drawer.scrollTop=0;syncList();
+ }
 
-</main>
-<button id="backToTop" type="button" hidden aria-label="Volver arriba" title="Volver arriba">↑</button>
-<div id="actionStatus" role="status" aria-live="polite" hidden></div>
-
-<footer>
-  <strong>RivFree · Comparador independiente</strong><br>
-  <span class="studio-footer-text">No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.</span>
-  <div class="rf-social rf-social-footer" id="footerSocial" aria-label="Redes sociales de RivFree"></div>
-  <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html" hidden>Privacidad</a></div>
-</footer>
-
-<dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="site-config.js?v=20261002-v84" defer></script>
-<script src="privacy-config.js?v=20260925-ux1" defer></script>
-<script src="tracking-config.js?v=20260930-v4" defer></script>
-<script src="consent.js?v=20260930-v4" defer></script>
-<script src="matching.js?v=20260928-seo3" defer></script>
-<script src="catalog.js?v=20261002-v84" defer></script>
-<script src="catalog-cache.js?v=20261002-v84" defer></script>
-<script src="features.js?v=20261002-v84" defer></script>
-<script src="shared-list-codec.js?v=20260925-share2" defer></script>
-<script src="shopping.js?v=20261002-v84" defer></script>
-<script src="storefront.js?v=20261002-v84" defer></script>
-<script src="product-details.js?v=20261002-v84" defer></script>
-<script src="app.js?v=20261002-v84" defer></script>
-<script src="product-content.js?v=20260930" defer></script>
-<script src="search-api-config.js" defer></script>
-<script src="store-directory.js?v=20261002-v84" defer></script>
-<script src="experience.js?v=20261002-v84" defer></script>
-<script src="explore-model.js?v=20261001-v5" defer></script>
-<script src="category-index.js?v=20261002-v84" defer></script>
-<script src="explore.js?v=20261002-v841" defer></script>
-<script src="nav-bar.js?v=20261002-v84" defer></script>
-<script src="ui-updates.js?v=20261002-v84" defer></script>
-<script src="mobile-shell.js?v=20261002-v84" defer></script>
-</body></html>
+ // Keep labels, counter and search state in sync with the rest of the site.
+ if(listSource)new MutationObserver(syncList).observe(listSource,{childList:true,characterData:true,subtree:true});
+ function syncSettingsLabel(){settingsButton.setAttribute('aria-label',t('Configuración','Configurações'));settingsButton.title=t('Configuración','Configurações');}
+ $('languageToggle')?.addEventListener('change',()=>setTimeout(()=>{syncSettingsLabel();syncSearch();syncList();menuButton.setAttribute('aria-label',t('Abrir menú','Abrir menu'));if(!drawer.hidden)render();},0));
+ window.addEventListener('rivfree:catalog-ready',()=>{syncSearch();if(!drawer.hidden)render();});
+ const socialSource=$('footerSocial');if(socialSource)new MutationObserver(()=>{if(!drawer.hidden&&view==='main')render();}).observe(socialSource,{childList:true,subtree:true,attributes:true});
+ // Leaving the phone width closes the menu so it never stays open behind the desktop header.
+ window.matchMedia?.('(max-width: 650px)').addEventListener?.('change',e=>{if(!e.matches){close(false);searchMode='auto';syncSearch();}});
+ syncSearch();syncList();syncSettingsLabel();
+ window.RivFreeMobileMenu={open,close,render};
+})();

@@ -44,11 +44,12 @@ test('side menu: shortcuts, categories, dollar, language and theme; Escape close
  assert.deepEqual([...menu.querySelectorAll('.rf-m-tile')].map(b=>b.dataset.m),['offers','stores','list']);
  const rows=[...menu.querySelectorAll('.rf-m-row')].map(r=>r.textContent);
  assert.ok(rows.includes('Todas las categorías'));assert.ok(rows.some(r=>r.includes('Perfumes')));
- assert.ok(menu.querySelector('.rf-m-rates .rf-rate-row'),'today\'s dollar rows are in the menu');
+ assert.equal(menu.querySelector('.rf-m-rates'),null,'preferences are separate from categories');
  menu.querySelector('.rf-m-tile[data-m=stores]').click();
  await new Promise(r=>setTimeout(r,10));
  assert.equal(w.location.hash,'#/tiendas');assert.equal(open.getAttribute('aria-expanded'),'false');
- open.click();
+ d.getElementById('mobileSettingsButton').click();
+ assert.ok(menu.querySelector('.rf-m-rates .rf-rate-row'),'rates are accessible from the gear');
  const [es,pt]=menu.querySelectorAll('.rf-m-segment')[0].querySelectorAll('button');
  assert.equal(es.getAttribute('aria-pressed'),'true');pt.click();
  assert.equal(d.getElementById('languageToggle').value,'pt-BR');
@@ -64,6 +65,17 @@ test('side menu: shortcuts, categories, dollar, language and theme; Escape close
 test('categories in the phone menu use the same families, brands and types as the desktop menu',()=>{
  assert.match(read('explore.js'),/families:\(\)=>families,ready:\(\)=>facetsReady\(\),build:\(\)=>buildFacets\(\)/);
  const shell=read('mobile-shell.js');assert.match(shell,/explore\(\)\.activateFacet\(f\)/);assert.match(shell,/activateFacet\(item\)/);
+});
+
+test('social links use existing icons beside the drawer brand and settings have their own trigger',async t=>{
+ const {w,d}=await page(t,{products});const source=d.getElementById('footerSocial');source.hidden=false;
+ source.innerHTML='<a href="https://example.com/social" aria-label="Instagram"><img class="rf-app-icon" src="icons/social/instagram.svg" alt=""></a>';
+ d.getElementById('mobileMenuButton').click();
+ const menu=d.getElementById('mobileMenu'),link=menu.querySelector('.rf-m-head .rf-m-head-social a');
+ assert.equal(link.href,'https://example.com/social');assert.equal(link.querySelector('img').getAttribute('src'),'icons/social/instagram.svg');assert.equal(menu.querySelector('.rf-m-section .rf-m-social'),null);
+ const gear=d.getElementById('mobileSettingsButton');gear.click();assert.equal(gear.getAttribute('aria-expanded'),'true');assert.equal(menu.querySelector('.rf-m-head-social'),null);assert.ok(menu.querySelector('[aria-label="Idioma"]'));assert.ok(menu.querySelector('[aria-label="Tema"]'));
+ menu.querySelector('.rf-rate-row[data-currency="USD"]').click();assert.equal(menu.querySelector('.rf-rate-row[data-currency="USD"]').getAttribute('aria-pressed'),'true');
+ menu.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert.equal(gear.getAttribute('aria-expanded'),'false');
 });
 
 test('the SEO heading is published above the footer, not above the shop',()=>{

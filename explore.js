@@ -1,583 +1,181 @@
+/* RivFree v7 · Phone layout (≤ 650 px): one compact bar, side menu, lighter home.
+   Desktop is not affected: every visible rule lives inside the media query, except the hidden defaults. */
+.rf-m-only,.rf-m-actions{display:none}
+.rf-m-drawer[hidden],.rf-m-overlay[hidden]{display:none!important}
 
-import re
-import sys
-import time
-import unicodedata
-from pathlib import Path
-from urllib.parse import unquote, urljoin, urlparse
+/* ── Side menu (built by mobile-shell.js) ─────────────────────────────── */
+.rf-m-overlay{position:fixed;inset:0;z-index:180;background:rgb(10 18 32 / 0%);transition:background .2s ease}
+body.rf-m-drawer-open .rf-m-overlay{background:rgb(10 18 32 / 55%)}
+.rf-m-drawer{position:fixed;z-index:190;top:0;bottom:0;left:0;width:min(86%,340px);overflow-y:auto;overscroll-behavior:contain;
+ background:var(--surface,#fff);color:var(--ink,#172337);box-shadow:8px 0 30px rgb(10 18 32 / 25%);transform:translateX(-102%);transition:transform .22s ease;padding-bottom:24px}
+body.rf-m-drawer-open .rf-m-drawer{transform:none}
+body.rf-m-drawer-open{overflow:hidden}
+.rf-m-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;padding:6px 8px 6px 16px;background:#14243a;color:#fff}
+.rf-m-brand{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.rf-m-brand .brand-name-free{color:#ffb5b9}
+.rf-m-close,.rf-m-back{display:inline-flex;align-items:center;gap:4px;min-height:40px;padding:0 8px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}
+.rf-m-close{width:42px;justify-content:center;padding:0}
+.rf-m-back{margin-left:-8px}
+.rf-m-close:focus-visible,.rf-m-back:focus-visible{outline:2px solid #ffb5c0;outline-offset:1px}
+.rf-m-svg,.rf-m-row-icon,.rf-m-row-next,.rf-m-tile-icon,.rf-m-choice-icon{width:22px;height:22px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rf-m-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 14px 4px}
+.rf-m-tile{position:relative;display:grid;justify-items:center;gap:6px;padding:12px 4px 10px;border:1px solid var(--line,#dce2ea);border-radius:14px;background:var(--surface,#fff);color:var(--ink,#172337);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.rf-m-tile:disabled{opacity:.5}
+.rf-m-tile[data-m=offers] .rf-m-tile-icon{color:#d6335a}
+.rf-m-tile[data-m=stores] .rf-m-tile-icon{color:#2f74c0}
+.rf-m-tile[data-m=list] .rf-m-tile-icon{color:#e5294b;fill:#e5294b}
+.rf-m-tile-count{position:absolute;top:6px;right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#e5294b;color:#fff;font-size:10.5px;line-height:18px;font-weight:800}
+.rf-m-section{padding:10px 14px 2px}
+.rf-m-section+.rf-m-section{border-top:1px solid var(--line,#e3e7ee);margin-top:8px;padding-top:14px}
+.rf-m-section-title{margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#5b6577)}
+.rf-m-row{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:0 6px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer}
+.rf-m-row:active,.rf-m-row:hover{background:color-mix(in srgb,var(--ink,#172337) 6%,transparent)}
+.rf-m-row-label{flex:1;min-width:0}
+.rf-m-row-count{font-size:12px;font-weight:700;color:var(--muted,#5b6577)}
+.rf-m-row-next{width:18px;height:18px;color:var(--muted,#5b6577)}
+.rf-m-row-icon{color:var(--muted,#5b6577)}
+.rf-m-family-title{margin:4px 0 12px;font-size:22px;letter-spacing:-.02em}
+.rf-m-primary{width:100%;min-height:46px;border:0;border-radius:12px;background:var(--rf-red,#ad233c);color:#fff;font:inherit;font-size:15px;font-weight:800;cursor:pointer}
+.rf-m-muted{color:var(--muted,#5b6577);font-size:13px}
+.rf-m-chips{display:flex;flex-wrap:wrap;gap:8px}
+.rf-m-chip{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:1px solid var(--line,#dce2ea);border-radius:999px;background:var(--surface,#fff);color:inherit;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.rf-m-chip small{font-size:11px;color:var(--muted,#5b6577);font-weight:700}
+.rf-m-segment{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0 10px;padding:4px;border-radius:12px;background:color-mix(in srgb,var(--ink,#172337) 6%,transparent)}
+.rf-m-choice{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;border:0;border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.rf-m-choice[aria-pressed=true]{background:var(--surface,#fff);box-shadow:0 1px 4px rgb(10 18 32 / 15%)}
+.rf-m-choice .rf-lang-flag{width:22px;height:16px;border-radius:3px}
+.rf-m-rates .rf-rate-list{display:grid;gap:4px}
+.rf-m-rates .rf-rate-row{display:flex;align-items:center;gap:12px;width:100%;padding:9px 8px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.rf-m-rates .rf-rate-row[aria-pressed=true]{background:color-mix(in srgb,var(--rf-red,#ad233c) 10%,transparent);box-shadow:inset 3px 0 0 var(--rf-red,#ad233c)}
+.rf-m-rates .rf-rate-name{display:flex;flex-direction:column;flex:1;line-height:1.2}
+.rf-m-rates .rf-rate-name small,.rf-m-rates .rf-rate-note{color:var(--muted,#5b6577);font-size:11.5px}
+.rf-m-rates .rf-rate-value{font-weight:800}
+.rf-m-rates .rf-rate-usd{display:grid;place-items:center;width:24px;height:17px;border-radius:3px;background:#2c4568;color:#6fe3a5;font-weight:900;font-size:12px}
+.rf-m-rates .rf-rate-note{margin:6px 8px 0;line-height:1.45}
+.rf-m-social{display:flex;flex-wrap:wrap;gap:8px}
+.rf-m-social .rf-app-icon{width:34px;height:34px}
+:root[data-theme=dark] .rf-m-drawer{background:#16202f;color:#eef3fa}
+:root[data-theme=dark] .rf-m-tile,:root[data-theme=dark] .rf-m-chip{background:#1d2a3d;border-color:#2c3c55;color:#eef3fa}
+:root[data-theme=dark] .rf-m-choice[aria-pressed=true]{background:#2a3a52}
+@media (prefers-reduced-motion:reduce){.rf-m-drawer,.rf-m-overlay{transition:none}}
 
-sys.path.append(str(Path(__file__).parent))
-from utils import (
-    PRICE_RE,
-    canonical_product_url,
-    clean_price,
-    extract_wix_detail_price,
-    extract_wix_products,
-    finalize_scrape,
-    get_soup,
-    navigate,
-    explicit_empty_catalog,
-)
+@media(max-width:650px){
+ /* ── Header: menu · RivFree · search · Mi lista ─────────────────────── */
+ .topbar{position:sticky!important;top:0;z-index:60;padding:6px 8px!important}
+ .topbar-inner{display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px 88px!important;align-items:center!important;gap:0!important;row-gap:6px!important}
+ .rf-m-only{display:inline-grid}
+ .rf-m-actions{display:flex;grid-column:4;grid-row:1;justify-self:end;gap:2px}
+ .rf-m-menu{grid-column:1;grid-row:1;justify-self:start}
+ .topbar .brand{grid-column:2;grid-row:1;justify-self:center;min-width:0}
+ .topbar .brand-lockup{gap:0}
+ .topbar .brand p,.topbar .brand-mark{display:none!important}
+ .topbar .brand :is(h1,.seo-brand-title){font-size:25px!important;line-height:1.1;margin:0}
+ .topbar .header-actions{display:none!important}
+ .topbar .search-field{display:none!important;grid-column:1/-1!important;grid-row:2!important;margin:0 0 4px!important}
+ body.rf-m-search-open .topbar .search-field{display:block!important}
+ .topbar .search-field input{font-size:16px}
+ .category-shortcuts{display:none!important}
+ .rf-m-icon{position:relative;width:42px;height:42px;place-items:center;border:0;border-radius:12px;background:transparent;color:#fff;cursor:pointer}
+ .rf-m-icon:active{background:rgb(255 255 255 / 10%)}
+ .rf-m-icon:focus-visible{outline:2px solid #ffb5c0;outline-offset:1px}
+ .rf-m-icon .rf-m-svg{width:24px;height:24px}
+ .rf-m-list .rf-m-svg{color:#ff6b85}
+ .rf-m-count{position:absolute;top:3px;right:1px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#e5294b;color:#fff;font-size:10px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px #14243a}
 
-LAST_RUN_STATUS = {}
-BASE_URL = "https://www.baraofreeshop.com.br"
-DETAIL_RECOVERY_LIMIT = None  # recuperar todos los pendientes mientras haya presupuesto
-DETAIL_RECOVERY_BUDGET_SECONDS = 50 * 60
+ /* Top notice: one short line */
+ .rf-disclaimer .rf-disclaimer-inner{padding:5px 8px 5px 12px!important;gap:8px!important}
+ .rf-disclaimer p{font-size:11.5px!important;line-height:1.35!important}
+ .rf-disclaimer .rf-disclaimer-icon{width:16px!important;height:16px!important;font-size:10px!important}
+ .rf-disclaimer .rf-disclaimer-close{width:30px!important;height:30px!important}
 
-RESERVED_PATHS = {
-    "", "shop", "blog", "contato", "turista", "social", "trabalhe-conosco",
-    "my-wishlist", "wishlist", "cart", "checkout", "lista-de-desejos", "home",
-    "inicio", "o-barao", "seguranca-e-saude-no-trabalho", "saude-no-trabalho",
-    "responsabilidadesocial", "responsabilidade-social", "blog-barao",
-    "politica-de-privacidade", "politica-privacidade", "termos", "termos-de-uso",
-    "docedeleitebarao",  # Brand story page; the product category is copia-de-doce-de-leite-1.
+ /* ── Home ─────────────────────────────────────────────────────────── */
+ #shoppingBenefits{display:none!important}
+ /* Carousel: a short banner with the same proportions on every slide */
+ main>#heroCampaign:not([hidden]),#heroCampaign{height:auto!important;min-height:0!important;aspect-ratio:16/8.5;width:auto!important;margin:10px 12px 0!important;border-radius:16px!important;overflow:hidden;border:0!important}
+ #heroCampaign .campaign-slide{height:100%!important;min-height:0!important;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important;align-items:center;gap:6px!important;padding:10px 12px 26px 16px!important}
+ #heroCampaign .campaign-copy{overflow:hidden!important;max-height:100%}
+ #heroCampaign .campaign-copy .eyebrow{display:block;font-size:8.5px!important;letter-spacing:1.4px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #heroCampaign .campaign-copy h2{font-size:clamp(17px,5.6vw,22px)!important;line-height:1.08!important;letter-spacing:-.4px!important;margin:5px 0 8px!important;min-height:0!important;white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ #heroCampaign .campaign-copy p{display:none!important}
+ #heroCampaign .campaign-cta{min-height:0!important;padding:7px 12px!important;font-size:11.5px!important;border-radius:9px!important;white-space:nowrap}
+ #heroCampaign .campaign-visual{height:100%!important;min-height:0}
+ #heroCampaign .campaign-visual:before,#heroCampaign .campaign-visual:after{display:none!important}
+ #heroCampaign .product-pedestal{width:min(30vw,118px)!important;height:min(30vw,118px)!important;margin:0!important}
+ #heroCampaign .product-pedestal:nth-child(n+2){display:none!important}
+ #heroCampaign .product-pedestal img{width:100%;height:100%;object-fit:contain}
+ #heroCampaign .campaign-custom-image{width:100%;height:100%;object-fit:contain}
+ #heroCampaign[data-layout=banner] .campaign-custom-image{object-fit:cover}
+ #heroCampaign .campaign-arrow{display:none!important}
+ #heroCampaign .campaign-label{top:8px!important;right:10px!important;font-size:7.5px!important}
+ #heroCampaign .campaign-dots{bottom:7px!important;transform:scale(.8)}
+ #heroCampaign .campaign-pause{width:24px!important;height:24px!important;bottom:6px!important;right:8px!important;font-size:10px!important}
+
+ /* Sections: smaller titles, less padding, no empty placeholders */
+ .popular-section{margin:14px 12px 0!important;padding:14px 0 10px!important}
+ .popular-section .section-heading{min-height:0!important;padding:0 12px!important;margin-bottom:10px!important}
+ .popular-section .section-heading .eyebrow{font-size:9.5px!important;letter-spacing:.12em!important}
+ .popular-section .section-heading h2{font-size:20px!important;line-height:1.15!important;margin:2px 0 0!important}
+ .popular-section .section-heading p{font-size:12px!important;margin:3px 0 0!important}
+ .popular-section:not(:has(.card)){display:none!important}
+ .discovery-arrow{display:none!important}
+ .popular-rail{min-height:0!important;padding:0 12px 6px!important;gap:10px!important;scroll-padding-left:12px;align-items:stretch}
+ .popular-rail .card{flex:0 0 46%!important;min-height:0!important}
+ .popular-rail .card-price-row{min-height:0!important}
+
+ /* Cards: photo, name, price; the whole card opens the product */
+ .popular-rail .card-img,.popular-rail .card-img.product-target,.grid .card-img{height:120px!important;padding:6px 6px 0!important}
+ .card .card-name{font-size:12px!important;line-height:1.3!important;min-height:0!important;max-height:3.9em!important;-webkit-line-clamp:3}
+ .popular-rail .card-action,.popular-rail .card-link.card-cta{display:none!important}
+ .card .card-price-amount{font-size:19px!important}
+
+ /* SEO text at the end of the page: small, under the content */
+ .seo-home-heading{width:auto!important;margin:18px 12px 0!important;padding:14px 4px 4px!important}
+
+ /* Results page: two compact columns, the card itself opens the product */
+ #grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin:0 12px!important;padding:0!important}
+ #grid .card{min-height:0!important;border-radius:14px!important}
+ #grid .card-img,#grid .card-img.product-target{height:128px!important;padding:6px 6px 0!important}
+ #grid .card-body{padding:8px 10px 10px!important;gap:4px!important}
+ #grid .card-utility-row,#grid .card-action,#grid .card-link.card-cta,#grid .card-store-count{display:none!important}
+ #grid .card-stores{gap:4px!important;padding:6px 10px 0!important}
+ #grid .card-stores .card-store{font-size:9.5px!important;padding:3px 7px!important;min-height:0!important}
+ #grid .card-price-row{margin-top:auto!important;min-height:0!important}
+ #grid .card .heart-button{width:34px!important;height:34px!important;top:6px!important;right:6px!important}
+ /* Results page */
+ #catalogSection .catalog-heading{padding-top:12px!important;margin-bottom:10px!important}
+ #catalogSection .catalog-heading{align-items:center!important}
+ #catalogSection .catalog-heading h2{font-size:20px!important;line-height:1.15!important}
+ #catalogSection .updated-badge{font-size:10px!important;padding:5px 8px!important}
+ #stockNotice{margin:0 12px 12px!important}
+ #stockNotice .stock-notice-inner{padding:8px 10px!important;gap:8px!important;font-size:12px!important;line-height:1.4!important}
+ #catalogSection .catalog-heading p,#catalogSection .catalog-heading .eyebrow{display:none!important}
+ /* Product and store pages */
+ #detailPage{padding-top:4px!important}
+ #detailPage h1{font-size:23px!important;letter-spacing:-.4px!important;margin:10px 0 6px!important}
+ #detailPage .rf-product-visual{min-height:0!important;height:210px;padding:14px!important;border-radius:18px!important}
+ #detailPage .rf-product-visual img{height:180px!important}
+ /* v8: room for "Mostrar más", readable store chips, bigger tap targets, all discount tiers in view */
+ .load-more-wrap{margin:16px 12px 28px!important;padding:0!important}
+ .load-more-wrap .load-more-btn{width:100%;min-height:46px}
+ #grid .card-stores .card-store{font-size:10.5px!important;padding:4px 8px!important}
+ #grid .card .heart-button{width:40px!important;height:40px!important;top:4px!important;right:4px!important}
+ #catalogSection .offer-tiers:not([hidden]){display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px!important;overflow:visible!important}
+ #catalogSection .offer-tiers .offer-tiers-title{display:none!important}
+ #catalogSection .offer-tiers .offer-tier{min-width:0!important;height:auto!important;min-height:46px;padding:4px 2px!important;flex-direction:column!important;justify-content:center;gap:2px!important;font-size:13px!important}
+ #catalogSection .offer-tiers .offer-tier-count{font-size:10.5px!important;padding:1px 6px!important}
+ #catalogSection .offer-tiers .offer-tier-main span{display:none}
+ .rf-store-shortcuts .rf-store-go{flex:1 1 140px}
+ /* Jumps to the results stop below the sticky bar (and the open search field) */
+ #catalogStart,#grid,.rf-results-bar,.empty-state{scroll-margin-top:72px!important}
+ body.rf-m-search-open :is(#catalogStart,#grid,.rf-results-bar,.empty-state){scroll-margin-top:136px!important}
+ /* Catalog details (i): full width inside the results bar instead of running off the screen */
+ #catalogSection .rf-results-bar{position:relative}
+ #catalogSection .rf-results-info .catalog-details{position:static}
+ #catalogSection .rf-results-info .catalog-details>p{left:10px!important;right:10px!important;top:52px!important;width:auto!important;max-width:none!important}
 }
 
-CATEGORY_LABELS = {
-    "femininos": "perfumeria-femininos",
-    "masculinos": "perfumeria-masculinos",
-    "esteelauder": "cosmetica-esteelauder",
-    "lancomecosmeticos": "cosmetica-lancome",
-    "clinique": "cosmetica-clinique",
-    "loreal": "cosmetica-loreal",
-    "maybelline": "cosmetica-maybelline",
-    "larocheposay": "cosmetica-larocheposay",
-    "cerave": "cosmetica-cerave",
-    "victorias": "cosmetica-victoriassecret",
-    "kerastase": "cosmetica-kerastase",
-    "wella": "cosmetica-wella",
-    "tommy-vestimesta": "ropa-tommy",
-    "barbie": "jugueteria-barbie",
-    "funkopop": "jugueteria-funkopop",
-    "pokemon": "jugueteria-pokemon",
-    "copia-de-condimentos": "chocolates",
-}
-
-
-def _valid_category_slug(path):
-    path = (path or "").strip("/").lower()
-    if not path or "/" in path or path in RESERVED_PATHS:
-        return False
-    if path.startswith(("product-page", "blank", "wix-", "_")):
-        return False
-    if any(token in path for token in ("responsabilidade", "saude-no-trabalho")):
-        return False
-    return True
-
-
-def _category_identity(path):
-    """Iguala slugs Unicode y percent-encoded (cópia == c%C3%B3pia)."""
-    try:
-        value = unquote((path or "").strip("/"))
-    except Exception:
-        value = (path or "").strip("/")
-    return unicodedata.normalize("NFC", value).casefold()
-
-
-def discover_categories():
-    """Descubre categorías desde la navegación, evitando páginas institucionales."""
-    soup = get_soup(BASE_URL, retries=3, delay=2, timeout=40)
-    if soup is None:
-        raise RuntimeError("Barão no respondió al descubrir categorías")
-
-    anchors = soup.select('nav a[href], header a[href], [role="navigation"] a[href]')
-    if not anchors:
-        anchors = soup.find_all("a", href=True)
-
-    slugs = []
-    seen = set()
-    for anchor in anchors:
-        href = anchor.get("href")
-        parsed = urlparse(urljoin(BASE_URL, href))
-        if parsed.netloc.removeprefix("www.") != urlparse(BASE_URL).netloc.removeprefix("www."):
-            continue
-        path = parsed.path.strip("/")
-        identity = _category_identity(path)
-        if _valid_category_slug(path) and identity not in seen:
-            seen.add(identity)
-            slugs.append(path)
-
-    if len(slugs) < 20:
-        raise RuntimeError(f"Barão: solo se descubrieron {len(slugs)} categorías; menú posiblemente cambió")
-    return slugs
-
-
-
-def _discover_categories_rendered(page):
-    """Segunda fuente para categorías: menú renderizado por Chromium."""
-    try:
-        navigate(page, BASE_URL, attempts=2)
-        page.wait_for_timeout(700)
-        hrefs = page.locator('nav a[href], header a[href], [role="navigation"] a[href]').evaluate_all(
-            "els => els.map(a => a.href)"
-        )
-    except Exception as exc:
-        print(f"[Barao] [aviso] no se pudo validar el menú renderizado: {exc}")
-        return []
-
-    base_host = urlparse(BASE_URL).netloc.removeprefix("www.")
-    slugs = []
-    seen = set()
-    for href in hrefs:
-        try:
-            parsed = urlparse(urljoin(BASE_URL, href))
-        except Exception:
-            continue
-        if parsed.netloc.removeprefix("www.") != base_host:
-            continue
-        slug = parsed.path.strip("/")
-        identity = _category_identity(slug)
-        if _valid_category_slug(slug) and identity not in seen:
-            seen.add(identity)
-            slugs.append(slug)
-    return slugs
-
-
-def _prices_from_text(text):
-    """Devuelve (actual, anterior) leyendo sólo texto visible de una tarjeta."""
-    if not text:
-        return None, None
-    matches = list(PRICE_RE.finditer(text.replace("\xa0", " ")))
-    prices = [clean_price(match.group(0)) for match in matches]
-    prices = [price for price in prices if isinstance(price, (int, float)) and price > 0]
-    if not prices:
-        return None, None
-    current = prices[-1]
-    original = prices[0] if len(prices) > 1 and prices[0] > current else None
-    return current, original
-
-
-
-
-def _collapse_visible_text(value):
-    return " ".join((value or "").replace("\xa0", " ").split())
-
-
-def _fill_prices_from_listing_text(products, visible_text):
-    """Completa precios usando el texto realmente visible del listado.
-
-    Wix/Barão a veces renderiza nombre y precio como componentes hermanos, por
-    lo que page.content() y el product-item-root no siempre los dejan juntos.
-    Acá ubicamos los nombres visibles en orden y limitamos cada búsqueda hasta
-    el siguiente producto para no robar el precio de la tarjeta vecina.
-    """
-    text = _collapse_visible_text(visible_text)
-    if not text or not products:
-        return 0
-
-    folded = text.casefold()
-    located = []
-    cursor = 0
-
-    # Mantener el orden que entrega la grilla es importante: si hay nombres
-    # repetidos, buscamos cada aparición a partir de la anterior.
-    for index, product in enumerate(products):
-        name = _collapse_visible_text(product.get("nombre"))
-        if not name:
-            continue
-        needle = name.casefold()
-        pos = folded.find(needle, cursor)
-        if pos < 0:
-            pos = folded.find(needle)
-        if pos < 0:
-            continue
-        located.append((pos, index, name))
-        cursor = pos + len(name)
-
-    located.sort(key=lambda item: item[0])
-    observed = 0
-    for position, (pos, index, name) in enumerate(located):
-        start = pos + len(name)
-        end = min(len(text), start + 320)
-        if position + 1 < len(located):
-            next_pos = located[position + 1][0]
-            if next_pos > start:
-                end = min(end, next_pos)
-
-        segment = text[start:end]
-        current, original = _prices_from_text(segment)
-        if current is None:
-            continue
-
-        product = products[index]
-        product["precio_usd"] = current
-        product["precio_original_usd"] = original
-        product["en_oferta"] = bool(original and original > current)
-        product["precio_fuente"] = "listado_visible"
-        observed += 1
-
-    return observed
-
-def _name_from_text(text):
-    text = " ".join((text or "").replace("\xa0", " ").split())
-    if not text:
-        return None
-    match = PRICE_RE.search(text)
-    if match:
-        text = text[:match.start()]
-    text = re.sub(r"\b(?:preço|precio|price)\s*$", "", text, flags=re.I).strip(" -–—|:")
-    if text.lower() in {"esgotado", "sold out"}:
-        return None
-    return text or None
-
-
-def _product_from_visible_row(row, category, existing=None):
-    """Combina una tarjeta renderizada con el registro HTML; el precio visible gana."""
-    existing = dict(existing or {})
-    url = (row.get("url") or existing.get("url") or "").split("#")[0]
-    if not url:
-        return None
-    current, original = _prices_from_text(row.get("text"))
-    name = row.get("name") or existing.get("nombre") or _name_from_text(row.get("text"))
-    if not name:
-        return None
-
-    product = {
-        "tienda": "Barão Free Shop",
-        "nombre": name,
-        "precio_usd": existing.get("precio_usd"),
-        "precio_original_usd": existing.get("precio_original_usd"),
-        "en_oferta": existing.get("en_oferta", False),
-        "categoria": category,
-        "url": url,
-        "imagen": row.get("image") or existing.get("imagen"),
-    }
-    # El DOM visible es la fuente más fiel: si el usuario ve un precio ahí,
-    # reemplaza cualquier valor incompleto obtenido del HTML serializado.
-    if current is not None:
-        product["precio_usd"] = current
-        product["precio_original_usd"] = original
-        product["en_oferta"] = bool(original and original > current)
-    return product
-
-
-def _collect_visible_rows(page):
-    """Obtiene una fila por producto usando el DOM que el navegador realmente muestra.
-
-    Wix puede colocar el precio como hermano del link/título y fuera del
-    product-item-root. Subimos por los padres sólo mientras el contenedor siga
-    perteneciendo a UN único producto; así no tomamos el precio de la tarjeta vecina.
-    """
-    return page.locator('a[href*="/product-page/"]').evaluate_all(
-        r"""
-        links => {
-          const byUrl = new Map();
-          for (const a of links) {
-            const href = (a.href || '').split('#')[0];
-            if (!href) continue;
-            let node = a;
-            let chosen = null;
-            for (let i = 0; i < 9 && node; i++, node = node.parentElement) {
-              const hrefs = [...node.querySelectorAll('a[href*="/product-page/"]')]
-                .map(x => (x.href || '').split('#')[0])
-                .filter(Boolean);
-              const unique = [...new Set(hrefs)];
-              if (unique.length !== 1 || unique[0] !== href) continue;
-              chosen = node;
-              const text = (node.innerText || '').replace(/\u00a0/g, ' ');
-              if (/(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*[0-9]/i.test(text) || /esgotado/i.test(text)) {
-                break;
-              }
-            }
-            const root = a.closest('[data-hook="product-item-root"]') || chosen || a.parentElement || a;
-            const nameEl = root.querySelector('[data-hook="product-item-name"]');
-            const img = root.querySelector('img') || (chosen && chosen.querySelector('img'));
-            const candidate = chosen || root;
-            const text = (candidate.innerText || root.innerText || a.innerText || '').trim();
-            let name = (nameEl && nameEl.innerText || '').trim();
-            if (!name) {
-              name = (a.getAttribute('aria-label') || '').trim();
-            }
-            if (!name && img) name = (img.getAttribute('alt') || '').trim();
-            const image = img ? (img.currentSrc || img.src || img.getAttribute('data-src') || null) : null;
-            const old = byUrl.get(href);
-            const score = (/(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*[0-9]/i.test(text) ? 10 : 0) + text.length;
-            if (!old || score > old.score) byUrl.set(href, {url: href, text, name, image, score});
-          }
-          return [...byUrl.values()];
-        }
-        """
-    )
-
-
-def _extract_rendered_products(page, category):
-    """Fusiona extracción Wix tradicional con el DOM visible renderizado."""
-    from bs4 import BeautifulSoup
-
-    generic = extract_wix_products(
-        BeautifulSoup(page.content(), "html.parser"),
-        "Barão Free Shop",
-        category,
-        BASE_URL,
-    )
-    by_url = {p.get("url"): p for p in generic if p.get("url")}
-
-    for row in _collect_visible_rows(page):
-        row["url"] = urljoin(BASE_URL, row.get("url") or "")
-        existing = by_url.get(row["url"])
-        product = _product_from_visible_row(row, category, existing)
-        if product:
-            by_url[product["url"]] = product
-
-    return list(by_url.values())
-
-
-def _expand_current_page(page, max_rounds=220):
-    """Carga todos los 'Ver mais' conservando una medición basada en links reales."""
-    previous = -1
-    stable = 0
-    for _ in range(max_rounds):
-        count = page.locator('a[href*="/product-page/"]').evaluate_all(
-            "els => new Set(els.map(a => (a.href || '').split('#')[0]).filter(Boolean)).size"
-        )
-        stable = stable + 1 if count == previous else 0
-        previous = count
-        more = page.get_by_role("button", name=re.compile(
-            r"ver mais|mostrar mais|carregar mais|load more|show more|ver más|cargar más", re.I
-        ))
-        active = False
-        if more.count():
-            button = more.last
-            active = button.is_visible() and button.is_enabled()
-            if active:
-                button.click(timeout=10000)
-                page.wait_for_timeout(900)
-        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        page.wait_for_timeout(500)
-        if stable >= 3 and not active:
-            return count
-        if stable >= 8 and active:
-            raise RuntimeError("Barão: 'Ver mais' quedó activo pero la grilla dejó de crecer")
-    raise RuntimeError("Barão: límite de expansión de categoría alcanzado")
-
-
-def scrape_category(slug, page):
-    """Procesa una categoría sin perder páginas ya leídas ante un fallo posterior."""
-    url = f"{BASE_URL}/{slug}"
-    category = CATEGORY_LABELS.get(slug, slug)
-    products = {}
-    signatures = set()
-    try:
-        from bs4 import BeautifulSoup
-        navigate(page, url, 'a[href*="/product-page/"], [data-hook="empty-gallery-title"]')
-        if not page.locator('a[href*="/product-page/"]').count() and explicit_empty_catalog(BeautifulSoup(page.content(), 'html.parser')):
-            LAST_RUN_STATUS.setdefault('categorias_vacias', []).append(slug)
-            return []
-        for page_no in range(1, 301):
-            try:
-                loaded = _expand_current_page(page)
-                found = _extract_rendered_products(page, category)
-                if not found:
-                    raise RuntimeError("categoría sin productos legibles")
-
-                try:
-                    visible_text = page.locator("body").inner_text(timeout=10000)
-                except Exception:
-                    visible_text = ""
-                visible_prices = _fill_prices_from_listing_text(found, visible_text)
-
-                signature = tuple(sorted(p["url"] for p in found if p.get("url")))
-                if signature in signatures:
-                    raise RuntimeError("página repetida")
-                signatures.add(signature)
-                for product in found:
-                    products[product["url"]] = product
-                priced = sum(p.get("precio_usd") is not None for p in found)
-                print(
-                    f"[Barao]   {slug} página {page_no}: {len(found)} productos, "
-                    f"{priced} con precio ({visible_prices} confirmados por texto visible; DOM {loaded} links)"
-                )
-
-                next_button = page.locator('[data-hook="pagination__next"], a[rel="next"]').first
-                if (
-                    not next_button.count()
-                    or not next_button.is_visible()
-                    or not next_button.is_enabled()
-                    or next_button.get_attribute("aria-disabled") == "true"
-                ):
-                    return list(products.values())
-                next_button.click(timeout=10000)
-                page.wait_for_timeout(1800)
-            except Exception as exc:
-                if products:
-                    LAST_RUN_STATUS.update(
-                        partial=True,
-                        warning="Barão: una parte de una categoría falló; se conservaron los avances",
-                    )
-                    print(f"[Barao] [aviso] {slug} página {page_no}: {exc}")
-                    return list(products.values())
-                raise
-    except Exception as exc:
-        LAST_RUN_STATUS.setdefault('categorias_fallidas', []).append({'categoria': slug, 'error': str(exc)[:300]})
-        LAST_RUN_STATUS.update(
-            partial=True,
-            warning="Barão: categorías fallidas; se conservan productos anteriores",
-        )
-        print(f"[Barao] [aviso] se omite {url}: {exc}")
-        return list(products.values())
-
-
-def _detail_price_from_page(page):
-    """Lee precio del bloque principal de la ficha sin tocar recomendaciones."""
-    from bs4 import BeautifulSoup
-
-    current, original = extract_wix_detail_price(BeautifulSoup(page.content(), "html.parser"))
-    if current is not None:
-        return current, original
-
-    # Algunos templates viejos de Barão no usan product-prices-wrapper.
-    text = page.locator('h1, [data-hook="product-title"]').first.evaluate(
-        r"""
-        title => {
-          let node = title;
-          for (let i = 0; i < 8 && node; i++, node = node.parentElement) {
-            const text = (node.innerText || '').replace(/\u00a0/g, ' ');
-            if (/(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*[0-9]/i.test(text)) return text;
-          }
-          return title.innerText || '';
-        }
-        """
-    )
-    return _prices_from_text(text)
-
-
-def _recover_missing_prices(page, products):
-    missing = [p for p in products if p.get("precio_usd") is None and p.get("url")]
-    if not missing:
-        return 0, 0
-
-    started = time.monotonic()
-    recovered = 0
-    attempted = 0
-    failed = 0
-    limit = len(missing) if DETAIL_RECOVERY_LIMIT is None else min(len(missing), DETAIL_RECOVERY_LIMIT)
-
-    for product in missing[:limit]:
-        if time.monotonic() - started >= DETAIL_RECOVERY_BUDGET_SECONDS:
-            print(
-                f"[Barao] [aviso] presupuesto de recuperación agotado tras {attempted}/{len(missing)} fichas; "
-                f"recuperados {recovered}, fallidos {failed}"
-            )
-            break
-        attempted += 1
-        try:
-            navigate(page, product["url"], 'h1, [data-hook="product-title"]', attempts=2)
-            page.wait_for_timeout(350)
-            current, original = _detail_price_from_page(page)
-            if current is not None:
-                product["precio_usd"] = current
-                product["precio_original_usd"] = original
-                product["en_oferta"] = bool(original and original > current)
-                product["precio_fuente"] = "ficha"
-                recovered += 1
-            else:
-                failed += 1
-        except Exception as exc:
-            failed += 1
-            print(f"[Barao] [aviso] ficha sin precio {product['url']}: {exc}")
-
-        if attempted % 100 == 0 or attempted == limit:
-            pending_now = max(0, len(missing) - recovered)
-            print(
-                f"[Barao] recuperación {attempted}/{len(missing)}; "
-                f"recuperados {recovered}; fallidos {failed}; pendientes {pending_now}"
-            )
-
-    pending = sum(p.get("precio_usd") is None for p in products)
-    return recovered, pending
-
-
-def _prefer_complete_duplicate(old, new):
-    if old is None:
-        return new
-    old_score = int(old.get("precio_usd") is not None) * 4 + int(bool(old.get("imagen"))) + len(old.get("nombre") or "") / 1000
-    new_score = int(new.get("precio_usd") is not None) * 4 + int(bool(new.get("imagen"))) + len(new.get("nombre") or "") / 1000
-    return new if new_score >= old_score else old
-
-
-def run():
-    LAST_RUN_STATUS.clear()
-    from playwright.sync_api import sync_playwright
-
-    all_products = {}
-    raw_keys = set()
-    canonical_collisions = 0
-    with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
-        page = browser.new_page()
-        page.set_extra_http_headers({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                          "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-        })
-
-        categories = discover_categories()
-        html_category_count = len(categories)
-        rendered_categories = _discover_categories_rendered(page)
-        category_ids = {_category_identity(slug) for slug in categories}
-        for slug in rendered_categories:
-            identity = _category_identity(slug)
-            if identity not in category_ids:
-                category_ids.add(identity)
-                categories.append(slug)
-        print(
-            f"[Barao] {len(categories)} categorías únicas "
-            f"(HTML {html_category_count}, renderizado {len(rendered_categories)})"
-        )
-        for slug in categories:
-            print(f"[Barao] recorriendo categoria: {slug}")
-            found = scrape_category(slug, page)
-            for product in found:
-                raw_key = product.get("url") or product.get("nombre")
-                if raw_key:
-                    raw_keys.add(raw_key)
-                key = canonical_product_url(product.get("url")) or (
-                    "fallback", product.get("nombre"), product.get("categoria")
-                )
-                if key in all_products:
-                    canonical_collisions += 1
-                all_products[key] = _prefer_complete_duplicate(all_products.get(key), product)
-            print(f"[Barao]   -> {len(found)} productos")
-
-        products = list(all_products.values())
-        print(
-            f"[Barao] normalización: {len(raw_keys)} URLs/registros distintos -> "
-            f"{len(products)} productos canónicos; {canonical_collisions} duplicados fusionados"
-        )
-        listing_prices = sum(p.get("precio_usd") is not None for p in products)
-        missing_before = len(products) - listing_prices
-        print(
-            f"[Barao] listado terminado: {len(products)} productos; "
-            f"{listing_prices} con precio; {missing_before} pendientes"
-        )
-
-        recovered, pending = _recover_missing_prices(page, products)
-        print(f"[Barao] detalle: {recovered} precios recuperados; {pending} pendientes")
-        browser.close()
-
-    if pending:
-        LAST_RUN_STATUS.update(
-            partial=True,
-            warning=LAST_RUN_STATUS.get("warning") or f"Barão: {pending} productos siguen sin precio confirmado",
-        )
-
-    LAST_RUN_STATUS.update({
-        "fresh_products": len(products),
-        "prices_listing": listing_prices,
-        "prices_recovered": recovered,
-        "prices_pending": pending,
-        "metrics": {
-            "precios_desde_listado": listing_prices,
-            "precios_recuperados": recovered,
-            "categorias_vacias": LAST_RUN_STATUS.get('categorias_vacias', []),
-            "categorias_fallidas": len(LAST_RUN_STATUS.get('categorias_fallidas', [])),
-            "detalle_categorias_fallidas": LAST_RUN_STATUS.get('categorias_fallidas', []),
-        },
-    })
-
-    out_dir = Path(__file__).parent.parent / "data"
-    finalize_scrape(products, "barao", out_dir, LAST_RUN_STATUS)
-    return products
-
-
-if __name__ == "__main__":
-    run()
+.rf-m-head-social{display:flex;flex:1;min-width:0;flex-wrap:wrap;justify-content:flex-end;gap:2px}
+.rf-m-head-social a{display:inline-flex;align-items:center;justify-content:center;min-width:36px;min-height:40px}
+.rf-m-head-social .rf-app-icon{width:28px;height:28px}
+.rf-m-brand,.rf-m-close{flex-shrink:0}
+@media(max-width:650px){.rf-m-settings{grid-column:3;grid-row:1;justify-self:center;color:#ffb5b9}.topbar .brand :is(h1,.seo-brand-title){font-size:23px!important}}
