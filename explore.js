@@ -1,170 +1,583 @@
-/* Personal history stays in this browser; global popularity comes from the feed. */
-(() => {
- const $=id=>document.getElementById(id),M=window.RivFreeExploreModel;
- const text=(es,pt)=>LANG==='es'?es:(pt||es);
- const node=(tag,label,cls)=>{const n=document.createElement(tag);if(label)n.textContent=label;if(cls)n.className=cls;return n;};
- const btn=(label,fn,cls)=>{const b=node('button',label,cls);b.type='button';b.onclick=fn;return b;};
- const historyKey='rivfree-search-history';let searches=[];
- try{searches=M.history(JSON.parse(localStorage.getItem(historyKey)||'[]'));}catch{}
- function saveHistory(){try{localStorage.setItem(historyKey,JSON.stringify(searches));}catch{}}
- const main=document.querySelector('main'),input=$('search');
- function section(id,title){const s=node('section',null,'popular-section rf-personal-section');s.id=id;const heading=node('div',null,'section-heading'),wrap=node('div');wrap.append(node('span','RIVFREE','eyebrow'),node('h2',title),node('p'));heading.append(wrap);const grid=node('div',null,'popular-rail');grid.tabIndex=0;grid.setAttribute('role','region');grid.setAttribute('aria-label',title);grid.addEventListener('click',handleProductClick);s.append(heading,grid);return s;}
- const recommended=section('basedOnSearches',text('Inspirado en tus búsquedas','Inspirado nas suas buscas'));
- const recent=node('div',null,'rf-history-chips');recommended.insertBefore(recent,recommended.lastChild);
- const most=section('mostSearched',text('Más buscados','Mais buscados'));main.append(recommended,most);
- const clearPersonal=btn(text('Borrar consultas','Limpar consultas'),()=>{consultations.clear();try{localStorage.removeItem('rivfree-consultations');}catch{}renderPopularProducts();},'rf-text-button');$('popularProducts').querySelector('.section-heading').append(clearPersonal);
- const homePanel=node('section',null,'rf-search-home');homePanel.id='searchHome';homePanel.hidden=true;homePanel.setAttribute('aria-label',text('Historial y descubrimiento','Histórico e descobertas'));homePanel.setAttribute('role','dialog');$('searchForm').append(homePanel);
- let cachedCatalog=null,cachedSignature='',randomGroups=[],rankedGroups=[],facetCounts=new Map(),facetMatches=new Map(),activeFamily='phones';
- function runQuery(query){input.value=query;hidePanel();runSearch();}
- function chips(container){container.replaceChildren();for(const item of searches){const chip=node('span',null,'rf-history-chip');chip.append(btn('⌕ '+item.query,()=>runQuery(item.query)));const remove=btn('×',()=>{const inside=homePanel.contains(remove);searches=searches.filter(x=>x!==item);saveHistory();drawPanel();renderPopularProducts();if(inside)homePanel.querySelector('button')?.focus();},'rf-history-remove');remove.setAttribute('aria-label',text('Eliminar búsqueda: ','Excluir busca: ')+item.query);chip.append(remove);container.append(chip);}}
- function drawPanel(){homePanel.replaceChildren();const top=node('div',null,'rf-panel-heading');top.append(node('strong',text('Historial de búsqueda','Histórico de busca')),btn(text('Borrar todo','Limpar tudo'),()=>{searches=[];saveHistory();drawPanel();renderPopularProducts();homePanel.querySelector('button')?.focus();},'rf-text-button'));homePanel.append(top);const historyBox=node('div',null,'rf-history-chips');chips(historyBox);homePanel.append(historyBox);
-  if(!searches.length)homePanel.append(node('p',text('Tus próximas búsquedas aparecerán aquí.','Suas próximas buscas aparecerão aqui.'),'rf-muted'));
-  homePanel.append(node('strong',rankedGroups.length?text('Más buscados','Mais buscados'):text('Para descubrir','Para descobrir')));const mini=node('div',null,'rf-search-mini');
-  for(const g of (rankedGroups.length?rankedGroups:randomGroups).slice(0,6)){const a=node('a');a.href='#/producto/'+encodeURIComponent(g.key);const src=safeImageUrl(g.offers.find(o=>safeImageUrl(o.imagen))?.imagen);if(src){const img=node('img');img.src=src;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();a.append(img);}a.append(node('span',readableProductName(g.name)));a.onclick=()=>{hidePanel();recordProductConsult(g.key);};mini.append(a);}homePanel.append(mini);
- }
- function showPanel(){closeSearchSuggestions();drawPanel();homePanel.hidden=false;input.setAttribute('aria-expanded','true');input.setAttribute('aria-controls','searchHome');input.setAttribute('aria-haspopup','dialog');}
- function hidePanel(){homePanel.hidden=true;input.setAttribute('aria-controls','searchSuggestions');input.setAttribute('aria-haspopup','listbox');input.setAttribute('aria-expanded',String(!$('searchSuggestions').hidden));}
- input.addEventListener('focus',showPanel);input.addEventListener('click',showPanel);
- input.addEventListener('input',()=>{if(input.value.trim())hidePanel();else showPanel();});
- input.addEventListener('keydown',e=>{if(!homePanel.hidden&&e.key==='ArrowDown'){e.preventDefault();homePanel.querySelector('button,a')?.focus();}if(e.key==='Escape')hidePanel();});
- homePanel.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();input.focus();hidePanel();}});
- document.addEventListener('pointerdown',e=>{if(!$('searchForm').contains(e.target))hidePanel();});
- $('searchForm').addEventListener('focusout',()=>setTimeout(()=>{if(!$('searchForm').contains(document.activeElement))hidePanel();},0));
- const priorSearch=runSearch;
- runSearch=async function(){const query=input.value.trim();if(query){searches=M.history(searches,query);saveHistory();}clearFacet();hidePanel();await priorSearch();railsStale=true;cachedSignature='';};
- function clearFacet(){const u=new URL(location.href);u.searchParams.delete('facet');history.replaceState(null,'',u);}
- const priorCategory=selectCampaignCategory;
- let facetActivating=false;
- selectCampaignCategory=function(category,options){if(!facetActivating)clearFacet();return priorCategory(category,options);};
- // Facet filter used by getFiltered() to narrow the candidates before any other work.
- window.RivFreeFacet=()=>{const id=new URL(location.href).searchParams.get('facet');if(!id)return null;if(!facetsReady())buildFacetsNow();const keys=facetMatches.get(id);return keys?{id,keys}:null;};
- $('clearFilters').addEventListener('click',()=>{clearFacet();render(true);});
- function fill(grid,groups){const scroll=grid.scrollLeft;grid.classList.toggle('few-products',groups.length<5);grid.replaceChildren(...groups.map(g=>createProductCard({...g,visibleOffers:g.offers})));grid.scrollLeft=scroll;}
- function syncVisibility(detail,results){const visible=window.RIVFREE_SITE_CONFIG?.homepage?.visible||{};recommended.hidden=detail||results||visible.recommended===false;most.hidden=detail||visible.most===false||!rankedGroups.length;const facet=facets.find(f=>f.id===new URL(location.href).searchParams.get('facet'));if(results&&facet)$('catalogStart').querySelector('h2').textContent=facetLabel(facet);}
- function renderPersonal(){
-  if(!PRODUCT_GROUPS.length)return;
-  const signature=JSON.stringify([LANG,searches,[...consultations],[...favorites],referenceCurrency,exchange.rate,popularFeed]);
-  if(cachedCatalog===PRODUCT_GROUPS&&cachedSignature===signature)return;
-  if(cachedCatalog!==PRODUCT_GROUPS){randomGroups=shuffled(PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice))).slice(0,8);scheduleFacets();cachedCatalog=PRODUCT_GROUPS;}
-  cachedSignature=signature;
-  const totals=new Map((popularFeed?.items||[]).filter(i=>Number.isInteger(i.searches)&&i.searches>0).map(i=>[i.url,i.searches]));
-  rankedGroups=PRODUCT_GROUPS.map(g=>({g,n:g.offers.reduce((a,o)=>a+(totals.get(o.url)||0),0)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,12).map(x=>x.g);
-  const personal=PRODUCT_GROUPS.filter(g=>consultations.has(g.key)).sort((a,b)=>consultations.get(b.key).count-consultations.get(a.key).count||consultations.get(b.key).last-consultations.get(a.key).last).slice(0,12);
-  $('popularTitle').textContent=text('Más consultados por ti','Mais consultados por você');$('popularNote').textContent=personal.length?text('Los productos que más abriste, guardados solo en este navegador.','Os produtos que você mais abriu, salvos apenas neste navegador.'):text('Abrí un producto para empezar tu selección personal.','Abra um produto para começar sua seleção pessoal.');
-  $('popularProducts').querySelector('.eyebrow').textContent=text('TU ACTIVIDAD','SUA ATIVIDADE');clearPersonal.textContent=text('Borrar consultas','Limpar consultas');clearPersonal.hidden=!personal.length;fill($('popularGrid'),personal);updatePopularArrows();
-  recommended.querySelector('h2').textContent=text('Inspirado en tus búsquedas','Inspirado nas suas buscas');recommended.querySelector('.section-heading p').textContent=searches.length?text('Productos relacionados con tus búsquedas recientes.','Produtos relacionados às suas buscas recentes.'):text('Cuando busques, te mostraremos opciones relacionadas aquí.','Ao buscar, mostraremos opções relacionadas aqui.');chips(recent);
-  const queries=searches.slice(0,6).map(s=>Catalog.searchQuery(s.query));const suggestions=PRODUCT_GROUPS.map(g=>({g,score:queries.reduce((n,q,i)=>n+(g.offers.some(o=>Catalog.matchesSearch(o,q))?6-i:0),0)})).filter(x=>x.score>0&&x.g.offers.some(hasPrice)).sort((a,b)=>b.score-a.score).slice(0,8).map(x=>x.g);fill(recommended.lastChild,suggestions);
-  if(searches.length&&!suggestions.length)recommended.lastChild.append(node('p',text('No encontramos productos para esas búsquedas. Probá con otro término.','Não encontramos produtos para essas buscas. Tente outro termo.')));
-  most.querySelector('h2').textContent=text('Más buscados','Mais buscados');most.querySelector('.section-heading p').textContent=rankedGroups.length?text('Selecciones desde búsquedas de los últimos 30 días.','Seleções a partir de buscas nos últimos 30 dias.'):text('Todavía no hay suficientes datos: por ahora mostramos una selección aleatoria.','Ainda não há dados suficientes: por enquanto mostramos uma seleção aleatória.');fill(most.lastChild,rankedGroups.length?rankedGroups:randomGroups);most.hidden=!rankedGroups.length||window.RIVFREE_SITE_CONFIG?.homepage?.visible?.most===false;
-  const ids={hero:'heroCampaign',benefits:'shoppingBenefits',discover:'discoverProducts',popular:'popularProducts',recommended:'basedOnSearches',most:'mostSearched'};for(const key of [...new Set([...(window.RIVFREE_SITE_CONFIG?.homepage?.order||[]),...Object.keys(ids)])]){if(ids[key])main.append($(ids[key]));}drawCategories();if(!homePanel.hidden)drawPanel();
- }
- // Below-the-fold rails run in their own task so the first screen paints sooner.
- let personalQueued=false;
- function queuePersonal(){if(personalQueued)return;personalQueued=true;setTimeout(()=>{personalQueued=false;renderPersonal();},0);}
- // The home rails are rebuilt only while they are visible; results and detail pages skip that work.
- let railsStale=true;
- renderPopularProducts=function(){const type=location.hash.split('/')[1],detail=['producto','tienda','tiendas'].includes(type),results=type==='buscar'||!!ACTIVE_SEARCH.trim()||selectedCategories().length>0||$('soloOfertas').checked||$('favoritesOnly').checked;
-  if(detail||results){railsStale=true;if(PRODUCT_GROUPS.length&&cachedCatalog!==PRODUCT_GROUPS)scheduleFacets();}else{renderDiscoverProducts();queuePersonal();railsStale=false;}
-  $('popularProducts').hidden=detail||results||window.RIVFREE_SITE_CONFIG?.homepage?.visible?.popular===false;const link=document.querySelector('a[href="#popularProducts"]');if(link)link.hidden=$('popularProducts').hidden;syncVisibility(detail,results);};
- const categoryMenu=document.querySelector('.rf-category-menu');
- const oldOptions=categoryMenu.querySelector('.rf-category-options');oldOptions.hidden=true;oldOptions.classList.remove('rf-category-options');
- const mega=node('div',null,'rf-mega-menu');categoryMenu.append(mega);
- // Each family lists curated shortcuts plus brands and product types found in the live catalog.
- const familyCategories={tech:['electronica'],computers:['informatica'],perfumes:['perfumes'],drinks:['bebidas'],beauty:['cosmetica'],food:['alimentos'],home:['hogar','electrodomesticos']};
- const covered=['perfumes','bebidas','alimentos','cosmetica','electronica','informatica','electrodomesticos','hogar'];
- const families=[...M.taxonomy,...Object.entries(Catalog.categories).filter(([id])=>!covered.includes(id)).map(([id,labels])=>({id,es:labels[0],pt:labels[1],match:p=>p.categoryId===id,brands:[],types:[]}))];
- for(const f of families){f.categories=familyCategories[f.id]||(Catalog.categories[f.id]?[f.id]:[]);f.dynamicBrands=[];f.dynamicTypes=[];f.dynamic=!['phones','gaming','apple'].includes(f.id);}
- let facets=families.flatMap(f=>[f,...f.brands,...f.types]);
- const facetSlug=s=>M.normalize(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
- let brandIndex=null,facetCatalog=null,facetJob=null,facetSteps=null;
- const facetsReady=()=>facetCatalog===PRODUCT_GROUPS&&!facetSteps;
- // Generator so the same work can run in 10 ms slices (background) or all at once (facet in the URL).
- function* facetIndexSteps(){
-  const CI=window.RivFreeCategoryIndex,groups=PRODUCT_GROUPS;
-  // Brands normally come precomputed from the catalog worker; older cached data falls back here.
-  if(CI&&ALL_PRODUCTS.length&&!ALL_PRODUCTS.some(p=>p.brandKey)){brandIndex=CI.build(ALL_PRODUCTS);yield;}else brandIndex=null;
-  const brandOf=p=>p.brandKey?{key:p.brandKey,label:p.brandLabel}:(brandIndex?brandIndex.brandOf(p):null);
-  const matches=new Map(families.flatMap(f=>[f,...f.brands,...f.types]).map(f=>[f.id,new Set()]));
-  const brandSets=new Map(families.map(f=>[f.id,new Map()]));
-  const typeDefs=new Map(families.map(f=>[f.id,f.dynamic&&CI?f.categories.flatMap(c=>CI.types(c)):[]]));
-  const typeSets=new Map(families.map(f=>[f.id,typeDefs.get(f.id).map(()=>new Set())]));
-  for(let index=0;index<groups.length;index++){
-   const g=groups[index];
-   for(const family of families){
-    const offers=g.offers.filter(family.match);if(!offers.length)continue;
-    matches.get(family.id).add(g.key);
-    for(const f of family.brands)if(offers.some(f.match))matches.get(f.id).add(g.key);
-    for(const f of family.types)if(offers.some(f.match))matches.get(f.id).add(g.key);
-    if(!family.dynamic)continue;
-    const brands=brandSets.get(family.id);
-    for(const o of offers){const b=brandOf(o);if(!b)continue;let entry=brands.get(b.key);if(!entry)brands.set(b.key,entry={brand:b,keys:new Set()});entry.keys.add(g.key);}
-    const defs=typeDefs.get(family.id);
-    if(defs.length){const sets=typeSets.get(family.id),names=offers.map(o=>M.normalize(o.nombre));for(let i=0;i<defs.length;i++)if(names.some(n=>defs[i].regex.test(n)))sets[i].add(g.key);}
-   }
-   if(index%60===59)yield;
-  }
-  for(const family of families){
-   const curatedKeys=family.brands.map(b=>M.normalize(b.label).replace(/[^a-z0-9]/g,''));
-   family.dynamicBrands=[...brandSets.get(family.id).values()].filter(x=>x.keys.size>=2&&!curatedKeys.some(k=>k.includes(x.brand.key)||x.brand.key.includes(k))).sort((a,b)=>b.keys.size-a.keys.size||a.brand.label.localeCompare(b.brand.label)).slice(0,60).map(x=>{const id=family.id+'-b-'+x.brand.key;matches.set(id,x.keys);return {id,label:x.brand.label,kind:'brand'};});
-   const curatedTypes=family.types.map(t=>M.normalize(t.label));
-   family.dynamicTypes=typeDefs.get(family.id).map((t,i)=>({t,keys:typeSets.get(family.id)[i]})).filter(x=>x.keys.size&&!curatedTypes.includes(M.normalize(x.t.es))&&!curatedTypes.includes(M.normalize(x.t.pt))).map(x=>{const id=family.id+'-t-'+facetSlug(x.t.es);matches.set(id,x.keys);return {id,es:x.t.es,pt:x.t.pt,kind:'type'};});
-  }
-  facetMatches=matches;
-  facets=families.flatMap(f=>[f,...f.brands,...f.types,...f.dynamicBrands,...f.dynamicTypes]);
-  facetCounts=new Map([...facetMatches].map(([id,set])=>[id,set.size]));
- }
- function startFacets(){if(facetCatalog!==PRODUCT_GROUPS){facetCatalog=PRODUCT_GROUPS;facetSteps=facetIndexSteps();}}
- function finishFacets(){facetSteps=null;facetJob=null;if(categoryMenu.open)drawCategories();window.dispatchEvent(new CustomEvent('rivfree:facets-ready'));}
- function buildFacetsNow(){if(!PRODUCT_GROUPS.length)return;startFacets();if(!facetSteps)return;while(!facetSteps.next().done);finishFacets();}
- function buildFacets(){
-  if(!PRODUCT_GROUPS.length)return Promise.resolve();
-  startFacets();if(!facetSteps)return Promise.resolve();
-  return facetJob||=new Promise(resolve=>{
-   const catalog=PRODUCT_GROUPS;
-   const slice=()=>{
-    if(facetCatalog!==catalog||!facetSteps){resolve();return;}
-    const until=performance.now()+10;
-    while(performance.now()<until){if(facetSteps.next().done){finishFacets();resolve();return;}}
-    setTimeout(slice,0);
-   };
-   slice();
-  });
- }
- // Started when the browser is idle after the catalog loads, or immediately when the menu opens.
- function scheduleFacets(){if(facetsReady()||facetJob)return;const run=()=>buildFacets();if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:5000});else setTimeout(run,1500);}
- function facetLabel(f){return f.label||f[LANG==='es'?'es':'pt'];}
- function activateFacet(f){const u=new URL(location.href);u.searchParams.set('facet',f.id);u.hash='/buscar';history.replaceState(null,'',u);categoryMenu.open=false;facetActivating=true;try{selectCampaignCategory('');}finally{facetActivating=false;}$('catalogStart').scrollIntoView({block:'start'});}
- const expanded=new Set();
- categoryMenu.addEventListener('toggle',()=>{if(categoryMenu.open&&!facetsReady()){drawCategories();buildFacets();}});
- function drawCategories(){mega.replaceChildren();const tabs=node('div',null,'rf-mega-families'),panel=node('div',null,'rf-mega-panel');tabs.append(btn(text('Todas las categorías','Todas as categorias'),()=>{categoryMenu.open=false;selectCampaignCategory('');}));
-  const ready=facetsReady();
-  for(const f of families){if(ready&&!(facetCounts.get(f.id)>0))continue;const b=btn(f[LANG==='es'?'es':'pt'],()=>{activeFamily=f.id;drawCategories();mega.querySelector(`[data-family="${f.id}"]`)?.focus();});b.dataset.family=f.id;b.setAttribute('aria-expanded',String(f.id===activeFamily));b.setAttribute('aria-controls','categoryDetailPanel');const n=ready?facetCounts.get(f.id):0;if(n)b.append(node('span',n.toLocaleString(LANG),'rf-mega-count'));tabs.append(b);}
-  const family=families.find(f=>f.id===activeFamily)||families[0];panel.id='categoryDetailPanel';panel.append(node('h2',family[LANG==='es'?'es':'pt']));
-  if(!ready){panel.append(node('p',PRODUCT_GROUPS.length?text('Cargando marcas y tipos…','Carregando marcas e tipos…'):text('Cargando categorías…','Carregando categorias…'),'rf-muted rf-mega-loading'));mega.append(tabs,panel);if(PRODUCT_GROUPS.length&&categoryMenu.open)buildFacets();return;}
-  panel.append(btn(text('Ver todos','Ver todos')+' · '+(facetCounts.get(family.id)||0).toLocaleString(LANG),()=>activateFacet(family),'rf-text-button'));
-  const brandItems=[...family.brands,...family.dynamicBrands].filter(f=>(facetCounts.get(f.id)||0)>0).sort((a,b)=>facetCounts.get(b.id)-facetCounts.get(a.id));
-  const typeItems=[...family.types,...family.dynamicTypes].filter(f=>(facetCounts.get(f.id)||0)>0).sort((a,b)=>facetCounts.get(b.id)-facetCounts.get(a.id));
-  for(let [key,title,items,limit] of [['brands',text('Marcas destacadas','Marcas em destaque'),brandItems,14],['types',text('Tipos y características','Tipos e características'),typeItems,12]])if(items.length){
-   if(items.length<=limit+3)limit=items.length;
-   const box=node('section');box.append(node('h3',title));const links=node('div',null,'rf-mega-links'+(key==='brands'?' rf-mega-brands':''));const open=expanded.has(family.id+key);
-   for(const f of items.slice(0,open?items.length:limit)){const count=facetCounts.get(f.id)||0;const b=btn('',()=>activateFacet(f));b.append(node('span',facetLabel(f),'rf-mega-label'),node('span',count.toLocaleString(LANG),'rf-mega-count'));b.setAttribute('aria-label',facetLabel(f)+' · '+count);links.append(b);}
-   box.append(links);
-   if(items.length>limit){const more=btn(open?text('Ver menos','Ver menos'):text(`Ver ${items.length-limit} más`,`Ver mais ${items.length-limit}`),()=>{if(open)expanded.delete(family.id+key);else expanded.add(family.id+key);drawCategories();mega.querySelector(`.rf-mega-more[data-more="${key}"]`)?.focus();},'rf-text-button rf-mega-more');more.dataset.more=key;more.setAttribute('aria-expanded',String(open));box.append(more);}
-   panel.append(box);
-  }
-  if(PRODUCT_GROUPS.length&&!brandItems.length&&!typeItems.length)panel.append(node('p',text('Explorá los productos disponibles de esta categoría.','Explore os produtos disponíveis nesta categoria.')));mega.append(tabs,panel);
- }
- function appendWhatsApp(actions,offer){const url=M.whatsapp(STORE_INFO[offer.tienda]);const label='WhatsApp · '+offer.tienda;let a;
-  if(url){url.searchParams.set('text',text('Hola, quisiera consultar por ','Olá, gostaria de consultar sobre ')+offer.nombre+(safeHttpUrl(offer.url)?' '+offer.url:''));a=node('a');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';}else{a=node('button');a.type='button';a.disabled=true;}
-  a.className='rf-whatsapp';a.setAttribute('aria-label',url?label:text('WhatsApp no informado: ','WhatsApp não informado: ')+offer.tienda);a.title=url?label:text('Esta tienda aún no tiene WhatsApp confirmado','Esta loja ainda não tem WhatsApp confirmado');
-  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const p=document.createElementNS(svg.namespaceURI,'path');p.setAttribute('d','M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.6-4.7a8.5 8.5 0 1 1 15.9-4.3Z M8 7.5c.5 4 2.5 6 6.5 7l1.5-2-2.5-1-1 1c-1.5-.7-2.3-1.5-3-3l1-1L9 6.5Z');svg.append(p);a.append(svg,node('span','WhatsApp'));actions.append(a);
- }
- // families/ready/build are used by the phone menu (mobile-shell.js) to list categories, brands and types.
- window.RivFreeExplore={syncVisibility,appendWhatsApp,facets:()=>facets,facetCounts:()=>facetCounts,activateFacet,brandIndex:()=>brandIndex,families:()=>families,ready:()=>facetsReady(),build:()=>buildFacets(),label:f=>facetLabel(f)};
- window.addEventListener('rivfree:catalog-ready',()=>{renderPopularProducts();if(new URL(location.href).searchParams.has('facet'))render();});
- window.addEventListener('hashchange',()=>{hidePanel();renderPopularProducts();});
- $('languageToggle').addEventListener('change',()=>{drawCategories();renderPopularProducts();});
- document.addEventListener('rivfree-site-config-applied',()=>{renderPopularProducts();});
- window.addEventListener('storage',e=>{if(e.key===historyKey){try{searches=M.history(JSON.parse(e.newValue||'[]'));}catch{searches=[];}renderPopularProducts();}});
- drawCategories();renderPopularProducts();
-})();
+
+import re
+import sys
+import time
+import unicodedata
+from pathlib import Path
+from urllib.parse import unquote, urljoin, urlparse
+
+sys.path.append(str(Path(__file__).parent))
+from utils import (
+    PRICE_RE,
+    canonical_product_url,
+    clean_price,
+    extract_wix_detail_price,
+    extract_wix_products,
+    finalize_scrape,
+    get_soup,
+    navigate,
+    explicit_empty_catalog,
+)
+
+LAST_RUN_STATUS = {}
+BASE_URL = "https://www.baraofreeshop.com.br"
+DETAIL_RECOVERY_LIMIT = None  # recuperar todos los pendientes mientras haya presupuesto
+DETAIL_RECOVERY_BUDGET_SECONDS = 50 * 60
+
+RESERVED_PATHS = {
+    "", "shop", "blog", "contato", "turista", "social", "trabalhe-conosco",
+    "my-wishlist", "wishlist", "cart", "checkout", "lista-de-desejos", "home",
+    "inicio", "o-barao", "seguranca-e-saude-no-trabalho", "saude-no-trabalho",
+    "responsabilidadesocial", "responsabilidade-social", "blog-barao",
+    "politica-de-privacidade", "politica-privacidade", "termos", "termos-de-uso",
+    "docedeleitebarao",  # Brand story page; the product category is copia-de-doce-de-leite-1.
+}
+
+CATEGORY_LABELS = {
+    "femininos": "perfumeria-femininos",
+    "masculinos": "perfumeria-masculinos",
+    "esteelauder": "cosmetica-esteelauder",
+    "lancomecosmeticos": "cosmetica-lancome",
+    "clinique": "cosmetica-clinique",
+    "loreal": "cosmetica-loreal",
+    "maybelline": "cosmetica-maybelline",
+    "larocheposay": "cosmetica-larocheposay",
+    "cerave": "cosmetica-cerave",
+    "victorias": "cosmetica-victoriassecret",
+    "kerastase": "cosmetica-kerastase",
+    "wella": "cosmetica-wella",
+    "tommy-vestimesta": "ropa-tommy",
+    "barbie": "jugueteria-barbie",
+    "funkopop": "jugueteria-funkopop",
+    "pokemon": "jugueteria-pokemon",
+    "copia-de-condimentos": "chocolates",
+}
+
+
+def _valid_category_slug(path):
+    path = (path or "").strip("/").lower()
+    if not path or "/" in path or path in RESERVED_PATHS:
+        return False
+    if path.startswith(("product-page", "blank", "wix-", "_")):
+        return False
+    if any(token in path for token in ("responsabilidade", "saude-no-trabalho")):
+        return False
+    return True
+
+
+def _category_identity(path):
+    """Iguala slugs Unicode y percent-encoded (cópia == c%C3%B3pia)."""
+    try:
+        value = unquote((path or "").strip("/"))
+    except Exception:
+        value = (path or "").strip("/")
+    return unicodedata.normalize("NFC", value).casefold()
+
+
+def discover_categories():
+    """Descubre categorías desde la navegación, evitando páginas institucionales."""
+    soup = get_soup(BASE_URL, retries=3, delay=2, timeout=40)
+    if soup is None:
+        raise RuntimeError("Barão no respondió al descubrir categorías")
+
+    anchors = soup.select('nav a[href], header a[href], [role="navigation"] a[href]')
+    if not anchors:
+        anchors = soup.find_all("a", href=True)
+
+    slugs = []
+    seen = set()
+    for anchor in anchors:
+        href = anchor.get("href")
+        parsed = urlparse(urljoin(BASE_URL, href))
+        if parsed.netloc.removeprefix("www.") != urlparse(BASE_URL).netloc.removeprefix("www."):
+            continue
+        path = parsed.path.strip("/")
+        identity = _category_identity(path)
+        if _valid_category_slug(path) and identity not in seen:
+            seen.add(identity)
+            slugs.append(path)
+
+    if len(slugs) < 20:
+        raise RuntimeError(f"Barão: solo se descubrieron {len(slugs)} categorías; menú posiblemente cambió")
+    return slugs
+
+
+
+def _discover_categories_rendered(page):
+    """Segunda fuente para categorías: menú renderizado por Chromium."""
+    try:
+        navigate(page, BASE_URL, attempts=2)
+        page.wait_for_timeout(700)
+        hrefs = page.locator('nav a[href], header a[href], [role="navigation"] a[href]').evaluate_all(
+            "els => els.map(a => a.href)"
+        )
+    except Exception as exc:
+        print(f"[Barao] [aviso] no se pudo validar el menú renderizado: {exc}")
+        return []
+
+    base_host = urlparse(BASE_URL).netloc.removeprefix("www.")
+    slugs = []
+    seen = set()
+    for href in hrefs:
+        try:
+            parsed = urlparse(urljoin(BASE_URL, href))
+        except Exception:
+            continue
+        if parsed.netloc.removeprefix("www.") != base_host:
+            continue
+        slug = parsed.path.strip("/")
+        identity = _category_identity(slug)
+        if _valid_category_slug(slug) and identity not in seen:
+            seen.add(identity)
+            slugs.append(slug)
+    return slugs
+
+
+def _prices_from_text(text):
+    """Devuelve (actual, anterior) leyendo sólo texto visible de una tarjeta."""
+    if not text:
+        return None, None
+    matches = list(PRICE_RE.finditer(text.replace("\xa0", " ")))
+    prices = [clean_price(match.group(0)) for match in matches]
+    prices = [price for price in prices if isinstance(price, (int, float)) and price > 0]
+    if not prices:
+        return None, None
+    current = prices[-1]
+    original = prices[0] if len(prices) > 1 and prices[0] > current else None
+    return current, original
+
+
+
+
+def _collapse_visible_text(value):
+    return " ".join((value or "").replace("\xa0", " ").split())
+
+
+def _fill_prices_from_listing_text(products, visible_text):
+    """Completa precios usando el texto realmente visible del listado.
+
+    Wix/Barão a veces renderiza nombre y precio como componentes hermanos, por
+    lo que page.content() y el product-item-root no siempre los dejan juntos.
+    Acá ubicamos los nombres visibles en orden y limitamos cada búsqueda hasta
+    el siguiente producto para no robar el precio de la tarjeta vecina.
+    """
+    text = _collapse_visible_text(visible_text)
+    if not text or not products:
+        return 0
+
+    folded = text.casefold()
+    located = []
+    cursor = 0
+
+    # Mantener el orden que entrega la grilla es importante: si hay nombres
+    # repetidos, buscamos cada aparición a partir de la anterior.
+    for index, product in enumerate(products):
+        name = _collapse_visible_text(product.get("nombre"))
+        if not name:
+            continue
+        needle = name.casefold()
+        pos = folded.find(needle, cursor)
+        if pos < 0:
+            pos = folded.find(needle)
+        if pos < 0:
+            continue
+        located.append((pos, index, name))
+        cursor = pos + len(name)
+
+    located.sort(key=lambda item: item[0])
+    observed = 0
+    for position, (pos, index, name) in enumerate(located):
+        start = pos + len(name)
+        end = min(len(text), start + 320)
+        if position + 1 < len(located):
+            next_pos = located[position + 1][0]
+            if next_pos > start:
+                end = min(end, next_pos)
+
+        segment = text[start:end]
+        current, original = _prices_from_text(segment)
+        if current is None:
+            continue
+
+        product = products[index]
+        product["precio_usd"] = current
+        product["precio_original_usd"] = original
+        product["en_oferta"] = bool(original and original > current)
+        product["precio_fuente"] = "listado_visible"
+        observed += 1
+
+    return observed
+
+def _name_from_text(text):
+    text = " ".join((text or "").replace("\xa0", " ").split())
+    if not text:
+        return None
+    match = PRICE_RE.search(text)
+    if match:
+        text = text[:match.start()]
+    text = re.sub(r"\b(?:preço|precio|price)\s*$", "", text, flags=re.I).strip(" -–—|:")
+    if text.lower() in {"esgotado", "sold out"}:
+        return None
+    return text or None
+
+
+def _product_from_visible_row(row, category, existing=None):
+    """Combina una tarjeta renderizada con el registro HTML; el precio visible gana."""
+    existing = dict(existing or {})
+    url = (row.get("url") or existing.get("url") or "").split("#")[0]
+    if not url:
+        return None
+    current, original = _prices_from_text(row.get("text"))
+    name = row.get("name") or existing.get("nombre") or _name_from_text(row.get("text"))
+    if not name:
+        return None
+
+    product = {
+        "tienda": "Barão Free Shop",
+        "nombre": name,
+        "precio_usd": existing.get("precio_usd"),
+        "precio_original_usd": existing.get("precio_original_usd"),
+        "en_oferta": existing.get("en_oferta", False),
+        "categoria": category,
+        "url": url,
+        "imagen": row.get("image") or existing.get("imagen"),
+    }
+    # El DOM visible es la fuente más fiel: si el usuario ve un precio ahí,
+    # reemplaza cualquier valor incompleto obtenido del HTML serializado.
+    if current is not None:
+        product["precio_usd"] = current
+        product["precio_original_usd"] = original
+        product["en_oferta"] = bool(original and original > current)
+    return product
+
+
+def _collect_visible_rows(page):
+    """Obtiene una fila por producto usando el DOM que el navegador realmente muestra.
+
+    Wix puede colocar el precio como hermano del link/título y fuera del
+    product-item-root. Subimos por los padres sólo mientras el contenedor siga
+    perteneciendo a UN único producto; así no tomamos el precio de la tarjeta vecina.
+    """
+    return page.locator('a[href*="/product-page/"]').evaluate_all(
+        r"""
+        links => {
+          const byUrl = new Map();
+          for (const a of links) {
+            const href = (a.href || '').split('#')[0];
+            if (!href) continue;
+            let node = a;
+            let chosen = null;
+            for (let i = 0; i < 9 && node; i++, node = node.parentElement) {
+              const hrefs = [...node.querySelectorAll('a[href*="/product-page/"]')]
+                .map(x => (x.href || '').split('#')[0])
+                .filter(Boolean);
+              const unique = [...new Set(hrefs)];
+              if (unique.length !== 1 || unique[0] !== href) continue;
+              chosen = node;
+              const text = (node.innerText || '').replace(/\u00a0/g, ' ');
+              if (/(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*[0-9]/i.test(text) || /esgotado/i.test(text)) {
+                break;
+              }
+            }
+            const root = a.closest('[data-hook="product-item-root"]') || chosen || a.parentElement || a;
+            const nameEl = root.querySelector('[data-hook="product-item-name"]');
+            const img = root.querySelector('img') || (chosen && chosen.querySelector('img'));
+            const candidate = chosen || root;
+            const text = (candidate.innerText || root.innerText || a.innerText || '').trim();
+            let name = (nameEl && nameEl.innerText || '').trim();
+            if (!name) {
+              name = (a.getAttribute('aria-label') || '').trim();
+            }
+            if (!name && img) name = (img.getAttribute('alt') || '').trim();
+            const image = img ? (img.currentSrc || img.src || img.getAttribute('data-src') || null) : null;
+            const old = byUrl.get(href);
+            const score = (/(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*[0-9]/i.test(text) ? 10 : 0) + text.length;
+            if (!old || score > old.score) byUrl.set(href, {url: href, text, name, image, score});
+          }
+          return [...byUrl.values()];
+        }
+        """
+    )
+
+
+def _extract_rendered_products(page, category):
+    """Fusiona extracción Wix tradicional con el DOM visible renderizado."""
+    from bs4 import BeautifulSoup
+
+    generic = extract_wix_products(
+        BeautifulSoup(page.content(), "html.parser"),
+        "Barão Free Shop",
+        category,
+        BASE_URL,
+    )
+    by_url = {p.get("url"): p for p in generic if p.get("url")}
+
+    for row in _collect_visible_rows(page):
+        row["url"] = urljoin(BASE_URL, row.get("url") or "")
+        existing = by_url.get(row["url"])
+        product = _product_from_visible_row(row, category, existing)
+        if product:
+            by_url[product["url"]] = product
+
+    return list(by_url.values())
+
+
+def _expand_current_page(page, max_rounds=220):
+    """Carga todos los 'Ver mais' conservando una medición basada en links reales."""
+    previous = -1
+    stable = 0
+    for _ in range(max_rounds):
+        count = page.locator('a[href*="/product-page/"]').evaluate_all(
+            "els => new Set(els.map(a => (a.href || '').split('#')[0]).filter(Boolean)).size"
+        )
+        stable = stable + 1 if count == previous else 0
+        previous = count
+        more = page.get_by_role("button", name=re.compile(
+            r"ver mais|mostrar mais|carregar mais|load more|show more|ver más|cargar más", re.I
+        ))
+        active = False
+        if more.count():
+            button = more.last
+            active = button.is_visible() and button.is_enabled()
+            if active:
+                button.click(timeout=10000)
+                page.wait_for_timeout(900)
+        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        page.wait_for_timeout(500)
+        if stable >= 3 and not active:
+            return count
+        if stable >= 8 and active:
+            raise RuntimeError("Barão: 'Ver mais' quedó activo pero la grilla dejó de crecer")
+    raise RuntimeError("Barão: límite de expansión de categoría alcanzado")
+
+
+def scrape_category(slug, page):
+    """Procesa una categoría sin perder páginas ya leídas ante un fallo posterior."""
+    url = f"{BASE_URL}/{slug}"
+    category = CATEGORY_LABELS.get(slug, slug)
+    products = {}
+    signatures = set()
+    try:
+        from bs4 import BeautifulSoup
+        navigate(page, url, 'a[href*="/product-page/"], [data-hook="empty-gallery-title"]')
+        if not page.locator('a[href*="/product-page/"]').count() and explicit_empty_catalog(BeautifulSoup(page.content(), 'html.parser')):
+            LAST_RUN_STATUS.setdefault('categorias_vacias', []).append(slug)
+            return []
+        for page_no in range(1, 301):
+            try:
+                loaded = _expand_current_page(page)
+                found = _extract_rendered_products(page, category)
+                if not found:
+                    raise RuntimeError("categoría sin productos legibles")
+
+                try:
+                    visible_text = page.locator("body").inner_text(timeout=10000)
+                except Exception:
+                    visible_text = ""
+                visible_prices = _fill_prices_from_listing_text(found, visible_text)
+
+                signature = tuple(sorted(p["url"] for p in found if p.get("url")))
+                if signature in signatures:
+                    raise RuntimeError("página repetida")
+                signatures.add(signature)
+                for product in found:
+                    products[product["url"]] = product
+                priced = sum(p.get("precio_usd") is not None for p in found)
+                print(
+                    f"[Barao]   {slug} página {page_no}: {len(found)} productos, "
+                    f"{priced} con precio ({visible_prices} confirmados por texto visible; DOM {loaded} links)"
+                )
+
+                next_button = page.locator('[data-hook="pagination__next"], a[rel="next"]').first
+                if (
+                    not next_button.count()
+                    or not next_button.is_visible()
+                    or not next_button.is_enabled()
+                    or next_button.get_attribute("aria-disabled") == "true"
+                ):
+                    return list(products.values())
+                next_button.click(timeout=10000)
+                page.wait_for_timeout(1800)
+            except Exception as exc:
+                if products:
+                    LAST_RUN_STATUS.update(
+                        partial=True,
+                        warning="Barão: una parte de una categoría falló; se conservaron los avances",
+                    )
+                    print(f"[Barao] [aviso] {slug} página {page_no}: {exc}")
+                    return list(products.values())
+                raise
+    except Exception as exc:
+        LAST_RUN_STATUS.setdefault('categorias_fallidas', []).append({'categoria': slug, 'error': str(exc)[:300]})
+        LAST_RUN_STATUS.update(
+            partial=True,
+            warning="Barão: categorías fallidas; se conservan productos anteriores",
+        )
+        print(f"[Barao] [aviso] se omite {url}: {exc}")
+        return list(products.values())
+
+
+def _detail_price_from_page(page):
+    """Lee precio del bloque principal de la ficha sin tocar recomendaciones."""
+    from bs4 import BeautifulSoup
+
+    current, original = extract_wix_detail_price(BeautifulSoup(page.content(), "html.parser"))
+    if current is not None:
+        return current, original
+
+    # Algunos templates viejos de Barão no usan product-prices-wrapper.
+    text = page.locator('h1, [data-hook="product-title"]').first.evaluate(
+        r"""
+        title => {
+          let node = title;
+          for (let i = 0; i < 8 && node; i++, node = node.parentElement) {
+            const text = (node.innerText || '').replace(/\u00a0/g, ' ');
+            if (/(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*[0-9]/i.test(text)) return text;
+          }
+          return title.innerText || '';
+        }
+        """
+    )
+    return _prices_from_text(text)
+
+
+def _recover_missing_prices(page, products):
+    missing = [p for p in products if p.get("precio_usd") is None and p.get("url")]
+    if not missing:
+        return 0, 0
+
+    started = time.monotonic()
+    recovered = 0
+    attempted = 0
+    failed = 0
+    limit = len(missing) if DETAIL_RECOVERY_LIMIT is None else min(len(missing), DETAIL_RECOVERY_LIMIT)
+
+    for product in missing[:limit]:
+        if time.monotonic() - started >= DETAIL_RECOVERY_BUDGET_SECONDS:
+            print(
+                f"[Barao] [aviso] presupuesto de recuperación agotado tras {attempted}/{len(missing)} fichas; "
+                f"recuperados {recovered}, fallidos {failed}"
+            )
+            break
+        attempted += 1
+        try:
+            navigate(page, product["url"], 'h1, [data-hook="product-title"]', attempts=2)
+            page.wait_for_timeout(350)
+            current, original = _detail_price_from_page(page)
+            if current is not None:
+                product["precio_usd"] = current
+                product["precio_original_usd"] = original
+                product["en_oferta"] = bool(original and original > current)
+                product["precio_fuente"] = "ficha"
+                recovered += 1
+            else:
+                failed += 1
+        except Exception as exc:
+            failed += 1
+            print(f"[Barao] [aviso] ficha sin precio {product['url']}: {exc}")
+
+        if attempted % 100 == 0 or attempted == limit:
+            pending_now = max(0, len(missing) - recovered)
+            print(
+                f"[Barao] recuperación {attempted}/{len(missing)}; "
+                f"recuperados {recovered}; fallidos {failed}; pendientes {pending_now}"
+            )
+
+    pending = sum(p.get("precio_usd") is None for p in products)
+    return recovered, pending
+
+
+def _prefer_complete_duplicate(old, new):
+    if old is None:
+        return new
+    old_score = int(old.get("precio_usd") is not None) * 4 + int(bool(old.get("imagen"))) + len(old.get("nombre") or "") / 1000
+    new_score = int(new.get("precio_usd") is not None) * 4 + int(bool(new.get("imagen"))) + len(new.get("nombre") or "") / 1000
+    return new if new_score >= old_score else old
+
+
+def run():
+    LAST_RUN_STATUS.clear()
+    from playwright.sync_api import sync_playwright
+
+    all_products = {}
+    raw_keys = set()
+    canonical_collisions = 0
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+        page = browser.new_page()
+        page.set_extra_http_headers({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                          "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+        })
+
+        categories = discover_categories()
+        html_category_count = len(categories)
+        rendered_categories = _discover_categories_rendered(page)
+        category_ids = {_category_identity(slug) for slug in categories}
+        for slug in rendered_categories:
+            identity = _category_identity(slug)
+            if identity not in category_ids:
+                category_ids.add(identity)
+                categories.append(slug)
+        print(
+            f"[Barao] {len(categories)} categorías únicas "
+            f"(HTML {html_category_count}, renderizado {len(rendered_categories)})"
+        )
+        for slug in categories:
+            print(f"[Barao] recorriendo categoria: {slug}")
+            found = scrape_category(slug, page)
+            for product in found:
+                raw_key = product.get("url") or product.get("nombre")
+                if raw_key:
+                    raw_keys.add(raw_key)
+                key = canonical_product_url(product.get("url")) or (
+                    "fallback", product.get("nombre"), product.get("categoria")
+                )
+                if key in all_products:
+                    canonical_collisions += 1
+                all_products[key] = _prefer_complete_duplicate(all_products.get(key), product)
+            print(f"[Barao]   -> {len(found)} productos")
+
+        products = list(all_products.values())
+        print(
+            f"[Barao] normalización: {len(raw_keys)} URLs/registros distintos -> "
+            f"{len(products)} productos canónicos; {canonical_collisions} duplicados fusionados"
+        )
+        listing_prices = sum(p.get("precio_usd") is not None for p in products)
+        missing_before = len(products) - listing_prices
+        print(
+            f"[Barao] listado terminado: {len(products)} productos; "
+            f"{listing_prices} con precio; {missing_before} pendientes"
+        )
+
+        recovered, pending = _recover_missing_prices(page, products)
+        print(f"[Barao] detalle: {recovered} precios recuperados; {pending} pendientes")
+        browser.close()
+
+    if pending:
+        LAST_RUN_STATUS.update(
+            partial=True,
+            warning=LAST_RUN_STATUS.get("warning") or f"Barão: {pending} productos siguen sin precio confirmado",
+        )
+
+    LAST_RUN_STATUS.update({
+        "fresh_products": len(products),
+        "prices_listing": listing_prices,
+        "prices_recovered": recovered,
+        "prices_pending": pending,
+        "metrics": {
+            "precios_desde_listado": listing_prices,
+            "precios_recuperados": recovered,
+            "categorias_vacias": LAST_RUN_STATUS.get('categorias_vacias', []),
+            "categorias_fallidas": len(LAST_RUN_STATUS.get('categorias_fallidas', [])),
+            "detalle_categorias_fallidas": LAST_RUN_STATUS.get('categorias_fallidas', []),
+        },
+    })
+
+    out_dir = Path(__file__).parent.parent / "data"
+    finalize_scrape(products, "barao", out_dir, LAST_RUN_STATUS)
+    return products
+
+
+if __name__ == "__main__":
+    run()
