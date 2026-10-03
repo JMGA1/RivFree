@@ -1,271 +1,169 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.clarity.ms; connect-src 'self' https://api.frankfurter.dev https://cloudflareinsights.com https://*.google-analytics.com https://*.analytics.google.com https://*.clarity.ms; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
-<meta name="referrer" content="no-referrer">
-<!-- Cookieless traffic metrics; no Google Analytics tag. -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RivFree — Comparador de preços de free shops</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23B42335%22%2F%3E%3Cg%20fill%3D%22white%22%3E%3Cpath%20d%3D%22M10%2015h15c9%200%2014%205%2014%2013%200%206-3%2010-8%2012l10%2010H29L19%2039v11h-9zm9%208v9h6c3%200%205-1%205-4s-2-5-5-5z%22%2F%3E%3Cpath%20d%3D%22M41%2015h17v9H50v6h7v9h-7v11h-9z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-<link rel="stylesheet" href="styles.css?v=20261002-v84">
-<meta name="description" content="Compará precios de free shops de Rivera y Santana do Livramento: perfumes, bebidas, electrónica y más. Guardá favoritos y planificá tu recorrida con RivFree.">
-<meta name="theme-color" content="#B42335">
-<meta property="og:type" content="website">
-<meta property="og:title" content="RivFree — Compará free shops de Rivera y Santana do Livramento">
-<meta property="og:description" content="Encontrá precios, compará tiendas y armá tu lista para recorrer Rivera y Santana do Livramento.">
-<meta property="og:image" content="https://jmga1.github.io/RivFree/social-card.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RivFree — Compará free shops de Rivera y Santana do Livramento">
-<meta name="twitter:description" content="Compará precios y guardá tu lista de favoritos.">
-<meta name="twitter:image" content="https://jmga1.github.io/RivFree/social-card.png">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="stylesheet" href="experience.css?v=20261002-v84">
-<link rel="stylesheet" href="explore.css?v=20260930-6">
-<link rel="stylesheet" href="ui-updates.css?v=20261002-v84">
-<link rel="stylesheet" href="store-directory.css?v=20261002-v84">
-<link rel="stylesheet" href="mobile.css?v=20261003-v85">
-<link rel="stylesheet" href="consent.css?v=20260930-v4">
-</head>
-<body>
-<dialog id="importListDialog" class="import-list-dialog" aria-labelledby="importListTitle">
-  <div class="import-list-icon" aria-hidden="true">♡</div>
-  <span class="eyebrow">RIVFREE · LISTA COMPARTIDA</span>
-  <h2 id="importListTitle">¿Importar esta lista?</h2>
-  <p id="importMessage"></p>
-  <p id="importResolveStatus" class="import-resolve-status" hidden></p>
-  <div class="import-list-actions">
-    <button id="importShoppingList" type="button">Importar lista</button>
-    <button id="dismissImport" type="button">Ahora no</button>
-  </div>
-</dialog>
+// IndexedDB keeps the prepared catalog without localStorage's small quota.
+function catalogDB() {
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open('rivfree-catalog',1);
+  req.onupgradeneeded=()=>req.result.createObjectStore('catalog');
+  req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+ });
+}
+async function cachedCatalog(value) {
+ const db=await catalogDB();
+ try {return await new Promise((resolve,reject)=>{
+  const tx=db.transaction('catalog',value?'readwrite':'readonly');
+  const req=value?tx.objectStore('catalog').put(value,'current'):tx.objectStore('catalog').get('current');
+  tx.oncomplete=()=>resolve(req.result);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);
+ });} finally {db.close();}
+}
+async function fetchWithTimeout(url,options={},timeout=30000) {
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);
+ try {const response=await fetch(url,{...options,signal:controller.signal});if(!response.ok)throw new Error(`HTTP ${response.status}`);return await response.json();}
+ finally {clearTimeout(timer);}
+}
+async function fetchOptionalJson(url,fallback) {
+ try {return await fetchWithTimeout(url,{cache:'no-store'});} catch {return fallback;}
+}
+function validManualCatalog(value){return value&&Array.isArray(value.productos);}
+function manualVersion(value){return String(value?.version||value?.actualizado||'empty');}
+// Studio corrections to store products; without any, the cache key stays as before.
+function correctionsUsable(value){return !!value&&typeof value==='object'&&!!value.correcciones&&typeof value.correcciones==='object'&&!Array.isArray(value.correcciones);}
+function correctionsSuffix(value){return correctionsUsable(value)&&Object.keys(value.correcciones).length?'|fix:'+String(value.version||value.actualizado||Object.keys(value.correcciones).length):'';}
+function validStoreVersions(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).length>0&&Object.values(value).every(v=>typeof v==='string'&&v);}
+function storeSignature(versions){return 'stores:'+Object.entries(versions||{}).sort(([a],[b])=>a.localeCompare(b)).map(([slug,version])=>`${slug}=${version}`).join(';');}
+function catalogFromPartitions(storeData,meta={}){
+ return {
+  actualizado:meta.actualizado||null,
+  resumen:Array.isArray(meta.resumen)?meta.resumen:[],
+  productos:Object.keys(storeData||{}).sort().flatMap(slug=>Array.isArray(storeData[slug])?storeData[slug]:[])
+ };
+}
+function combineCatalogData(scraped,manual,corrections){
+ if(typeof mergeCatalogData==='function')return mergeCatalogData(scraped,manual,corrections);
+ const base=scraped&&Array.isArray(scraped.productos)?scraped:{productos:[]};
+ const manualProducts=validManualCatalog(manual)?manual.productos.filter(p=>p&&p.activo!==false).map(p=>({...p,manual:true})):[];
+ return {...base,productos:[...(base.productos||[]),...manualProducts],manual_actualizado:manual?.actualizado||null};
+}
+// Bump when matching, normalization, manual-catalog merging, or the prepared shape changes.
+const PREPARED_CATALOG_VERSION='20261001-v51-brands';
+function validPrepared(value){
+ return value && Array.isArray(value.products) && Array.isArray(value.groups) &&
+  Array.isArray(value.words) && value.legacyKeys && typeof value.legacyKeys==='object';
+}
+async function loadStorePartitions(meta,cached){
+ const currentVersions=meta.stores;
+ const oldData=cached?.partitioned&&cached.storeData&&typeof cached.storeData==='object'?cached.storeData:{};
+ const oldVersions=cached?.partitioned&&cached.storeVersions&&typeof cached.storeVersions==='object'?cached.storeVersions:{};
+ const storeData={},effectiveVersions={};let offline=false;
+ const entries=Object.entries(currentVersions).sort(([a],[b])=>a.localeCompare(b));
+ const results=await Promise.allSettled(entries.map(async ([slug,version])=>{
+  if(oldVersions[slug]===version&&Array.isArray(oldData[slug]))return oldData[slug];
+  const part=await fetchWithTimeout(`data/products/${encodeURIComponent(slug)}.json?v=${encodeURIComponent(version)}`);
+  if(!Array.isArray(part))throw new Error('Invalid store catalog');
+  return part;
+ }));
+ results.forEach((result,i)=>{
+  const [slug,version]=entries[i];
+  if(result.status==='fulfilled'){storeData[slug]=result.value;effectiveVersions[slug]=version;}
+  else if(Array.isArray(oldData[slug])){storeData[slug]=oldData[slug];effectiveVersions[slug]=oldVersions[slug]||`cached-${slug}`;offline=true;}
+  else throw result.reason;
+ });
+ return {storeData,storeVersions:effectiveVersions,offline};
+}
+async function loadLegacyFullCatalog(meta,cached){
+ const version=meta.version;
+ if(cached&&!cached.partitioned&&cached.scrapedVersion===version&&Array.isArray(cached.scrapedData?.productos))return {scrapedData:cached.scrapedData,scrapedVersion:version,offline:false};
+ if(cached&&!cached.partitioned&&!cached.scrapedVersion&&cached.version===version&&Array.isArray(cached.data?.productos))return {scrapedData:cached.data,scrapedVersion:version,offline:false};
+ const scrapedData=await fetchWithTimeout('data/products.json?v='+encodeURIComponent(version));
+ if(!Array.isArray(scrapedData.productos))throw new Error('Invalid catalog');
+ return {scrapedData,scrapedVersion:version,offline:false};
+}
+function preparedSnapshot(cached){
+ if(cached?.preparedVersion!==PREPARED_CATALOG_VERSION||!validPrepared(cached.prepared))return null;
+ const meta=cached.partitioned?cached.scrapedMeta:(cached.scrapedData||cached.data);
+ if(!meta)return null;
+ return {version:cached.version,data:{actualizado:meta.actualizado,resumen:meta.resumen||[],manualActualizado:cached.manualData?.actualizado||null},prepared:cached.prepared,offline:false,refreshing:true};
+}
+async function loadCatalogLocally(onCached) {
+ const manualRequest=fetchOptionalJson('data/manual-products.json',null);
+ const correctionsRequest=fetchOptionalJson('data/product-corrections.json',null);
+ const metaRequest=fetchWithTimeout('data/meta.json',{cache:'no-store'}).then(value=>({value}),error=>({error}));
+ let cached;try {cached=await cachedCatalog();}catch{}
+ const snapshot=preparedSnapshot(cached);if(snapshot&&onCached)onCached(snapshot);
+ const emptyManual={version:'empty',actualizado:null,productos:[]};
+ let manualData=await manualRequest;
+ if(!validManualCatalog(manualData))manualData=validManualCatalog(cached?.manualData)?cached.manualData:emptyManual;
+ let corrections=await correctionsRequest;
+ if(!correctionsUsable(corrections))corrections=correctionsUsable(cached?.corrections)?cached.corrections:null;
 
+ let scrapedData,scrapedVersion,offline=false,partitioned=false,storeData=null,storeVersions=null,scrapedMeta=null;
+ try {
+  const result=await metaRequest;if(result.error)throw result.error;const meta=result.value;
+  if(typeof meta.version!=='string'||!meta.version)throw new Error('Invalid version');
+  if(validStoreVersions(meta.stores)){
+   try{
+    const loaded=await loadStorePartitions(meta,cached);
+    partitioned=true;storeData=loaded.storeData;storeVersions=loaded.storeVersions;offline=loaded.offline;
+    scrapedMeta={actualizado:meta.actualizado||null,resumen:Array.isArray(meta.resumen)?meta.resumen:[]};
+    scrapedData=catalogFromPartitions(storeData,scrapedMeta);
+    scrapedVersion=storeSignature(storeVersions);
+   }catch(partitionError){
+    // Compatibilidad/rescate: una publicación incompleta todavía puede usar products.json.
+    const full=await loadLegacyFullCatalog(meta,cached);
+    scrapedData=full.scrapedData;scrapedVersion=full.scrapedVersion;offline=full.offline;
+   }
+  }else{
+   const full=await loadLegacyFullCatalog(meta,cached);
+   scrapedData=full.scrapedData;scrapedVersion=full.scrapedVersion;offline=full.offline;
+  }
+ }catch(error){
+  if(cached?.partitioned&&cached.storeData&&validStoreVersions(cached.storeVersions)){
+   partitioned=true;storeData=cached.storeData;storeVersions=cached.storeVersions;scrapedMeta=cached.scrapedMeta||{};
+   scrapedData=catalogFromPartitions(storeData,scrapedMeta);scrapedVersion=storeSignature(storeVersions);offline=true;
+  }else if(cached&&Array.isArray(cached.scrapedData?.productos)){
+   scrapedData=cached.scrapedData;scrapedVersion=cached.scrapedVersion||cached.version||null;offline=true;
+  }else if(cached&&Array.isArray(cached.data?.productos)){
+   scrapedData=cached.data;scrapedVersion=cached.version||null;offline=true;
+  }else{
+   scrapedData=await fetchWithTimeout('data/products.json');if(!Array.isArray(scrapedData.productos))throw error;scrapedVersion=null;offline=true;
+  }
+ }
 
-<aside class="rf-disclaimer" id="siteDisclaimer" aria-label="Aviso importante"><div class="rf-disclaimer-inner"><span class="rf-disclaimer-icon" aria-hidden="true">i</span><p><strong class="rf-d-long">RivFree es un comparador de precios.</strong> <span class="rf-d-long">No vendemos productos ni estamos afiliados a las tiendas: cada compra se hace directamente con el free shop.</span><span class="rf-d-short"><strong>Solo comparamos precios:</strong> no vendemos ni estamos afiliados a las tiendas.</span></p><button type="button" class="rf-disclaimer-close" id="siteDisclaimerClose" aria-label="Cerrar aviso" title="Cerrar aviso">×</button></div></aside>
-<div class="topbar">
-  <div class="topbar-inner">
-    <a class="brand brand-link" href="./" aria-label="Volver al inicio y recargar">
-      <div class="brand-lockup">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 48 48" focusable="false">
-            <path class="brand-bag-solid" d="M10.5 18.5h27L35.2 40H12.8L10.5 18.5Z"/>
-            <path class="brand-handle-bold" d="M17.5 19v-2.5a6.5 6.5 0 0 1 13 0V19"/>
-          </svg>
-        </span>
-        <div>
-          <h1>Riv<span class="brand-name-free">Free</span></h1>
-          <p>Explorá y compará los free shops de Rivera y Santana do Livramento</p>
-        </div>
-      </div>
-    </a>
-    <form class="field search-field" id="searchForm" role="search">
-      <div class="rf-social rf-social-header" id="headerSocial" aria-label="Redes sociales de RivFree"></div>
-      <label for="search">Buscar producto</label>
-      <div class="search-row">
-        <input type="search" id="search" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" autocomplete="off" placeholder="Ej.: perfume Dior, whisky, parlante JBL">
-        <button class="search-button" id="searchButton" type="submit">
-          <svg class="search-button-icon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><span>Buscar</span>
-        </button>
-      </div>
-      <div id="searchSuggestions" class="search-suggestions" role="listbox" aria-label="Sugerencias de productos" hidden></div><p class="search-help">Escribí tu búsqueda completa y presioná Enter.</p>
-      <div class="search-status" id="searchStatus" role="status" aria-live="polite">
-        <span class="spinner" aria-hidden="true"></span>
-        <span>Buscando productos…</span>
-      </div>
-    </form>
-    <div class="header-actions">
-      <button id="openStoreDirectory" class="theme-toggle" type="button">Free shops</button>
-      <select id="languageToggle" class="theme-toggle" aria-label="Cambiar idioma">
-        <option value="es">ES</option><option value="pt-BR" selected>PT</option>
-      </select>
-      <button class="theme-toggle theme-mode" id="themeToggle" type="button" aria-pressed="false"><span class="theme-mode-icon" aria-hidden="true"></span><span class="theme-mode-label">Modo oscuro</span></button>
-      <button id="headerShoppingList" class="header-list" type="button" hidden><span aria-hidden="true">♡</span> <span>Mi lista</span></button>
-      
-    </div>
-  </div>
-</div>
-
-
-<nav class="category-shortcuts" aria-label="Categorías"><button data-category-shortcut="">Todas las categorías</button><button data-category-shortcut="perfumes">Perfumes</button><button data-category-shortcut="bebidas">Bebidas</button><button data-category-shortcut="alimentos">Chocolates y alimentos</button><button data-category-shortcut="electronica">Electrónica</button><button data-category-shortcut="cosmetica">Cuidado personal</button><!-- Íconos de la barra: Lucide (lucide.dev, licencia ISC, ver LICENSE-lucide.txt). --><div class="rf-nav-quick" id="navQuick"><a class="rf-nav-item" id="navStores" href="#/tiendas"><svg class="rf-nav-icon rf-icon-store" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg><span class="rf-nav-label">Tiendas</span></a><button class="rf-nav-item" id="navOffers" type="button"><svg class="rf-nav-icon rf-icon-offers" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/></svg><span class="rf-nav-label">Ofertas</span></button><button class="rf-nav-item rf-nav-rate" id="navExchange" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="navExchangePanel"><svg class="rf-nav-icon rf-icon-rate" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg><span class="rf-nav-label"><span class="rf-nav-rate-title">Dólar hoy</span> <strong id="navExchangeValue">…</strong></span></button><button class="rf-nav-item" id="navList" type="button"><svg class="rf-nav-icon rf-icon-list" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span class="rf-nav-label">Mi lista</span><span class="rf-nav-count" id="navListCount" hidden>0</span></button></div></nav>
-<main>
-<section id="heroCampaign" class="campaign-carousel hero-campaign" aria-label="Campañas destacadas" aria-roledescription="carousel"></section>
-<div class="shopping-benefits" id="shoppingBenefits"><span><b>01</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg> Compará entre free shops</span><span><b>02</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 5c-3-3-6-1-8 1C10 4 7 2 4 5c-4 4 2 10 8 15 6-5 12-11 8-15Z"/></svg> Guardá productos y cantidades</span><span><b>03</b><svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg> Llevá tu lista en el celular</span></div>
-<section class="popular-section" id="discoverProducts" aria-labelledby="discoverTitle">
- <div class="section-heading"><div><span class="eyebrow">RIVERA · SANTANA DO LIVRAMENTO</span><h2 id="discoverTitle">Por descubrir</h2><p>Una selección aleatoria para inspirar tu próxima compra.</p></div></div>
- <div class="discovery-carousel">
-  <button id="discoverPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="discoverGrid">‹</button>
-  <div id="discoverGrid" class="popular-rail" tabindex="0" role="region" aria-label="Por descubrir"></div>
-  <button id="discoverNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="discoverGrid">›</button>
- </div>
-</section>
-<section class="popular-section" id="popularProducts" aria-labelledby="popularTitle">
- <div class="section-heading"><div><span class="eyebrow">INSPIRACIÓN PARA TU RECORRIDO</span><h2 id="popularTitle">Más consultados</h2><p id="popularNote"></p></div></div>
- <div class="discovery-carousel">
-  <button id="popularPrevious" class="discovery-arrow previous" type="button" aria-label="Productos anteriores" aria-controls="popularGrid" disabled>‹</button>
-  <div id="popularGrid" class="popular-rail" tabindex="0" role="region" aria-label="Más consultados"></div>
-  <button id="popularNext" class="discovery-arrow next" type="button" aria-label="Más productos" aria-controls="popularGrid" disabled>›</button>
- </div>
-</section>
-<section id="catalogSection" class="catalog-section">
-<div class="section-heading catalog-heading" id="catalogStart"><div><span class="eyebrow">EXPLORÁ. COMPARÁ. ELEGÍ.</span><h2>Todo el catálogo</h2><p>Explorá todas las tiendas y encontrá tu próximo favorito.</p></div><div class="catalog-status"><div class="updated-badge" id="updatedBadge">cargando...</div></div></div>
-<div class="controls">
-  <div class="controls-card search-hero">
-
-
-    <div class="quick-filter-row">
-      <div class="field category-quick-filter">
-        <label for="categorySearch">Categoría</label>
-        <div class="category-picker">
-          <input type="search" id="categorySearch" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="categoryOptions" autocomplete="off" placeholder="Buscá una categoría">
-          <button id="clearCategory" class="category-clear" type="button" aria-label="Limpiar categoría" hidden>Limpiar</button>
-          <div id="categoryOptions" role="listbox" aria-multiselectable="true" hidden></div>
-        </div>
-        <div id="categoryChips" class="category-chips" aria-label="Categorías seleccionadas"></div><select id="categoria" multiple hidden aria-hidden="true" tabindex="-1"><option value="">Todas</option></select>
-      </div>
-
-      <label class="chk price-availability"><input type="checkbox" id="hideUnavailable"> Solo con precio</label>
-      <button type="button" class="rf-adv-toggle" id="advancedToggle" aria-expanded="false" aria-controls="advancedFilters"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></svg><span>Filtros avanzados</span><span class="rf-adv-count" id="advancedCount" hidden></span></button>
-      <details class="advanced-filters" id="advancedFilters">
-        <summary>
-          <span class="filter-summary-icon" aria-hidden="true"></span>
-          <span>Filtros avanzados</span>
-          <span class="filter-summary-note">Precio, ofertas y tiendas</span>
-        </summary>
-        <div class="advanced-grid">
-          <div class="field">
-            <label>Precio USD</label>
-            <div class="price-range">
-              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="minPrice" placeholder="min" min="0" step="0.01" inputmode="decimal" aria-label="Precio mínimo en dólares"></div>
-              <div class="money-input"><span aria-hidden="true">US$</span><input type="number" id="maxPrice" placeholder="max" min="0" step="0.01" inputmode="decimal" aria-label="Precio máximo en dólares"></div>
-            </div>
-          </div>
-
-          <div class="field toggle-oferta">
-            <label class="chk"><input type="checkbox" id="soloOfertas"> Solo ofertas</label>
-          </div>
-
-          <div class="field stores-filter">
-            <p class="stores-filter-title" id="storesFilterTitle"><b>Tiendas</b> <span>Tocá una o varias para ver solo sus productos. Sin elegir, se muestran todas.</span></p>
-            <div class="stores-field" id="storesField" role="group" aria-labelledby="storesFilterTitle">
-              <!-- checkboxes de tiendas se llenan por JS: ninguna marcada = todas las tiendas -->
-            </div>
-          </div>
-
-          <div class="filter-actions">
-            <button class="clear-btn" id="clearFilters" type="button">Limpiar filtros</button>
-          </div>
-        </div>
-      </details>
-    </div>
-  </div>
-</div>
-<div class="catalog-toolbar rf-results-bar">
-  <div class="rf-results-info"><div class="results-meta" id="resultsMeta" aria-live="polite">Cargando productos...</div><button type="button" id="offersModeChip" class="rf-mode-chip" hidden title="Salir de ofertas"><span>Ofertas</span><b aria-hidden="true">✕</b></button><details class="catalog-details"><summary title="Detalles del catálogo" aria-label="Detalles del catálogo">i</summary><p id="resultsDetails"></p></details></div>
-  <div class="offer-tiers" id="offerTiers" role="group" aria-label="Filtrar ofertas por descuento" hidden><span class="offer-tiers-title">Descuento</span><button type="button" class="offer-tier" data-discount="0" aria-pressed="true"><span class="offer-tier-main">Todas</span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-1" data-discount="20" aria-pressed="false"><span class="offer-tier-main"><b>20%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-2" data-discount="40" aria-pressed="false"><span class="offer-tier-main"><b>40%</b> <span>o más</span></span><span class="offer-tier-count"></span></button><button type="button" class="offer-tier tier-3" data-discount="60" aria-pressed="false"><span class="offer-tier-main"><b>60%</b> <span>o más</span></span><span class="offer-tier-count"></span></button></div>
-  <div class="rf-results-actions">
-    <label class="rf-fav-toggle" title="Mostrar solo favoritos"><input type="checkbox" id="favoritesOnly"><svg class="rf-ui-svg rf-heart-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg><span>Favoritos</span></label>
-    <div class="field sort-field"><label for="orden"><svg class="rf-ui-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg><span>Ordenar</span></label>
-            <select id="orden">
-              <option value="relevancia">Más relevantes</option><option value="caida">Mayor caída de precio</option><option value="descuento">Mayor descuento</option><option value="nuevos">Recién agregados</option><option value="ofertas">Ofertas primero</option>
-              <option value="precio_asc">Precio: menor a mayor</option>
-              <option value="precio_desc">Precio: mayor a menor</option>
-              <option value="nombre_asc" selected>Nombre: A-Z</option>
-            </select>
-    </div>
-  </div>
-</div>
-
-<aside class="stock-notice" id="stockNotice" aria-label="Aviso sobre disponibilidad">
-  <div class="stock-notice-inner">
-    <span class="stock-notice-icon" aria-hidden="true">i</span>
-    <div class="stock-notice-text">
-      <strong>Antes de tu visita.</strong> La web refleja catálogos online, no el stock físico completo de cada tienda.
-    </div>
-    <button class="stock-notice-close" id="stockNoticeClose" type="button" aria-label="Cerrar aviso">×</button>
-  </div>
-</aside>
-
-<div id="priceError" role="alert" hidden></div>
-<div id="loadError" role="alert" hidden><p id="loadErrorText"></p><button type="button" id="retryLoad" class="clear-btn">Reintentar</button></div>
-<section class="planning-tools" aria-label="Favoritos y conversión" hidden>
-<button type="button" id="openShoppingList"><span>Mi lista</span> <span id="listCount" class="list-count">0</span></button>
-<label class="reference-currency-label"><span>Moneda de referencia</span><select id="referenceCurrency" aria-label="Moneda de referencia"><option value="USD">USD</option><option value="BRL" selected>BRL · Real</option><option value="UYU">UYU · Peso uruguayo</option><option value="ARS">ARS · Peso argentino</option></select></label><details class="exchange-details"><summary><strong id="exchangePreview">USD → BRL</strong> <span>· Cotización</span></summary><label><span id="exchangePair">USD → BRL</span> <input id="exchangeRate" type="number" min="0.01" step="0.01" placeholder="Cotización" aria-label="Reales por dólar"></label>
-<p id="exchangeNote"></p><button id="automaticExchange" type="button">Usar cotización automática</button></details></section>
-<p id="connectionNote" class="rf-connection-note" hidden>Sin conexión: catálogo guardado / Sem conexão: catálogo salvo.</p>
-<div class="grid" id="grid"></div>
-<div class="load-more-wrap" id="loadMoreWrap" hidden>
-  <button class="load-more-btn" id="loadMore" type="button">Mostrar más productos</button>
-</div>
-<div class="empty-state" id="emptyState" style="display:none;">
-  No se encontraron productos con esos filtros.<br>Probá ampliar la búsqueda.
-</div>
-</section>
-
-<!-- Outside #catalogSection: the list must open from any page, even when the catalog is hidden. -->
-<dialog id="shoppingDialog" class="rf-list-dialog" aria-labelledby="shoppingTitle"><div class="shopping-header"><div class="rf-list-heading"><span class="rf-list-heart"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg></span><div><h2 id="shoppingTitle">Mi lista</h2><p id="shoppingSummary" class="rf-list-summary"></p></div></div><button type="button" id="closeShoppingList" aria-label="Cerrar">✕</button></div><div id="shoppingRoute" class="rf-list-route"></div><div id="shoppingList"></div><div class="share-list"><button id="shareShoppingList" type="button"><svg class="rf-list-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg><span>Compartir lista</span></button><p id="shareHint">Abrila en otro celular con un enlace, sin crear cuenta.</p><input id="sharedListLink" readonly hidden aria-label="Enlace de la lista"></div></dialog>
-<dialog id="productDialog" aria-labelledby="productPreviewTitle"><div class="dialog-header"><h2 id="productPreviewTitle"></h2><button class="dialog-close" id="productPreviewClose" type="button" aria-label="Cerrar / Fechar">×</button></div><div id="productPreviewContent"></div></dialog>
-<dialog class="comparison-dialog" id="comparisonDialog" aria-labelledby="dialogTitle">
-  <div class="dialog-header">
-    <div>
-      <h2 id="dialogTitle">Comparar precios</h2>
-      <p class="dialog-subtitle" id="dialogSubtitle"></p>
-    </div>
-    <button class="dialog-close" id="dialogClose" type="button" aria-label="Cerrar">×</button>
-  </div>
-  <div class="comparison-list" id="comparisonList"></div>
-</dialog>
-
-<dialog id="storeDirectoryDialog" aria-labelledby="storeDirectoryTitle">
-  <div class="shopping-header"><div><span class="eyebrow">RIVFREE · RIVERA Y SANTANA DO LIVRAMENTO</span><h2 id="storeDirectoryTitle">Guía de free shops</h2></div><button id="closeStoreDirectory" type="button" aria-label="Cerrar">✕</button></div>
-  <p class="directory-intro">Consultá las tiendas registradas en RivFree. Confirmá horarios y datos de contacto en los canales oficiales antes de tu visita.</p>
-  <p id="storeDirectoryStatus" role="status"></p><button id="retryStoreDirectory" type="button" hidden>Reintentar</button>
-  <div id="storeDirectoryList" class="store-directory-grid"></div>
-</dialog>
-<dialog class="comparison-dialog" id="storeDialog" aria-labelledby="storeDialogTitle">
-  <div class="dialog-header">
-    <div>
-      <h2 id="storeDialogTitle">Información de la tienda</h2>
-      <p class="dialog-subtitle">Datos de contacto y enlaces oficiales</p>
-    </div>
-    <button class="dialog-close" id="storeDialogClose" type="button" aria-label="Cerrar">×</button>
-  </div>
-  <div class="store-info" id="storeInfo"></div>
-</dialog>
-
-</main>
-<button id="backToTop" type="button" hidden aria-label="Volver arriba" title="Volver arriba">↑</button>
-<div id="actionStatus" role="status" aria-live="polite" hidden></div>
-
-<footer>
-  <strong>RivFree · Comparador independiente</strong><br>
-  <span class="studio-footer-text">No realizamos ventas ni estamos afiliados a las tiendas. Los precios y la disponibilidad son orientativos y pueden cambiar. Consultá la información actualizada en la publicación oficial de cada tienda.</span>
-  <div class="rf-social rf-social-footer" id="footerSocial" aria-label="Redes sociales de RivFree"></div>
-  <div class="footer-actions"><a class="privacy-policy-link" href="privacy.html" hidden>Privacidad</a></div>
-</footer>
-
-<dialog id="historyDialog"><button type="button" id="closeHistory" aria-label="Cerrar / Fechar">✕</button><h2>Historial / Histórico</h2><div id="historyContent"></div></dialog>
-<script src="site-config.js?v=20261002-v84" defer></script>
-<script src="privacy-config.js?v=20260925-ux1" defer></script>
-<script src="tracking-config.js?v=20260930-v4" defer></script>
-<script src="consent.js?v=20260930-v4" defer></script>
-<script src="matching.js?v=20260928-seo3" defer></script>
-<script src="catalog.js?v=20261002-v84" defer></script>
-<script src="catalog-cache.js?v=20261002-v84" defer></script>
-<script src="features.js?v=20261002-v84" defer></script>
-<script src="shared-list-codec.js?v=20260925-share2" defer></script>
-<script src="shopping.js?v=20261002-v84" defer></script>
-<script src="storefront.js?v=20261002-v84" defer></script>
-<script src="product-details.js?v=20261002-v84" defer></script>
-<script src="app.js?v=20261002-v84" defer></script>
-<script src="product-content.js?v=20260930" defer></script>
-<script src="search-api-config.js" defer></script>
-<script src="store-directory.js?v=20261002-v84" defer></script>
-<script src="experience.js?v=20261002-v84" defer></script>
-<script src="explore-model.js?v=20261001-v5" defer></script>
-<script src="category-index.js?v=20261002-v84" defer></script>
-<script src="explore.js?v=20261002-v841" defer></script>
-<script src="nav-bar.js?v=20261002-v84" defer></script>
-<script src="ui-updates.js?v=20261002-v84" defer></script>
-<script src="mobile-shell.js?v=20261003-v85" defer></script>
-</body></html>
+ const data=combineCatalogData(scrapedData,manualData,corrections);
+ const version=`${scrapedVersion||'unversioned'}|manual:${manualVersion(manualData)}${correctionsSuffix(corrections)}`;
+ const reuse=cached?.version===version&&cached.preparedVersion===PREPARED_CATALOG_VERSION&&validPrepared(cached.prepared);
+ const prepared=reuse?cached.prepared:prepareCatalog(data);
+ if(!reuse||cached?.data||JSON.stringify(cached?.scrapedMeta)!==JSON.stringify(scrapedMeta)){
+  const entry={version,scrapedVersion,manualData,corrections,preparedVersion:PREPARED_CATALOG_VERSION,prepared,partitioned};
+  if(partitioned){entry.storeData=storeData;entry.storeVersions=storeVersions;entry.scrapedMeta=scrapedMeta;}
+  else entry.scrapedData=scrapedData;
+  try {await cachedCatalog(entry);}catch{}
+ }
+ return {version,data:{actualizado:data.actualizado,resumen:data.resumen,manualActualizado:manualData.actualizado||null},prepared,offline};
+}
+function loadCatalogWithoutWorker(onRefresh,preferCache=true){
+ return new Promise((resolve,reject)=>{
+  let initial;
+  loadCatalogLocally(preferCache?snapshot=>{initial=snapshot;resolve(snapshot);}:null).then(result=>{
+   if(initial)onRefresh({changed:result.version!==initial.version,offline:result.offline,data:result.data});else resolve(result);
+  },error=>{if(initial)onRefresh({changed:false,offline:true});else reject(error);});
+ });
+}
+async function loadCatalog(onRefresh=()=>{},preferCache=true) {
+ if(typeof Worker==='undefined')return loadCatalogWithoutWorker(onRefresh,preferCache);
+ try {return await new Promise((resolve,reject)=>{
+  const worker=new Worker('catalog-worker.js?v=20261002-v84');let delivered=false;
+  const timer=setTimeout(()=>{worker.terminate();if(delivered)onRefresh({changed:false,offline:true});else reject(Object.assign(new Error('Worker timeout'),{catalogFailure:true}));},70000);
+  const products=[],groups=[],legacyKeys={};
+  worker.onmessage=({data})=>{
+   if(data?.part==='refresh'){clearTimeout(timer);worker.terminate();onRefresh(data);return;}
+   if(data?.part==='products'){for(const p of data.items)products.push(p);return;}
+   if(data?.part==='groups'){for(const g of data.items){g.offers=g.o.map(x=>typeof x==='number'?products[x]:x);delete g.o;groups.push(g);}return;}
+   if(data?.part==='legacy'){for(const [key,value] of data.items)legacyKeys[key]=value;return;}
+   if(data?.phase!=='cached'){clearTimeout(timer);worker.terminate();}
+   if(data?.part==='done'){delivered=true;resolve({data:data.data,offline:data.offline,refreshing:data.phase==='cached',prepared:{products,groups,legacyKeys,words:data.words}});}
+   else if(delivered)onRefresh({changed:false,offline:true});
+   else data.error?reject(Object.assign(new Error(data.error),{catalogFailure:true})):resolve(data);
+  };
+  worker.onerror=()=>{clearTimeout(timer);worker.terminate();if(delivered)onRefresh({changed:false,offline:true});else reject(new Error('Worker failed'));};worker.postMessage({preferCache});
+ });}catch(error){if(error.catalogFailure)throw error;return loadCatalogWithoutWorker(onRefresh,preferCache);}
+}
+if(typeof module!=='undefined') module.exports={fetchWithTimeout,fetchOptionalJson,manualVersion,validManualCatalog,validStoreVersions,storeSignature,catalogFromPartitions,correctionsSuffix};

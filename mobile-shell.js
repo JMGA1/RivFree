@@ -1,586 +1,219 @@
-
-import asyncio
-import re
-import sys
-from pathlib import Path
-from urllib.parse import urljoin, urlparse
-
-sys.path.append(str(Path(__file__).parent))
-from utils import (
-    PRICE_RE,
-    catalog_metrics,
-    clean_price,
-    dedupe_products_prefer_complete,
-    finalize_scrape,
-    load_previous_store,
-    merge_product_records,
-)
-
-BASE_URL = "https://mantrafreeshop.com"
-CATEGORY_RE = re.compile(r"-c\d+/?(?:$|[?#])", re.I)
-PRODUCT_RE = re.compile(r"-p\d+/?(?:$|[?#])", re.I)
-CATEGORY_WORKERS = 1
-DETAIL_WORKERS = 1
-NAV_TIMEOUT_MS = 45000
-DETAIL_TIMEOUT_MS = 25000
-REQUEST_PAUSE_MS = 900
-MAX_DETAIL_RECOVERY = 120
-LAST_RUN_STATUS = {}
-
-
-
-
-def _extract_usd_prices(raw_text):
-    """Parsea importes USD aunque Ecwid divida los miles entre varios spans.
-
-    Ejemplos reales posibles en el DOM renderizado:
-      ``U$1149.00``
-      ``U$ 1 149.00``
-      ``U$ 1 149 . 00``
-
-    ``clean_price`` funciona bien cuando el número llega continuo, pero el
-    ``get_text(" ")`` de BeautifulSoup puede insertar espacios entre spans y
-    convertir 1149.00 en ``1 149 . 00``. En ese caso el regex normal veía solo
-    el primer ``1`` y RivFree terminaba mostrando USD 1.00.
-    """
-    if not raw_text:
-        return []
-    text = str(raw_text).replace("\xa0", " ")
-    pattern = re.compile(r"(?:USD\s*\$?|US\s*\$|U\$S|U\$)\s*([0-9][0-9\s.,]*)", re.I)
-    values = []
-    for match in pattern.finditer(text):
-        numeric = re.sub(r"\s+", "", match.group(1)).strip(".,")
-        if not numeric:
-            continue
-        value = clean_price("U$" + numeric)
-        if value is not None and value > 0:
-            values.append(value)
-    return values
-
-
-def _price_from_node(node):
-    """Extrae el precio de un nodo Ecwid usando atributos y texto visible."""
-    if node is None:
-        return None
-
-    # Ecwid y plantillas intermedias pueden exponer el valor crudo en atributos.
-    # Preferimos esos valores porque no sufren separación visual en spans.
-    for attr in (
-        "data-price", "data-price-value", "data-product-price", "data-ec-price",
-        "data-value", "content", "aria-label",
-    ):
-        raw = node.get(attr) if hasattr(node, "get") else None
-        if not raw:
-            continue
-        raw = str(raw).strip()
-        values = _extract_usd_prices(raw)
-        if values:
-            return values[0]
-        compact = re.sub(r"\s+", "", raw)
-        if re.fullmatch(r"[0-9]+(?:[.,][0-9]{1,2})?", compact):
-            value = clean_price("U$" + compact)
-            if value is not None and value > 0:
-                return value
-
-    values = _extract_usd_prices(node.get_text(" ", strip=True))
-    return values[0] if values else None
-
-def _slug_from_url(url):
-    path = urlparse(url).path.strip("/")
-    return re.sub(r"-c\d+$", "", path) or "varios"
-
-
-def _load_previous():
-    return load_previous_store("mantra", Path(__file__).parent.parent / "data")
-
-
-async def _goto(page, url, retries=4, timeout_ms=NAV_TIMEOUT_MS):
-    """Navega con backoff especial para 429."""
-    last = None
-    rate_limited = 0
-    for attempt in range(1, retries + 1):
-        try:
-            response = await page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
-            status = response.status if response is not None else 200
-            if status == 429:
-                rate_limited += 1
-                wait_ms = min(90000, 10000 * (3 ** (rate_limited - 1)))
-                print(f"[Mantra] HTTP 429 en {url}; pausa {wait_ms/1000:.0f}s antes de reintentar")
-                await page.wait_for_timeout(wait_ms)
-                last = RuntimeError(f"HTTP 429: {url}")
-                continue
-            if status >= 400:
-                raise RuntimeError(f"HTTP {status}: {url}")
-            await page.wait_for_timeout(REQUEST_PAUSE_MS)
-            return response
-        except Exception as exc:
-            last = exc
-            if attempt < retries:
-                await page.wait_for_timeout(min(15000, 1500 * attempt))
-    raise RuntimeError(f"no se pudo cargar {url}: {last}")
-
-
-def _extract_listing_products_from_html(html, category):
-    """Extrae una fila por tarjeta Ecwid usando selectores propios de Ecwid.
-
-    La versión anterior subía por ancestros desde cada enlace hasta encontrar
-    cualquier texto con ``U$``. Eso podía asociar a un producto el precio de un
-    bloque vecino o tomar el precio de comparación como vigente. Acá el precio
-    queda estrictamente limitado al ``.grid-product`` correspondiente.
-    """
-    from bs4 import BeautifulSoup
-
-    soup = BeautifulSoup(html, "html.parser")
-    products = {}
-
-    # Ecwid documenta .grid-product como la tarjeta de catálogo y
-    # .grid-product__price-amount / .grid-product__price-value.ec-price-item
-    # como el precio mostrado en esa tarjeta.
-    cards = soup.select('.grid-product')
-
-    # Respaldo para snapshots/tests antiguos que no traigan la clase exacta.
-    if not cards:
-        cards = []
-        seen = set()
-        for link in soup.find_all('a', href=True):
-            href = urljoin(BASE_URL, link.get('href', ''))
-            if not PRODUCT_RE.search(href):
-                continue
-            node = link
-            candidate = link
-            for _ in range(6):
-                if node is None:
-                    break
-                urls = {
-                    urljoin(BASE_URL, a.get('href', ''))
-                    for a in node.find_all('a', href=True)
-                    if PRODUCT_RE.search(urljoin(BASE_URL, a.get('href', '')))
-                }
-                if len(urls) > 1:
-                    break
-                candidate = node
-                if node.select_one('.grid-product__price, .grid-product__price-amount, .grid-product__price-value'):
-                    break
-                node = node.parent
-            identity = id(candidate)
-            if identity not in seen:
-                seen.add(identity)
-                cards.append(candidate)
-
-    for card in cards:
-        links = [
-            a for a in card.find_all('a', href=True)
-            if PRODUCT_RE.search(urljoin(BASE_URL, a.get('href', '')))
-        ]
-        if not links:
-            continue
-        link = links[0]
-        href = urljoin(BASE_URL, link.get('href', '')).split('#')[0]
-        if urlparse(href).netloc.removeprefix('www.') != 'mantrafreeshop.com':
-            continue
-
-        title = card.select_one('.grid-product__title-inner, .grid-product__title')
-        name = title.get_text(' ', strip=True) if title else ''
-        img = card.find('img')
-        if not name and img:
-            name = img.get('alt', '').strip()
-        if not name:
-            # Solo usamos el texto del enlace como último respaldo y limpiamos
-            # cualquier importe para que no contamine el nombre.
-            name = PRICE_RE.sub('', link.get_text(' ', strip=True)).strip(' -–|:')
-        if not name:
-            continue
-
-        current = None
-        original = None
-
-        # Fuente primaria: clases oficiales del precio actual en la grilla.
-        current_tag = card.select_one(
-            '.grid-product__price-amount, '
-            '.grid-product__price-value.ec-price-item'
-        )
-        if current_tag:
-            current = _price_from_node(current_tag)
-
-        # Si existe precio anterior/comparativo, nunca debe convertirse en el
-        # precio vigente del producto.
-        compare_tag = card.select_one(
-            '.grid-product__price-compare, '
-            '.grid-product__price-compare-at, '
-            '.grid-product__price-old, '
-            '.grid-product__price--compare'
-        )
-        if compare_tag:
-            original = _price_from_node(compare_tag)
-
-        # Fallback estrictamente dentro del bloque de precio de ESTA tarjeta.
-        # Si hay dos importes y no hay semántica suficiente, el menor es el
-        # precio vigente y el mayor el precio anterior; es la relación válida
-        # para una rebaja y evita elegir el compare-at por posición textual.
-        price_box = card.select_one('.grid-product__price')
-        if price_box:
-            observed = _extract_usd_prices(price_box.get_text(' ', strip=True))
-            if current is None and observed:
-                current = min(observed)
-            if original is None and len(observed) > 1 and current is not None:
-                higher = [value for value in observed if value > current]
-                original = max(higher) if higher else None
-
-        if current is not None and current <= 0:
-            current = None
-        if original is not None and (current is None or original <= current):
-            original = None
-
-        image = None
-        if img:
-            image = img.get('data-src') or img.get('data-lazy-src') or img.get('src')
-
-        product = {
-            'tienda': 'Mantra Free Shop',
-            'nombre': name,
-            'precio_usd': current,
-            'precio_original_usd': original,
-            'en_oferta': bool(original and current and original > current),
-            'categoria': category,
-            'url': href,
-            'imagen': image,
-            'precio_fuente': 'listado' if current is not None else None,
-        }
-        products[href] = merge_product_records(products.get(href), product)
-
-    return list(products.values())
-
-
-async def _collect_links(page):
-    links = await page.locator("a[href]").evaluate_all("els => els.map(a => a.href)")
-    cats = []
-    for href in links:
-        if not href:
-            continue
-        clean = href.split("#")[0]
-        if urlparse(clean).netloc.removeprefix("www.") == "mantrafreeshop.com" and CATEGORY_RE.search(clean):
-            cats.append(clean)
-    return list(dict.fromkeys(cats))
-
-
-async def _expand(page, category, rounds=200):
-    """Expande una grilla Ecwid sin perder lo ya observado ante una falla tardía."""
-    categories = set()
-    products = {}
-    stable = 0
-    signatures = set()
-    warning = None
-    for _ in range(rounds):
-        categories.update(await _collect_links(page))
-        found = _extract_listing_products_from_html(await page.content(), category)
-        before = len(products)
-        for item in found:
-            products[item["url"]] = merge_product_records(products.get(item["url"]), item)
-        stable = stable + 1 if len(products) == before else 0
-
-        more = page.get_by_role("button", name=re.compile(r"load more|show more|mostrar mais|carregar mais|ver mais", re.I)).first
-        if await more.count() and await more.is_visible() and await more.is_enabled():
-            if stable >= 8:
-                warning = "cargar más dejó de agregar productos"
-                return sorted(categories), list(products.values()), warning
-            try:
-                await more.click(timeout=10000)
-            except Exception as exc:
-                warning = f"falló cargar más: {exc}"
-                return sorted(categories), list(products.values()), warning
-        elif stable >= 4:
-            next_link = page.locator('.ec-pager__next a, a.ec-pager__next, a[rel="next"]').first
-            if (await next_link.count() and await next_link.is_visible()
-                    and await next_link.is_enabled()
-                    and await next_link.get_attribute("aria-disabled") != "true"):
-                signature = tuple(sorted(products))
-                if signature in signatures:
-                    warning = "paginación repetida"
-                    return sorted(categories), list(products.values()), warning
-                signatures.add(signature)
-                try:
-                    await next_link.click(timeout=10000)
-                except Exception as exc:
-                    warning = f"no se pudo abrir página siguiente: {exc}"
-                    return sorted(categories), list(products.values()), warning
-                stable = 0
-            else:
-                return sorted(categories), list(products.values()), warning
-        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        await page.wait_for_timeout(1300)
-
-    warning = "límite de carga alcanzado"
-    return sorted(categories), list(products.values()), warning
-
-
-async def _discover_catalog(context):
-    products = {}
-    failed_categories = []
-    partial_categories = []
-    scheduled = set()
-    queue = asyncio.Queue()
-
-    first = await context.new_page()
-    try:
-        await _goto(first, BASE_URL, retries=4)
-        initial_cats, initial_products, initial_warning = await _expand(first, "varios")
-        for item in initial_products:
-            products[item["url"]] = merge_product_records(products.get(item["url"]), item)
-        if initial_warning:
-            partial_categories.append(BASE_URL)
-            print(f"[Mantra] [aviso] portada parcial: {initial_warning}")
-    finally:
-        await first.close()
-
-    for cat in initial_cats:
-        if cat not in scheduled:
-            scheduled.add(cat)
-            await queue.put(cat)
-
-    async def worker(worker_id):
-        page = await context.new_page()
-        try:
-            while True:
-                cat = await queue.get()
-                label = _slug_from_url(cat)
-                try:
-                    await _goto(page, cat, retries=4)
-                    subcats, found, partial_warning = await _expand(page, label)
-                    for item in found:
-                        products[item["url"]] = merge_product_records(products.get(item["url"]), item)
-                    if partial_warning:
-                        partial_categories.append(cat)
-                        print(f"[Mantra] [aviso] {label}: avance parcial ({partial_warning})")
-                    for sub in subcats:
-                        if sub not in scheduled:
-                            scheduled.add(sub)
-                            await queue.put(sub)
-                    with_price = sum(p.get("precio_usd") is not None for p in found)
-                    print(f"[Mantra] {label}: {len(found)} productos ({with_price} con precio); total {len(products)}")
-                except Exception as exc:
-                    failed_categories.append(cat)
-                    print(f"[Mantra] [aviso] categoría {cat}: {exc}")
-                finally:
-                    queue.task_done()
-        except asyncio.CancelledError:
-            pass
-        finally:
-            await page.close()
-
-    workers = [asyncio.create_task(worker(i + 1)) for i in range(CATEGORY_WORKERS)]
-    await queue.join()
-    for task in workers:
-        task.cancel()
-    await asyncio.gather(*workers, return_exceptions=True)
-    return list(products.values()), failed_categories, partial_categories
-
-
-def _extract_detail_soup(soup, url, category):
-    """Extrae una ficha Ecwid real sin confundirla con una página genérica.
-
-    Se mantiene esta función separada porque los tests de regresión y otros
-    consumidores internos la usan directamente. Un ``h1`` genérico no basta
-    para considerar que estamos en una ficha: exigimos selectores propios de
-    Ecwid y limitamos el precio al bloque principal del producto.
-    """
-    # Ecwid leaves an empty legacy heading before the real product title.
-    title = next((node for node in soup.select(
-        '.product-details__product-title, .ecwid-productBrowser-head'
-    ) if node.get_text(' ', strip=True)), None)
-    if title is None:
-        return None
-
-    name = title.get_text(" ", strip=True)
-    if not name:
-        return None
-
-    price_scope = soup.select_one(
-        ".product-details__product-price, .ecwid-productBrowser-price"
-    )
-    price_tag = soup.select_one(
-        ".product-details__product-price .details-product-price__value, "
-        ".product-details__product-price-value, .ecwid-productBrowser-price"
-    )
-    old_tag = soup.select_one(
-        ".product-details__product-price .details-product-price__compare, "
-        ".product-details__product-price .details-product-price__compare-at-price"
-    )
-
-    price = _price_from_node(price_tag) if price_tag else None
-    if price is None and price_scope is not None:
-        matches = _extract_usd_prices(price_scope.get_text(" ", strip=True))
-        if matches:
-            # En una ficha sin selector semántico específico, el primer precio
-            # visible del bloque principal es el vigente.
-            price = matches[0]
-
-    original = _price_from_node(old_tag) if old_tag else None
-    if original is not None and (price is None or original <= price):
-        original = None
-
-    og = soup.find("meta", attrs={"property": "og:image"})
-    image = og.get("content") if og and og.get("content") else None
-
-    return {
-        "tienda": "Mantra Free Shop",
-        "nombre": name,
-        "precio_usd": price,
-        "precio_original_usd": original,
-        "en_oferta": bool(original and price and original > price),
-        "categoria": category,
-        "url": url,
-        "imagen": image,
-    }
-
-
-async def _extract_detail(page, product):
-    from bs4 import BeautifulSoup
-    await _goto(page, product["url"], retries=3, timeout_ms=DETAIL_TIMEOUT_MS)
-    await page.wait_for_selector('.product-details__product-title, .ecwid-productBrowser-price', state='visible', timeout=15000)
-    await page.wait_for_timeout(800)
-    detail = _extract_detail_soup(
-        BeautifulSoup(await page.content(), "html.parser"),
-        product["url"],
-        product.get("categoria") or "varios",
-    )
-    if detail is None:
-        raise RuntimeError("la página no parece una ficha de producto Ecwid")
-
-    # El listado sigue siendo la fuente primaria: la ficha solo completa campos
-    # que faltaban, en especial el precio.
-    if not product.get("nombre"):
-        product["nombre"] = detail.get("nombre")
-    if product.get("precio_usd") is None and detail.get("precio_usd") is not None:
-        product["precio_usd"] = detail["precio_usd"]
-        product["precio_original_usd"] = detail.get("precio_original_usd")
-        product["en_oferta"] = detail.get("en_oferta", False)
-        product["precio_fuente"] = "ficha"
-    if not product.get("imagen") and detail.get("imagen"):
-        product["imagen"] = detail["imagen"]
-    if product.get('precio_usd') is None:
-        product['precio_fuente'] = 'sin_precio_publicado'
-    return product
-
-
-async def _recover_details(context, products):
-    missing = [p for p in products if not p.get("nombre") or p.get("precio_usd") is None]
-    selected = missing[:MAX_DETAIL_RECOVERY]
-    not_attempted = [p.get("url") for p in missing[MAX_DETAIL_RECOVERY:] if p.get("url")]
-    failed = []
-    recovered = 0
-    rate_limited = 0
-    page = await context.new_page()
-    visited = 0
-    try:
-        for index, product in enumerate(selected):
-            # Si el servidor ya nos limitó varias veces, detener la recuperación
-            # secundaria. El catálogo del listado se conserva y las fichas
-            # restantes quedan explícitamente pendientes.
-            if rate_limited >= 3:
-                not_attempted.extend(
-                    p.get("url") for p in selected[index:] if p.get("url")
-                )
-                print(
-                    f"[Mantra] demasiados HTTP 429; se detienen detalles y quedan "
-                    f"{len(selected) - index} fichas pendientes"
-                )
-                break
-
-            before = product.get("precio_usd")
-            visited += 1
-            try:
-                await _extract_detail(page, product)
-                if before is None and product.get("precio_usd") is not None:
-                    recovered += 1
-            except Exception as exc:
-                if "429" in str(exc):
-                    rate_limited += 1
-                failed.append(product.get("url"))
-                print(f"[Mantra] [aviso] ficha {product.get('url')}: {exc}")
-            if visited % 25 == 0 or visited == len(selected):
-                print(f"[Mantra] detalles {visited}/{len(selected)}; recuperados {recovered}; fallidos {len(failed)}")
-    finally:
-        await page.close()
-    return {"visited": visited, "recovered": recovered, "failed": failed, "not_attempted": not_attempted, "rate_limited": rate_limited}
-
-
-def _merge_previous(products, previous, failed_urls, failed_categories):
-    previous_by_url = {p.get("url"): p for p in previous if isinstance(p, dict) and p.get("url")}
-    current = {p.get("url"): p for p in products if p.get("url")}
-    for url in failed_urls:
-        if url in previous_by_url and url not in current:
-            current[url] = dict(previous_by_url[url], datos_anteriores=True)
-        elif url in previous_by_url and current[url].get("precio_usd") is None and previous_by_url[url].get("precio_usd") is not None:
-            current[url]["precio_usd"] = previous_by_url[url].get("precio_usd")
-            current[url]["datos_anteriores"] = True
-            current[url]["precio_fuente"] = "cache"
-
-    failed_labels = {_slug_from_url(url) for url in failed_categories}
-    if failed_labels:
-        for old in previous:
-            if (isinstance(old, dict) and old.get("url")
-                    and old.get("categoria") in failed_labels):
-                current.setdefault(old["url"], dict(old, datos_anteriores=True))
-    return list(current.values())
-
-
-async def _run_async():
-    global LAST_RUN_STATUS
-    LAST_RUN_STATUS = {}
-    from playwright.async_api import async_playwright
-
-    previous = _load_previous()
-    async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
-        context = await browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36")
-        try:
-            products, failed_categories, partial_categories = await _discover_catalog(context)
-            if not products:
-                raise RuntimeError("Mantra: no se descubrieron productos en los listados")
-            products = dedupe_products_prefer_complete(products)
-            listing_prices = sum(p.get("precio_usd") is not None for p in products)
-            print(f"[Mantra] listado consolidado: {len(products)} productos; {listing_prices} con precio")
-            recovery = await _recover_details(context, products)
-        finally:
-            await context.close()
-            await browser.close()
-
-    unresolved = set(recovery["failed"]) | set(recovery["not_attempted"])
-    merged = _merge_previous(products, previous, unresolved, failed_categories + partial_categories)
-    if not merged:
-        raise RuntimeError("Mantra: no se obtuvo ninguna ficha válida")
-
-    metrics = catalog_metrics(merged)
-    metrics.update({
-        "categorias_fallidas": len(failed_categories),
-        "categorias_parciales": len(partial_categories),
-        "precios_desde_listado": listing_prices,
-        "fichas_consultadas": recovery["visited"],
-        "precios_recuperados": recovery["recovered"],
-        "fichas_fallidas": len(recovery["failed"]),
-        "fichas_sin_precio_publicado": sum(p.get('precio_fuente') == 'sin_precio_publicado' for p in products),
-        "fichas_no_visitadas": len(recovery["not_attempted"]),
-        "http_429": recovery["rate_limited"],
-        "productos_frescos": len(merged) - metrics["productos_anteriores"],
-    })
-    warnings = []
-    if failed_categories:
-        warnings.append(f"{len(failed_categories)} categorías fallaron")
-    if partial_categories:
-        warnings.append(f"{len(partial_categories)} categorías quedaron parciales")
-    if recovery["failed"]:
-        warnings.append(f"{len(recovery['failed'])} fichas fallaron")
-    if recovery["not_attempted"]:
-        warnings.append(f"{len(recovery['not_attempted'])} fichas quedaron pendientes")
-    warning = "Mantra parcial: " + "; ".join(warnings) if warnings else None
-    LAST_RUN_STATUS = {"partial": bool(warning), "warning": warning, "metrics": metrics}
-    finalize_scrape(merged, "mantra", Path(__file__).parent.parent / "data", LAST_RUN_STATUS)
-    return merged
-
-
-def run():
-    return asyncio.run(_run_async())
-
-
-if __name__ == "__main__":
-    run()
+/* Phone layout: one compact bar (menu · RivFree · search · Mi lista) and a side menu with everything else:
+   categories (families, brands and types), offers, stores, today's dollar, language, theme and social links.
+   Icons: Lucide (ISC, see LICENSE-lucide.txt). Desktop keeps its own header; these controls only show on phones. */
+(() => {
+ 'use strict';
+ const $=id=>document.getElementById(id);
+ const topbar=document.querySelector('.topbar-inner');
+ if(!topbar||$('mobileMenu'))return;
+ const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
+ const isEs=()=>String($('languageToggle')?.value||document.documentElement.lang||'').startsWith('es');
+ const t=(es,pt)=>isEs()?es:pt;
+ const reduced=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ const ICONS={
+  settings:'<path d="M12.22 2h-.44a2 2 0 0 0-2 1.72l-.12.89a2 2 0 0 1-1.18 1.52l-.2.09a2 2 0 0 1-1.9-.18l-.73-.54a2 2 0 0 0-2.63.38l-.22.38a2 2 0 0 0 .63 2.5l.71.55a2 2 0 0 1 .72 1.76v.22a2 2 0 0 1-.72 1.76l-.71.55a2 2 0 0 0-.63 2.5l.22.38a2 2 0 0 0 2.63.38l.73-.54a2 2 0 0 1 1.9-.18l.2.09a2 2 0 0 1 1.18 1.52l.12.89a2 2 0 0 0 2 1.72h.44a2 2 0 0 0 2-1.72l.12-.89a2 2 0 0 1 1.18-1.52l.2-.09a2 2 0 0 1 1.9.18l.73.54a2 2 0 0 0 2.63-.38l.22-.38a2 2 0 0 0-.63-2.5l-.71-.55a2 2 0 0 1-.72-1.76v-.22a2 2 0 0 1 .72-1.76l.71-.55a2 2 0 0 0 .63-2.5l-.22-.38a2 2 0 0 0-2.63-.38l-.73.54a2 2 0 0 1-1.9.18l-.2-.09a2 2 0 0 1-1.18-1.52l-.12-.89A2 2 0 0 0 12.22 2Z"/><circle cx="12" cy="11" r="3"/>',
+  menu:'<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+  search:'<circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/>',
+  close:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  back:'<path d="m15 18-6-6 6-6"/>',
+  next:'<path d="m9 18 6-6-6-6"/>',
+  heart:'<path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/>',
+  offers:'<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m15 9-6 6"/><path d="M9 9h.01"/><path d="M15 15h.01"/>',
+  store:'<path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/>',
+  dollar:'<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>',
+  grid:'<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'
+ };
+ function icon(name,cls='rf-m-svg'){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');svg.setAttribute('class',cls);svg.innerHTML=ICONS[name];return svg;}
+ function iconButton(name,cls){const b=el('button',null,'rf-m-icon rf-m-only '+cls);b.type='button';b.append(icon(name));return b;}
+
+ // ── Compact bar ──────────────────────────────────────────────────────────
+ const menuButton=iconButton('menu','rf-m-menu');menuButton.id='mobileMenuButton';
+ menuButton.setAttribute('aria-controls','mobileMenu');menuButton.setAttribute('aria-expanded','false');
+ const searchButton=iconButton('search','rf-m-search');searchButton.id='mobileSearchButton';searchButton.setAttribute('aria-controls','searchForm');
+ const listButton=iconButton('heart','rf-m-list');listButton.id='mobileListButton';
+ const listBadge=el('span',null,'rf-m-count');listBadge.hidden=true;listButton.append(listBadge);
+ const settingsButton=iconButton('settings','rf-m-settings');settingsButton.id='mobileSettingsButton';settingsButton.setAttribute('aria-controls','mobileMenu');settingsButton.setAttribute('aria-expanded','false');
+ const actions=el('div',null,'rf-m-actions');actions.append(searchButton,listButton);
+ topbar.prepend(menuButton);topbar.append(settingsButton,actions);
+
+ // Search opens under the bar. While search results are shown it stays open so the search can be refined;
+ // the button closes it in any case.
+ let searchMode='auto';
+ const searching=()=>typeof ACTIVE_SEARCH!=='undefined'&&!!String(ACTIVE_SEARCH).trim()&&location.hash.startsWith('#/buscar');
+ function syncSearch(focus=false){
+  const open=searchMode==='open'||(searchMode==='auto'&&searching());
+  document.body.classList.toggle('rf-m-search-open',open);
+  searchButton.replaceChildren(icon(open?'close':'search'));
+  searchButton.setAttribute('aria-expanded',String(open));
+  searchButton.setAttribute('aria-label',open?t('Cerrar búsqueda','Fechar busca'):t('Buscar productos','Buscar produtos'));
+  if(open&&focus)$('search')?.focus({preventScroll:true});
+ }
+ searchButton.addEventListener('click',()=>{
+  const open=document.body.classList.contains('rf-m-search-open');
+  searchMode=open?'closed':'open';syncSearch(!open);
+ });
+ $('searchForm')?.addEventListener('submit',()=>{searchMode='auto';$('search')?.blur();setTimeout(()=>syncSearch(),0);});
+ window.addEventListener('hashchange',()=>{searchMode='auto';syncSearch();});
+ // A search runs asynchronously: show the bar again once its results are on screen.
+ if(typeof runSearch==='function'){const prior=runSearch;runSearch=async function(...args){const result=await prior.apply(this,args);syncSearch();return result;};}
+
+ listButton.addEventListener('click',()=>$('openShoppingList')?.click());
+ const listSource=$('listCount');
+ function syncList(){
+  const n=Number(listSource?.textContent)||0;listBadge.textContent=String(n);listBadge.hidden=!n;
+  listButton.setAttribute('aria-label',t('Mi lista','Minha lista')+(n?' · '+n:''));
+  const tile=drawer.querySelector('[data-m="list"] .rf-m-tile-count');if(tile){tile.textContent=String(n);tile.hidden=!n;}
+ }
+ menuButton.setAttribute('aria-label',t('Abrir menú','Abrir menu'));
+
+ // ── Side menu ────────────────────────────────────────────────────────────
+ const overlay=el('div',null,'rf-m-overlay');overlay.hidden=true;
+ const drawer=el('aside',null,'rf-m-drawer');drawer.id='mobileMenu';drawer.hidden=true;drawer.tabIndex=-1;
+ drawer.setAttribute('role','dialog');drawer.setAttribute('aria-modal','true');
+ document.body.append(overlay,drawer);
+ let view='main',lastFocus=null,closeTimer=0,pollTimer=0;
+
+ function open(nextView='main'){
+  clearTimeout(closeTimer);clearTimeout(pollTimer);view=nextView;render();
+  lastFocus=document.activeElement;drawer.hidden=false;overlay.hidden=false;
+  requestAnimationFrame(()=>document.body.classList.add('rf-m-drawer-open'));
+  menuButton.setAttribute('aria-expanded',String(view!=='settings'));settingsButton.setAttribute('aria-expanded',String(view==='settings'));
+  drawer.querySelector('.rf-m-close')?.focus({preventScroll:true});
+ }
+ function close(restore=true){
+  if(drawer.hidden)return;
+  document.body.classList.remove('rf-m-drawer-open');menuButton.setAttribute('aria-expanded','false');settingsButton.setAttribute('aria-expanded','false');
+  clearTimeout(pollTimer);
+  closeTimer=setTimeout(()=>{drawer.hidden=true;overlay.hidden=true;},reduced()?0:220);
+  if(restore)lastFocus?.focus?.({preventScroll:true});
+ }
+ function go(action){close(false);setTimeout(action,0);}
+ menuButton.addEventListener('click',()=>drawer.hidden?open():close());
+ settingsButton.addEventListener('click',()=>open('settings'));
+ overlay.addEventListener('click',()=>close());
+ drawer.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(e.key!=='Tab')return;
+  const items=[...drawer.querySelectorAll('button,a[href],input,select')].filter(n=>!n.disabled&&n.offsetParent!==null);
+  if(!items.length)return;const first=items[0],last=items.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ });
+
+ function row(label,{iconName,count,next,onClick,pressed}={}){
+  const b=el('button',null,'rf-m-row');b.type='button';
+  if(iconName)b.append(icon(iconName,'rf-m-row-icon'));
+  b.append(el('span',label,'rf-m-row-label'));
+  if(count)b.append(el('span',Number(count).toLocaleString(isEs()?'es-UY':'pt-BR'),'rf-m-row-count'));
+  if(next)b.append(icon('next','rf-m-row-next'));
+  if(pressed!==undefined)b.setAttribute('aria-pressed',String(pressed));
+  b.addEventListener('click',onClick);return b;
+ }
+ function section(title){const box=el('section',null,'rf-m-section');if(title)box.append(el('h3',title,'rf-m-section-title'));return box;}
+ function head(title,back){
+  const bar=el('div',null,'rf-m-head');
+  if(back){const b=el('button',null,'rf-m-back');b.type='button';b.append(icon('back'),el('span',t('Categorías','Categorias')));b.addEventListener('click',()=>{view='main';render();drawer.querySelector('.rf-m-back,.rf-m-close')?.focus();});bar.append(b);}
+  else{const brand=el('span',null,'rf-m-brand');brand.append('Riv',el('span','Free','brand-name-free'));bar.append(brand);if(view!=='settings'){const social=$('footerSocial');if(social&&!social.hidden){const links=el('nav',null,'rf-m-head-social');links.setAttribute('aria-label',t('Redes sociales','Redes sociais'));links.append(...[...social.children].map(n=>n.cloneNode(true)));bar.append(links);}}}
+  const x=el('button',null,'rf-m-close');x.type='button';x.setAttribute('aria-label',t('Cerrar menú','Fechar menu'));x.append(icon('close'));x.addEventListener('click',()=>close());
+  bar.append(x);if(title)drawer.setAttribute('aria-label',title);return bar;
+ }
+ const explore=()=>window.RivFreeExplore;
+ const counts=()=>explore()?.ready?.()?explore().facetCounts():null;
+ const label=f=>explore()?.label?explore().label(f):(isEs()?f.es:f.pt);
+
+ function renderMain(){
+  drawer.append(head(t('Menú','Menu')));
+  const tiles=el('div',null,'rf-m-tiles');
+  const offersReady=!$('navOffers')?.disabled;
+  for(const [key,name,text,action,disabled] of [
+   ['offers','offers',t('Ofertas','Ofertas'),()=>go(()=>$('navOffers')?.click()),!offersReady],
+   ['stores','store',t('Tiendas','Lojas'),()=>go(()=>{location.hash='#/tiendas';}),false],
+   ['list','heart',t('Mi lista','Minha lista'),()=>go(()=>$('openShoppingList')?.click()),false]]){
+   const b=el('button',null,'rf-m-tile');b.type='button';b.dataset.m=key;b.disabled=disabled;b.append(icon(name,'rf-m-tile-icon'),el('span',text));
+   if(key==='list'){const c=el('span',null,'rf-m-tile-count');c.hidden=true;b.append(c);}
+   b.addEventListener('click',action);tiles.append(b);
+  }
+  drawer.append(tiles);
+
+  const categories=section(t('Categorías','Categorias'));
+  categories.append(row(t('Todas las categorías','Todas as categorias'),{iconName:'grid',onClick:()=>go(()=>selectCampaignCategory(''))}));
+  const families=explore()?.families?.()||[];const c=counts();
+  if(families.length){
+   for(const f of families){const n=c?c.get(f.id)||0:0;if(c&&!n)continue;categories.append(row(label(f),{count:n,next:true,onClick:()=>{view=f.id;render();drawer.querySelector('.rf-m-back')?.focus();}}));}
+  }else if(typeof Catalog!=='undefined'){
+   for(const [id,names] of Object.entries(Catalog.categories))categories.append(row(names[isEs()?0:1],{onClick:()=>go(()=>selectCampaignCategory(id))}));
+  }
+  drawer.append(categories);
+
+ }
+
+ function renderSettings(){
+  drawer.append(head(t('Configuración','Configurações')));
+  const heading=section();heading.append(el('h2',t('Configuración','Configurações'),'rf-m-family-title'));drawer.append(heading);
+  if(window.RivFreeRates){
+   const rates=section(t('Dólar hoy','Dólar hoje'));rates.classList.add('rf-m-rates');
+   const box=el('div');window.RivFreeRates.render(box,()=>{render();drawer.querySelector('.rf-rate-row[aria-pressed=true]')?.focus();});rates.append(box);drawer.append(rates);
+  }
+
+  const prefs=section(t('Preferencias','Preferências'));
+  const lang=el('div',null,'rf-m-segment');lang.setAttribute('role','group');lang.setAttribute('aria-label',t('Idioma','Idioma'));
+  for(const [value,flag,name] of [['es','icons/flag-uy.svg','Español'],['pt-BR','icons/flag-br.svg','Português']]){
+   const b=el('button',null,'rf-m-choice');b.type='button';b.setAttribute('aria-pressed',String((value==='es')===isEs()));
+   const img=el('img',null,'rf-lang-flag');img.src=flag;img.alt='';img.width=22;img.height=16;b.append(img,el('span',name));
+   b.addEventListener('click',()=>{const select=$('languageToggle');if(!select||select.value===value)return;select.value=value;select.dispatchEvent(new Event('change',{bubbles:true}));setTimeout(()=>{render();drawer.querySelector('.rf-m-segment [aria-pressed=true]')?.focus();},0);});
+   lang.append(b);
+  }
+  const dark=document.documentElement.dataset.theme==='dark';
+  const theme=el('div',null,'rf-m-segment');theme.setAttribute('role','group');theme.setAttribute('aria-label',t('Tema','Tema'));
+  for(const [mode,iconName,name] of [['light','sun',t('Claro','Claro')],['dark','moon',t('Oscuro','Escuro')]]){
+   const b=el('button',null,'rf-m-choice');b.type='button';b.setAttribute('aria-pressed',String((mode==='dark')===dark));b.append(icon(iconName,'rf-m-choice-icon'),el('span',name));
+   b.addEventListener('click',()=>{if((document.documentElement.dataset.theme==='dark')!==(mode==='dark'))$('themeToggle')?.click();setTimeout(()=>{render();drawer.querySelector('[aria-label="Tema"] [aria-pressed=true]')?.focus();},0);});
+   theme.append(b);
+  }
+  prefs.append(lang,theme);drawer.append(prefs);
+
+ }
+
+ function renderFamily(id){
+  const families=explore()?.families?.()||[];const f=families.find(x=>x.id===id);
+  if(!f){view='main';renderMain();return;}
+  drawer.append(head(label(f),true));
+  const box=section();box.append(el('h2',label(f),'rf-m-family-title'));
+  const c=counts();
+  const all=el('button',null,'rf-m-primary');all.type='button';all.textContent=t('Ver todo','Ver tudo')+(c?' · '+(c.get(f.id)||0).toLocaleString(isEs()?'es-UY':'pt-BR'):'');
+  all.addEventListener('click',()=>go(()=>explore().activateFacet(f)));box.append(all);
+  drawer.append(box);
+  if(!c){
+   box.append(el('p',t('Cargando marcas y tipos…','Carregando marcas e tipos…'),'rf-m-muted'));
+   if(typeof PRODUCT_GROUPS!=='undefined'&&PRODUCT_GROUPS.length)explore()?.build?.();
+   clearTimeout(pollTimer);pollTimer=setTimeout(function wait(){if(view!==id||drawer.hidden)return;if(counts()){render();return;}pollTimer=setTimeout(wait,300);},300);
+   return;
+  }
+  for(const [title,items,limit] of [[t('Marcas','Marcas'),[...(f.brands||[]),...(f.dynamicBrands||[])],14],[t('Tipos','Tipos'),[...(f.types||[]),...(f.dynamicTypes||[])],10]]){
+   const shown=items.filter(x=>(c.get(x.id)||0)>0).sort((a,b)=>c.get(b.id)-c.get(a.id)).slice(0,limit);
+   if(!shown.length)continue;
+   const group=section(title);const chips=el('div',null,'rf-m-chips');
+   for(const item of shown){const b=el('button',null,'rf-m-chip');b.type='button';b.append(el('span',label(item)),el('small',(c.get(item.id)||0).toLocaleString(isEs()?'es-UY':'pt-BR')));b.addEventListener('click',()=>go(()=>explore().activateFacet(item)));chips.append(b);}
+   group.append(chips);drawer.append(group);
+  }
+ }
+
+ function render(){
+  drawer.replaceChildren();
+  if(view==='settings')renderSettings();else if(view==='main')renderMain();else renderFamily(view);
+  drawer.scrollTop=0;syncList();
+ }
+
+ // Keep labels, counter and search state in sync with the rest of the site.
+ if(listSource)new MutationObserver(syncList).observe(listSource,{childList:true,characterData:true,subtree:true});
+ function syncSettingsLabel(){settingsButton.setAttribute('aria-label',t('Configuración','Configurações'));settingsButton.title=t('Configuración','Configurações');}
+ $('languageToggle')?.addEventListener('change',()=>setTimeout(()=>{syncSettingsLabel();syncSearch();syncList();menuButton.setAttribute('aria-label',t('Abrir menú','Abrir menu'));if(!drawer.hidden)render();},0));
+ window.addEventListener('rivfree:catalog-ready',()=>{syncSearch();if(!drawer.hidden)render();});
+ const socialSource=$('footerSocial');if(socialSource)new MutationObserver(()=>{if(!drawer.hidden&&view==='main')render();}).observe(socialSource,{childList:true,subtree:true,attributes:true});
+ // Leaving the phone width closes the menu so it never stays open behind the desktop header.
+ window.matchMedia?.('(max-width: 650px)').addEventListener?.('change',e=>{if(!e.matches){close(false);searchMode='auto';syncSearch();}});
+ syncSearch();syncList();syncSettingsLabel();
+ window.RivFreeMobileMenu={open,close,render};
+})();

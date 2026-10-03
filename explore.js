@@ -1,181 +1,171 @@
-/* RivFree v7 · Phone layout (≤ 650 px): one compact bar, side menu, lighter home.
-   Desktop is not affected: every visible rule lives inside the media query, except the hidden defaults. */
-.rf-m-only,.rf-m-actions{display:none}
-.rf-m-drawer[hidden],.rf-m-overlay[hidden]{display:none!important}
-
-/* ── Side menu (built by mobile-shell.js) ─────────────────────────────── */
-.rf-m-overlay{position:fixed;inset:0;z-index:180;background:rgb(10 18 32 / 0%);transition:background .2s ease}
-body.rf-m-drawer-open .rf-m-overlay{background:rgb(10 18 32 / 55%)}
-.rf-m-drawer{position:fixed;z-index:190;top:0;bottom:0;left:0;width:min(86%,340px);overflow-y:auto;overscroll-behavior:contain;
- background:var(--surface,#fff);color:var(--ink,#172337);box-shadow:8px 0 30px rgb(10 18 32 / 25%);transform:translateX(-102%);transition:transform .22s ease;padding-bottom:24px}
-body.rf-m-drawer-open .rf-m-drawer{transform:none}
-body.rf-m-drawer-open{overflow:hidden}
-.rf-m-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;padding:6px 8px 6px 16px;background:#14243a;color:#fff}
-.rf-m-brand{font-size:22px;font-weight:800;letter-spacing:-.02em}
-.rf-m-brand .brand-name-free{color:#ffb5b9}
-.rf-m-close,.rf-m-back{display:inline-flex;align-items:center;gap:4px;min-height:40px;padding:0 8px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}
-.rf-m-close{width:42px;justify-content:center;padding:0}
-.rf-m-back{margin-left:-8px}
-.rf-m-close:focus-visible,.rf-m-back:focus-visible{outline:2px solid #ffb5c0;outline-offset:1px}
-.rf-m-svg,.rf-m-row-icon,.rf-m-row-next,.rf-m-tile-icon,.rf-m-choice-icon{width:22px;height:22px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.rf-m-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 14px 4px}
-.rf-m-tile{position:relative;display:grid;justify-items:center;gap:6px;padding:12px 4px 10px;border:1px solid var(--line,#dce2ea);border-radius:14px;background:var(--surface,#fff);color:var(--ink,#172337);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
-.rf-m-tile:disabled{opacity:.5}
-.rf-m-tile[data-m=offers] .rf-m-tile-icon{color:#d6335a}
-.rf-m-tile[data-m=stores] .rf-m-tile-icon{color:#2f74c0}
-.rf-m-tile[data-m=list] .rf-m-tile-icon{color:#e5294b;fill:#e5294b}
-.rf-m-tile-count{position:absolute;top:6px;right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#e5294b;color:#fff;font-size:10.5px;line-height:18px;font-weight:800}
-.rf-m-section{padding:10px 14px 2px}
-.rf-m-section+.rf-m-section{border-top:1px solid var(--line,#e3e7ee);margin-top:8px;padding-top:14px}
-.rf-m-section-title{margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#5b6577)}
-.rf-m-row{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;padding:0 6px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer}
-.rf-m-row:active,.rf-m-row:hover{background:color-mix(in srgb,var(--ink,#172337) 6%,transparent)}
-.rf-m-row-label{flex:1;min-width:0}
-.rf-m-row-count{font-size:12px;font-weight:700;color:var(--muted,#5b6577)}
-.rf-m-row-next{width:18px;height:18px;color:var(--muted,#5b6577)}
-.rf-m-row-icon{color:var(--muted,#5b6577)}
-.rf-m-family-title{margin:4px 0 12px;font-size:22px;letter-spacing:-.02em}
-.rf-m-primary{width:100%;min-height:46px;border:0;border-radius:12px;background:var(--rf-red,#ad233c);color:#fff;font:inherit;font-size:15px;font-weight:800;cursor:pointer}
-.rf-m-muted{color:var(--muted,#5b6577);font-size:13px}
-.rf-m-chips{display:flex;flex-wrap:wrap;gap:8px}
-.rf-m-chip{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:1px solid var(--line,#dce2ea);border-radius:999px;background:var(--surface,#fff);color:inherit;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
-.rf-m-chip small{font-size:11px;color:var(--muted,#5b6577);font-weight:700}
-.rf-m-segment{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0 10px;padding:4px;border-radius:12px;background:color-mix(in srgb,var(--ink,#172337) 6%,transparent)}
-.rf-m-choice{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;border:0;border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
-.rf-m-choice[aria-pressed=true]{background:var(--surface,#fff);box-shadow:0 1px 4px rgb(10 18 32 / 15%)}
-.rf-m-choice .rf-lang-flag{width:22px;height:16px;border-radius:3px}
-.rf-m-rates .rf-rate-list{display:grid;gap:4px}
-.rf-m-rates .rf-rate-row{display:flex;align-items:center;gap:12px;width:100%;padding:9px 8px;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.rf-m-rates .rf-rate-row[aria-pressed=true]{background:color-mix(in srgb,var(--rf-red,#ad233c) 10%,transparent);box-shadow:inset 3px 0 0 var(--rf-red,#ad233c)}
-.rf-m-rates .rf-rate-name{display:flex;flex-direction:column;flex:1;line-height:1.2}
-.rf-m-rates .rf-rate-name small,.rf-m-rates .rf-rate-note{color:var(--muted,#5b6577);font-size:11.5px}
-.rf-m-rates .rf-rate-value{font-weight:800}
-.rf-m-rates .rf-rate-usd{display:grid;place-items:center;width:24px;height:17px;border-radius:3px;background:#2c4568;color:#6fe3a5;font-weight:900;font-size:12px}
-.rf-m-rates .rf-rate-note{margin:6px 8px 0;line-height:1.45}
-.rf-m-social{display:flex;flex-wrap:wrap;gap:8px}
-.rf-m-social .rf-app-icon{width:34px;height:34px}
-:root[data-theme=dark] .rf-m-drawer{background:#16202f;color:#eef3fa}
-:root[data-theme=dark] .rf-m-tile,:root[data-theme=dark] .rf-m-chip{background:#1d2a3d;border-color:#2c3c55;color:#eef3fa}
-:root[data-theme=dark] .rf-m-choice[aria-pressed=true]{background:#2a3a52}
-@media (prefers-reduced-motion:reduce){.rf-m-drawer,.rf-m-overlay{transition:none}}
-
-@media(max-width:650px){
- /* ── Header: menu · RivFree · search · Mi lista ─────────────────────── */
- .topbar{position:sticky!important;top:0;z-index:60;padding:6px 8px!important}
- .topbar-inner{display:grid!important;grid-template-columns:44px minmax(0,1fr) 44px 88px!important;align-items:center!important;gap:0!important;row-gap:6px!important}
- .rf-m-only{display:inline-grid}
- .rf-m-actions{display:flex;grid-column:4;grid-row:1;justify-self:end;gap:2px}
- .rf-m-menu{grid-column:1;grid-row:1;justify-self:start}
- .topbar .brand{grid-column:2;grid-row:1;justify-self:center;min-width:0}
- .topbar .brand-lockup{gap:0}
- .topbar .brand p,.topbar .brand-mark{display:none!important}
- .topbar .brand :is(h1,.seo-brand-title){font-size:25px!important;line-height:1.1;margin:0}
- .topbar .header-actions{display:none!important}
- .topbar .search-field{display:none!important;grid-column:1/-1!important;grid-row:2!important;margin:0 0 4px!important}
- body.rf-m-search-open .topbar .search-field{display:block!important}
- .topbar .search-field input{font-size:16px}
- .category-shortcuts{display:none!important}
- .rf-m-icon{position:relative;width:42px;height:42px;place-items:center;border:0;border-radius:12px;background:transparent;color:#fff;cursor:pointer}
- .rf-m-icon:active{background:rgb(255 255 255 / 10%)}
- .rf-m-icon:focus-visible{outline:2px solid #ffb5c0;outline-offset:1px}
- .rf-m-icon .rf-m-svg{width:24px;height:24px}
- .rf-m-list .rf-m-svg{color:#ff6b85}
- .rf-m-count{position:absolute;top:3px;right:1px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#e5294b;color:#fff;font-size:10px;font-weight:800;line-height:17px;text-align:center;box-shadow:0 0 0 2px #14243a}
-
- /* Top notice: one short line */
- .rf-disclaimer .rf-disclaimer-inner{padding:5px 8px 5px 12px!important;gap:8px!important}
- .rf-disclaimer p{font-size:11.5px!important;line-height:1.35!important}
- .rf-disclaimer .rf-disclaimer-icon{width:16px!important;height:16px!important;font-size:10px!important}
- .rf-disclaimer .rf-disclaimer-close{width:30px!important;height:30px!important}
-
- /* ── Home ─────────────────────────────────────────────────────────── */
- #shoppingBenefits{display:none!important}
- /* Carousel: a short banner with the same proportions on every slide */
- main>#heroCampaign:not([hidden]),#heroCampaign{height:auto!important;min-height:0!important;aspect-ratio:16/8.5;width:auto!important;margin:10px 12px 0!important;border-radius:16px!important;overflow:hidden;border:0!important}
- #heroCampaign .campaign-slide{height:100%!important;min-height:0!important;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)!important;align-items:center;gap:6px!important;padding:10px 12px 26px 16px!important}
- #heroCampaign .campaign-copy{overflow:hidden!important;max-height:100%}
- #heroCampaign .campaign-copy .eyebrow{display:block;font-size:8.5px!important;letter-spacing:1.4px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- #heroCampaign .campaign-copy h2{font-size:clamp(17px,5.6vw,22px)!important;line-height:1.08!important;letter-spacing:-.4px!important;margin:5px 0 8px!important;min-height:0!important;white-space:normal!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
- #heroCampaign .campaign-copy p{display:none!important}
- #heroCampaign .campaign-cta{min-height:0!important;padding:7px 12px!important;font-size:11.5px!important;border-radius:9px!important;white-space:nowrap}
- #heroCampaign .campaign-visual{height:100%!important;min-height:0}
- #heroCampaign .campaign-visual:before,#heroCampaign .campaign-visual:after{display:none!important}
- #heroCampaign .product-pedestal{width:min(30vw,118px)!important;height:min(30vw,118px)!important;margin:0!important}
- #heroCampaign .product-pedestal:nth-child(n+2){display:none!important}
- #heroCampaign .product-pedestal img{width:100%;height:100%;object-fit:contain}
- #heroCampaign .campaign-custom-image{width:100%;height:100%;object-fit:contain}
- #heroCampaign[data-layout=banner] .campaign-custom-image{object-fit:cover}
- #heroCampaign .campaign-arrow{display:none!important}
- #heroCampaign .campaign-label{top:8px!important;right:10px!important;font-size:7.5px!important}
- #heroCampaign .campaign-dots{bottom:7px!important;transform:scale(.8)}
- #heroCampaign .campaign-pause{width:24px!important;height:24px!important;bottom:6px!important;right:8px!important;font-size:10px!important}
-
- /* Sections: smaller titles, less padding, no empty placeholders */
- .popular-section{margin:14px 12px 0!important;padding:14px 0 10px!important}
- .popular-section .section-heading{min-height:0!important;padding:0 12px!important;margin-bottom:10px!important}
- .popular-section .section-heading .eyebrow{font-size:9.5px!important;letter-spacing:.12em!important}
- .popular-section .section-heading h2{font-size:20px!important;line-height:1.15!important;margin:2px 0 0!important}
- .popular-section .section-heading p{font-size:12px!important;margin:3px 0 0!important}
- .popular-section:not(:has(.card)){display:none!important}
- .discovery-arrow{display:none!important}
- .popular-rail{min-height:0!important;padding:0 12px 6px!important;gap:10px!important;scroll-padding-left:12px;align-items:stretch}
- .popular-rail .card{flex:0 0 46%!important;min-height:0!important}
- .popular-rail .card-price-row{min-height:0!important}
-
- /* Cards: photo, name, price; the whole card opens the product */
- .popular-rail .card-img,.popular-rail .card-img.product-target,.grid .card-img{height:120px!important;padding:6px 6px 0!important}
- .card .card-name{font-size:12px!important;line-height:1.3!important;min-height:0!important;max-height:3.9em!important;-webkit-line-clamp:3}
- .popular-rail .card-action,.popular-rail .card-link.card-cta{display:none!important}
- .card .card-price-amount{font-size:19px!important}
-
- /* SEO text at the end of the page: small, under the content */
- .seo-home-heading{width:auto!important;margin:18px 12px 0!important;padding:14px 4px 4px!important}
-
- /* Results page: two compact columns, the card itself opens the product */
- #grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin:0 12px!important;padding:0!important}
- #grid .card{min-height:0!important;border-radius:14px!important}
- #grid .card-img,#grid .card-img.product-target{height:128px!important;padding:6px 6px 0!important}
- #grid .card-body{padding:8px 10px 10px!important;gap:4px!important}
- #grid .card-utility-row,#grid .card-action,#grid .card-link.card-cta,#grid .card-store-count{display:none!important}
- #grid .card-stores{gap:4px!important;padding:6px 10px 0!important}
- #grid .card-stores .card-store{font-size:9.5px!important;padding:3px 7px!important;min-height:0!important}
- #grid .card-price-row{margin-top:auto!important;min-height:0!important}
- #grid .card .heart-button{width:34px!important;height:34px!important;top:6px!important;right:6px!important}
- /* Results page */
- #catalogSection .catalog-heading{padding-top:12px!important;margin-bottom:10px!important}
- #catalogSection .catalog-heading{align-items:center!important}
- #catalogSection .catalog-heading h2{font-size:20px!important;line-height:1.15!important}
- #catalogSection .updated-badge{font-size:10px!important;padding:5px 8px!important}
- #stockNotice{margin:0 12px 12px!important}
- #stockNotice .stock-notice-inner{padding:8px 10px!important;gap:8px!important;font-size:12px!important;line-height:1.4!important}
- #catalogSection .catalog-heading p,#catalogSection .catalog-heading .eyebrow{display:none!important}
- /* Product and store pages */
- #detailPage{padding-top:4px!important}
- #detailPage h1{font-size:23px!important;letter-spacing:-.4px!important;margin:10px 0 6px!important}
- #detailPage .rf-product-visual{min-height:0!important;height:210px;padding:14px!important;border-radius:18px!important}
- #detailPage .rf-product-visual img{height:180px!important}
- /* v8: room for "Mostrar más", readable store chips, bigger tap targets, all discount tiers in view */
- .load-more-wrap{margin:16px 12px 28px!important;padding:0!important}
- .load-more-wrap .load-more-btn{width:100%;min-height:46px}
- #grid .card-stores .card-store{font-size:10.5px!important;padding:4px 8px!important}
- #grid .card .heart-button{width:40px!important;height:40px!important;top:4px!important;right:4px!important}
- #catalogSection .offer-tiers:not([hidden]){display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px!important;overflow:visible!important}
- #catalogSection .offer-tiers .offer-tiers-title{display:none!important}
- #catalogSection .offer-tiers .offer-tier{min-width:0!important;height:auto!important;min-height:46px;padding:4px 2px!important;flex-direction:column!important;justify-content:center;gap:2px!important;font-size:13px!important}
- #catalogSection .offer-tiers .offer-tier-count{font-size:10.5px!important;padding:1px 6px!important}
- #catalogSection .offer-tiers .offer-tier-main span{display:none}
- .rf-store-shortcuts .rf-store-go{flex:1 1 140px}
- /* Jumps to the results stop below the sticky bar (and the open search field) */
- #catalogStart,#grid,.rf-results-bar,.empty-state{scroll-margin-top:72px!important}
- body.rf-m-search-open :is(#catalogStart,#grid,.rf-results-bar,.empty-state){scroll-margin-top:136px!important}
- /* Catalog details (i): full width inside the results bar instead of running off the screen */
- #catalogSection .rf-results-bar{position:relative}
- #catalogSection .rf-results-info .catalog-details{position:static}
- #catalogSection .rf-results-info .catalog-details>p{left:10px!important;right:10px!important;top:52px!important;width:auto!important;max-width:none!important}
-}
-
-.rf-m-head-social{display:flex;flex:1;min-width:0;flex-wrap:wrap;justify-content:flex-end;gap:2px}
-.rf-m-head-social a{display:inline-flex;align-items:center;justify-content:center;min-width:36px;min-height:40px}
-.rf-m-head-social .rf-app-icon{width:28px;height:28px}
-.rf-m-brand,.rf-m-close{flex-shrink:0}
-@media(max-width:650px){.rf-m-settings{grid-column:3;grid-row:1;justify-self:center;color:#ffb5b9}.topbar .brand :is(h1,.seo-brand-title){font-size:23px!important}}
+/* Personal history stays in this browser; global popularity comes from the feed. */
+(() => {
+ const $=id=>document.getElementById(id),M=window.RivFreeExploreModel;
+ const text=(es,pt)=>LANG==='es'?es:(pt||es);
+ const node=(tag,label,cls)=>{const n=document.createElement(tag);if(label)n.textContent=label;if(cls)n.className=cls;return n;};
+ const btn=(label,fn,cls)=>{const b=node('button',label,cls);b.type='button';b.onclick=fn;return b;};
+ const historyKey='rivfree-search-history';let searches=[];
+ try{searches=M.history(JSON.parse(localStorage.getItem(historyKey)||'[]'));}catch{}
+ function saveHistory(){try{localStorage.setItem(historyKey,JSON.stringify(searches));}catch{}}
+ const main=document.querySelector('main'),input=$('search');
+ function section(id,title){const s=node('section',null,'popular-section rf-personal-section');s.id=id;const heading=node('div',null,'section-heading'),wrap=node('div');wrap.append(node('span','RIVFREE','eyebrow'),node('h2',title),node('p'));heading.append(wrap);const grid=node('div',null,'popular-rail');grid.tabIndex=0;grid.setAttribute('role','region');grid.setAttribute('aria-label',title);grid.addEventListener('click',handleProductClick);s.append(heading,grid);return s;}
+ const recommended=section('basedOnSearches',text('Inspirado en tus búsquedas','Inspirado nas suas buscas'));
+ const recent=node('div',null,'rf-history-chips');recommended.insertBefore(recent,recommended.lastChild);
+ const most=section('mostSearched',text('Más buscados','Mais buscados'));main.append(recommended,most);
+ const clearPersonal=btn(text('Borrar consultas','Limpar consultas'),()=>{consultations.clear();try{localStorage.removeItem('rivfree-consultations');}catch{}renderPopularProducts();},'rf-text-button');$('popularProducts').querySelector('.section-heading').append(clearPersonal);
+ const homePanel=node('section',null,'rf-search-home');homePanel.id='searchHome';homePanel.hidden=true;homePanel.setAttribute('aria-label',text('Historial y descubrimiento','Histórico e descobertas'));homePanel.setAttribute('role','dialog');$('searchForm').append(homePanel);
+ let cachedCatalog=null,cachedSignature='',randomGroups=[],rankedGroups=[],facetCounts=new Map(),facetMatches=new Map(),activeFamily='phones';
+ function runQuery(query){input.value=query;hidePanel();runSearch();}
+ function chips(container){container.replaceChildren();for(const item of searches){const chip=node('span',null,'rf-history-chip');chip.append(btn('⌕ '+item.query,()=>runQuery(item.query)));const remove=btn('×',()=>{const inside=homePanel.contains(remove);searches=searches.filter(x=>x!==item);saveHistory();drawPanel();renderPopularProducts();if(inside)homePanel.querySelector('button')?.focus();},'rf-history-remove');remove.setAttribute('aria-label',text('Eliminar búsqueda: ','Excluir busca: ')+item.query);chip.append(remove);container.append(chip);}}
+ function drawPanel(){homePanel.replaceChildren();const top=node('div',null,'rf-panel-heading');top.append(node('strong',text('Historial de búsqueda','Histórico de busca')),btn(text('Borrar todo','Limpar tudo'),()=>{searches=[];saveHistory();drawPanel();renderPopularProducts();homePanel.querySelector('button')?.focus();},'rf-text-button'));homePanel.append(top);const historyBox=node('div',null,'rf-history-chips');chips(historyBox);homePanel.append(historyBox);
+  if(!searches.length)homePanel.append(node('p',text('Tus próximas búsquedas aparecerán aquí.','Suas próximas buscas aparecerão aqui.'),'rf-muted'));
+  homePanel.append(node('strong',rankedGroups.length?text('Más buscados','Mais buscados'):text('Para descubrir','Para descobrir')));const mini=node('div',null,'rf-search-mini');
+  for(const g of (rankedGroups.length?rankedGroups:randomGroups).slice(0,6)){const a=node('a');a.href='#/producto/'+encodeURIComponent(g.key);const src=safeImageUrl(g.offers.find(o=>safeImageUrl(o.imagen))?.imagen);if(src){const img=node('img');img.src=src;img.alt='';img.loading='lazy';img.onerror=()=>img.remove();a.append(img);}a.append(node('span',readableProductName(g.name)));a.onclick=()=>{hidePanel();recordProductConsult(g.key);};mini.append(a);}homePanel.append(mini);
+ }
+ function showPanel(){closeSearchSuggestions();drawPanel();homePanel.hidden=false;input.setAttribute('aria-expanded','true');input.setAttribute('aria-controls','searchHome');input.setAttribute('aria-haspopup','dialog');}
+ function hidePanel(){homePanel.hidden=true;input.setAttribute('aria-controls','searchSuggestions');input.setAttribute('aria-haspopup','listbox');input.setAttribute('aria-expanded',String(!$('searchSuggestions').hidden));}
+ input.addEventListener('focus',showPanel);input.addEventListener('click',showPanel);
+ input.addEventListener('input',()=>{if(input.value.trim())hidePanel();else showPanel();});
+ input.addEventListener('keydown',e=>{if(!homePanel.hidden&&e.key==='ArrowDown'){e.preventDefault();homePanel.querySelector('button,a')?.focus();}if(e.key==='Escape')hidePanel();});
+ homePanel.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();input.focus();hidePanel();}});
+ document.addEventListener('pointerdown',e=>{if(!$('searchForm').contains(e.target))hidePanel();});
+ $('searchForm').addEventListener('focusout',()=>setTimeout(()=>{if(!$('searchForm').contains(document.activeElement))hidePanel();},0));
+ const priorSearch=runSearch;
+ runSearch=async function(){const query=input.value.trim();if(query){searches=M.history(searches,query);saveHistory();}clearFacet();hidePanel();await priorSearch();railsStale=true;cachedSignature='';};
+ function clearFacet(){const u=new URL(location.href);u.searchParams.delete('facet');history.replaceState(null,'',u);}
+ const priorCategory=selectCampaignCategory;
+ let facetActivating=false;
+ selectCampaignCategory=function(category,options){if(!facetActivating)clearFacet();return priorCategory(category,options);};
+ // Facet filter used by getFiltered() to narrow the candidates before any other work.
+ window.RivFreeFacet=()=>{const id=new URL(location.href).searchParams.get('facet');if(!id)return null;if(!facetsReady())buildFacetsNow();const keys=facetMatches.get(id);return keys?{id,keys}:null;};
+ $('clearFilters').addEventListener('click',()=>{clearFacet();render(true);});
+ function fill(grid,groups){const scroll=grid.scrollLeft;grid.classList.toggle('few-products',groups.length<5);grid.replaceChildren(...groups.map(g=>createProductCard({...g,visibleOffers:g.offers})));grid.scrollLeft=scroll;}
+ function syncVisibility(detail,results){const visible=window.RIVFREE_SITE_CONFIG?.homepage?.visible||{};recommended.hidden=detail||results||visible.recommended===false;most.hidden=detail||visible.most===false||!rankedGroups.length;const facet=facets.find(f=>f.id===new URL(location.href).searchParams.get('facet'));if(results&&facet)$('catalogStart').querySelector('h2').textContent=facetLabel(facet);}
+ function renderPersonal(){
+  if(!PRODUCT_GROUPS.length)return;
+  const signature=JSON.stringify([LANG,searches,[...consultations],[...favorites],referenceCurrency,exchange.rate,popularFeed]);
+  if(cachedCatalog===PRODUCT_GROUPS&&cachedSignature===signature)return;
+  if(cachedCatalog!==PRODUCT_GROUPS){randomGroups=shuffled(PRODUCT_GROUPS.filter(g=>g.offers.some(hasPrice))).slice(0,8);scheduleFacets();cachedCatalog=PRODUCT_GROUPS;}
+  cachedSignature=signature;
+  const totals=new Map((popularFeed?.items||[]).filter(i=>Number.isInteger(i.searches)&&i.searches>0).map(i=>[i.url,i.searches]));
+  rankedGroups=PRODUCT_GROUPS.map(g=>({g,n:g.offers.reduce((a,o)=>a+(totals.get(o.url)||0),0)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,12).map(x=>x.g);
+  const personal=PRODUCT_GROUPS.filter(g=>consultations.has(g.key)).sort((a,b)=>consultations.get(b.key).count-consultations.get(a.key).count||consultations.get(b.key).last-consultations.get(a.key).last).slice(0,12);
+  $('popularTitle').textContent=text('Más consultados por ti','Mais consultados por você');$('popularNote').textContent=personal.length?text('Los productos que más abriste, guardados solo en este navegador.','Os produtos que você mais abriu, salvos apenas neste navegador.'):text('Abrí un producto para empezar tu selección personal.','Abra um produto para começar sua seleção pessoal.');
+  $('popularProducts').querySelector('.eyebrow').textContent=text('TU ACTIVIDAD','SUA ATIVIDADE');clearPersonal.textContent=text('Borrar consultas','Limpar consultas');clearPersonal.hidden=!personal.length;fill($('popularGrid'),personal);updatePopularArrows();
+  recommended.querySelector('h2').textContent=text('Inspirado en tus búsquedas','Inspirado nas suas buscas');recommended.querySelector('.section-heading p').textContent=searches.length?text('Productos relacionados con tus búsquedas recientes.','Produtos relacionados às suas buscas recentes.'):text('Cuando busques, te mostraremos opciones relacionadas aquí.','Ao buscar, mostraremos opções relacionadas aqui.');chips(recent);
+  const queries=searches.slice(0,6).map(s=>Catalog.searchQuery(s.query));const suggestions=PRODUCT_GROUPS.map(g=>({g,score:queries.reduce((n,q,i)=>n+(g.offers.some(o=>Catalog.matchesSearch(o,q))?6-i:0),0)})).filter(x=>x.score>0&&x.g.offers.some(hasPrice)).sort((a,b)=>b.score-a.score).slice(0,8).map(x=>x.g);fill(recommended.lastChild,suggestions);
+  if(searches.length&&!suggestions.length)recommended.lastChild.append(node('p',text('No encontramos productos para esas búsquedas. Probá con otro término.','Não encontramos produtos para essas buscas. Tente outro termo.')));
+  most.querySelector('h2').textContent=text('Más buscados','Mais buscados');most.querySelector('.section-heading p').textContent=rankedGroups.length?text('Selecciones desde búsquedas de los últimos 30 días.','Seleções a partir de buscas nos últimos 30 dias.'):text('Todavía no hay suficientes datos: por ahora mostramos una selección aleatoria.','Ainda não há dados suficientes: por enquanto mostramos uma seleção aleatória.');fill(most.lastChild,rankedGroups.length?rankedGroups:randomGroups);most.hidden=!rankedGroups.length||window.RIVFREE_SITE_CONFIG?.homepage?.visible?.most===false;
+  const ids={hero:'heroCampaign',benefits:'shoppingBenefits',discover:'discoverProducts',popular:'popularProducts',recommended:'basedOnSearches',most:'mostSearched'};for(const key of [...new Set([...(window.RIVFREE_SITE_CONFIG?.homepage?.order||[]),...Object.keys(ids)])]){if(ids[key])main.append($(ids[key]));}drawCategories();if(!homePanel.hidden)drawPanel();
+ }
+ // Below-the-fold rails run in their own task so the first screen paints sooner.
+ let personalQueued=false;
+ function queuePersonal(){if(personalQueued)return;personalQueued=true;setTimeout(()=>{personalQueued=false;renderPersonal();},0);}
+ // The home rails are rebuilt only while they are visible; results and detail pages skip that work.
+ let railsStale=true;
+ renderPopularProducts=function(){const type=location.hash.split('/')[1],detail=['producto','tienda','tiendas'].includes(type),results=type==='buscar'||!!ACTIVE_SEARCH.trim()||selectedCategories().length>0||$('soloOfertas').checked||$('favoritesOnly').checked;
+  if(detail||results){railsStale=true;if(PRODUCT_GROUPS.length&&cachedCatalog!==PRODUCT_GROUPS)scheduleFacets();}else{renderDiscoverProducts();queuePersonal();railsStale=false;}
+  $('popularProducts').hidden=detail||results||window.RIVFREE_SITE_CONFIG?.homepage?.visible?.popular===false;const link=document.querySelector('a[href="#popularProducts"]');if(link)link.hidden=$('popularProducts').hidden;syncVisibility(detail,results);};
+ const categoryMenu=document.querySelector('.rf-category-menu');
+ const oldOptions=categoryMenu.querySelector('.rf-category-options');oldOptions.hidden=true;oldOptions.classList.remove('rf-category-options');
+ const mega=node('div',null,'rf-mega-menu');categoryMenu.append(mega);
+ // Each family lists curated shortcuts plus brands and product types found in the live catalog.
+ const familyCategories={tech:['electronica'],computers:['informatica'],perfumes:['perfumes'],drinks:['bebidas'],beauty:['cosmetica'],food:['alimentos'],home:['hogar','electrodomesticos']};
+ const covered=['perfumes','bebidas','alimentos','cosmetica','electronica','informatica','electrodomesticos','hogar'];
+ const families=[...M.taxonomy,...Object.entries(Catalog.categories).filter(([id])=>!covered.includes(id)).map(([id,labels])=>({id,es:labels[0],pt:labels[1],match:p=>p.categoryId===id,brands:[],types:[]}))];
+ for(const f of families){f.categories=familyCategories[f.id]||(Catalog.categories[f.id]?[f.id]:[]);f.dynamicBrands=[];f.dynamicTypes=[];f.dynamic=!['phones','gaming','apple'].includes(f.id);}
+ let facets=families.flatMap(f=>[f,...f.brands,...f.types]);
+ const facetSlug=s=>M.normalize(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ let brandIndex=null,facetCatalog=null,facetJob=null,facetSteps=null;
+ const facetsReady=()=>facetCatalog===PRODUCT_GROUPS&&!facetSteps;
+ // Generator so the same work can run in 10 ms slices (background) or all at once (facet in the URL).
+ function* facetIndexSteps(){
+  const CI=window.RivFreeCategoryIndex,groups=PRODUCT_GROUPS;
+  // Brands normally come precomputed from the catalog worker; older cached data falls back here.
+  if(CI&&ALL_PRODUCTS.length&&!ALL_PRODUCTS.some(p=>p.brandKey)){brandIndex=CI.build(ALL_PRODUCTS);yield;}else brandIndex=null;
+  const brandOf=p=>p.brandKey?{key:p.brandKey,label:p.brandLabel}:(brandIndex?brandIndex.brandOf(p):null);
+  const matches=new Map(families.flatMap(f=>[f,...f.brands,...f.types]).map(f=>[f.id,new Set()]));
+  const brandSets=new Map(families.map(f=>[f.id,new Map()]));
+  const typeDefs=new Map(families.map(f=>[f.id,f.dynamic&&CI?f.categories.flatMap(c=>CI.types(c)):[]]));
+  const typeSets=new Map(families.map(f=>[f.id,typeDefs.get(f.id).map(()=>new Set())]));
+  for(let index=0;index<groups.length;index++){
+   const g=groups[index];
+   for(const family of families){
+    const offers=g.offers.filter(family.match);if(!offers.length)continue;
+    matches.get(family.id).add(g.key);
+    for(const f of family.brands)if(offers.some(f.match))matches.get(f.id).add(g.key);
+    for(const f of family.types)if(offers.some(f.match))matches.get(f.id).add(g.key);
+    if(!family.dynamic)continue;
+    const brands=brandSets.get(family.id);
+    for(const o of offers){const b=brandOf(o);if(!b)continue;let entry=brands.get(b.key);if(!entry)brands.set(b.key,entry={brand:b,keys:new Set()});entry.keys.add(g.key);}
+    const defs=typeDefs.get(family.id);
+    if(defs.length){const sets=typeSets.get(family.id),names=offers.map(o=>M.normalize(o.nombre));for(let i=0;i<defs.length;i++)if(names.some(n=>defs[i].regex.test(n)))sets[i].add(g.key);}
+   }
+   if(index%60===59)yield;
+  }
+  for(const family of families){
+   const curatedKeys=family.brands.map(b=>M.normalize(b.label).replace(/[^a-z0-9]/g,''));
+   family.dynamicBrands=[...brandSets.get(family.id).values()].filter(x=>x.keys.size>=2&&!curatedKeys.some(k=>k.includes(x.brand.key)||x.brand.key.includes(k))).sort((a,b)=>b.keys.size-a.keys.size||a.brand.label.localeCompare(b.brand.label)).slice(0,60).map(x=>{const id=family.id+'-b-'+x.brand.key;matches.set(id,x.keys);return {id,label:x.brand.label,kind:'brand'};});
+   const curatedTypes=family.types.map(t=>M.normalize(t.label));
+   family.dynamicTypes=typeDefs.get(family.id).map((t,i)=>({t,keys:typeSets.get(family.id)[i]})).filter(x=>x.keys.size&&!curatedTypes.includes(M.normalize(x.t.es))&&!curatedTypes.includes(M.normalize(x.t.pt))).map(x=>{const id=family.id+'-t-'+facetSlug(x.t.es);matches.set(id,x.keys);return {id,es:x.t.es,pt:x.t.pt,kind:'type'};});
+  }
+  facetMatches=matches;
+  facets=families.flatMap(f=>[f,...f.brands,...f.types,...f.dynamicBrands,...f.dynamicTypes]);
+  facetCounts=new Map([...facetMatches].map(([id,set])=>[id,set.size]));
+ }
+ function startFacets(){if(facetCatalog!==PRODUCT_GROUPS){facetCatalog=PRODUCT_GROUPS;facetSteps=facetIndexSteps();}}
+ function finishFacets(){facetSteps=null;facetJob=null;if(categoryMenu.open)drawCategories();window.dispatchEvent(new CustomEvent('rivfree:facets-ready'));}
+ function buildFacetsNow(){if(!PRODUCT_GROUPS.length)return;startFacets();if(!facetSteps)return;while(!facetSteps.next().done);finishFacets();}
+ function buildFacets(){
+  if(!PRODUCT_GROUPS.length)return Promise.resolve();
+  startFacets();if(!facetSteps)return Promise.resolve();
+  return facetJob||=new Promise(resolve=>{
+   const catalog=PRODUCT_GROUPS;
+   const slice=()=>{
+    if(facetCatalog!==catalog||!facetSteps){resolve();return;}
+    const until=performance.now()+10;
+    while(performance.now()<until){if(facetSteps.next().done){finishFacets();resolve();return;}}
+    setTimeout(slice,0);
+   };
+   slice();
+  });
+ }
+ // Started when the browser is idle after the catalog loads, or immediately when the menu opens.
+ function scheduleFacets(){if(facetsReady()||facetJob)return;const run=()=>buildFacets();if('requestIdleCallback' in window)requestIdleCallback(run,{timeout:5000});else setTimeout(run,1500);}
+ function facetLabel(f){return f.label||f[LANG==='es'?'es':'pt'];}
+ function activateFacet(f){const u=new URL(location.href);u.searchParams.set('facet',f.id);u.hash='/buscar';history.replaceState(null,'',u);categoryMenu.open=false;facetActivating=true;try{selectCampaignCategory('');}finally{facetActivating=false;}$('catalogStart').scrollIntoView({block:'start'});}
+ const expanded=new Set();
+ // The index may finish while the menu is closed; refresh its previous loading view on every opening.
+ categoryMenu.addEventListener('toggle',()=>{if(categoryMenu.open){drawCategories();if(!facetsReady())buildFacets();}});
+ function drawCategories(){mega.replaceChildren();const tabs=node('div',null,'rf-mega-families'),panel=node('div',null,'rf-mega-panel');tabs.append(btn(text('Todas las categorías','Todas as categorias'),()=>{categoryMenu.open=false;selectCampaignCategory('');}));
+  const ready=facetsReady();
+  for(const f of families){if(ready&&!(facetCounts.get(f.id)>0))continue;const b=btn(f[LANG==='es'?'es':'pt'],()=>{activeFamily=f.id;drawCategories();mega.querySelector(`[data-family="${f.id}"]`)?.focus();});b.dataset.family=f.id;b.setAttribute('aria-expanded',String(f.id===activeFamily));b.setAttribute('aria-controls','categoryDetailPanel');const n=ready?facetCounts.get(f.id):0;if(n)b.append(node('span',n.toLocaleString(LANG),'rf-mega-count'));tabs.append(b);}
+  const family=families.find(f=>f.id===activeFamily)||families[0];panel.id='categoryDetailPanel';panel.append(node('h2',family[LANG==='es'?'es':'pt']));
+  if(!ready){panel.append(node('p',PRODUCT_GROUPS.length?text('Cargando marcas y tipos…','Carregando marcas e tipos…'):text('Cargando categorías…','Carregando categorias…'),'rf-muted rf-mega-loading'));mega.append(tabs,panel);if(PRODUCT_GROUPS.length&&categoryMenu.open)buildFacets();return;}
+  panel.append(btn(text('Ver todos','Ver todos')+' · '+(facetCounts.get(family.id)||0).toLocaleString(LANG),()=>activateFacet(family),'rf-text-button'));
+  const brandItems=[...family.brands,...family.dynamicBrands].filter(f=>(facetCounts.get(f.id)||0)>0).sort((a,b)=>facetCounts.get(b.id)-facetCounts.get(a.id));
+  const typeItems=[...family.types,...family.dynamicTypes].filter(f=>(facetCounts.get(f.id)||0)>0).sort((a,b)=>facetCounts.get(b.id)-facetCounts.get(a.id));
+  for(let [key,title,items,limit] of [['brands',text('Marcas destacadas','Marcas em destaque'),brandItems,14],['types',text('Tipos y características','Tipos e características'),typeItems,12]])if(items.length){
+   if(items.length<=limit+3)limit=items.length;
+   const box=node('section');box.append(node('h3',title));const links=node('div',null,'rf-mega-links'+(key==='brands'?' rf-mega-brands':''));const open=expanded.has(family.id+key);
+   for(const f of items.slice(0,open?items.length:limit)){const count=facetCounts.get(f.id)||0;const b=btn('',()=>activateFacet(f));b.append(node('span',facetLabel(f),'rf-mega-label'),node('span',count.toLocaleString(LANG),'rf-mega-count'));b.setAttribute('aria-label',facetLabel(f)+' · '+count);links.append(b);}
+   box.append(links);
+   if(items.length>limit){const more=btn(open?text('Ver menos','Ver menos'):text(`Ver ${items.length-limit} más`,`Ver mais ${items.length-limit}`),()=>{if(open)expanded.delete(family.id+key);else expanded.add(family.id+key);drawCategories();mega.querySelector(`.rf-mega-more[data-more="${key}"]`)?.focus();},'rf-text-button rf-mega-more');more.dataset.more=key;more.setAttribute('aria-expanded',String(open));box.append(more);}
+   panel.append(box);
+  }
+  if(PRODUCT_GROUPS.length&&!brandItems.length&&!typeItems.length)panel.append(node('p',text('Explorá los productos disponibles de esta categoría.','Explore os produtos disponíveis nesta categoria.')));mega.append(tabs,panel);
+ }
+ function appendWhatsApp(actions,offer){const url=M.whatsapp(STORE_INFO[offer.tienda]);const label='WhatsApp · '+offer.tienda;let a;
+  if(url){url.searchParams.set('text',text('Hola, quisiera consultar por ','Olá, gostaria de consultar sobre ')+offer.nombre+(safeHttpUrl(offer.url)?' '+offer.url:''));a=node('a');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';}else{a=node('button');a.type='button';a.disabled=true;}
+  a.className='rf-whatsapp';a.setAttribute('aria-label',url?label:text('WhatsApp no informado: ','WhatsApp não informado: ')+offer.tienda);a.title=url?label:text('Esta tienda aún no tiene WhatsApp confirmado','Esta loja ainda não tem WhatsApp confirmado');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const p=document.createElementNS(svg.namespaceURI,'path');p.setAttribute('d','M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20.5l1.6-4.7a8.5 8.5 0 1 1 15.9-4.3Z M8 7.5c.5 4 2.5 6 6.5 7l1.5-2-2.5-1-1 1c-1.5-.7-2.3-1.5-3-3l1-1L9 6.5Z');svg.append(p);a.append(svg,node('span','WhatsApp'));actions.append(a);
+ }
+ // families/ready/build are used by the phone menu (mobile-shell.js) to list categories, brands and types.
+ window.RivFreeExplore={syncVisibility,appendWhatsApp,facets:()=>facets,facetCounts:()=>facetCounts,activateFacet,brandIndex:()=>brandIndex,families:()=>families,ready:()=>facetsReady(),build:()=>buildFacets(),label:f=>facetLabel(f)};
+ window.addEventListener('rivfree:catalog-ready',()=>{renderPopularProducts();if(new URL(location.href).searchParams.has('facet'))render();});
+ window.addEventListener('hashchange',()=>{hidePanel();renderPopularProducts();});
+ $('languageToggle').addEventListener('change',()=>{drawCategories();renderPopularProducts();});
+ document.addEventListener('rivfree-site-config-applied',()=>{renderPopularProducts();});
+ window.addEventListener('storage',e=>{if(e.key===historyKey){try{searches=M.history(JSON.parse(e.newValue||'[]'));}catch{searches=[];}renderPopularProducts();}});
+ drawCategories();renderPopularProducts();
+})();
